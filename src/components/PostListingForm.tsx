@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import type { CategoryId, ListingKind } from "@/lib/types";
 import { categories, cities } from "@/lib/data";
+import ImageUploader from "./ImageUploader";
 
 type Status = "idle" | "submitting" | "success";
 
@@ -24,6 +25,7 @@ export default function PostListingForm() {
   const [reward, setReward] = useState("");
   const [contactName, setContactName] = useState("");
   const [contactPhone, setContactPhone] = useState("");
+  const [imageUrls, setImageUrls] = useState<string[]>([]);
   const [status, setStatus] = useState<Status>("idle");
   const [error, setError] = useState("");
 
@@ -48,6 +50,7 @@ export default function PostListingForm() {
     setReward("");
     setContactName("");
     setContactPhone("");
+    setImageUrls([]);
     setStatus("idle");
   }
 
@@ -63,6 +66,19 @@ export default function PostListingForm() {
           ro'yxatiga qo'shildi. AI yordamchi mos e'lonlarni avtomatik qidirib
           topishga harakat qiladi.
         </p>
+        {imageUrls.length > 0 && (
+          <div className="mt-5 flex flex-wrap justify-center gap-3">
+            {imageUrls.map((url) => (
+              // eslint-disable-next-line @next/next/no-img-element -- uploaded to /public at runtime, not a build-time asset
+              <img
+                key={url}
+                src={url}
+                alt=""
+                className="h-20 w-20 rounded-xl border border-border object-cover"
+              />
+            ))}
+          </div>
+        )}
         <div className="mt-6 flex flex-wrap justify-center gap-3">
           <button
             type="button"
@@ -176,8 +192,8 @@ export default function PostListingForm() {
           <ImagePlus className="h-4 w-4" />
           Rasm qo'shish
         </h2>
-        <div className="mt-3 flex h-32 items-center justify-center rounded-xl border-2 border-dashed border-border text-center text-sm text-muted">
-          Rasmni shu yerga tashlang yoki bosib tanlang
+        <div className="mt-3">
+          <ImageUploader onChange={setImageUrls} />
         </div>
       </div>
 
