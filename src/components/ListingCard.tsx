@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Eye, MapPin, Calendar1, Gift } from "lucide-react";
+import { MapPin, Calendar1, Gift } from "lucide-react";
 import type { Listing } from "@/lib/types";
 import { categoryIcons } from "@/lib/icons";
 import { categories, formatDate, formatSom } from "@/lib/data";
@@ -65,7 +65,7 @@ export default function ListingCard({ listing }: { listing: Listing }) {
         <p className="mt-1.5 line-clamp-2 text-sm text-muted">{listing.description}</p>
       </div>
 
-      <div className="mt-4 flex items-center justify-between border-t border-border pt-3 text-xs text-muted">
+      <div className="mt-4 flex items-center gap-3 border-t border-border pt-3 text-xs text-muted">
         <span className="flex items-center gap-1">
           <MapPin className="h-3.5 w-3.5" />
           {listing.city}
@@ -73,10 +73,6 @@ export default function ListingCard({ listing }: { listing: Listing }) {
         <span className="flex items-center gap-1">
           <Calendar1 className="h-3.5 w-3.5" />
           {formatDate(listing.date)}
-        </span>
-        <span className="flex items-center gap-1">
-          <Eye className="h-3.5 w-3.5" />
-          {listing.views}
         </span>
       </div>
     </Link>

@@ -37,7 +37,7 @@ export default function Home() {
   const latest = [...listings]
     .filter((l) => l.status === "active")
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-    .slice(0, 8);
+    .slice(0, 4);
   const rewarded = getRewardedListings().slice(0, 3);
 
   return (
