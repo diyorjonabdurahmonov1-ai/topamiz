@@ -1,6 +1,13 @@
-import { beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { db } from "./db";
-import { findOrCreateGoogleUser, getUserByEmail, getUserByGoogleId, getUserById, pickAvatarColor } from "./auth";
+import {
+  findOrCreateGoogleUser,
+  getUserByEmail,
+  getUserByGoogleId,
+  getUserById,
+  isAdmin,
+  pickAvatarColor,
+} from "./auth";
 
 beforeEach(() => {
   db.exec("DELETE FROM sessions; DELETE FROM messages; DELETE FROM tags; DELETE FROM users;");
@@ -50,5 +57,26 @@ describe("findOrCreateGoogleUser", () => {
   it("returns null for a google id or email that doesn't exist", () => {
     expect(getUserByGoogleId("nope")).toBeNull();
     expect(getUserByEmail("nope@example.com")).toBeNull();
+  });
+});
+
+describe("isAdmin", () => {
+  const originalAdminEmails = process.env.ADMIN_EMAILS;
+
+  afterEach(() => {
+    process.env.ADMIN_EMAILS = originalAdminEmails;
+  });
+
+  it("returns false when there is no user or ADMIN_EMAILS is unset", () => {
+    delete process.env.ADMIN_EMAILS;
+    expect(isAdmin(null)).toBe(false);
+    expect(isAdmin({ email: "owner@example.com" })).toBe(false);
+  });
+
+  it("matches an email in a comma-separated ADMIN_EMAILS list, case-insensitively", () => {
+    process.env.ADMIN_EMAILS = "owner@example.com, Second@Example.com";
+    expect(isAdmin({ email: "owner@example.com" })).toBe(true);
+    expect(isAdmin({ email: "SECOND@example.com" })).toBe(true);
+    expect(isAdmin({ email: "someone-else@example.com" })).toBe(false);
   });
 });

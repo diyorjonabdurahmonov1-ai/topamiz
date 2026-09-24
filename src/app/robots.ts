@@ -8,7 +8,7 @@ export default function robots(): MetadataRoute.Robots {
       allow: "/",
       // Auth-gated pages a crawler would either bounce off of (redirected
       // to /kirish) or that carry no public content worth indexing.
-      disallow: ["/api/", "/xabarlar", "/mening-belgilarim", "/belgilash"],
+      disallow: ["/api/", "/xabarlar", "/mening-belgilarim", "/belgilash", "/admin"],
     },
     sitemap: `${SITE_URL}/sitemap.xml`,
   };

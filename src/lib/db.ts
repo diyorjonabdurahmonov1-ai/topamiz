@@ -67,11 +67,23 @@ db.exec(`
     read_at TEXT
   );
 
+  CREATE TABLE IF NOT EXISTS ads (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    media_url TEXT NOT NULL,
+    media_type TEXT NOT NULL,
+    link_url TEXT NOT NULL,
+    title TEXT NOT NULL DEFAULT '',
+    active INTEGER NOT NULL DEFAULT 1,
+    sort_order INTEGER NOT NULL DEFAULT 0,
+    created_at TEXT NOT NULL DEFAULT (datetime('now'))
+  );
+
   CREATE INDEX IF NOT EXISTS idx_sessions_user ON sessions(user_id);
   CREATE INDEX IF NOT EXISTS idx_messages_recipient ON messages(recipient_id);
   CREATE INDEX IF NOT EXISTS idx_messages_sender ON messages(sender_id);
   CREATE INDEX IF NOT EXISTS idx_messages_tag ON messages(tag_id);
   CREATE INDEX IF NOT EXISTS idx_tags_owner ON tags(owner_id);
+  CREATE INDEX IF NOT EXISTS idx_ads_active ON ads(active, sort_order);
 `);
 
 // Migrate a database created before Google sign-in: the old `users` table
