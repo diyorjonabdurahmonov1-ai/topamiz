@@ -3,10 +3,11 @@
 import { useEffect, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import type { AdBanner } from "@/lib/ads";
+import type { Dictionary } from "@/lib/i18n";
 
 const ROTATE_MS = 5000;
 
-export default function AdCarousel({ ads }: { ads: AdBanner[] }) {
+export default function AdCarousel({ ads, dict }: { ads: AdBanner[]; dict: Dictionary }) {
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -54,7 +55,7 @@ export default function AdCarousel({ ads }: { ads: AdBanner[] }) {
           />
         ) : (
           // eslint-disable-next-line @next/next/no-img-element -- admin-uploaded ad media (may be an animated GIF), not a fixed local asset
-          <img src={ad.mediaUrl} alt={ad.title || "Reklama"} className="h-full w-full object-cover" />
+          <img src={ad.mediaUrl} alt={ad.title || dict.ads.fallbackAlt} className="h-full w-full object-cover" />
         )}
       </a>
 
@@ -69,7 +70,7 @@ export default function AdCarousel({ ads }: { ads: AdBanner[] }) {
           <button
             type="button"
             onClick={() => go(-1)}
-            aria-label="Oldingi reklama"
+            aria-label={dict.ads.previousAria}
             className="absolute left-2 top-1/2 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full bg-black/50 text-white opacity-0 transition-opacity hover:bg-black/70 group-hover:opacity-100"
           >
             <ChevronLeft className="h-4 w-4" />
@@ -77,7 +78,7 @@ export default function AdCarousel({ ads }: { ads: AdBanner[] }) {
           <button
             type="button"
             onClick={() => go(1)}
-            aria-label="Keyingi reklama"
+            aria-label={dict.ads.nextAria}
             className="absolute right-2 top-1/2 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full bg-black/50 text-white opacity-0 transition-opacity hover:bg-black/70 group-hover:opacity-100"
           >
             <ChevronRight className="h-4 w-4" />

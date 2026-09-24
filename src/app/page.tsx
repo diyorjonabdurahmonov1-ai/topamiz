@@ -39,7 +39,7 @@ export default async function Home() {
       />
 
       <div className="relative mx-auto max-w-7xl px-4 py-6 pb-10 sm:px-6 sm:py-8 lg:px-8">
-        <AdCarousel ads={ads} />
+        <AdCarousel ads={ads} dict={dict} />
         <HomeTabs
           lost={allLost.slice(0, 8)}
           found={allFound.slice(0, 8)}

@@ -4,9 +4,10 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Search, X } from "lucide-react";
 import type { AuthUser } from "@/lib/auth";
+import type { Dictionary } from "@/lib/i18n";
 import Avatar from "./Avatar";
 
-export default function UserSearch() {
+export default function UserSearch({ dict }: { dict: Dictionary }) {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<AuthUser[]>([]);
   const [open, setOpen] = useState(false);
@@ -36,7 +37,7 @@ export default function UserSearch() {
           onChange={(e) => setQuery(e.target.value)}
           onFocus={() => setOpen(true)}
           onBlur={() => setTimeout(() => setOpen(false), 150)}
-          placeholder="Ism yoki email bo'yicha izlang..."
+          placeholder={dict.messages.searchPlaceholder}
           className="w-full bg-transparent py-2.5 text-sm focus:outline-none"
         />
         {query && (
@@ -70,7 +71,7 @@ export default function UserSearch() {
               </Link>
             ))
           ) : (
-            <p className="px-4 py-3 text-sm text-muted">Hech kim topilmadi</p>
+            <p className="px-4 py-3 text-sm text-muted">{dict.messages.noUsersFound}</p>
           )}
         </div>
       )}

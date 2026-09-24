@@ -3,6 +3,8 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { LayoutDashboard, MessageCircle, QrCode } from "lucide-react";
 import { getCurrentUser, isAdmin } from "@/lib/auth";
+import { getLocale } from "@/lib/i18n/server";
+import { getDictionary } from "@/lib/i18n";
 import ProfileEditForm from "@/components/ProfileEditForm";
 import LogoutButton from "@/components/LogoutButton";
 
@@ -13,17 +15,18 @@ export const metadata: Metadata = {
 export default async function OwnProfilePage() {
   const user = await getCurrentUser();
   if (!user) redirect("/kirish");
+  const dict = getDictionary(await getLocale());
 
   const links = [
-    { href: "/xabarlar", icon: MessageCircle, label: "Xabarlarim" },
-    { href: "/mening-belgilarim", icon: QrCode, label: "QR-belgilarim" },
-    ...(isAdmin(user) ? [{ href: "/admin", icon: LayoutDashboard, label: "Admin panel" }] : []),
+    { href: "/xabarlar", icon: MessageCircle, label: dict.profile.myMessages },
+    { href: "/mening-belgilarim", icon: QrCode, label: dict.profile.myQrTags },
+    ...(isAdmin(user) ? [{ href: "/admin", icon: LayoutDashboard, label: dict.profile.adminPanel }] : []),
   ];
 
   return (
     <div className="mx-auto max-w-md px-4 py-10 sm:px-6">
       <div className="rounded-2xl border border-border bg-surface p-6">
-        <ProfileEditForm user={user} />
+        <ProfileEditForm user={user} dict={dict} />
       </div>
 
       <div className="mt-5 grid grid-cols-2 gap-3">
@@ -42,7 +45,7 @@ export default async function OwnProfilePage() {
       </div>
 
       <div className="mt-6 flex justify-center">
-        <LogoutButton />
+        <LogoutButton label={dict.profile.logout} />
       </div>
     </div>
   );

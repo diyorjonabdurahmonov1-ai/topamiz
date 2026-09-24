@@ -3,15 +3,18 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { Send } from "lucide-react";
 import type { MessageRow } from "@/lib/messages";
+import type { Dictionary } from "@/lib/i18n";
 
 export default function ChatThread({
   otherUserId,
   currentUserId,
   initialMessages,
+  dict,
 }: {
   otherUserId: number;
   currentUserId: number;
   initialMessages: MessageRow[];
+  dict: Dictionary;
 }) {
   const [messages, setMessages] = useState<MessageRow[]>(initialMessages);
   const [input, setInput] = useState("");
@@ -55,9 +58,7 @@ export default function ChatThread({
     <div className="flex flex-col overflow-hidden rounded-2xl border border-border bg-surface">
       <div ref={scrollRef} className="max-h-[520px] min-h-[360px] space-y-2.5 overflow-y-auto p-4">
         {messages.length === 0 ? (
-          <p className="py-10 text-center text-sm text-muted">
-            Hali xabar yo'q. Birinchi xabarni yozing.
-          </p>
+          <p className="py-10 text-center text-sm text-muted">{dict.messages.noMessagesYet}</p>
         ) : (
           messages.map((m) => {
             const mine = m.senderId === currentUserId;
@@ -82,14 +83,14 @@ export default function ChatThread({
         <input
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder="Xabar yozing..."
+          placeholder={dict.messages.messagePlaceholder}
           className="w-full rounded-xl border border-border bg-bg-elevated px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-via/40"
         />
         <button
           type="submit"
           disabled={sending}
           className="btn-brand flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-white disabled:opacity-60"
-          aria-label="Yuborish"
+          aria-label={dict.messages.sendAriaLabel}
         >
           <Send className="h-4 w-4" />
         </button>

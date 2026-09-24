@@ -6,6 +6,8 @@ import { Tag as TagIcon } from "lucide-react";
 import { getCurrentUser } from "@/lib/auth";
 import { getConversations, getGuestNotifications, markAllGuestNotificationsRead } from "@/lib/messages";
 import { formatDate } from "@/lib/data";
+import { getLocale } from "@/lib/i18n/server";
+import { getDictionary } from "@/lib/i18n";
 import Avatar from "@/components/Avatar";
 import UserSearch from "@/components/UserSearch";
 
@@ -16,6 +18,7 @@ export const metadata: Metadata = {
 export default async function MessagesPage() {
   const user = await getCurrentUser();
   if (!user) redirect("/kirish");
+  const dict = getDictionary(await getLocale());
 
   const guestNotifications = getGuestNotifications(user.id);
   markAllGuestNotificationsRead(user.id);
@@ -23,15 +26,15 @@ export default async function MessagesPage() {
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-8 sm:px-6">
-      <h1 className="text-2xl font-extrabold tracking-tight">Xabarlar</h1>
+      <h1 className="text-2xl font-extrabold tracking-tight">{dict.messages.title}</h1>
       <div className="mt-4">
-        <UserSearch />
+        <UserSearch dict={dict} />
       </div>
 
       {guestNotifications.length > 0 && (
         <div className="mt-6">
           <h2 className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted">
-            QR-belgi orqali xabarlar
+            {dict.messages.qrNotificationsHeading}
           </h2>
           <div className="space-y-2">
             {guestNotifications.map((n) => (
@@ -44,7 +47,13 @@ export default async function MessagesPage() {
                     href={n.tagCode ? `/t/${n.tagCode}` : "#"}
                     className="relative h-14 w-14 shrink-0 overflow-hidden rounded-lg border border-border"
                   >
-                    <Image src={n.tagPhotoUrl} alt={n.tagTitle ?? "Buyum"} fill sizes="56px" className="object-cover" />
+                    <Image
+                      src={n.tagPhotoUrl}
+                      alt={n.tagTitle ?? dict.messages.itemFallback}
+                      fill
+                      sizes="56px"
+                      className="object-cover"
+                    />
                   </Link>
                 )}
                 <div className="min-w-0 flex-1">
@@ -52,15 +61,15 @@ export default async function MessagesPage() {
                     <TagIcon className="h-3.5 w-3.5" />
                     {n.tagCode ? (
                       <Link href={`/t/${n.tagCode}`} className="hover:underline">
-                        {n.tagTitle ?? "Buyum"}
+                        {n.tagTitle ?? dict.messages.itemFallback}
                       </Link>
                     ) : (
-                      n.tagTitle ?? "Buyum"
+                      n.tagTitle ?? dict.messages.itemFallback
                     )}
                   </div>
                   <p className="mt-1.5 text-sm text-foreground">{n.body}</p>
                   <p className="mt-1.5 text-xs text-muted">
-                    {n.guestName ?? "Nomsiz"}
+                    {n.guestName ?? dict.messages.noNameFallback}
                     {n.guestPhone ? ` · ${n.guestPhone}` : ""} · {formatDate(n.createdAt.slice(0, 10))}
                   </p>
                 </div>
@@ -71,10 +80,12 @@ export default async function MessagesPage() {
       )}
 
       <div className="mt-6">
-        <h2 className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted">Suhbatlar</h2>
+        <h2 className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted">
+          {dict.messages.conversationsHeading}
+        </h2>
         {conversations.length === 0 ? (
           <p className="rounded-xl border border-dashed border-border py-10 text-center text-sm text-muted">
-            Hali suhbatlaringiz yo'q. Yuqoridan odam qidirib, birinchi xabarni yozing.
+            {dict.messages.noConversations}
           </p>
         ) : (
           <div className="divide-y divide-border overflow-hidden rounded-xl border border-border bg-surface">

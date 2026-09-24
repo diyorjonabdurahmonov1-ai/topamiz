@@ -165,4 +165,108 @@ export interface Dictionary {
   languageSwitcher: {
     label: string;
   };
+
+  profile: {
+    editProfile: string;
+    noBio: string;
+    namePlaceholder: string;
+    bioPlaceholder: string;
+    cancel: string;
+    save: string;
+    myMessages: string;
+    myQrTags: string;
+    adminPanel: string;
+    logout: string;
+    genericError: string;
+  };
+
+  publicProfile: {
+    noBio: string;
+    writeMessage: string;
+  };
+
+  messages: {
+    title: string;
+    searchPlaceholder: string;
+    noUsersFound: string;
+    qrNotificationsHeading: string;
+    itemFallback: string;
+    noNameFallback: string;
+    conversationsHeading: string;
+    noConversations: string;
+    noMessagesYet: string;
+    messagePlaceholder: string;
+    sendAriaLabel: string;
+  };
+
+  tags: {
+    createPageTitlePrefix: string;
+    createPageTitleHighlight: string;
+    createPageSubtitle: string;
+    myTagsTitle: string;
+    newButton: string;
+    emptyTitle: string;
+    emptyBody: string;
+    createButton: string;
+    aboutItemHeading: string;
+    itemNameLabel: string;
+    itemNamePlaceholder: string;
+    itemDescLabel: string;
+    itemDescPlaceholder: string;
+    photoHeading: string;
+    nameRequiredError: string;
+    photoRequiredError: string;
+    genericError: string;
+    creating: string;
+    submit: string;
+    readyTitle: string;
+    readyBody: string;
+    downloadButton: string;
+    myTagsLink: string;
+    foundBadge: string;
+    download: string;
+    view: string;
+    copyLink: string;
+    copied: string;
+    reactivate: string;
+    markFound: string;
+    deleteConfirm: string;
+    delete: string;
+    publicBadge: string;
+    resolvedBadge: string;
+    descriptionLabel: string;
+    resolvedNotice: string;
+    writeToOwner: string;
+    guestNamePlaceholder: string;
+    guestPhonePlaceholder: string;
+    contactMessagePlaceholder: string;
+    sentTitle: string;
+    sentBody: string;
+    messageRequiredError: string;
+    send: string;
+    loginHint: string;
+  };
+
+  ads: {
+    pageTitle: string;
+    pageSubtitle: string;
+    monthlyUsers: string;
+    monthlyViews: string;
+    currentBannerHeading: string;
+    previousAria: string;
+    nextAria: string;
+    fallbackAlt: string;
+    inquiryHeading: string;
+    inquirySubtitle: string;
+    companyLabel: string;
+    companyPlaceholder: string;
+    phoneLabel: string;
+    phonePlaceholder: string;
+    commentLabel: string;
+    commentPlaceholder: string;
+    requiredError: string;
+    submit: string;
+    successTitle: string;
+    successBody: string;
+  };
 }

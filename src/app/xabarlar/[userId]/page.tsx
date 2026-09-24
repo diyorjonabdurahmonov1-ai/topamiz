@@ -4,6 +4,8 @@ import { notFound, redirect } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { getCurrentUser, getUserById } from "@/lib/auth";
 import { getThread, markThreadRead } from "@/lib/messages";
+import { getLocale } from "@/lib/i18n/server";
+import { getDictionary } from "@/lib/i18n";
 import Avatar from "@/components/Avatar";
 import ChatThread from "@/components/ChatThread";
 
@@ -28,6 +30,7 @@ export default async function ChatPage(props: PageProps<"/xabarlar/[userId]">) {
 
   markThreadRead(user.id, otherId);
   const messages = getThread(user.id, otherId);
+  const dict = getDictionary(await getLocale());
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-6 sm:px-6">
@@ -44,7 +47,7 @@ export default async function ChatPage(props: PageProps<"/xabarlar/[userId]">) {
         </Link>
       </div>
 
-      <ChatThread otherUserId={otherId} currentUserId={user.id} initialMessages={messages} />
+      <ChatThread otherUserId={otherId} currentUserId={user.id} initialMessages={messages} dict={dict} />
     </div>
   );
 }
