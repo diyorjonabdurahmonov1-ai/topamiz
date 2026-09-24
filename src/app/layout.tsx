@@ -7,6 +7,8 @@ import BottomNav from "@/components/BottomNav";
 import { getCurrentUser } from "@/lib/auth";
 import { unreadTotal } from "@/lib/messages";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
+import { getLocale } from "@/lib/i18n/server";
+import { getDictionary } from "@/lib/i18n";
 import "./globals.css";
 
 const manrope = Manrope({
@@ -69,9 +71,11 @@ export const viewport: Viewport = {
 export default async function RootLayout({ children }: LayoutProps<"/">) {
   const user = await getCurrentUser();
   const unreadCount = user ? unreadTotal(user.id) : 0;
+  const locale = await getLocale();
+  const dict = getDictionary(locale);
 
   return (
-    <html lang="uz" className={`${manrope.variable} dark`} suppressHydrationWarning>
+    <html lang={locale} className={`${manrope.variable} dark`} suppressHydrationWarning>
       <head>
         <Script id="theme-init" strategy="beforeInteractive">
           {`try {
@@ -82,12 +86,12 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
         </Script>
       </head>
       <body className="min-h-full flex flex-col bg-bg text-foreground antialiased selection:bg-brand-via/30">
-        <Navbar user={user} unreadCount={unreadCount} />
+        <Navbar user={user} unreadCount={unreadCount} locale={locale} dict={dict} />
         <main className="flex-1 pb-16 sm:pb-0">{children}</main>
         <div className="hidden sm:block">
-          <Footer />
+          <Footer dict={dict} locale={locale} />
         </div>
-        <BottomNav user={user} unreadCount={unreadCount} />
+        <BottomNav user={user} unreadCount={unreadCount} dict={dict} />
       </body>
     </html>
   );

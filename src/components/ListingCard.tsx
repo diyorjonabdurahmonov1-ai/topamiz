@@ -1,12 +1,13 @@
 import Link from "next/link";
 import { MapPin, Calendar1, Gift } from "lucide-react";
 import type { Listing } from "@/lib/types";
+import type { Dictionary } from "@/lib/i18n";
 import { categoryIcons } from "@/lib/icons";
-import { categories, formatDate, formatSom } from "@/lib/data";
+import { formatDate, formatSom } from "@/lib/data";
 
-export default function ListingCard({ listing }: { listing: Listing }) {
+export default function ListingCard({ listing, dict }: { listing: Listing; dict: Dictionary }) {
   const Icon = categoryIcons[listing.category];
-  const categoryLabel = categories.find((c) => c.id === listing.category)?.label ?? "";
+  const categoryLabel = dict.categories[listing.category];
 
   return (
     <Link
@@ -16,7 +17,7 @@ export default function ListingCard({ listing }: { listing: Listing }) {
       {listing.status === "resolved" && (
         <div className="absolute inset-0 z-10 flex items-center justify-center bg-bg/70 backdrop-blur-[2px]">
           <span className="rounded-full border border-border bg-surface px-4 py-1.5 text-xs font-semibold text-muted">
-            Hal qilindi ✓
+            {dict.listingCard.resolved}
           </span>
         </div>
       )}
@@ -29,7 +30,7 @@ export default function ListingCard({ listing }: { listing: Listing }) {
               : "bg-success/10 text-success"
           }`}
         >
-          {listing.kind === "lost" ? "Yo'qoldi" : "Topildi"}
+          {listing.kind === "lost" ? dict.common.lost : dict.common.found}
         </span>
         {listing.reward ? (
           <span className="flex items-center gap-1 rounded-full bg-accent-gold/15 px-2.5 py-1 text-xs font-semibold text-accent-gold">

@@ -25,37 +25,39 @@ function jaccard(a: Set<string>, b: Set<string>): number {
   return union === 0 ? 0 : intersection / union;
 }
 
+export type MatchReasonKey = "sameCategory" | "sameCity" | "similarKeywords" | "closeDates";
+
 export interface MatchResult {
   listing: Listing;
   score: number;
-  reasons: string[];
+  reasons: MatchReasonKey[];
 }
 
-export function scorePair(a: Listing, b: Listing): { score: number; reasons: string[] } {
-  const reasons: string[] = [];
+export function scorePair(a: Listing, b: Listing): { score: number; reasons: MatchReasonKey[] } {
+  const reasons: MatchReasonKey[] = [];
   let score = 0;
 
   if (a.category === b.category) {
     score += 0.35;
-    reasons.push("Bir xil turkum");
+    reasons.push("sameCategory");
   }
   if (a.city === b.city) {
     score += 0.25;
-    reasons.push("Bir xil shahar");
+    reasons.push("sameCity");
   }
 
   const tokensA = new Set([...tokenize(a.title), ...tokenize(a.description)]);
   const tokensB = new Set([...tokenize(b.title), ...tokenize(b.description)]);
   const textScore = jaccard(tokensA, tokensB);
   score += textScore * 0.4;
-  if (textScore > 0.08) reasons.push("Tavsifda o'xshash kalit so'zlar");
+  if (textScore > 0.08) reasons.push("similarKeywords");
 
   const daysApart = Math.abs(
     (new Date(a.date).getTime() - new Date(b.date).getTime()) / 86_400_000
   );
   if (daysApart <= 5) {
     score += 0.1 * (1 - daysApart / 5);
-    reasons.push("Sanalar yaqin");
+    reasons.push("closeDates");
   }
 
   return { score: Math.min(1, score), reasons };

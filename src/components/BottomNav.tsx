@@ -4,27 +4,34 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Home, MessageCircle, QrCode, Search, User } from "lucide-react";
 import type { AuthUser } from "@/lib/auth";
+import type { Dictionary } from "@/lib/i18n";
 
 export default function BottomNav({
   user,
   unreadCount = 0,
+  dict,
 }: {
   user: AuthUser | null;
   unreadCount?: number;
+  dict: Dictionary;
 }) {
   const pathname = usePathname();
 
   const items = [
-    { href: "/", icon: Home, label: "Bosh sahifa" },
-    { href: "/elonlar", icon: Search, label: "E'lonlar" },
-    { href: "/belgilash", icon: QrCode, label: "Belgilash", primary: true },
+    { href: "/", icon: Home, label: dict.bottomNav.home },
+    { href: "/elonlar", icon: Search, label: dict.bottomNav.listings },
+    { href: "/belgilash", icon: QrCode, label: dict.bottomNav.mark, primary: true },
     {
       href: user ? "/xabarlar" : "/kirish",
       icon: MessageCircle,
-      label: "Xabarlar",
+      label: dict.bottomNav.messages,
       badge: unreadCount,
     },
-    { href: user ? "/profil" : "/kirish", icon: User, label: user ? "Profil" : "Kirish" },
+    {
+      href: user ? "/profil" : "/kirish",
+      icon: User,
+      label: user ? dict.bottomNav.profile : dict.bottomNav.login,
+    },
   ];
 
   return (

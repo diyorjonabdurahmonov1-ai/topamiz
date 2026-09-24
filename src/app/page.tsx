@@ -3,9 +3,13 @@ import HomeTabs from "@/components/HomeTabs";
 import { getActiveAds } from "@/lib/ads";
 import { getAllActiveListings, getRewardedListings } from "@/lib/listings";
 import { getVisitorCountry } from "@/lib/geo";
+import { getLocale } from "@/lib/i18n/server";
+import { getDictionary } from "@/lib/i18n";
 
 export default async function Home() {
   const country = await getVisitorCountry();
+  const locale = await getLocale();
+  const dict = getDictionary(locale);
   const active = getAllActiveListings(country);
   const allLost = [...active]
     .filter((l) => l.kind === "lost")
@@ -43,6 +47,8 @@ export default async function Home() {
           lostCount={allLost.length}
           foundCount={allFound.length}
           rewardedCount={allRewarded.length}
+          dict={dict}
+          locale={locale}
         />
       </div>
     </div>

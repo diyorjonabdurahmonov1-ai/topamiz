@@ -5,25 +5,31 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X, Plus, MessageCircle, QrCode } from "lucide-react";
 import type { AuthUser } from "@/lib/auth";
+import type { Dictionary, Locale } from "@/lib/i18n";
 import Logo from "./Logo";
 import ThemeToggle from "./ThemeToggle";
 import Avatar from "./Avatar";
-
-const links = [
-  { href: "/elonlar", label: "E'lonlar" },
-  { href: "/mukofotli", label: "Mukofotli" },
-  { href: "/reklama", label: "Reklama" },
-];
+import LanguageSwitcher from "./LanguageSwitcher";
 
 export default function Navbar({
   user,
   unreadCount = 0,
+  locale,
+  dict,
 }: {
   user: AuthUser | null;
   unreadCount?: number;
+  locale: Locale;
+  dict: Dictionary;
 }) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
+
+  const links = [
+    { href: "/elonlar", label: dict.nav.listings },
+    { href: "/mukofotli", label: dict.nav.rewarded },
+    { href: "/reklama", label: dict.nav.ads },
+  ];
 
   return (
     <header className="sticky top-0 z-50 w-full glass">
@@ -50,11 +56,12 @@ export default function Navbar({
         </div>
 
         <div className="hidden items-center gap-3 md:flex">
+          <LanguageSwitcher locale={locale} label={dict.languageSwitcher.label} />
           <ThemeToggle />
           {user && (
             <Link
               href="/xabarlar"
-              aria-label="Xabarlar"
+              aria-label={dict.nav.messages}
               className="relative flex h-9 w-9 items-center justify-center rounded-xl border border-border bg-surface text-muted hover:text-foreground"
             >
               <MessageCircle className="h-4 w-4" />
@@ -75,7 +82,7 @@ export default function Navbar({
               href="/kirish"
               className="rounded-lg px-3 py-2 text-sm font-medium text-muted hover:text-foreground"
             >
-              Kirish
+              {dict.nav.login}
             </Link>
           )}
           <Link
@@ -83,16 +90,17 @@ export default function Navbar({
             className="btn-brand flex items-center gap-1.5 rounded-xl px-4 py-2 text-sm font-semibold text-white"
           >
             <Plus className="h-4 w-4" />
-            E'lon joylash
+            {dict.nav.postListing}
           </Link>
         </div>
 
         <div className="flex items-center gap-2 md:hidden">
+          <LanguageSwitcher locale={locale} label={dict.languageSwitcher.label} />
           <ThemeToggle />
           <button
             type="button"
             onClick={() => setOpen((v) => !v)}
-            aria-label="Menyu"
+            aria-label={dict.nav.menu}
             className="flex h-9 w-9 items-center justify-center rounded-xl border border-border bg-surface"
           >
             {open ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
@@ -119,7 +127,7 @@ export default function Navbar({
               className="flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium text-muted hover:bg-surface-2 hover:text-foreground"
             >
               <QrCode className="h-4 w-4" />
-              QR-belgi yaratish
+              {dict.nav.createQr}
             </Link>
             {!user && (
               <Link
@@ -127,7 +135,7 @@ export default function Navbar({
                 onClick={() => setOpen(false)}
                 className="rounded-lg px-3 py-2.5 text-sm font-medium text-muted hover:bg-surface-2 hover:text-foreground"
               >
-                Kirish
+                {dict.nav.login}
               </Link>
             )}
             <Link
@@ -136,7 +144,7 @@ export default function Navbar({
               className="btn-brand mt-2 flex items-center justify-center gap-1.5 rounded-xl px-4 py-2.5 text-sm font-semibold text-white"
             >
               <Plus className="h-4 w-4" />
-              E'lon joylash
+              {dict.nav.postListing}
             </Link>
           </div>
         </div>

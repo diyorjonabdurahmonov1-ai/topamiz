@@ -3,6 +3,8 @@
 import { useMemo, useState } from "react";
 import { Search, SlidersHorizontal, X } from "lucide-react";
 import type { CategoryId, Listing, ListingKind } from "@/lib/types";
+import type { Dictionary, Locale } from "@/lib/i18n";
+import { formatResultsCount } from "@/lib/i18n/format";
 import { categories, cities } from "@/lib/data";
 import { smartSearch } from "@/lib/ai";
 import ListingRow from "./ListingRow";
@@ -15,12 +17,16 @@ export default function ListingsExplorer({
   initialCategory = "all",
   initialCity = "all",
   listings,
+  dict,
+  locale,
 }: {
   initialQuery?: string;
   initialKind?: KindFilter;
   initialCategory?: CategoryId | "all";
   initialCity?: string;
   listings: Listing[];
+  dict: Dictionary;
+  locale: Locale;
 }) {
   const [query, setQuery] = useState(initialQuery);
   const [kind, setKind] = useState<KindFilter>(initialKind);
@@ -55,7 +61,7 @@ export default function ListingsExplorer({
             <input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Qidiruv: hujjat, telefon, mushuk..."
+              placeholder={dict.listingsPage.searchPlaceholder}
               className="w-full bg-transparent py-2.5 text-sm focus:outline-none"
             />
           </div>
@@ -65,15 +71,15 @@ export default function ListingsExplorer({
             className="flex items-center justify-center gap-1.5 rounded-xl border border-border bg-surface px-4 py-2.5 text-sm font-semibold text-foreground sm:w-auto"
           >
             <SlidersHorizontal className="h-4 w-4" />
-            Filtrlar
+            {dict.listingsPage.filters}
           </button>
         </div>
 
         <div className="mt-3 flex gap-2">
           {[
-            { id: "all", label: "Barchasi" },
-            { id: "lost", label: "Yo'qoldi" },
-            { id: "found", label: "Topildi" },
+            { id: "all", label: dict.listingsPage.kindAll },
+            { id: "lost", label: dict.common.lost },
+            { id: "found", label: dict.common.found },
           ].map((opt) => (
             <button
               key={opt.id}
@@ -93,28 +99,32 @@ export default function ListingsExplorer({
         {filtersOpen && (
           <div className="mt-4 grid grid-cols-1 gap-3 border-t border-border pt-4 sm:grid-cols-2">
             <div>
-              <label className="mb-1.5 block text-xs font-semibold text-muted">Turkum</label>
+              <label className="mb-1.5 block text-xs font-semibold text-muted">
+                {dict.listingsPage.categoryLabel}
+              </label>
               <select
                 value={category}
                 onChange={(e) => setCategory(e.target.value as CategoryId | "all")}
                 className="w-full rounded-xl border border-border bg-surface px-3 py-2.5 text-sm focus:outline-none"
               >
-                <option value="all">Barcha turkumlar</option>
+                <option value="all">{dict.listingsPage.allCategories}</option>
                 {categories.map((c) => (
                   <option key={c.id} value={c.id}>
-                    {c.label}
+                    {dict.categories[c.id]}
                   </option>
                 ))}
               </select>
             </div>
             <div>
-              <label className="mb-1.5 block text-xs font-semibold text-muted">Shahar</label>
+              <label className="mb-1.5 block text-xs font-semibold text-muted">
+                {dict.listingsPage.cityLabel}
+              </label>
               <select
                 value={city}
                 onChange={(e) => setCity(e.target.value)}
                 className="w-full rounded-xl border border-border bg-surface px-3 py-2.5 text-sm focus:outline-none"
               >
-                <option value="all">Barcha shaharlar</option>
+                <option value="all">{dict.listingsPage.allCities}</option>
                 {cities.map((c) => (
                   <option key={c} value={c}>
                     {c}
@@ -127,10 +137,7 @@ export default function ListingsExplorer({
       </div>
 
       <div className="mt-5 flex items-center justify-between">
-        <p className="text-sm text-muted">
-          <span className="font-semibold text-foreground">{results.length}</span> ta e'lon
-          topildi
-        </p>
+        <p className="text-sm text-muted">{formatResultsCount(locale, results.length)}</p>
         {hasActiveFilters && (
           <button
             type="button"
@@ -138,22 +145,19 @@ export default function ListingsExplorer({
             className="flex items-center gap-1 text-xs font-semibold text-muted hover:text-foreground"
           >
             <X className="h-3.5 w-3.5" />
-            Filtrlarni tozalash
+            {dict.listingsPage.clearFilters}
           </button>
         )}
       </div>
 
       {results.length > 0 ? (
         <div className="mt-5">
-          <ListingRow listings={results} />
+          <ListingRow listings={results} dict={dict} />
         </div>
       ) : (
         <div className="mt-10 flex flex-col items-center rounded-2xl border border-dashed border-border py-16 text-center">
-          <p className="text-lg font-semibold">Hech narsa topilmadi</p>
-          <p className="mt-1.5 max-w-sm text-sm text-muted">
-            Boshqa kalit so'z bilan qidiring yoki filtrlarni tozalab qayta
-            urinib ko'ring.
-          </p>
+          <p className="text-lg font-semibold">{dict.listingsPage.noResultsTitle}</p>
+          <p className="mt-1.5 max-w-sm text-sm text-muted">{dict.listingsPage.noResultsBody}</p>
         </div>
       )}
     </div>

@@ -1,10 +1,10 @@
 import Link from "next/link";
 import { Wand2 } from "lucide-react";
 import type { MatchResult } from "@/lib/ai";
+import type { Dictionary } from "@/lib/i18n";
 import { categoryIcons } from "@/lib/icons";
-import { categories } from "@/lib/data";
 
-export default function AiMatches({ matches }: { matches: MatchResult[] }) {
+export default function AiMatches({ matches, dict }: { matches: MatchResult[]; dict: Dictionary }) {
   if (matches.length === 0) return null;
 
   return (
@@ -13,12 +13,12 @@ export default function AiMatches({ matches }: { matches: MatchResult[] }) {
         <div className="flex h-8 w-8 items-center justify-center rounded-lg btn-brand text-white">
           <Wand2 className="h-4 w-4" />
         </div>
-        <h3 className="text-sm font-bold">AI tavsiya etgan mos e'lonlar</h3>
+        <h3 className="text-sm font-bold">{dict.aiMatches.title}</h3>
       </div>
       <div className="mt-4 space-y-3">
         {matches.map(({ listing, score, reasons }) => {
           const Icon = categoryIcons[listing.category];
-          const categoryLabel = categories.find((c) => c.id === listing.category)?.label;
+          const categoryLabel = dict.categories[listing.category];
           return (
             <Link
               key={listing.id}
@@ -36,7 +36,8 @@ export default function AiMatches({ matches }: { matches: MatchResult[] }) {
               <div className="min-w-0 flex-1">
                 <p className="truncate text-sm font-semibold">{listing.title}</p>
                 <p className="truncate text-xs text-muted">
-                  {categoryLabel} · {listing.city} · {reasons.join(", ")}
+                  {categoryLabel} · {listing.city} ·{" "}
+                  {reasons.map((r) => dict.aiMatches.reasons[r]).join(", ")}
                 </p>
               </div>
               <span className="shrink-0 rounded-full bg-success/10 px-2.5 py-1 text-xs font-bold text-success">

@@ -2,13 +2,16 @@
 
 import { useState } from "react";
 import { Phone, ShieldCheck, User } from "lucide-react";
+import type { Dictionary } from "@/lib/i18n";
 
 export default function ContactCard({
   name,
   phone,
+  dict,
 }: {
   name: string;
   phone: string;
+  dict: Dictionary;
 }) {
   const [revealed, setRevealed] = useState(false);
 
@@ -22,7 +25,7 @@ export default function ContactCard({
           <p className="text-sm font-semibold">{name}</p>
           <p className="flex items-center gap-1 text-xs text-muted">
             <ShieldCheck className="h-3.5 w-3.5" />
-            Tasdiqlangan foydalanuvchi
+            {dict.contactCard.verifiedUser}
           </p>
         </div>
       </div>
@@ -42,12 +45,10 @@ export default function ContactCard({
           className="btn-brand mt-4 flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold text-white"
         >
           <Phone className="h-4 w-4" />
-          Aloqa raqamini ko'rsatish
+          {dict.contactCard.showPhone}
         </button>
       )}
-      <p className="mt-3 text-center text-xs text-muted">
-        Xavfsizlik uchun uchrashuvni ochiq joyda tashkillashtiring.
-      </p>
+      <p className="mt-3 text-center text-xs text-muted">{dict.contactCard.safetyNote}</p>
     </div>
   );
 }

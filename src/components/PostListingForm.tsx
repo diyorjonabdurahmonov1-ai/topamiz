@@ -11,12 +11,14 @@ import {
   Sparkles,
 } from "lucide-react";
 import type { CategoryId, ListingKind } from "@/lib/types";
+import type { Dictionary, Locale } from "@/lib/i18n";
+import { formatPostSuccessBody } from "@/lib/i18n/format";
 import { categories, cities } from "@/lib/data";
 import ImageUploader from "./ImageUploader";
 
 type Status = "idle" | "submitting" | "success";
 
-export default function PostListingForm() {
+export default function PostListingForm({ dict, locale }: { dict: Dictionary; locale: Locale }) {
   const [kind, setKind] = useState<ListingKind>("lost");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -32,7 +34,7 @@ export default function PostListingForm() {
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     if (!title.trim() || !description.trim() || !contactName.trim() || !contactPhone.trim()) {
-      setError("Iltimos, * bilan belgilangan barcha maydonlarni to'ldiring.");
+      setError(dict.postListing.requiredFieldsError);
       return;
     }
     setError("");
@@ -54,10 +56,10 @@ export default function PostListingForm() {
         }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error ?? "Xatolik yuz berdi");
+      if (!res.ok) throw new Error(data.error ?? dict.postListing.genericError);
       setStatus("success");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Xatolik yuz berdi");
+      setError(err instanceof Error ? err.message : dict.postListing.genericError);
       setStatus("idle");
     }
   }
@@ -75,16 +77,15 @@ export default function PostListingForm() {
   }
 
   if (status === "success") {
+    const kindLabel = kind === "lost" ? dict.postListing.successKindLost : dict.postListing.successKindFound;
     return (
       <div className="animate-fade-up flex flex-col items-center rounded-3xl border border-border bg-surface p-10 text-center">
         <div className="flex h-16 w-16 items-center justify-center rounded-full bg-success/10 text-success">
           <CheckCircle2 className="h-8 w-8" />
         </div>
-        <h2 className="mt-5 text-2xl font-extrabold">E'lon muvaffaqiyatli joylandi!</h2>
+        <h2 className="mt-5 text-2xl font-extrabold">{dict.postListing.successTitle}</h2>
         <p className="mt-2 max-w-md text-sm text-muted">
-          "{title}" e'loni {kind === "lost" ? "yo'qolgan" : "topilgan"} buyumlar
-          ro'yxatiga qo'shildi. AI yordamchi mos e'lonlarni avtomatik qidirib
-          topishga harakat qiladi.
+          {formatPostSuccessBody(locale, kindLabel, title)}
         </p>
         {imageUrls.length > 0 && (
           <div className="mt-5 flex flex-wrap justify-center gap-3">
@@ -105,13 +106,13 @@ export default function PostListingForm() {
             onClick={resetForm}
             className="rounded-xl border border-border bg-surface px-5 py-2.5 text-sm font-semibold hover:bg-surface-2"
           >
-            Yana e'lon joylash
+            {dict.postListing.postAnother}
           </button>
           <Link
             href="/elonlar"
             className="btn-brand rounded-xl px-5 py-2.5 text-sm font-semibold text-white"
           >
-            Barcha e'lonlarni ko'rish
+            {dict.postListing.viewAllListings}
           </Link>
         </div>
       </div>
@@ -121,12 +122,12 @@ export default function PostListingForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="rounded-2xl border border-border bg-surface p-5 sm:p-6">
-        <h2 className="text-sm font-bold">Buyum turi</h2>
+        <h2 className="text-sm font-bold">{dict.postListing.itemTypeHeading}</h2>
         <div className="mt-3 grid grid-cols-2 gap-3">
           {(
             [
-              { id: "lost", label: "Men buyum yo'qotdim" },
-              { id: "found", label: "Men buyum topdim" },
+              { id: "lost", label: dict.postListing.lostOption },
+              { id: "found", label: dict.postListing.foundOption },
             ] as const
           ).map((opt) => (
             <button
@@ -146,34 +147,36 @@ export default function PostListingForm() {
       </div>
 
       <div className="rounded-2xl border border-border bg-surface p-5 sm:p-6">
-        <h2 className="text-sm font-bold">Asosiy ma'lumot</h2>
+        <h2 className="text-sm font-bold">{dict.postListing.mainInfoHeading}</h2>
         <div className="mt-4 space-y-4">
           <div>
             <label className="mb-1.5 block text-xs font-semibold text-muted">
-              Sarlavha *
+              {dict.postListing.titleLabel}
             </label>
             <input
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="Masalan: Qora rangli hamyon"
+              placeholder={dict.postListing.titlePlaceholder}
               className="w-full rounded-xl border border-border bg-bg-elevated px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-via/40"
             />
           </div>
           <div>
             <label className="mb-1.5 block text-xs font-semibold text-muted">
-              Tavsif *
+              {dict.postListing.descriptionLabel}
             </label>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={4}
-              placeholder="Buyum qanday ko'rinishga ega, qayerda va qachon yo'qolgan/topilgan..."
+              placeholder={dict.postListing.descriptionPlaceholder}
               className="w-full rounded-xl border border-border bg-bg-elevated px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-via/40"
             />
           </div>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>
-              <label className="mb-1.5 block text-xs font-semibold text-muted">Turkum</label>
+              <label className="mb-1.5 block text-xs font-semibold text-muted">
+                {dict.postListing.categoryLabel}
+              </label>
               <select
                 value={category}
                 onChange={(e) => setCategory(e.target.value as CategoryId)}
@@ -181,13 +184,15 @@ export default function PostListingForm() {
               >
                 {categories.map((c) => (
                   <option key={c.id} value={c.id}>
-                    {c.label}
+                    {dict.categories[c.id]}
                   </option>
                 ))}
               </select>
             </div>
             <div>
-              <label className="mb-1.5 block text-xs font-semibold text-muted">Shahar</label>
+              <label className="mb-1.5 block text-xs font-semibold text-muted">
+                {dict.postListing.cityLabel}
+              </label>
               <div className="relative">
                 <MapPin className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
                 <select
@@ -210,7 +215,7 @@ export default function PostListingForm() {
       <div className="rounded-2xl border border-border bg-surface p-5 sm:p-6">
         <h2 className="flex items-center gap-2 text-sm font-bold">
           <ImagePlus className="h-4 w-4" />
-          Rasm qo'shish
+          {dict.postListing.photosHeading}
         </h2>
         <div className="mt-3">
           <ImageUploader onChange={setImageUrls} />
@@ -221,46 +226,44 @@ export default function PostListingForm() {
         <div className="rounded-2xl border border-accent-gold/30 bg-accent-gold/5 p-5 sm:p-6">
           <h2 className="flex items-center gap-2 text-sm font-bold text-accent-gold">
             <Sparkles className="h-4 w-4" />
-            Mukofot taklif qilish (ixtiyoriy)
+            {dict.postListing.rewardHeading}
           </h2>
-          <p className="mt-1 text-xs text-muted">
-            Mukofot taklif qilish buyumingiz tezroq topilishiga yordam beradi.
-          </p>
+          <p className="mt-1 text-xs text-muted">{dict.postListing.rewardHint}</p>
           <input
             type="number"
             min={0}
             value={reward}
             onChange={(e) => setReward(e.target.value)}
-            placeholder="Masalan: 200000"
+            placeholder={dict.postListing.rewardPlaceholder}
             className="mt-3 w-full rounded-xl border border-border bg-bg-elevated px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent-gold/40"
           />
         </div>
       )}
 
       <div className="rounded-2xl border border-border bg-surface p-5 sm:p-6">
-        <h2 className="text-sm font-bold">Aloqa ma'lumotlari</h2>
+        <h2 className="text-sm font-bold">{dict.postListing.contactHeading}</h2>
         <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div>
             <label className="mb-1.5 block text-xs font-semibold text-muted">
-              Ismingiz *
+              {dict.postListing.nameLabel}
             </label>
             <input
               value={contactName}
               onChange={(e) => setContactName(e.target.value)}
-              placeholder="Ism Familiya"
+              placeholder={dict.postListing.namePlaceholder}
               className="w-full rounded-xl border border-border bg-bg-elevated px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-via/40"
             />
           </div>
           <div>
             <label className="mb-1.5 block text-xs font-semibold text-muted">
-              Telefon raqami *
+              {dict.postListing.phoneLabel}
             </label>
             <div className="relative">
               <Phone className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
               <input
                 value={contactPhone}
                 onChange={(e) => setContactPhone(e.target.value)}
-                placeholder="+998 90 123 45 67"
+                placeholder={dict.postListing.phonePlaceholder}
                 className="w-full rounded-xl border border-border bg-bg-elevated px-9 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-via/40"
               />
             </div>
@@ -282,10 +285,10 @@ export default function PostListingForm() {
         {status === "submitting" ? (
           <>
             <Loader2 className="h-4 w-4 animate-spin" />
-            Joylanmoqda...
+            {dict.postListing.submitting}
           </>
         ) : (
-          "E'lonni joylash"
+          dict.postListing.submit
         )}
       </button>
     </form>

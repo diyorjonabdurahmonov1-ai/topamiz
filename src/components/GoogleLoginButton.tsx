@@ -1,4 +1,4 @@
-export default function GoogleLoginButton() {
+export default function GoogleLoginButton({ label }: { label: string }) {
   return (
     <a
       href="/api/auth/google"
@@ -22,7 +22,7 @@ export default function GoogleLoginButton() {
           d="M12 4.77c1.76 0 3.34.61 4.58 1.79l3.44-3.44C17.95 1.19 15.24 0 12 0 7.31 0 3.25 2.7 1.27 6.62l4 3.11C6.22 6.88 8.87 4.77 12 4.77z"
         />
       </svg>
-      Google orqali kirish
+      {label}
     </a>
   );
 }

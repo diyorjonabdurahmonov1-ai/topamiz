@@ -2,11 +2,14 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, Calendar1, Eye, Gift, MapPin } from "lucide-react";
-import { categories, formatDate, formatSom } from "@/lib/data";
+import { formatDate, formatSom } from "@/lib/data";
 import { categoryIcons } from "@/lib/icons";
 import { findMatches } from "@/lib/ai";
 import { getAllActiveListings, getListingById, incrementListingViews } from "@/lib/listings";
 import { getCurrentUser } from "@/lib/auth";
+import { getLocale } from "@/lib/i18n/server";
+import { getDictionary } from "@/lib/i18n";
+import { formatViewsCount } from "@/lib/i18n/format";
 import AiMatches from "@/components/AiMatches";
 import ContactCard from "@/components/ContactCard";
 import ReportListingButton from "@/components/ReportListingButton";
@@ -24,8 +27,10 @@ export default async function ListingDetailPage(props: PageProps<"/elonlar/[id]"
 
   incrementListingViews(id);
   const user = await getCurrentUser();
+  const locale = await getLocale();
+  const dict = getDictionary(locale);
   const Icon = categoryIcons[listing.category];
-  const categoryLabel = categories.find((c) => c.id === listing.category)?.label ?? "";
+  const categoryLabel = dict.categories[listing.category];
   const matches = findMatches(listing, getAllActiveListings(listing.country));
 
   return (
@@ -36,9 +41,9 @@ export default async function ListingDetailPage(props: PageProps<"/elonlar/[id]"
           className="inline-flex items-center gap-1.5 text-sm font-semibold text-muted hover:text-foreground"
         >
           <ArrowLeft className="h-4 w-4" />
-          Barcha e'lonlar
+          {dict.listingDetail.backLink}
         </Link>
-        <ReportListingButton listingId={listing.id} isLoggedIn={!!user} />
+        <ReportListingButton listingId={listing.id} isLoggedIn={!!user} dict={dict} />
       </div>
 
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
@@ -51,17 +56,17 @@ export default async function ListingDetailPage(props: PageProps<"/elonlar/[id]"
                   : "bg-success/10 text-success"
               }`}
             >
-              {listing.kind === "lost" ? "Yo'qoldi" : "Topildi"}
+              {listing.kind === "lost" ? dict.common.lost : dict.common.found}
             </span>
             {listing.status === "resolved" && (
               <span className="rounded-full border border-border px-3 py-1 text-xs font-semibold text-muted">
-                Hal qilindi
+                {dict.common.resolved}
               </span>
             )}
             {listing.reward ? (
               <span className="flex items-center gap-1 rounded-full bg-accent-gold/15 px-3 py-1 text-xs font-semibold text-accent-gold">
                 <Gift className="h-3.5 w-3.5" />
-                {formatSom(listing.reward)} mukofot
+                {formatSom(listing.reward)} {dict.common.rewardSuffix}
               </span>
             ) : null}
           </div>
@@ -82,7 +87,7 @@ export default async function ListingDetailPage(props: PageProps<"/elonlar/[id]"
             </span>
             <span className="flex items-center gap-1.5">
               <Eye className="h-4 w-4" />
-              {listing.views} marta ko'rilgan
+              {formatViewsCount(locale, listing.views)}
             </span>
           </div>
 
@@ -115,7 +120,7 @@ export default async function ListingDetailPage(props: PageProps<"/elonlar/[id]"
             <p className="text-xs font-semibold uppercase tracking-wide text-muted">
               {categoryLabel}
             </p>
-            <h2 className="mt-2 text-sm font-bold">Tavsif</h2>
+            <h2 className="mt-2 text-sm font-bold">{dict.listingDetail.descriptionLabel}</h2>
             <p className="mt-1.5 whitespace-pre-line text-sm leading-relaxed text-muted">
               {listing.description}
             </p>
@@ -123,8 +128,8 @@ export default async function ListingDetailPage(props: PageProps<"/elonlar/[id]"
         </div>
 
         <div className="space-y-5">
-          <ContactCard name={listing.contactName} phone={listing.contactPhone} />
-          <AiMatches matches={matches} />
+          <ContactCard name={listing.contactName} phone={listing.contactPhone} dict={dict} />
+          <AiMatches matches={matches} dict={dict} />
         </div>
       </div>
     </div>
