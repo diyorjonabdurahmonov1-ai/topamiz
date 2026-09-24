@@ -12,7 +12,6 @@ import Avatar from "./Avatar";
 const links = [
   { href: "/elonlar", label: "E'lonlar" },
   { href: "/mukofotli", label: "Mukofotli" },
-  { href: "/ai-yordamchi", label: "AI Yordamchi" },
   { href: "/reklama", label: "Reklama" },
 ];
 
