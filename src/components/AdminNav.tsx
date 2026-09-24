@@ -2,13 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Flag, LayoutDashboard, Megaphone, Users } from "lucide-react";
+import { Flag, LayoutDashboard, Mail, Megaphone, Users } from "lucide-react";
 
 const LINKS = [
   { href: "/admin", icon: LayoutDashboard, label: "Statistika" },
   { href: "/admin/foydalanuvchilar", icon: Users, label: "Foydalanuvchilar" },
   { href: "/admin/shikoyatlar", icon: Flag, label: "Shikoyatlar" },
   { href: "/admin/reklama", icon: Megaphone, label: "Reklama" },
+  { href: "/admin/reklama-arizalari", icon: Mail, label: "Reklama arizalari" },
 ];
 
 export default function AdminNav() {

@@ -3,16 +3,17 @@ import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Tag as TagIcon } from "lucide-react";
-import { getCurrentUser } from "@/lib/auth";
+import { displayIdentity, getCurrentUser } from "@/lib/auth";
 import { getConversations, getGuestNotifications, markAllGuestNotificationsRead } from "@/lib/messages";
 import { formatDate } from "@/lib/data";
 import { getLocale } from "@/lib/i18n/server";
 import { getDictionary } from "@/lib/i18n";
 import Avatar from "@/components/Avatar";
 import UserSearch from "@/components/UserSearch";
+import RefreshOnMount from "@/components/RefreshOnMount";
 
 export const metadata: Metadata = {
-  title: "Xabarlar — Topamiz",
+  title: "Xabarlar — Findo",
 };
 
 export default async function MessagesPage() {
@@ -21,11 +22,13 @@ export default async function MessagesPage() {
   const dict = getDictionary(await getLocale());
 
   const guestNotifications = getGuestNotifications(user.id);
+  const hadUnreadGuestNotifications = guestNotifications.some((n) => !n.readAt);
   markAllGuestNotificationsRead(user.id);
   const conversations = getConversations(user.id);
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-8 sm:px-6">
+      {hadUnreadGuestNotifications && <RefreshOnMount />}
       <h1 className="text-2xl font-extrabold tracking-tight">{dict.messages.title}</h1>
       <div className="mt-4">
         <UserSearch dict={dict} />
@@ -89,29 +92,32 @@ export default async function MessagesPage() {
           </p>
         ) : (
           <div className="divide-y divide-border overflow-hidden rounded-xl border border-border bg-surface">
-            {conversations.map((c) => (
-              <Link
-                key={c.otherUser.id}
-                href={`/xabarlar/${c.otherUser.id}`}
-                className="flex items-center gap-3 px-4 py-3 hover:bg-surface-2"
-              >
-                <Avatar name={c.otherUser.name} color={c.otherUser.avatarColor} avatarUrl={c.otherUser.avatarUrl} size={44} />
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-center justify-between gap-2">
-                    <p className="truncate text-sm font-semibold">{c.otherUser.name}</p>
-                    <span className="shrink-0 text-xs text-muted">
-                      {formatDate(c.lastMessage.createdAt.slice(0, 10))}
-                    </span>
+            {conversations.map((c) => {
+              const identity = displayIdentity(c.otherUser);
+              return (
+                <Link
+                  key={c.otherUser.id}
+                  href={`/xabarlar/${c.otherUser.id}`}
+                  className="flex items-center gap-3 px-4 py-3 hover:bg-surface-2"
+                >
+                  <Avatar name={identity.name} color={identity.avatarColor} avatarUrl={identity.avatarUrl} size={44} />
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center justify-between gap-2">
+                      <p className="truncate text-sm font-semibold">{identity.name}</p>
+                      <span className="shrink-0 text-xs text-muted">
+                        {formatDate(c.lastMessage.createdAt.slice(0, 10))}
+                      </span>
+                    </div>
+                    <p className="truncate text-sm text-muted">{c.lastMessage.body}</p>
                   </div>
-                  <p className="truncate text-sm text-muted">{c.lastMessage.body}</p>
-                </div>
-                {c.unreadCount > 0 && (
-                  <span className="flex h-5 min-w-5 shrink-0 items-center justify-center rounded-full btn-brand px-1.5 text-[11px] font-bold text-white">
-                    {c.unreadCount}
-                  </span>
-                )}
-              </Link>
-            ))}
+                  {c.unreadCount > 0 && (
+                    <span className="flex h-5 min-w-5 shrink-0 items-center justify-center rounded-full btn-brand px-1.5 text-[11px] font-bold text-white">
+                      {c.unreadCount}
+                    </span>
+                  )}
+                </Link>
+              );
+            })}
           </div>
         )}
       </div>

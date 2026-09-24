@@ -109,6 +109,15 @@ db.exec(`
     UNIQUE(listing_id, reporter_id)
   );
 
+  CREATE TABLE IF NOT EXISTS ad_inquiries (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    company TEXT NOT NULL,
+    phone TEXT NOT NULL,
+    message TEXT NOT NULL DEFAULT '',
+    handled_at TEXT,
+    created_at TEXT NOT NULL DEFAULT (datetime('now'))
+  );
+
   CREATE INDEX IF NOT EXISTS idx_sessions_user ON sessions(user_id);
   CREATE INDEX IF NOT EXISTS idx_messages_recipient ON messages(recipient_id);
   CREATE INDEX IF NOT EXISTS idx_messages_sender ON messages(sender_id);

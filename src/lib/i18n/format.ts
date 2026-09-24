@@ -67,17 +67,17 @@ export function formatViewsCount(locale: Locale, n: number): string {
 export function formatCopyright(locale: Locale, year: number): string {
   switch (locale) {
     case "ru":
-      return `© ${year} Topamiz. Все права защищены.`;
+      return `© ${year} Findo. Все права защищены.`;
     case "en":
-      return `© ${year} Topamiz. All rights reserved.`;
+      return `© ${year} Findo. All rights reserved.`;
     case "kk":
-      return `© ${year} Topamiz. Барлық құқықтар қорғалған.`;
+      return `© ${year} Findo. Барлық құқықтар қорғалған.`;
     case "tg":
-      return `© ${year} Topamiz. Ҳамаи ҳуқуқҳо ҳифз шудаанд.`;
+      return `© ${year} Findo. Ҳамаи ҳуқуқҳо ҳифз шудаанд.`;
     case "ky":
-      return `© ${year} Topamiz. Бардык укуктар корголгон.`;
+      return `© ${year} Findo. Бардык укуктар корголгон.`;
     default:
-      return `© ${year} Topamiz. Barcha huquqlar himoyalangan.`;
+      return `© ${year} Findo. Barcha huquqlar himoyalangan.`;
   }
 }
 

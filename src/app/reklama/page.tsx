@@ -8,7 +8,7 @@ import { getLocale } from "@/lib/i18n/server";
 import { getDictionary } from "@/lib/i18n";
 
 export const metadata: Metadata = {
-  title: "Reklama taxtachasi — Topamiz",
+  title: "Reklama taxtachasi — Findo",
 };
 
 export default async function AdBoardPage() {

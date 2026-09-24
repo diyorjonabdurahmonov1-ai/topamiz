@@ -80,7 +80,7 @@ export default function TagCard({
         <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1.5">
           <a
             href={qrDataUrl}
-            download={`topamiz-qr-${tag.code}.png`}
+            download={`findo-qr-${tag.code}.png`}
             className="flex items-center gap-1 text-xs font-semibold text-brand-via hover:text-brand-to"
           >
             <Download className="h-3.5 w-3.5" />

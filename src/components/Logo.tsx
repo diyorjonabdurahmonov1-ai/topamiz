@@ -10,7 +10,7 @@ export default function Logo({ className = "" }: { className?: string }) {
       <span className="relative flex h-9 w-9 items-center justify-center rounded-xl btn-brand text-white shadow-lg">
         <MapPinCheck className="h-5 w-5" strokeWidth={2.4} />
       </span>
-      <span className="gradient-text">Topamiz</span>
+      <span className="gradient-text">Findo</span>
     </Link>
   );
 }

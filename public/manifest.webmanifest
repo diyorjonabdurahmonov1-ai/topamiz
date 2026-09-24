@@ -1,6 +1,6 @@
 {
-  "name": "Topamiz — Yo'qolgan buyumni topish",
-  "short_name": "Topamiz",
+  "name": "Findo — Yo'qolgan buyumni topish",
+  "short_name": "Findo",
   "description": "Yo'qolgan yoki topilgan buyumlar uchun platforma.",
   "start_url": "/",
   "display": "standalone",

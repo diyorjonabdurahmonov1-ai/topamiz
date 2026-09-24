@@ -6,7 +6,7 @@ import { getDictionary } from "@/lib/i18n";
 import TagForm from "@/components/TagForm";
 
 export const metadata: Metadata = {
-  title: "QR-belgi yaratish — Topamiz",
+  title: "QR-belgi yaratish — Findo",
 };
 
 export default async function CreateTagPage() {

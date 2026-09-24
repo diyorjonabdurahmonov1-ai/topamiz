@@ -4,7 +4,7 @@ import AdminAdForm from "@/components/AdminAdForm";
 import AdminAdRow from "@/components/AdminAdRow";
 
 export const metadata: Metadata = {
-  title: "Reklama boshqaruvi — Topamiz",
+  title: "Reklama boshqaruvi — Findo",
 };
 
 export default async function AdminAdsPage() {

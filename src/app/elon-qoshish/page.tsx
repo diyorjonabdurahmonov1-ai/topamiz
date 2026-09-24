@@ -6,7 +6,7 @@ import { getDictionary } from "@/lib/i18n";
 import PostListingForm from "@/components/PostListingForm";
 
 export const metadata: Metadata = {
-  title: "E'lon joylash — Topamiz",
+  title: "E'lon joylash — Findo",
 };
 
 export default async function PostListingPage() {
