@@ -1,4 +1,4 @@
-import type { Ad, Category, Listing } from "./types";
+import type { Category, Listing } from "./types";
 
 export const categories: Category[] = [
   { id: "hujjatlar", label: "Hujjatlar", icon: "IdCard" },
@@ -225,39 +225,6 @@ export const listings: Listing[] = [
     colorFrom: "#f97316",
     colorTo: "#f5a524",
     views: 334,
-  },
-];
-
-export const ads: Ad[] = [
-  {
-    id: "ad-1",
-    title: "SecureTag — buyumingizga QR yorliq",
-    subtitle: "Har qanday buyumga yopishtiring, topgan odam bir zumda sizga bog'lanadi.",
-    cta: "Buyurtma berish",
-    href: "#",
-    colorFrom: "#6366f1",
-    colorTo: "#22d3ee",
-    badge: "Sponsor",
-  },
-  {
-    id: "ad-2",
-    title: "PetChip klinikasi",
-    subtitle: "Uy hayvoningizni chip bilan belgilang, yo'qotib qo'ymang.",
-    cta: "Batafsil",
-    href: "#",
-    colorFrom: "#f59e0b",
-    colorTo: "#f97316",
-    badge: "Reklama",
-  },
-  {
-    id: "ad-3",
-    title: "Topamiz Biznes",
-    subtitle: "Do'koningiz yoki xizmatingizni shu yerda minglab foydalanuvchiga ko'rsating.",
-    cta: "Reklama joylashtirish",
-    href: "/reklama",
-    colorFrom: "#a855f7",
-    colorTo: "#6366f1",
-    badge: "Bizning taklif",
   },
 ];
 

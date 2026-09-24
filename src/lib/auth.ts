@@ -131,6 +131,15 @@ export async function clearSessionCookie() {
   store.delete(SESSION_COOKIE);
 }
 
+export function isAdmin(user: Pick<AuthUser, "email"> | null): boolean {
+  if (!user?.email) return false;
+  const admins = (process.env.ADMIN_EMAILS ?? "")
+    .split(",")
+    .map((e) => e.trim().toLowerCase())
+    .filter(Boolean);
+  return admins.includes(user.email.toLowerCase());
+}
+
 export async function getCurrentUser(): Promise<AuthUser | null> {
   const store = await cookies();
   const token = store.get(SESSION_COOKIE)?.value;

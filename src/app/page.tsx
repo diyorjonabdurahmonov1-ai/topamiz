@@ -1,6 +1,7 @@
-import AdCard from "@/components/AdCard";
+import AdCarousel from "@/components/AdCarousel";
 import HomeTabs from "@/components/HomeTabs";
-import { ads, getRewardedListings, listings } from "@/lib/data";
+import { getActiveAds } from "@/lib/ads";
+import { getRewardedListings, listings } from "@/lib/data";
 
 export default function Home() {
   const active = listings.filter((l) => l.status === "active");
@@ -11,10 +12,11 @@ export default function Home() {
     .filter((l) => l.kind === "found")
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
   const allRewarded = getRewardedListings();
+  const ads = getActiveAds();
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-6 pb-10 sm:px-6 sm:py-8 lg:px-8">
-      <AdCard ad={ads[0]} />
+      <AdCarousel ads={ads} />
       <HomeTabs
         lost={allLost.slice(0, 8)}
         found={allFound.slice(0, 8)}

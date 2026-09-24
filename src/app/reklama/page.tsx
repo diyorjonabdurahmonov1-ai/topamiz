@@ -1,15 +1,17 @@
 import type { Metadata } from "next";
 import { Megaphone, TrendingUp, Users } from "lucide-react";
-import AdCard from "@/components/AdCard";
+import AdCarousel from "@/components/AdCarousel";
 import StatCard from "@/components/StatCard";
 import AdInquiryForm from "@/components/AdInquiryForm";
-import { ads } from "@/lib/data";
+import { getActiveAds } from "@/lib/ads";
 
 export const metadata: Metadata = {
   title: "Reklama taxtachasi — Topamiz",
 };
 
 export default function AdBoardPage() {
+  const ads = getActiveAds();
+
   return (
     <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
       <div className="text-center">
@@ -30,14 +32,12 @@ export default function AdBoardPage() {
         <StatCard icon={TrendingUp} value="42 000+" label="Oylik sahifa ko'rishi" />
       </div>
 
-      <div className="mt-12">
-        <h2 className="text-xl font-bold">Hozirgi reklamalar</h2>
-        <div className="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {ads.map((ad) => (
-            <AdCard key={ad.id} ad={ad} />
-          ))}
+      {ads.length > 0 && (
+        <div className="mx-auto mt-12 max-w-lg">
+          <h2 className="mb-3 text-center text-xl font-bold">Hozirgi reklama banneri</h2>
+          <AdCarousel ads={ads} />
         </div>
-      </div>
+      )}
 
       <div className="mx-auto mt-14 max-w-xl">
         <AdInquiryForm />

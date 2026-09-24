@@ -42,6 +42,10 @@ cold start or an ephemeral filesystem.
   redirect URI must be exactly `https://findo.net.uz/api/auth/google/callback`.
   Without these two vars set, `/kirish` renders fine but clicking through
   fails.
+- The home-page ad banner (`/admin/reklama`, `src/lib/ads.ts`) is managed by
+  whoever's Google account email is listed in `ADMIN_EMAILS` (comma-separated
+  if more than one), also in `.env.production.local`. Anyone else hitting
+  `/admin/reklama` is redirected to `/`.
 
 ### Another project shares this server — do not touch it
 

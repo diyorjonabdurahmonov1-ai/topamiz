@@ -33,14 +33,3 @@ export interface Listing {
   colorTo: string;
   views: number;
 }
-
-export interface Ad {
-  id: string;
-  title: string;
-  subtitle: string;
-  cta: string;
-  href: string;
-  colorFrom: string;
-  colorTo: string;
-  badge?: string;
-}
