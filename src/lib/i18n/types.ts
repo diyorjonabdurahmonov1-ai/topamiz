@@ -74,6 +74,7 @@ export interface Dictionary {
     clearFilters: string;
     noResultsTitle: string;
     noResultsBody: string;
+    loadMore: string;
   };
 
   listingCard: {
@@ -97,16 +98,6 @@ export interface Dictionary {
     reasonPlaceholder: string;
     send: string;
     genericError: string;
-  };
-
-  aiMatches: {
-    title: string;
-    reasons: {
-      sameCategory: string;
-      sameCity: string;
-      similarKeywords: string;
-      closeDates: string;
-    };
   };
 
   postListing: {

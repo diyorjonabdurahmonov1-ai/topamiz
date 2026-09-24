@@ -84,6 +84,7 @@ const tg: Dictionary = {
     clearFilters: "Пок кардани филтрҳо",
     noResultsTitle: "Чизе ёфт нашуд",
     noResultsBody: "Бо калимаи дигар ҷустуҷӯ кунед ё филтрҳоро пок карда, боз кӯшиш кунед.",
+    loadMore: "Боз нишон додан",
   },
 
   listingCard: {
@@ -107,16 +108,6 @@ const tg: Dictionary = {
     reasonPlaceholder: "Сабаб (ихтиёрӣ)",
     send: "Фиристодан",
     genericError: "Хатогӣ рӯй дод",
-  },
-
-  aiMatches: {
-    title: "Эълонҳои мувофиқи пешниҳодкардаи AI",
-    reasons: {
-      sameCategory: "Категорияи якхела",
-      sameCity: "Шаҳри якхела",
-      similarKeywords: "Калимаҳои калидии монанд дар тавсиф",
-      closeDates: "Санаҳо наздиканд",
-    },
   },
 
   postListing: {

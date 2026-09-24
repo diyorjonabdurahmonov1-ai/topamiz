@@ -8,7 +8,7 @@ import type { Dictionary, Locale } from "@/lib/i18n";
 import { formatResultsCount } from "@/lib/i18n/format";
 import { categories, cities } from "@/lib/data";
 import { smartSearch } from "@/lib/ai";
-import ListingRow from "./ListingRow";
+import ListingsGrid from "./ListingsGrid";
 
 const ListingsMap = dynamic(() => import("./ListingsMap"), {
   ssr: false,
@@ -194,7 +194,7 @@ export default function ListingsExplorer({
         </div>
       ) : results.length > 0 ? (
         <div className="mt-5">
-          <ListingRow listings={results} dict={dict} />
+          <ListingsGrid key={`${query}|${kind}|${category}|${city}`} listings={results} dict={dict} />
         </div>
       ) : (
         <div className="mt-10 flex flex-col items-center rounded-2xl border border-dashed border-border py-16 text-center">

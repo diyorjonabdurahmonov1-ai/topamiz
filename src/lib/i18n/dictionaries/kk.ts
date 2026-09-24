@@ -84,6 +84,7 @@ const kk: Dictionary = {
     clearFilters: "Сүзгілерді тазалау",
     noResultsTitle: "Ештеңе табылмады",
     noResultsBody: "Басқа кілт сөзбен іздеңіз немесе сүзгілерді тазалап, қайта көріңіз.",
+    loadMore: "Тағы жүктеу",
   },
 
   listingCard: {
@@ -107,16 +108,6 @@ const kk: Dictionary = {
     reasonPlaceholder: "Себебі (міндетті емес)",
     send: "Жіберу",
     genericError: "Қате орын алды",
-  },
-
-  aiMatches: {
-    title: "AI ұсынған сәйкес хабарландырулар",
-    reasons: {
-      sameCategory: "Бірдей санат",
-      sameCity: "Бірдей қала",
-      similarKeywords: "Сипаттамада ұқсас кілт сөздер",
-      closeDates: "Күндер жақын",
-    },
   },
 
   postListing: {
