@@ -84,6 +84,7 @@ const en: Dictionary = {
     clearFilters: "Clear filters",
     noResultsTitle: "Nothing found",
     noResultsBody: "Try a different keyword or clear the filters and try again.",
+    loadMore: "Load more",
   },
 
   listingCard: {
@@ -107,16 +108,6 @@ const en: Dictionary = {
     reasonPlaceholder: "Reason (optional)",
     send: "Send",
     genericError: "Something went wrong",
-  },
-
-  aiMatches: {
-    title: "AI-suggested matching listings",
-    reasons: {
-      sameCategory: "Same category",
-      sameCity: "Same city",
-      similarKeywords: "Similar keywords in description",
-      closeDates: "Close dates",
-    },
   },
 
   postListing: {

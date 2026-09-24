@@ -84,6 +84,7 @@ const uz: Dictionary = {
     clearFilters: "Filtrlarni tozalash",
     noResultsTitle: "Hech narsa topilmadi",
     noResultsBody: "Boshqa kalit so'z bilan qidiring yoki filtrlarni tozalab qayta urinib ko'ring.",
+    loadMore: "Yana yuklash",
   },
 
   listingCard: {
@@ -107,16 +108,6 @@ const uz: Dictionary = {
     reasonPlaceholder: "Sababi (ixtiyoriy)",
     send: "Yuborish",
     genericError: "Xatolik yuz berdi",
-  },
-
-  aiMatches: {
-    title: "AI tavsiya etgan mos e'lonlar",
-    reasons: {
-      sameCategory: "Bir xil turkum",
-      sameCity: "Bir xil shahar",
-      similarKeywords: "Tavsifda o'xshash kalit so'zlar",
-      closeDates: "Sanalar yaqin",
-    },
   },
 
   postListing: {

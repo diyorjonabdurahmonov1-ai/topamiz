@@ -84,6 +84,7 @@ const ky: Dictionary = {
     clearFilters: "Чыпкаларды тазалоо",
     noResultsTitle: "Эч нерсе табылган жок",
     noResultsBody: "Башка ачкыч сөз менен издеңиз же чыпкаларды тазалап, кайра аракет кылыңыз.",
+    loadMore: "Дагы жүктөө",
   },
 
   listingCard: {
@@ -107,16 +108,6 @@ const ky: Dictionary = {
     reasonPlaceholder: "Себеби (милдеттүү эмес)",
     send: "Жөнөтүү",
     genericError: "Ката кетти",
-  },
-
-  aiMatches: {
-    title: "AI сунуштаган дал келген жарыялар",
-    reasons: {
-      sameCategory: "Бирдей категория",
-      sameCity: "Бирдей шаар",
-      similarKeywords: "Сүрөттөмөдө окшош ачкыч сөздөр",
-      closeDates: "Даталар жакын",
-    },
   },
 
   postListing: {

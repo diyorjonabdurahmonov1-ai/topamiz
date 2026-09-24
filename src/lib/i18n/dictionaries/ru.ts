@@ -84,6 +84,7 @@ const ru: Dictionary = {
     clearFilters: "Сбросить фильтры",
     noResultsTitle: "Ничего не найдено",
     noResultsBody: "Попробуйте другое ключевое слово или сбросьте фильтры и повторите попытку.",
+    loadMore: "Ещё показать",
   },
 
   listingCard: {
@@ -107,16 +108,6 @@ const ru: Dictionary = {
     reasonPlaceholder: "Причина (необязательно)",
     send: "Отправить",
     genericError: "Произошла ошибка",
-  },
-
-  aiMatches: {
-    title: "Подходящие объявления по мнению ИИ",
-    reasons: {
-      sameCategory: "Та же категория",
-      sameCity: "Тот же город",
-      similarKeywords: "Похожие ключевые слова в описании",
-      closeDates: "Близкие даты",
-    },
   },
 
   postListing: {
