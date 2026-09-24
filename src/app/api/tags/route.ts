@@ -1,7 +1,18 @@
 import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth";
-import { countActiveTags, createTag, FREE_TAG_LIMIT } from "@/lib/tags";
+import {
+  countActiveTags,
+  createTag,
+  FREE_TAG_LIMIT,
+  MAX_TAG_DESCRIPTION_LENGTH,
+  MAX_TAG_PHOTOS,
+  MAX_TAG_TITLE_LENGTH,
+} from "@/lib/tags";
 import { generateQrDataUrl, getBaseUrl, tagUrl } from "@/lib/qr";
+
+// Uploaded photos only ever come back from POST /api/upload as this prefix —
+// anything else is a client claiming an arbitrary external URL is one of ours.
+const OWN_UPLOAD_PREFIX = "/api/uploads/";
 
 export async function POST(request: Request) {
   const user = await getCurrentUser();
@@ -18,10 +29,15 @@ export async function POST(request: Request) {
   }
 
   const body = await request.json().catch(() => null);
-  const title = typeof body?.title === "string" ? body.title.trim() : "";
-  const description = typeof body?.description === "string" ? body.description.trim() : "";
+  const title = typeof body?.title === "string" ? body.title.trim().slice(0, MAX_TAG_TITLE_LENGTH) : "";
+  const description =
+    typeof body?.description === "string"
+      ? body.description.trim().slice(0, MAX_TAG_DESCRIPTION_LENGTH)
+      : "";
   const photoUrls = Array.isArray(body?.photoUrls)
-    ? body.photoUrls.filter((u: unknown): u is string => typeof u === "string")
+    ? body.photoUrls
+        .filter((u: unknown): u is string => typeof u === "string" && u.startsWith(OWN_UPLOAD_PREFIX))
+        .slice(0, MAX_TAG_PHOTOS)
     : [];
 
   if (!title || !description) {

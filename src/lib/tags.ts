@@ -3,6 +3,9 @@ import { db } from "./db";
 import { getUserById, type AuthUser } from "./auth";
 
 export const FREE_TAG_LIMIT = 2;
+export const MAX_TAG_TITLE_LENGTH = 100;
+export const MAX_TAG_DESCRIPTION_LENGTH = 1000;
+export const MAX_TAG_PHOTOS = 5;
 
 export interface ItemTag {
   id: number;

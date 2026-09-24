@@ -1,6 +1,8 @@
 import { db } from "./db";
 import { getUserById, type AuthUser } from "./auth";
 
+export const MAX_MESSAGE_LENGTH = 2000;
+
 export interface MessageRow {
   id: number;
   tagId: number | null;
