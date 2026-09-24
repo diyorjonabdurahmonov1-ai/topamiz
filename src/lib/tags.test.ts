@@ -7,6 +7,7 @@ import {
   deleteTag,
   getTagByCode,
   getTagsByOwner,
+  getTagStats,
   setTagStatus,
 } from "./tags";
 
@@ -99,5 +100,17 @@ describe("setTagStatus", () => {
 
     expect(setTagStatus(tag.code, attacker.id, "resolved")).toBe(false);
     expect(getTagByCode(tag.code)?.status).toBe("active");
+  });
+});
+
+describe("getTagStats", () => {
+  it("counts active and resolved tags across all owners", () => {
+    const owner = makeUser("egasi@example.com", "Egasi");
+    const a = createTag({ ownerId: owner.id, title: "A", description: "desc", photoUrls: [] });
+    createTag({ ownerId: owner.id, title: "B", description: "desc", photoUrls: [] });
+    createTag({ ownerId: owner.id, title: "C", description: "desc", photoUrls: [] });
+    setTagStatus(a.code, owner.id, "resolved");
+
+    expect(getTagStats()).toEqual({ total: 3, active: 2, resolved: 1 });
   });
 });

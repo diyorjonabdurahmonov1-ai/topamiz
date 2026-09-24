@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
-import { createSession, findOrCreateGoogleUser, setSessionCookie } from "@/lib/auth";
+import { createSession, findOrCreateGoogleUser, isUserBlocked, setSessionCookie } from "@/lib/auth";
 import { exchangeGoogleCode, OAUTH_STATE_COOKIE } from "@/lib/google-auth";
 import { getBaseUrl } from "@/lib/qr";
 
@@ -26,6 +26,10 @@ export async function GET(request: Request) {
     }
 
     const user = findOrCreateGoogleUser(profile);
+    if (isUserBlocked(user.id)) {
+      return NextResponse.redirect(`${baseUrl}/kirish?error=blocked`);
+    }
+
     const { token, expiresAt } = createSession(user.id);
     await setSessionCookie(token, expiresAt);
 

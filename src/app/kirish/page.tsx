@@ -12,7 +12,7 @@ export default async function LoginPage(props: PageProps<"/kirish">) {
   if (user) redirect("/profil");
 
   const searchParams = await props.searchParams;
-  const hasError = typeof searchParams.error === "string";
+  const error = typeof searchParams.error === "string" ? searchParams.error : null;
 
   return (
     <div className="mx-auto max-w-sm px-4 py-14 sm:px-6">
@@ -25,10 +25,16 @@ export default async function LoginPage(props: PageProps<"/kirish">) {
         </p>
       </div>
 
-      {hasError && (
+      {error === "blocked" ? (
         <p className="mb-4 rounded-xl bg-danger/10 px-4 py-3 text-center text-sm font-medium text-danger">
-          Google bilan kirishda xatolik yuz berdi. Qayta urinib ko&apos;ring.
+          Hisobingiz bloklangan. Savollar bo&apos;lsa, qo&apos;llab-quvvatlash bilan bog&apos;laning.
         </p>
+      ) : (
+        error && (
+          <p className="mb-4 rounded-xl bg-danger/10 px-4 py-3 text-center text-sm font-medium text-danger">
+            Google bilan kirishda xatolik yuz berdi. Qayta urinib ko&apos;ring.
+          </p>
+        )
       )}
 
       <GoogleLoginButton />

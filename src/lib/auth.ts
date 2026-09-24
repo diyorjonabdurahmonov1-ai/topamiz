@@ -25,6 +25,7 @@ interface UserRow {
   bio: string;
   avatar_color: string;
   avatar_url: string | null;
+  blocked_at: string | null;
   created_at: string;
 }
 
@@ -131,6 +132,13 @@ export async function clearSessionCookie() {
   store.delete(SESSION_COOKIE);
 }
 
+export function isUserBlocked(id: number): boolean {
+  const row = db.prepare("SELECT blocked_at FROM users WHERE id = ?").get(id) as
+    | { blocked_at: string | null }
+    | undefined;
+  return !!row?.blocked_at;
+}
+
 export function isAdmin(user: Pick<AuthUser, "email"> | null): boolean {
   if (!user?.email) return false;
   const admins = (process.env.ADMIN_EMAILS ?? "")
@@ -153,5 +161,21 @@ export async function getCurrentUser(): Promise<AuthUser | null> {
     )
     .get(token) as UserRow | undefined;
 
-  return row ? rowToUser(row) : null;
+  if (!row) return null;
+
+  if (row.blocked_at) {
+    // Blocked mid-session — end it now instead of letting a stale cookie
+    // keep working until it naturally expires.
+    db.prepare("DELETE FROM sessions WHERE token = ?").run(token);
+    return null;
+  }
+
+  // Powers the admin panel's "online now" count — throttled to at most
+  // once a minute per user so this doesn't add a write to every request.
+  db.prepare(
+    `UPDATE users SET last_seen_at = datetime('now')
+     WHERE id = ? AND (last_seen_at IS NULL OR last_seen_at < datetime('now', '-1 minutes'))`
+  ).run(row.id);
+
+  return rowToUser(row);
 }

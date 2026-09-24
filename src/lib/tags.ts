@@ -95,6 +95,14 @@ export function deleteTag(code: string, ownerId: number): boolean {
   return info.changes > 0;
 }
 
+export function getTagStats(): { total: number; active: number; resolved: number } {
+  const total = (db.prepare("SELECT COUNT(*) as c FROM tags").get() as { c: number }).c;
+  const active = (
+    db.prepare("SELECT COUNT(*) as c FROM tags WHERE status = 'active'").get() as { c: number }
+  ).c;
+  return { total, active, resolved: total - active };
+}
+
 export function setTagStatus(
   code: string,
   ownerId: number,

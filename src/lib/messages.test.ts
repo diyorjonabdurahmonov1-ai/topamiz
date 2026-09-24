@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 import { db } from "./db";
 import { findOrCreateGoogleUser } from "./auth";
 import {
+  countAllMessages,
   getConversations,
   getGuestNotifications,
   getThread,
@@ -129,5 +130,17 @@ describe("searchUsers", () => {
   it("returns nothing for a blank query", () => {
     const a = makeUser("aziz@example.com", "Aziz");
     expect(searchUsers("   ", a.id)).toEqual([]);
+  });
+});
+
+describe("countAllMessages", () => {
+  it("counts every message regardless of sender/recipient", () => {
+    const a = makeUser("aziz@example.com", "Aziz");
+    const b = makeUser("malika@example.com", "Malika");
+    sendMessage({ senderId: a.id, recipientId: b.id, body: "1" });
+    sendMessage({ senderId: b.id, recipientId: a.id, body: "2" });
+    sendMessage({ senderId: null, recipientId: a.id, body: "Anonim" });
+
+    expect(countAllMessages()).toBe(3);
   });
 });
