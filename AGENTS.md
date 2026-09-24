@@ -33,8 +33,15 @@ cold start or an ephemeral filesystem.
 - `ufw`: port 3000 is only open to `172.18.0.0/16` (the Docker network) —
   it is not reachable from the public internet directly, only through Caddy.
 - Auth cookies are `secure: true` in production (see `src/lib/auth.ts`), so
-  the site only works over HTTPS. Don't test login/register against the
-  server over plain `http://`.
+  the site only works over HTTPS. Don't test login against the server over
+  plain `http://`.
+- Sign-in is Google-only (`src/lib/google-auth.ts`, `/api/auth/google*`) —
+  requires `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` in a gitignored
+  `.env.production.local` at `/var/www/topamiz/`. Get these from a Google
+  Cloud Console OAuth client (Web application type); its one authorized
+  redirect URI must be exactly `https://findo.net.uz/api/auth/google/callback`.
+  Without these two vars set, `/kirish` renders fine but clicking through
+  fails.
 
 ### Another project shares this server — do not touch it
 
