@@ -32,4 +32,5 @@ export interface Listing {
   colorFrom: string;
   colorTo: string;
   views: number;
+  photoUrls: string[];
 }

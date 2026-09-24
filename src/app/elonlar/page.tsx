@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import ListingsExplorer from "@/components/ListingsExplorer";
 import type { CategoryId, ListingKind } from "@/lib/types";
 import { categories } from "@/lib/data";
+import { getAllActiveListings } from "@/lib/listings";
 
 export const metadata: Metadata = {
   title: "E'lonlar — Topamiz",
@@ -31,7 +32,12 @@ export default async function ElonlarPage(props: PageProps<"/elonlar">) {
           unutmang.
         </p>
       </div>
-      <ListingsExplorer initialQuery={q} initialKind={kind} initialCategory={category} />
+      <ListingsExplorer
+        initialQuery={q}
+        initialKind={kind}
+        initialCategory={category}
+        listings={getAllActiveListings()}
+      />
     </div>
   );
 }

@@ -1,11 +1,16 @@
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
+import { getCurrentUser } from "@/lib/auth";
 import PostListingForm from "@/components/PostListingForm";
 
 export const metadata: Metadata = {
   title: "E'lon joylash — Topamiz",
 };
 
-export default function PostListingPage() {
+export default async function PostListingPage() {
+  const user = await getCurrentUser();
+  if (!user) redirect("/kirish");
+
   return (
     <div className="mx-auto max-w-2xl px-4 py-10 sm:px-6 lg:px-8">
       <div className="mb-8 text-center">

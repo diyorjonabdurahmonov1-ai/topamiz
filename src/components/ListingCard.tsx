@@ -39,21 +39,30 @@ export default function ListingCard({ listing }: { listing: Listing }) {
         ) : null}
       </div>
 
-      <div
-        className="mt-4 flex h-32 items-center justify-center rounded-xl"
-        style={{
-          backgroundImage: `linear-gradient(135deg, ${listing.colorFrom}22, ${listing.colorTo}22)`,
-        }}
-      >
+      {listing.photoUrls.length > 0 ? (
+        // eslint-disable-next-line @next/next/no-img-element -- runtime-uploaded file served from /api/uploads, not a build-time asset
+        <img
+          src={listing.photoUrls[0]}
+          alt={listing.title}
+          className="mt-4 h-32 w-full rounded-xl object-cover"
+        />
+      ) : (
         <div
-          className="flex h-14 w-14 items-center justify-center rounded-2xl text-white shadow-lg"
+          className="mt-4 flex h-32 items-center justify-center rounded-xl"
           style={{
-            backgroundImage: `linear-gradient(135deg, ${listing.colorFrom}, ${listing.colorTo})`,
+            backgroundImage: `linear-gradient(135deg, ${listing.colorFrom}22, ${listing.colorTo}22)`,
           }}
         >
-          <Icon className="h-7 w-7" strokeWidth={2} />
+          <div
+            className="flex h-14 w-14 items-center justify-center rounded-2xl text-white shadow-lg"
+            style={{
+              backgroundImage: `linear-gradient(135deg, ${listing.colorFrom}, ${listing.colorTo})`,
+            }}
+          >
+            <Icon className="h-7 w-7" strokeWidth={2} />
+          </div>
         </div>
-      </div>
+      )}
 
       <div className="mt-4 flex-1">
         <p className="text-[11px] font-medium uppercase tracking-wide text-muted">

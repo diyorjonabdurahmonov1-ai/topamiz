@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import { Gift, ShieldCheck, TrendingUp } from "lucide-react";
 import ListingRow from "@/components/ListingRow";
 import StatCard from "@/components/StatCard";
-import { formatSom, getRewardedListings } from "@/lib/data";
+import { formatSom } from "@/lib/data";
+import { getRewardedListings } from "@/lib/listings";
 
 export const metadata: Metadata = {
   title: "Mukofotli e'lonlar — Topamiz",
