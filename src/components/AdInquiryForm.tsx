@@ -3,12 +3,9 @@
 import { useState, type FormEvent } from "react";
 import { CheckCircle2, Loader2, Send } from "lucide-react";
 
-const plans = ["Boshlang'ich", "Biznes", "Premium"] as const;
-
 export default function AdInquiryForm() {
   const [company, setCompany] = useState("");
   const [phone, setPhone] = useState("");
-  const [plan, setPlan] = useState<typeof plans[number]>("Biznes");
   const [message, setMessage] = useState("");
   const [status, setStatus] = useState<"idle" | "submitting" | "success">("idle");
   const [error, setError] = useState("");
@@ -32,8 +29,7 @@ export default function AdInquiryForm() {
         </div>
         <h3 className="mt-4 text-lg font-bold">So'rovingiz qabul qilindi!</h3>
         <p className="mt-1.5 max-w-sm text-sm text-muted">
-          "{plan}" tarifi bo'yicha bizning jamoamiz tez orada siz bilan
-          bog'lanadi.
+          Bizning jamoamiz tez orada siz bilan bog'lanadi.
         </p>
       </div>
     );
@@ -43,7 +39,7 @@ export default function AdInquiryForm() {
     <form onSubmit={handleSubmit} className="rounded-2xl border border-border bg-surface p-6">
       <h3 className="text-lg font-bold">Reklama uchun murojaat qiling</h3>
       <p className="mt-1 text-sm text-muted">
-        Ma'lumotlarni qoldiring, jamoamiz siz bilan bog'lanib tarif va
+        Ma'lumotlarni qoldiring, jamoamiz siz bilan bog'lanib narx va
         joylashuv bo'yicha maslahat beradi.
       </p>
 
@@ -69,25 +65,6 @@ export default function AdInquiryForm() {
             placeholder="+998 90 123 45 67"
             className="w-full rounded-xl border border-border bg-bg-elevated px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-via/40"
           />
-        </div>
-        <div>
-          <label className="mb-1.5 block text-xs font-semibold text-muted">Tarif</label>
-          <div className="flex flex-wrap gap-2">
-            {plans.map((p) => (
-              <button
-                key={p}
-                type="button"
-                onClick={() => setPlan(p)}
-                className={`rounded-full px-4 py-1.5 text-sm font-semibold transition-colors ${
-                  plan === p
-                    ? "btn-brand text-white"
-                    : "border border-border bg-bg-elevated text-muted hover:text-foreground"
-                }`}
-              >
-                {p}
-              </button>
-            ))}
-          </div>
         </div>
         <div>
           <label className="mb-1.5 block text-xs font-semibold text-muted">
