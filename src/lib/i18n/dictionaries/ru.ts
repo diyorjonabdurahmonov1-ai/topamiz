@@ -20,6 +20,7 @@ const ru: Dictionary = {
     rewardSuffix: "награда",
     previous: "Назад",
     next: "Вперёд",
+    close: "Закрыть",
   },
 
   nav: {
@@ -133,6 +134,10 @@ const ru: Dictionary = {
     descriptionPlaceholder: "Как выглядит вещь, где и когда потеряна/найдена...",
     categoryLabel: "Категория",
     cityLabel: "Город",
+    locateMeButton: "Определить моё местоположение (необязательно)",
+    locating: "Определяется...",
+    locateMeSuccess: "Местоположение определено",
+    locateMeError: "Не удалось определить местоположение",
     photosHeading: "Добавить фото",
     rewardHeading: "Предложить награду (необязательно)",
     rewardHint: "Награда поможет быстрее найти вашу вещь.",
@@ -258,6 +263,16 @@ const ru: Dictionary = {
     messageRequiredError: "Введите текст сообщения",
     send: "Отправить сообщение",
     loginHint: "Если у вас есть аккаунт, войдите — тогда владелец сможет ответить вам напрямую.",
+  },
+
+  map: {
+    listView: "Список",
+    mapView: "Карта",
+    myLocationButton: "Моё местоположение",
+    locating: "Определяется...",
+    locationError: "Не удалось определить местоположение",
+    viewListing: "Посмотреть",
+    you: "Вы",
   },
 
   ads: {

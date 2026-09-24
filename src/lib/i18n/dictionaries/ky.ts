@@ -20,6 +20,7 @@ const ky: Dictionary = {
     rewardSuffix: "сыйлык",
     previous: "Мурунку",
     next: "Кийинки",
+    close: "Жабуу",
   },
 
   nav: {
@@ -133,6 +134,10 @@ const ky: Dictionary = {
     descriptionPlaceholder: "Зат кандай көрүнөт, качан жана кайда жоголгон/табылган...",
     categoryLabel: "Категория",
     cityLabel: "Шаар",
+    locateMeButton: "Жайгашкан жеримди аныктоо (милдеттүү эмес)",
+    locating: "Аныкталууда...",
+    locateMeSuccess: "Жайгашкан жер аныкталды",
+    locateMeError: "Жайгашкан жерди аныктоо мүмкүн болгон жок",
     photosHeading: "Сүрөт кошуу",
     rewardHeading: "Сыйлык сунуштоо (милдеттүү эмес)",
     rewardHint: "Сыйлык сунуштоо заттын тезирээк табылышына жардам берет.",
@@ -258,6 +263,16 @@ const ky: Dictionary = {
     messageRequiredError: "Билдирүү текстин киргизиңиз",
     send: "Билдирүү жөнөтүү",
     loginHint: "Аккаунтуңуз болсо, кириңиз — ошондо ээси сизге түз жооп бере алат.",
+  },
+
+  map: {
+    listView: "Тизме",
+    mapView: "Карта",
+    myLocationButton: "Менин жайгашкан жерим",
+    locating: "Аныкталууда...",
+    locationError: "Жайгашкан жерди аныктоо мүмкүн болгон жок",
+    viewListing: "Көрүү",
+    you: "Сиз",
   },
 
   ads: {

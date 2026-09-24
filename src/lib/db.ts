@@ -1,6 +1,7 @@
 import Database from "better-sqlite3";
 import path from "node:path";
 import { mkdirSync } from "node:fs";
+import { coordinatesForCity } from "./city-coordinates";
 
 const DATA_DIR = path.join(process.cwd(), ".data");
 // Tests point this at ":memory:" (see vitest.config.ts) to run against an
@@ -94,6 +95,8 @@ db.exec(`
     photo_urls TEXT NOT NULL DEFAULT '[]',
     views INTEGER NOT NULL DEFAULT 0,
     country TEXT NOT NULL DEFAULT 'UZ',
+    lat REAL,
+    lng REAL,
     created_at TEXT NOT NULL DEFAULT (datetime('now'))
   );
 
@@ -177,6 +180,26 @@ if (!listingColumns.some((c) => c.name === "country")) {
 // Created here rather than in the block above so it works whether `country`
 // came from a fresh install's CREATE TABLE or the ALTER TABLE just above.
 db.exec("CREATE INDEX IF NOT EXISTS idx_listings_status_country ON listings(status, country)");
+
+// Map view: existing rows predate lat/lng, and even freshly-inserted rows
+// only get explicit coordinates when the poster used "use my location" —
+// everything else needs a city-center fallback so it still shows up on the
+// map. Backfilling here (rather than only on insert) also covers the
+// pre-seeded demo listings.
+if (!listingColumns.some((c) => c.name === "lat")) {
+  db.exec("ALTER TABLE listings ADD COLUMN lat REAL");
+  db.exec("ALTER TABLE listings ADD COLUMN lng REAL");
+}
+const listingsMissingCoords = db
+  .prepare("SELECT id, city FROM listings WHERE lat IS NULL OR lng IS NULL")
+  .all() as { id: number; city: string }[];
+if (listingsMissingCoords.length > 0) {
+  const setCoords = db.prepare("UPDATE listings SET lat = ?, lng = ? WHERE id = ?");
+  for (const row of listingsMissingCoords) {
+    const { lat, lng } = coordinatesForCity(row.city, row.id);
+    setCoords.run(lat, lng, row.id);
+  }
+}
 
 // Seed the listings table once, on the very first run, with the same
 // example content this app shipped with before listings were DB-backed —
