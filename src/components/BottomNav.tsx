@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Bot, Home, MessageCircle, QrCode, Search, User } from "lucide-react";
+import { Home, MessageCircle, QrCode, Search, User } from "lucide-react";
 import type { AuthUser } from "@/lib/auth";
 
 export default function BottomNav({
@@ -17,7 +17,6 @@ export default function BottomNav({
   const items = [
     { href: "/", icon: Home, label: "Bosh sahifa" },
     { href: "/elonlar", icon: Search, label: "E'lonlar" },
-    { href: "/ai-yordamchi", icon: Bot, label: "AI" },
     { href: "/belgilash", icon: QrCode, label: "Belgilash", primary: true },
     {
       href: user ? "/xabarlar" : "/kirish",

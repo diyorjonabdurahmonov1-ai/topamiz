@@ -45,7 +45,6 @@ export default function Footer() {
               <li><Link href="/elonlar?kind=lost" className="hover:text-foreground">Yo'qolgan buyumlar</Link></li>
               <li><Link href="/elonlar?kind=found" className="hover:text-foreground">Topilgan buyumlar</Link></li>
               <li><Link href="/mukofotli" className="hover:text-foreground">Mukofotli e'lonlar</Link></li>
-              <li><Link href="/ai-yordamchi" className="hover:text-foreground">AI Yordamchi</Link></li>
               <li><Link href="/reklama" className="hover:text-foreground">Reklama taxtachasi</Link></li>
             </ul>
           </div>
