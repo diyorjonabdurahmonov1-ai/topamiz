@@ -20,6 +20,9 @@
 # user-uploaded content (saved to disk by the /api/upload route)
 /.uploads/
 
+# local SQLite database
+/.data/
+
 # production
 /build
 

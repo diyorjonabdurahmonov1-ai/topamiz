@@ -1,0 +1,49 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+import { notFound, redirect } from "next/navigation";
+import { MessageCircle } from "lucide-react";
+import { getCurrentUser, getUserById } from "@/lib/auth";
+import Avatar from "@/components/Avatar";
+
+export async function generateMetadata(props: PageProps<"/profil/[id]">): Promise<Metadata> {
+  const { id } = await props.params;
+  const user = getUserById(Number(id));
+  return { title: user ? `${user.name} — Topamiz` : "Foydalanuvchi topilmadi — Topamiz" };
+}
+
+export default async function PublicProfilePage(props: PageProps<"/profil/[id]">) {
+  const { id } = await props.params;
+  const userId = Number(id);
+  if (!Number.isInteger(userId)) notFound();
+
+  const currentUser = await getCurrentUser();
+  if (currentUser && currentUser.id === userId) redirect("/profil");
+
+  const user = getUserById(userId);
+  if (!user) notFound();
+
+  return (
+    <div className="mx-auto max-w-md px-4 py-14 sm:px-6">
+      <div className="flex flex-col items-center rounded-2xl border border-border bg-surface p-8 text-center">
+        <Avatar name={user.name} color={user.avatarColor} size={88} />
+        <h1 className="mt-4 text-xl font-extrabold">{user.name}</h1>
+        {user.isPremium && (
+          <span className="mt-2 rounded-full bg-accent-gold/15 px-3 py-1 text-xs font-semibold text-accent-gold">
+            ⭐ Premium a'zo
+          </span>
+        )}
+        <p className="mt-3 max-w-sm text-sm text-muted">
+          {user.bio || "Bu foydalanuvchi hali bio qo'shmagan."}
+        </p>
+
+        <Link
+          href={`/xabarlar/${user.id}`}
+          className="btn-brand mt-6 flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold text-white"
+        >
+          <MessageCircle className="h-4 w-4" />
+          Xabar yozish
+        </Link>
+      </div>
+    </div>
+  );
+}

@@ -3,9 +3,11 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, X, Plus } from "lucide-react";
+import { Menu, X, Plus, MessageCircle, QrCode } from "lucide-react";
+import type { AuthUser } from "@/lib/auth";
 import Logo from "./Logo";
 import ThemeToggle from "./ThemeToggle";
+import Avatar from "./Avatar";
 
 const links = [
   { href: "/elonlar", label: "E'lonlar" },
@@ -14,7 +16,13 @@ const links = [
   { href: "/reklama", label: "Reklama" },
 ];
 
-export default function Navbar() {
+export default function Navbar({
+  user,
+  unreadCount = 0,
+}: {
+  user: AuthUser | null;
+  unreadCount?: number;
+}) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
 
@@ -44,6 +52,41 @@ export default function Navbar() {
 
         <div className="hidden items-center gap-3 md:flex">
           <ThemeToggle />
+          {user && (
+            <Link
+              href="/xabarlar"
+              aria-label="Xabarlar"
+              className="relative flex h-9 w-9 items-center justify-center rounded-xl border border-border bg-surface text-muted hover:text-foreground"
+            >
+              <MessageCircle className="h-4 w-4" />
+              {unreadCount > 0 && (
+                <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-danger px-1 text-[10px] font-bold text-white">
+                  {unreadCount}
+                </span>
+              )}
+            </Link>
+          )}
+          {user ? (
+            <Link href="/profil" className="flex items-center gap-2 rounded-xl px-1.5 py-1 hover:bg-surface-2">
+              <Avatar name={user.name} color={user.avatarColor} size={30} />
+              <span className="max-w-24 truncate text-sm font-semibold">{user.name}</span>
+            </Link>
+          ) : (
+            <div className="flex items-center gap-1">
+              <Link
+                href="/kirish"
+                className="rounded-lg px-3 py-2 text-sm font-medium text-muted hover:text-foreground"
+              >
+                Kirish
+              </Link>
+              <Link
+                href="/royxatdan-otish"
+                className="rounded-lg px-3 py-2 text-sm font-medium text-muted hover:text-foreground"
+              >
+                Ro'yxatdan o'tish
+              </Link>
+            </div>
+          )}
           <Link
             href="/elon-qoshish"
             className="btn-brand flex items-center gap-1.5 rounded-xl px-4 py-2 text-sm font-semibold text-white"
@@ -79,6 +122,23 @@ export default function Navbar() {
                 {link.label}
               </Link>
             ))}
+            <Link
+              href="/belgilash"
+              onClick={() => setOpen(false)}
+              className="flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium text-muted hover:bg-surface-2 hover:text-foreground"
+            >
+              <QrCode className="h-4 w-4" />
+              QR-belgi yaratish
+            </Link>
+            {!user && (
+              <Link
+                href="/kirish"
+                onClick={() => setOpen(false)}
+                className="rounded-lg px-3 py-2.5 text-sm font-medium text-muted hover:bg-surface-2 hover:text-foreground"
+              >
+                Kirish / Ro'yxatdan o'tish
+              </Link>
+            )}
             <Link
               href="/elon-qoshish"
               onClick={() => setOpen(false)}
