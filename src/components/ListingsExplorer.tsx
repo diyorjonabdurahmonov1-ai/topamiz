@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import { Search, SlidersHorizontal, X } from "lucide-react";
 import type { CategoryId, Listing, ListingKind } from "@/lib/types";
-import { categories, cities, listings } from "@/lib/data";
+import { categories, cities } from "@/lib/data";
 import { smartSearch } from "@/lib/ai";
 import ListingRow from "./ListingRow";
 
@@ -14,11 +14,13 @@ export default function ListingsExplorer({
   initialKind = "all",
   initialCategory = "all",
   initialCity = "all",
+  listings,
 }: {
   initialQuery?: string;
   initialKind?: KindFilter;
   initialCategory?: CategoryId | "all";
   initialCity?: string;
+  listings: Listing[];
 }) {
   const [query, setQuery] = useState(initialQuery);
   const [kind, setKind] = useState<KindFilter>(initialKind);
@@ -27,13 +29,13 @@ export default function ListingsExplorer({
   const [filtersOpen, setFiltersOpen] = useState(false);
 
   const results = useMemo(() => {
-    let pool: Listing[] = listings.filter((l) => l.status === "active");
+    let pool: Listing[] = listings;
     if (kind !== "all") pool = pool.filter((l) => l.kind === kind);
     if (category !== "all") pool = pool.filter((l) => l.category === category);
     if (city !== "all") pool = pool.filter((l) => l.city === city);
     if (query.trim()) pool = smartSearch(query, pool);
     return pool;
-  }, [query, kind, category, city]);
+  }, [listings, query, kind, category, city]);
 
   function resetFilters() {
     setQuery("");

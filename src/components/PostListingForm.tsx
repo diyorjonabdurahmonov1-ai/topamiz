@@ -29,7 +29,7 @@ export default function PostListingForm() {
   const [status, setStatus] = useState<Status>("idle");
   const [error, setError] = useState("");
 
-  function handleSubmit(e: FormEvent) {
+  async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     if (!title.trim() || !description.trim() || !contactName.trim() || !contactPhone.trim()) {
       setError("Iltimos, * bilan belgilangan barcha maydonlarni to'ldiring.");
@@ -37,9 +37,29 @@ export default function PostListingForm() {
     }
     setError("");
     setStatus("submitting");
-    // No backend is wired up yet — this simulates the save so the flow can be
-    // demoed end-to-end; swap for a real API call once one exists.
-    setTimeout(() => setStatus("success"), 900);
+    try {
+      const res = await fetch("/api/listings", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          kind,
+          title,
+          description,
+          category,
+          city,
+          reward: reward ? Number(reward) : null,
+          contactName,
+          contactPhone,
+          photoUrls: imageUrls,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error ?? "Xatolik yuz berdi");
+      setStatus("success");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Xatolik yuz berdi");
+      setStatus("idle");
+    }
   }
 
   function resetForm() {

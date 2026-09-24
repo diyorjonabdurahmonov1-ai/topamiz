@@ -1,10 +1,10 @@
 import AdCarousel from "@/components/AdCarousel";
 import HomeTabs from "@/components/HomeTabs";
 import { getActiveAds } from "@/lib/ads";
-import { getRewardedListings, listings } from "@/lib/data";
+import { getAllActiveListings, getRewardedListings } from "@/lib/listings";
 
 export default function Home() {
-  const active = listings.filter((l) => l.status === "active");
+  const active = getAllActiveListings();
   const allLost = [...active]
     .filter((l) => l.kind === "lost")
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
