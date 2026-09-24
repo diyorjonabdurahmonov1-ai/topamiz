@@ -2,8 +2,9 @@
 
 import { useState, type FormEvent } from "react";
 import { CheckCircle2, Loader2, Send } from "lucide-react";
+import type { Dictionary } from "@/lib/i18n";
 
-export default function AdInquiryForm() {
+export default function AdInquiryForm({ dict }: { dict: Dictionary }) {
   const [company, setCompany] = useState("");
   const [phone, setPhone] = useState("");
   const [message, setMessage] = useState("");
@@ -13,7 +14,7 @@ export default function AdInquiryForm() {
   function handleSubmit(e: FormEvent) {
     e.preventDefault();
     if (!company.trim() || !phone.trim()) {
-      setError("Kompaniya nomi va telefon raqamini kiriting.");
+      setError(dict.ads.requiredError);
       return;
     }
     setError("");
@@ -27,54 +28,43 @@ export default function AdInquiryForm() {
         <div className="flex h-14 w-14 items-center justify-center rounded-full bg-success/10 text-success">
           <CheckCircle2 className="h-7 w-7" />
         </div>
-        <h3 className="mt-4 text-lg font-bold">So'rovingiz qabul qilindi!</h3>
-        <p className="mt-1.5 max-w-sm text-sm text-muted">
-          Bizning jamoamiz tez orada siz bilan bog'lanadi.
-        </p>
+        <h3 className="mt-4 text-lg font-bold">{dict.ads.successTitle}</h3>
+        <p className="mt-1.5 max-w-sm text-sm text-muted">{dict.ads.successBody}</p>
       </div>
     );
   }
 
   return (
     <form onSubmit={handleSubmit} className="rounded-2xl border border-border bg-surface p-6">
-      <h3 className="text-lg font-bold">Reklama uchun murojaat qiling</h3>
-      <p className="mt-1 text-sm text-muted">
-        Ma'lumotlarni qoldiring, jamoamiz siz bilan bog'lanib narx va
-        joylashuv bo'yicha maslahat beradi.
-      </p>
+      <h3 className="text-lg font-bold">{dict.ads.inquiryHeading}</h3>
+      <p className="mt-1 text-sm text-muted">{dict.ads.inquirySubtitle}</p>
 
       <div className="mt-5 space-y-4">
         <div>
-          <label className="mb-1.5 block text-xs font-semibold text-muted">
-            Kompaniya / brend nomi *
-          </label>
+          <label className="mb-1.5 block text-xs font-semibold text-muted">{dict.ads.companyLabel}</label>
           <input
             value={company}
             onChange={(e) => setCompany(e.target.value)}
-            placeholder="Masalan: SecureTag MChJ"
+            placeholder={dict.ads.companyPlaceholder}
             className="w-full rounded-xl border border-border bg-bg-elevated px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-via/40"
           />
         </div>
         <div>
-          <label className="mb-1.5 block text-xs font-semibold text-muted">
-            Telefon raqami *
-          </label>
+          <label className="mb-1.5 block text-xs font-semibold text-muted">{dict.ads.phoneLabel}</label>
           <input
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
-            placeholder="+998 90 123 45 67"
+            placeholder={dict.ads.phonePlaceholder}
             className="w-full rounded-xl border border-border bg-bg-elevated px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-via/40"
           />
         </div>
         <div>
-          <label className="mb-1.5 block text-xs font-semibold text-muted">
-            Qo'shimcha izoh
-          </label>
+          <label className="mb-1.5 block text-xs font-semibold text-muted">{dict.ads.commentLabel}</label>
           <textarea
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             rows={3}
-            placeholder="Reklama qaysi shaharlarda ko'rinishini xohlaysiz?"
+            placeholder={dict.ads.commentPlaceholder}
             className="w-full rounded-xl border border-border bg-bg-elevated px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-via/40"
           />
         </div>
@@ -96,7 +86,7 @@ export default function AdInquiryForm() {
         ) : (
           <Send className="h-4 w-4" />
         )}
-        Murojaat yuborish
+        {dict.ads.submit}
       </button>
     </form>
   );

@@ -3,11 +3,12 @@
 import { useState, type FormEvent } from "react";
 import Link from "next/link";
 import { CheckCircle2, Download, Loader2, QrCode } from "lucide-react";
+import type { Dictionary } from "@/lib/i18n";
 import ImageUploader from "./ImageUploader";
 
 type Status = "idle" | "submitting" | "success";
 
-export default function TagForm() {
+export default function TagForm({ dict }: { dict: Dictionary }) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [imageUrls, setImageUrls] = useState<string[]>([]);
@@ -19,11 +20,11 @@ export default function TagForm() {
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     if (!title.trim() || !description.trim()) {
-      setError("Buyum nomi va tasnifini kiriting");
+      setError(dict.tags.nameRequiredError);
       return;
     }
     if (imageUrls.length === 0) {
-      setError("Kamida bitta rasm yuklang");
+      setError(dict.tags.photoRequiredError);
       return;
     }
     setError("");
@@ -35,12 +36,12 @@ export default function TagForm() {
         body: JSON.stringify({ title, description, photoUrls: imageUrls }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error ?? "Xatolik yuz berdi");
+      if (!res.ok) throw new Error(data.error ?? dict.tags.genericError);
       setQrDataUrl(data.qrDataUrl);
       setTagCode(data.tag.code);
       setStatus("success");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Xatolik yuz berdi");
+      setError(err instanceof Error ? err.message : dict.tags.genericError);
       setStatus("idle");
     }
   }
@@ -51,14 +52,10 @@ export default function TagForm() {
         <div className="flex h-14 w-14 items-center justify-center rounded-full bg-success/10 text-success">
           <CheckCircle2 className="h-7 w-7" />
         </div>
-        <h2 className="mt-4 text-xl font-extrabold">QR-belgi tayyor!</h2>
-        <p className="mt-1.5 max-w-sm text-sm text-muted">
-          Buni chop eting yoki saqlab, buyumingizga yopishtiring. Kimdir uni
-          topib skaner qilsa, shu belgi haqidagi ma'lumot va sizga xabar
-          yozish oynasi chiqadi.
-        </p>
+        <h2 className="mt-4 text-xl font-extrabold">{dict.tags.readyTitle}</h2>
+        <p className="mt-1.5 max-w-sm text-sm text-muted">{dict.tags.readyBody}</p>
         {/* eslint-disable-next-line @next/next/no-img-element -- generated data: URL, not an optimizable asset */}
-        <img src={qrDataUrl} alt="QR kod" className="mt-5 h-48 w-48 rounded-xl border border-border" />
+        <img src={qrDataUrl} alt="QR" className="mt-5 h-48 w-48 rounded-xl border border-border" />
         <div className="mt-5 flex flex-wrap justify-center gap-3">
           <a
             href={qrDataUrl}
@@ -66,13 +63,13 @@ export default function TagForm() {
             className="btn-brand flex items-center gap-1.5 rounded-xl px-5 py-2.5 text-sm font-semibold text-white"
           >
             <Download className="h-4 w-4" />
-            QR-kodni yuklab olish
+            {dict.tags.downloadButton}
           </a>
           <Link
             href="/mening-belgilarim"
             className="rounded-xl border border-border bg-surface px-5 py-2.5 text-sm font-semibold hover:bg-surface-2"
           >
-            Mening belgilarim
+            {dict.tags.myTagsLink}
           </Link>
         </div>
       </div>
@@ -82,26 +79,28 @@ export default function TagForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="rounded-2xl border border-border bg-surface p-5 sm:p-6">
-        <h2 className="text-sm font-bold">Buyum haqida</h2>
+        <h2 className="text-sm font-bold">{dict.tags.aboutItemHeading}</h2>
         <div className="mt-4 space-y-4">
           <div>
-            <label className="mb-1.5 block text-xs font-semibold text-muted">Buyum nomi *</label>
+            <label className="mb-1.5 block text-xs font-semibold text-muted">
+              {dict.tags.itemNameLabel}
+            </label>
             <input
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="Masalan: Uy kalitlari, Noutbuk sumkasi"
+              placeholder={dict.tags.itemNamePlaceholder}
               className="w-full rounded-xl border border-border bg-bg-elevated px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-via/40"
             />
           </div>
           <div>
             <label className="mb-1.5 block text-xs font-semibold text-muted">
-              Maxsus belgilari yoki tasnifi *
+              {dict.tags.itemDescLabel}
             </label>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={4}
-              placeholder="Buyumni tanib olish uchun: rangi, brendi, chizig'i, naqshi va h.k."
+              placeholder={dict.tags.itemDescPlaceholder}
               className="w-full rounded-xl border border-border bg-bg-elevated px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-via/40"
             />
           </div>
@@ -111,7 +110,7 @@ export default function TagForm() {
       <div className="rounded-2xl border border-border bg-surface p-5 sm:p-6">
         <h2 className="flex items-center gap-2 text-sm font-bold">
           <QrCode className="h-4 w-4" />
-          Rasm (1-2 tomondan) *
+          {dict.tags.photoHeading}
         </h2>
         <div className="mt-3">
           <ImageUploader onChange={setImageUrls} />
@@ -130,10 +129,10 @@ export default function TagForm() {
         {status === "submitting" ? (
           <>
             <Loader2 className="h-4 w-4 animate-spin" />
-            Yaratilmoqda...
+            {dict.tags.creating}
           </>
         ) : (
-          "QR-belgi yaratish"
+          dict.tags.submit
         )}
       </button>
     </form>

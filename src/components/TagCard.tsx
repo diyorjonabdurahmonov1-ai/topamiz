@@ -5,16 +5,19 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { CheckCircle2, Copy, Download, ExternalLink, Loader2, RotateCcw, Trash2 } from "lucide-react";
 import type { ItemTag } from "@/lib/tags";
+import type { Dictionary } from "@/lib/i18n";
 import { formatDate } from "@/lib/data";
 
 export default function TagCard({
   tag,
   qrDataUrl,
   url,
+  dict,
 }: {
   tag: ItemTag;
   qrDataUrl: string;
   url: string;
+  dict: Dictionary;
 }) {
   const router = useRouter();
   const [deleting, setDeleting] = useState(false);
@@ -23,7 +26,7 @@ export default function TagCard({
   const resolved = tag.status === "resolved";
 
   async function handleDelete() {
-    if (!confirm("Bu QR-belgini o'chirmoqchimisiz?")) return;
+    if (!confirm(dict.tags.deleteConfirm)) return;
     setDeleting(true);
     const res = await fetch(`/api/tags/${tag.code}`, { method: "DELETE" });
     if (res.ok) router.refresh();
@@ -59,7 +62,7 @@ export default function TagCard({
       {/* eslint-disable-next-line @next/next/no-img-element -- generated data: URL, not an optimizable asset */}
       <img
         src={qrDataUrl}
-        alt="QR kod"
+        alt="QR"
         className={`h-24 w-24 shrink-0 rounded-lg border border-border ${resolved ? "opacity-40" : ""}`}
       />
       <div className="min-w-0 flex-1">
@@ -68,7 +71,7 @@ export default function TagCard({
           {resolved && (
             <span className="flex shrink-0 items-center gap-1 rounded-full bg-success/10 px-2 py-0.5 text-[10px] font-semibold text-success">
               <CheckCircle2 className="h-3 w-3" />
-              Topildi
+              {dict.tags.foundBadge}
             </span>
           )}
         </div>
@@ -81,7 +84,7 @@ export default function TagCard({
             className="flex items-center gap-1 text-xs font-semibold text-brand-via hover:text-brand-to"
           >
             <Download className="h-3.5 w-3.5" />
-            Yuklab olish
+            {dict.tags.download}
           </a>
           <Link
             href={`/t/${tag.code}`}
@@ -89,7 +92,7 @@ export default function TagCard({
             className="flex items-center gap-1 text-xs font-semibold text-brand-via hover:text-brand-to"
           >
             <ExternalLink className="h-3.5 w-3.5" />
-            Ko'rish
+            {dict.tags.view}
           </Link>
           <button
             type="button"
@@ -97,7 +100,7 @@ export default function TagCard({
             className="flex items-center gap-1 text-xs font-semibold text-brand-via hover:text-brand-to"
           >
             <Copy className="h-3.5 w-3.5" />
-            {copied ? "Nusxalandi!" : "Havolani nusxalash"}
+            {copied ? dict.tags.copied : dict.tags.copyLink}
           </button>
           <button
             type="button"
@@ -112,7 +115,7 @@ export default function TagCard({
             ) : (
               <CheckCircle2 className="h-3.5 w-3.5" />
             )}
-            {resolved ? "Qayta faollashtirish" : "Topildi deb belgilash"}
+            {resolved ? dict.tags.reactivate : dict.tags.markFound}
           </button>
           <button
             type="button"
@@ -121,7 +124,7 @@ export default function TagCard({
             className="flex items-center gap-1 text-xs font-semibold text-danger hover:text-danger/80 disabled:opacity-60"
           >
             {deleting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Trash2 className="h-3.5 w-3.5" />}
-            O'chirish
+            {dict.tags.delete}
           </button>
         </div>
       </div>

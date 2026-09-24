@@ -3,6 +3,8 @@ import { notFound } from "next/navigation";
 import { CheckCircle2, QrCode } from "lucide-react";
 import { getCurrentUser } from "@/lib/auth";
 import { getTagByCode } from "@/lib/tags";
+import { getLocale } from "@/lib/i18n/server";
+import { getDictionary } from "@/lib/i18n";
 import Logo from "@/components/Logo";
 import TagContactForm from "@/components/TagContactForm";
 import TagPhoto from "@/components/TagPhoto";
@@ -19,6 +21,7 @@ export default async function PublicTagPage(props: PageProps<"/t/[code]">) {
   if (!tag) notFound();
 
   const user = await getCurrentUser();
+  const dict = getDictionary(await getLocale());
 
   return (
     <div className="mx-auto max-w-md px-4 py-10 sm:px-6">
@@ -29,13 +32,13 @@ export default async function PublicTagPage(props: PageProps<"/t/[code]">) {
       <div className="rounded-2xl border border-border bg-surface p-5 text-center">
         <span className="mx-auto flex w-fit items-center gap-1.5 rounded-full bg-brand-via/10 px-3 py-1 text-xs font-semibold text-brand-via">
           <QrCode className="h-3.5 w-3.5" />
-          QR-belgi orqali topilgan buyum
+          {dict.tags.publicBadge}
         </span>
         <h1 className="mt-3 text-xl font-extrabold">{tag.title}</h1>
         {tag.status === "resolved" && (
           <span className="mx-auto mt-2 flex w-fit items-center gap-1.5 rounded-full bg-success/10 px-3 py-1 text-xs font-semibold text-success">
             <CheckCircle2 className="h-3.5 w-3.5" />
-            Bu buyum egasiga qaytarilgan
+            {dict.tags.resolvedBadge}
           </span>
         )}
       </div>
@@ -54,18 +57,19 @@ export default async function PublicTagPage(props: PageProps<"/t/[code]">) {
       )}
 
       <div className="mt-4 rounded-2xl border border-border bg-surface p-5">
-        <p className="text-xs font-semibold uppercase tracking-wide text-muted">Tasnifi</p>
+        <p className="text-xs font-semibold uppercase tracking-wide text-muted">
+          {dict.tags.descriptionLabel}
+        </p>
         <p className="mt-1.5 whitespace-pre-line text-sm leading-relaxed">{tag.description}</p>
       </div>
 
       <div className="mt-4">
         {tag.status === "resolved" ? (
           <div className="rounded-2xl border border-border bg-surface p-5 text-center text-sm text-muted">
-            Bu buyum egasi tomonidan allaqachon topilgan deb belgilangan, shuning
-            uchun xabar yuborish yopilgan.
+            {dict.tags.resolvedNotice}
           </div>
         ) : (
-          <TagContactForm code={tag.code} isLoggedIn={!!user} />
+          <TagContactForm code={tag.code} isLoggedIn={!!user} dict={dict} />
         )}
       </div>
     </div>
