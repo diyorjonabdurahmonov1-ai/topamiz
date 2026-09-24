@@ -5,6 +5,7 @@ import { getCurrentUser } from "@/lib/auth";
 import { getTagByCode } from "@/lib/tags";
 import Logo from "@/components/Logo";
 import TagContactForm from "@/components/TagContactForm";
+import TagPhoto from "@/components/TagPhoto";
 
 export async function generateMetadata(props: PageProps<"/t/[code]">): Promise<Metadata> {
   const { code } = await props.params;
@@ -35,14 +36,13 @@ export default async function PublicTagPage(props: PageProps<"/t/[code]">) {
 
       {tag.photoUrls.length > 0 && (
         <div className="mt-4 grid grid-cols-2 gap-3">
-          {tag.photoUrls.map((url) => (
-            // eslint-disable-next-line @next/next/no-img-element -- uploaded to server at runtime, not a build-time asset
-            <img
+          {tag.photoUrls.map((url, index) => (
+            <div
               key={url}
-              src={url}
-              alt={tag.title}
-              className="aspect-square w-full rounded-xl border border-border object-cover"
-            />
+              className="relative aspect-square w-full overflow-hidden rounded-xl border border-border"
+            >
+              <TagPhoto src={url} alt={tag.title} priority={index === 0} />
+            </div>
           ))}
         </div>
       )}

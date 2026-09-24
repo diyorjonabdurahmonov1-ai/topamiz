@@ -4,6 +4,12 @@ import { db } from "./db";
 
 const SESSION_COOKIE = "topamiz_session";
 const SESSION_DAYS = 30;
+export const MAX_NAME_LENGTH = 80;
+export const MAX_BIO_LENGTH = 280;
+export const MIN_PASSWORD_LENGTH = 6;
+// scrypt's cost scales with input size — capping this keeps a maliciously
+// huge password from turning every login/register attempt into needless work.
+export const MAX_PASSWORD_LENGTH = 200;
 
 export interface AuthUser {
   id: number;

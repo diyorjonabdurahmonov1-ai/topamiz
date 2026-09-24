@@ -37,11 +37,21 @@ export default function RewardedPage() {
         uchrashib oling.
       </div>
 
-      <div className="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-        {rewarded.map((listing) => (
-          <ListingCard key={listing.id} listing={listing} />
-        ))}
-      </div>
+      {rewarded.length === 0 ? (
+        <div className="mt-10 flex flex-col items-center rounded-2xl border border-dashed border-border py-16 text-center">
+          <Gift className="h-8 w-8 text-muted" />
+          <p className="mt-3 text-sm font-semibold">Hozircha mukofotli e'lon yo'q</p>
+          <p className="mt-1 max-w-sm text-sm text-muted">
+            Yo'qolgan buyumingizga mukofot taklif qilsangiz, u shu yerda ko'rinadi.
+          </p>
+        </div>
+      ) : (
+        <div className="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {rewarded.map((listing) => (
+            <ListingCard key={listing.id} listing={listing} />
+          ))}
+        </div>
+      )}
     </div>
   );
 }

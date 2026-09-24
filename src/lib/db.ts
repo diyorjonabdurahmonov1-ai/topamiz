@@ -3,14 +3,17 @@ import path from "node:path";
 import { mkdirSync } from "node:fs";
 
 const DATA_DIR = path.join(process.cwd(), ".data");
-mkdirSync(DATA_DIR, { recursive: true });
+// Tests point this at ":memory:" (see vitest.config.ts) to run against an
+// isolated, throwaway database instead of the real one on disk.
+const DB_PATH = process.env.TOPAMIZ_DB_PATH ?? path.join(DATA_DIR, "topamiz.db");
+if (DB_PATH !== ":memory:") {
+  mkdirSync(DATA_DIR, { recursive: true });
+}
 
 // Cached on `global` so dev-mode hot reload doesn't reopen the file on every edit.
 const globalForDb = globalThis as unknown as { __topamizDb?: Database.Database };
 
-export const db =
-  globalForDb.__topamizDb ??
-  new Database(path.join(DATA_DIR, "topamiz.db"));
+export const db = globalForDb.__topamizDb ?? new Database(DB_PATH);
 
 if (process.env.NODE_ENV !== "production") {
   globalForDb.__topamizDb = db;
@@ -64,5 +67,6 @@ db.exec(`
   CREATE INDEX IF NOT EXISTS idx_sessions_user ON sessions(user_id);
   CREATE INDEX IF NOT EXISTS idx_messages_recipient ON messages(recipient_id);
   CREATE INDEX IF NOT EXISTS idx_messages_sender ON messages(sender_id);
+  CREATE INDEX IF NOT EXISTS idx_messages_tag ON messages(tag_id);
   CREATE INDEX IF NOT EXISTS idx_tags_owner ON tags(owner_id);
 `);
