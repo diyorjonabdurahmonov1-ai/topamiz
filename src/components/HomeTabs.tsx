@@ -85,11 +85,13 @@ export default function HomeTabs({
                       backgroundColor: `color-mix(in srgb, ${tab.tint} 8%, var(--surface))`,
                       boxShadow: `0 12px 28px -14px color-mix(in srgb, ${tab.tint} 55%, transparent)`,
                     }
-                  : undefined
+                  : {
+                      borderColor: `color-mix(in srgb, ${tab.tint} 22%, var(--border))`,
+                      backgroundColor: `color-mix(in srgb, ${tab.tint} 4%, var(--surface))`,
+                      boxShadow: `0 8px 20px -16px color-mix(in srgb, ${tab.tint} 40%, transparent)`,
+                    }
               }
-              className={`card-hover flex flex-col items-center gap-2.5 rounded-2xl border px-3 py-5 text-center ${
-                isActive ? "" : "border-border bg-surface"
-              }`}
+              className="card-hover flex flex-col items-center gap-2.5 rounded-2xl border px-3 py-5 text-center"
             >
               <span
                 className="flex h-11 w-11 items-center justify-center rounded-2xl text-white shadow-md sm:h-12 sm:w-12"

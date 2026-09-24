@@ -68,7 +68,12 @@ html {
 }
 
 body {
-  background: var(--bg);
+  background:
+    radial-gradient(1100px 550px at 12% -8%, color-mix(in srgb, var(--brand-via) 16%, transparent), transparent 60%),
+    radial-gradient(900px 480px at 100% 0%, color-mix(in srgb, var(--brand-to) 13%, transparent), transparent 55%),
+    radial-gradient(700px 420px at 45% 100%, color-mix(in srgb, var(--accent-gold) 9%, transparent), transparent 60%),
+    var(--bg);
+  background-attachment: fixed;
   color: var(--foreground);
   font-family: var(--font-sans), system-ui, sans-serif;
 }
