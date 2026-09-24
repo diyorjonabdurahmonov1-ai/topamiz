@@ -17,7 +17,6 @@ export interface AuthUser {
   name: string;
   bio: string;
   avatarColor: string;
-  isPremium: boolean;
   createdAt: string;
 }
 
@@ -28,7 +27,6 @@ interface UserRow {
   name: string;
   bio: string;
   avatar_color: string;
-  is_premium: number;
   created_at: string;
 }
 
@@ -39,7 +37,6 @@ function rowToUser(row: UserRow): AuthUser {
     name: row.name,
     bio: row.bio,
     avatarColor: row.avatar_color,
-    isPremium: !!row.is_premium,
     createdAt: row.created_at,
   };
 }

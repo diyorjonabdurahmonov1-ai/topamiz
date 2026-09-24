@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { MessageCircle, QrCode, Sparkles } from "lucide-react";
+import { MessageCircle, QrCode } from "lucide-react";
 import { getCurrentUser } from "@/lib/auth";
 import ProfileEditForm from "@/components/ProfileEditForm";
 import LogoutButton from "@/components/LogoutButton";
@@ -17,7 +17,6 @@ export default async function OwnProfilePage() {
   const links = [
     { href: "/xabarlar", icon: MessageCircle, label: "Xabarlarim" },
     { href: "/mening-belgilarim", icon: QrCode, label: "QR-belgilarim" },
-    { href: "/premium", icon: Sparkles, label: user.isPremium ? "Premium" : "Premium olish" },
   ];
 
   return (
@@ -26,7 +25,7 @@ export default async function OwnProfilePage() {
         <ProfileEditForm user={user} />
       </div>
 
-      <div className="mt-5 grid grid-cols-3 gap-3">
+      <div className="mt-5 grid grid-cols-2 gap-3">
         {links.map((link) => (
           <Link
             key={link.href}

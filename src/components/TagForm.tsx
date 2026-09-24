@@ -22,6 +22,10 @@ export default function TagForm() {
       setError("Buyum nomi va tasnifini kiriting");
       return;
     }
+    if (imageUrls.length === 0) {
+      setError("Kamida bitta rasm yuklang");
+      return;
+    }
     setError("");
     setStatus("submitting");
     try {
@@ -107,7 +111,7 @@ export default function TagForm() {
       <div className="rounded-2xl border border-border bg-surface p-5 sm:p-6">
         <h2 className="flex items-center gap-2 text-sm font-bold">
           <QrCode className="h-4 w-4" />
-          Rasm (1-2 tomondan)
+          Rasm (1-2 tomondan) *
         </h2>
         <div className="mt-3">
           <ImageUploader onChange={setImageUrls} />

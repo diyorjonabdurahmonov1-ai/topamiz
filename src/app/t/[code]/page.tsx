@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { QrCode } from "lucide-react";
+import { CheckCircle2, QrCode } from "lucide-react";
 import { getCurrentUser } from "@/lib/auth";
 import { getTagByCode } from "@/lib/tags";
 import Logo from "@/components/Logo";
@@ -32,6 +32,12 @@ export default async function PublicTagPage(props: PageProps<"/t/[code]">) {
           QR-belgi orqali topilgan buyum
         </span>
         <h1 className="mt-3 text-xl font-extrabold">{tag.title}</h1>
+        {tag.status === "resolved" && (
+          <span className="mx-auto mt-2 flex w-fit items-center gap-1.5 rounded-full bg-success/10 px-3 py-1 text-xs font-semibold text-success">
+            <CheckCircle2 className="h-3.5 w-3.5" />
+            Bu buyum egasiga qaytarilgan
+          </span>
+        )}
       </div>
 
       {tag.photoUrls.length > 0 && (
@@ -53,7 +59,14 @@ export default async function PublicTagPage(props: PageProps<"/t/[code]">) {
       </div>
 
       <div className="mt-4">
-        <TagContactForm code={tag.code} isLoggedIn={!!user} />
+        {tag.status === "resolved" ? (
+          <div className="rounded-2xl border border-border bg-surface p-5 text-center text-sm text-muted">
+            Bu buyum egasi tomonidan allaqachon topilgan deb belgilangan, shuning
+            uchun xabar yuborish yopilgan.
+          </div>
+        ) : (
+          <TagContactForm code={tag.code} isLoggedIn={!!user} />
+        )}
       </div>
     </div>
   );

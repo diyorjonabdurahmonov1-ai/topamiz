@@ -10,7 +10,6 @@ const ROUTES: Array<{ path: string; priority: number; changeFrequency: MetadataR
   { path: "/ai-yordamchi", priority: 0.6, changeFrequency: "monthly" },
   { path: "/reklama", priority: 0.5, changeFrequency: "monthly" },
   { path: "/elon-qoshish", priority: 0.6, changeFrequency: "monthly" },
-  { path: "/premium", priority: 0.4, changeFrequency: "monthly" },
   { path: "/kirish", priority: 0.3, changeFrequency: "yearly" },
   { path: "/royxatdan-otish", priority: 0.3, changeFrequency: "yearly" },
 ];
