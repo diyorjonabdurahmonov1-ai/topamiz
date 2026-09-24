@@ -4,13 +4,14 @@ import ListingRow from "@/components/ListingRow";
 import StatCard from "@/components/StatCard";
 import { formatSom } from "@/lib/data";
 import { getRewardedListings } from "@/lib/listings";
+import { getVisitorCountry } from "@/lib/geo";
 
 export const metadata: Metadata = {
   title: "Mukofotli e'lonlar — Topamiz",
 };
 
-export default function RewardedPage() {
-  const rewarded = getRewardedListings();
+export default async function RewardedPage() {
+  const rewarded = getRewardedListings(await getVisitorCountry());
   const totalReward = rewarded.reduce((sum, l) => sum + (l.reward ?? 0), 0);
 
   return (

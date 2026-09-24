@@ -11,6 +11,7 @@ import {
 } from "@/lib/listings";
 import { containsProhibitedContent, recordModerationViolation } from "@/lib/moderation";
 import { getClientIp, rateLimit } from "@/lib/rate-limit";
+import { countryForIp } from "@/lib/geo";
 import type { CategoryId, ListingKind } from "@/lib/types";
 
 // Uploaded photos only ever come back from POST /api/upload as this prefix —
@@ -91,6 +92,7 @@ export async function POST(request: Request) {
     contactName,
     contactPhone,
     photoUrls,
+    country: countryForIp(ip),
   });
 
   return NextResponse.json({ listing });

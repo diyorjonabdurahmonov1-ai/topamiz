@@ -33,4 +33,5 @@ export interface Listing {
   colorTo: string;
   views: number;
   photoUrls: string[];
+  country: string;
 }

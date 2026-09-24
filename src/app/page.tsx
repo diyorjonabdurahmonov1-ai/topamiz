@@ -2,16 +2,18 @@ import AdCarousel from "@/components/AdCarousel";
 import HomeTabs from "@/components/HomeTabs";
 import { getActiveAds } from "@/lib/ads";
 import { getAllActiveListings, getRewardedListings } from "@/lib/listings";
+import { getVisitorCountry } from "@/lib/geo";
 
-export default function Home() {
-  const active = getAllActiveListings();
+export default async function Home() {
+  const country = await getVisitorCountry();
+  const active = getAllActiveListings(country);
   const allLost = [...active]
     .filter((l) => l.kind === "lost")
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
   const allFound = [...active]
     .filter((l) => l.kind === "found")
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-  const allRewarded = getRewardedListings();
+  const allRewarded = getRewardedListings(country);
   const ads = getActiveAds();
 
   return (

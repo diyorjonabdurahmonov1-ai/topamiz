@@ -3,6 +3,7 @@ import ListingsExplorer from "@/components/ListingsExplorer";
 import type { CategoryId, ListingKind } from "@/lib/types";
 import { categories } from "@/lib/data";
 import { getAllActiveListings } from "@/lib/listings";
+import { getVisitorCountry } from "@/lib/geo";
 
 export const metadata: Metadata = {
   title: "E'lonlar — Topamiz",
@@ -27,16 +28,14 @@ export default async function ElonlarPage(props: PageProps<"/elonlar">) {
           Yo'qolgan va topilgan <span className="gradient-text">e'lonlar</span>
         </h1>
         <p className="mt-2 max-w-xl text-sm text-muted">
-          Barcha e'lonlarni ko'ring, qidiring va filtrlang. Buyumingizni
-          topganlarga yordam beruvchi AI yordamchidan foydalanishni ham
-          unutmang.
+          Barcha e'lonlarni ko'ring, qidiring va filtrlang.
         </p>
       </div>
       <ListingsExplorer
         initialQuery={q}
         initialKind={kind}
         initialCategory={category}
-        listings={getAllActiveListings()}
+        listings={getAllActiveListings(await getVisitorCountry())}
       />
     </div>
   );

@@ -93,6 +93,7 @@ db.exec(`
     status TEXT NOT NULL DEFAULT 'active',
     photo_urls TEXT NOT NULL DEFAULT '[]',
     views INTEGER NOT NULL DEFAULT 0,
+    country TEXT NOT NULL DEFAULT 'UZ',
     created_at TEXT NOT NULL DEFAULT (datetime('now'))
   );
 
@@ -166,6 +167,16 @@ if (!userColumns2.some((c) => c.name === "blocked_at")) {
 if (!userColumns2.some((c) => c.name === "moderation_strikes")) {
   db.exec("ALTER TABLE users ADD COLUMN moderation_strikes INTEGER NOT NULL DEFAULT 0");
 }
+
+// Country-based listing segmentation: existing rows predate this column,
+// so default them to 'UZ' — this app has only ever served Uzbekistan.
+const listingColumns = db.prepare("PRAGMA table_info(listings)").all() as { name: string }[];
+if (!listingColumns.some((c) => c.name === "country")) {
+  db.exec("ALTER TABLE listings ADD COLUMN country TEXT NOT NULL DEFAULT 'UZ'");
+}
+// Created here rather than in the block above so it works whether `country`
+// came from a fresh install's CREATE TABLE or the ALTER TABLE just above.
+db.exec("CREATE INDEX IF NOT EXISTS idx_listings_status_country ON listings(status, country)");
 
 // Seed the listings table once, on the very first run, with the same
 // example content this app shipped with before listings were DB-backed —
