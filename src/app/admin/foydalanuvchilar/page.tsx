@@ -4,7 +4,7 @@ import { listUsers } from "@/lib/admin-users";
 import AdminUserRow from "@/components/AdminUserRow";
 
 export const metadata: Metadata = {
-  title: "Foydalanuvchilar — Topamiz",
+  title: "Foydalanuvchilar — Findo",
 };
 
 export default async function AdminUsersPage(props: PageProps<"/admin/foydalanuvchilar">) {

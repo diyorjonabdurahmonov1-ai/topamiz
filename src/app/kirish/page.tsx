@@ -6,7 +6,7 @@ import { getDictionary } from "@/lib/i18n";
 import GoogleLoginButton from "@/components/GoogleLoginButton";
 
 export const metadata: Metadata = {
-  title: "Kirish — Topamiz",
+  title: "Kirish — Findo",
 };
 
 export default async function LoginPage(props: PageProps<"/kirish">) {

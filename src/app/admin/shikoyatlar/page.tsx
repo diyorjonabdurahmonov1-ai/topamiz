@@ -3,7 +3,7 @@ import { getReportedListings } from "@/lib/listing-reports";
 import AdminReportedListingRow from "@/components/AdminReportedListingRow";
 
 export const metadata: Metadata = {
-  title: "Shikoyatlar — Topamiz",
+  title: "Shikoyatlar — Findo",
 };
 
 export default function AdminReportsPage() {

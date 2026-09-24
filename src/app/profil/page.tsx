@@ -9,7 +9,7 @@ import ProfileEditForm from "@/components/ProfileEditForm";
 import LogoutButton from "@/components/LogoutButton";
 
 export const metadata: Metadata = {
-  title: "Mening profilim — Topamiz",
+  title: "Mening profilim — Findo",
 };
 
 export default async function OwnProfilePage() {

@@ -8,7 +8,7 @@ import { getLocale } from "@/lib/i18n/server";
 import { getDictionary } from "@/lib/i18n";
 
 export const metadata: Metadata = {
-  title: "E'lonlar — Topamiz",
+  title: "E'lonlar — Findo",
 };
 
 const categoryIds = new Set(categories.map((c) => c.id));

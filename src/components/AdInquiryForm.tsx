@@ -11,7 +11,7 @@ export default function AdInquiryForm({ dict }: { dict: Dictionary }) {
   const [status, setStatus] = useState<"idle" | "submitting" | "success">("idle");
   const [error, setError] = useState("");
 
-  function handleSubmit(e: FormEvent) {
+  async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     if (!company.trim() || !phone.trim()) {
       setError(dict.ads.requiredError);
@@ -19,7 +19,23 @@ export default function AdInquiryForm({ dict }: { dict: Dictionary }) {
     }
     setError("");
     setStatus("submitting");
-    setTimeout(() => setStatus("success"), 900);
+    try {
+      const res = await fetch("/api/ads/inquiries", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ company, phone, message }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setError(data.error || dict.ads.genericError);
+        setStatus("idle");
+        return;
+      }
+      setStatus("success");
+    } catch {
+      setError(dict.ads.genericError);
+      setStatus("idle");
+    }
   }
 
   if (status === "success") {

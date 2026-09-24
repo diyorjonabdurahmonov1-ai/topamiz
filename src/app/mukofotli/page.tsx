@@ -9,7 +9,7 @@ import { getLocale } from "@/lib/i18n/server";
 import { getDictionary } from "@/lib/i18n";
 
 export const metadata: Metadata = {
-  title: "Mukofotli e'lonlar — Topamiz",
+  title: "Mukofotli e'lonlar — Findo",
 };
 
 export default async function RewardedPage() {

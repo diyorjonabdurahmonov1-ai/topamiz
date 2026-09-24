@@ -21,7 +21,7 @@ const TITLE = `${SITE_NAME} — Yo'qolgan buyumni topish platformasi`;
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
-  // Every page already sets its own full "X — Topamiz" string, so this is
+  // Every page already sets its own full "X — Findo" string, so this is
   // only a fallback for a future page that doesn't — deliberately no
   // `title.template`, since Next.js applies a template to a child's plain
   // string title too and would double-suffix all of them.
@@ -34,7 +34,7 @@ export const metadata: Metadata = {
     "QR belgi",
     "O'zbekiston",
     "Toshkent",
-    "Topamiz",
+    "Findo",
   ],
   manifest: "/manifest.webmanifest",
   appleWebApp: {

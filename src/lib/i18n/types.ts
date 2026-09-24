@@ -269,6 +269,7 @@ export interface Dictionary {
     commentLabel: string;
     commentPlaceholder: string;
     requiredError: string;
+    genericError: string;
     submit: string;
     successTitle: string;
     successBody: string;

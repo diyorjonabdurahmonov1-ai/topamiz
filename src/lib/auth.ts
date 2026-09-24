@@ -148,6 +148,24 @@ export function isAdmin(user: Pick<AuthUser, "email"> | null): boolean {
   return admins.includes(user.email.toLowerCase());
 }
 
+// The admin's messages should read as coming from the platform itself, not
+// their personal Google account — reserved so no regular user can impersonate it.
+export const BRAND_NAME = "Findo";
+const BRAND_AVATAR_COLOR = "#6366f1";
+
+export function isReservedName(name: string): boolean {
+  return name.trim().toLowerCase().replace(/\s+/g, "") === BRAND_NAME.toLowerCase();
+}
+
+export function displayIdentity(
+  user: Pick<AuthUser, "email" | "name" | "avatarColor" | "avatarUrl">
+): { name: string; avatarColor: string; avatarUrl: string | null } {
+  if (isAdmin(user)) {
+    return { name: BRAND_NAME, avatarColor: BRAND_AVATAR_COLOR, avatarUrl: null };
+  }
+  return { name: user.name, avatarColor: user.avatarColor, avatarUrl: user.avatarUrl };
+}
+
 export async function getCurrentUser(): Promise<AuthUser | null> {
   const store = await cookies();
   const token = store.get(SESSION_COOKIE)?.value;

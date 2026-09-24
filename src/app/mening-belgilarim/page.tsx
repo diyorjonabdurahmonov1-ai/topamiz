@@ -10,7 +10,7 @@ import { getDictionary } from "@/lib/i18n";
 import TagCard from "@/components/TagCard";
 
 export const metadata: Metadata = {
-  title: "Mening QR-belgilarim — Topamiz",
+  title: "Mening QR-belgilarim — Findo",
 };
 
 export default async function MyTagsPage() {

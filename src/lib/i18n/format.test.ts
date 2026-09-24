@@ -36,7 +36,7 @@ describe("formatResultsCount / formatViewsCount", () => {
 
 describe("formatCopyright / formatPostSuccessBody", () => {
   it("builds the expected sentence per locale", () => {
-    expect(formatCopyright("en", 2026)).toBe("© 2026 Topamiz. All rights reserved.");
+    expect(formatCopyright("en", 2026)).toBe("© 2026 Findo. All rights reserved.");
     expect(formatPostSuccessBody("uz", "yo'qolgan", "Qora hamyon")).toBe(
       "\"Qora hamyon\" e'loni yo'qolgan buyumlar ro'yxatiga qo'shildi."
     );

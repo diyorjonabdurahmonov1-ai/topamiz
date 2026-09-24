@@ -67,7 +67,7 @@ export default function Footer({ dict, locale }: { dict: Dictionary; locale: Loc
               <li><Link href="/elon-qoshish" className="hover:text-foreground">{dict.footer.howToPost}</Link></li>
               <li><a href="#" className="hover:text-foreground">{dict.footer.safetyRules}</a></li>
               <li><a href="#" className="hover:text-foreground">{dict.footer.termsOfUse}</a></li>
-              <li><a href="mailto:info@topamiz.uz" className="hover:text-foreground">info@topamiz.uz</a></li>
+              <li><a href="mailto:info@findo.net.uz" className="hover:text-foreground">info@findo.net.uz</a></li>
             </ul>
           </div>
         </div>

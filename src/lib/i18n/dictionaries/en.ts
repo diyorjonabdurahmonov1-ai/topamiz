@@ -282,6 +282,7 @@ const en: Dictionary = {
     commentLabel: "Additional comment",
     commentPlaceholder: "Which cities would you like the ad to appear in?",
     requiredError: "Enter the company name and phone number.",
+    genericError: "Something went wrong. Please try again later.",
     submit: "Send inquiry",
     successTitle: "Your inquiry has been received!",
     successBody: "Our team will contact you soon.",

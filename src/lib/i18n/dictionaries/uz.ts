@@ -284,6 +284,7 @@ const uz: Dictionary = {
     commentLabel: "Qo'shimcha izoh",
     commentPlaceholder: "Reklama qaysi shaharlarda ko'rinishini xohlaysiz?",
     requiredError: "Kompaniya nomi va telefon raqamini kiriting.",
+    genericError: "Xatolik yuz berdi. Birozdan so'ng qayta urinib ko'ring.",
     submit: "Murojaat yuborish",
     successTitle: "So'rovingiz qabul qilindi!",
     successBody: "Bizning jamoamiz tez orada siz bilan bog'lanadi.",

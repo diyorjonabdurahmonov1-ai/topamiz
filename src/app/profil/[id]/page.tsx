@@ -10,7 +10,7 @@ import Avatar from "@/components/Avatar";
 export async function generateMetadata(props: PageProps<"/profil/[id]">): Promise<Metadata> {
   const { id } = await props.params;
   const user = getUserById(Number(id));
-  return { title: user ? `${user.name} — Topamiz` : "Foydalanuvchi topilmadi — Topamiz" };
+  return { title: user ? `${user.name} — Findo` : "Foydalanuvchi topilmadi — Findo" };
 }
 
 export default async function PublicProfilePage(props: PageProps<"/profil/[id]">) {

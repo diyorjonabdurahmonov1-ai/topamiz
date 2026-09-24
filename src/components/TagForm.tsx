@@ -59,7 +59,7 @@ export default function TagForm({ dict }: { dict: Dictionary }) {
         <div className="mt-5 flex flex-wrap justify-center gap-3">
           <a
             href={qrDataUrl}
-            download={`topamiz-qr-${tagCode}.png`}
+            download={`findo-qr-${tagCode}.png`}
             className="btn-brand flex items-center gap-1.5 rounded-xl px-5 py-2.5 text-sm font-semibold text-white"
           >
             <Download className="h-4 w-4" />

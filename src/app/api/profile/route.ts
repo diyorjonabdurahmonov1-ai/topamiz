@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { getCurrentUser, MAX_BIO_LENGTH, MAX_NAME_LENGTH } from "@/lib/auth";
+import { getCurrentUser, isAdmin, isReservedName, MAX_BIO_LENGTH, MAX_NAME_LENGTH } from "@/lib/auth";
 
 export async function PATCH(request: Request) {
   const user = await getCurrentUser();
@@ -12,6 +12,9 @@ export async function PATCH(request: Request) {
 
   if (!name) {
     return NextResponse.json({ error: "Ism bo'sh bo'lishi mumkin emas" }, { status: 400 });
+  }
+  if (isReservedName(name) && !isAdmin(user)) {
+    return NextResponse.json({ error: "Bu ism band, boshqa ism tanlang" }, { status: 400 });
   }
 
   db.prepare("UPDATE users SET name = ?, bio = ? WHERE id = ?").run(name, bio, user.id);

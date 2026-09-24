@@ -16,7 +16,7 @@ import ListingGallery from "@/components/ListingGallery";
 export async function generateMetadata(props: PageProps<"/elonlar/[id]">): Promise<Metadata> {
   const { id } = await props.params;
   const listing = getListingById(id);
-  return { title: listing ? `${listing.title} — Topamiz` : "E'lon topilmadi — Topamiz" };
+  return { title: listing ? `${listing.title} — Findo` : "E'lon topilmadi — Findo" };
 }
 
 export default async function ListingDetailPage(props: PageProps<"/elonlar/[id]">) {

@@ -12,7 +12,7 @@ import TagPhoto from "@/components/TagPhoto";
 export async function generateMetadata(props: PageProps<"/t/[code]">): Promise<Metadata> {
   const { code } = await props.params;
   const tag = getTagByCode(code);
-  return { title: tag ? `${tag.title} — Topamiz` : "Belgi topilmadi — Topamiz" };
+  return { title: tag ? `${tag.title} — Findo` : "Belgi topilmadi — Findo" };
 }
 
 export default async function PublicTagPage(props: PageProps<"/t/[code]">) {
