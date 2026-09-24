@@ -3,9 +3,10 @@
 import { useRef } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import type { Listing } from "@/lib/types";
+import type { Dictionary } from "@/lib/i18n";
 import ListingCard from "@/components/ListingCard";
 
-export default function ListingRow({ listings }: { listings: Listing[] }) {
+export default function ListingRow({ listings, dict }: { listings: Listing[]; dict: Dictionary }) {
   const scrollerRef = useRef<HTMLDivElement>(null);
 
   function scrollByAmount(direction: 1 | -1) {
@@ -22,7 +23,7 @@ export default function ListingRow({ listings }: { listings: Listing[] }) {
       >
         {listings.map((listing) => (
           <div key={listing.id} className="w-[78%] shrink-0 snap-start sm:w-72 lg:w-80">
-            <ListingCard listing={listing} />
+            <ListingCard listing={listing} dict={dict} />
           </div>
         ))}
       </div>
@@ -30,7 +31,7 @@ export default function ListingRow({ listings }: { listings: Listing[] }) {
       <button
         type="button"
         onClick={() => scrollByAmount(-1)}
-        aria-label="Oldingilar"
+        aria-label={dict.common.previous}
         className="absolute left-1 top-1/2 hidden -translate-y-1/2 items-center justify-center rounded-full border border-border bg-surface/90 p-2 text-foreground opacity-0 shadow-lg backdrop-blur transition-opacity hover:bg-surface-2 group-hover/row:opacity-100 lg:flex"
       >
         <ChevronLeft className="h-4 w-4" />
@@ -38,7 +39,7 @@ export default function ListingRow({ listings }: { listings: Listing[] }) {
       <button
         type="button"
         onClick={() => scrollByAmount(1)}
-        aria-label="Keyingilar"
+        aria-label={dict.common.next}
         className="absolute right-1 top-1/2 hidden -translate-y-1/2 items-center justify-center rounded-full border border-border bg-surface/90 p-2 text-foreground opacity-0 shadow-lg backdrop-blur transition-opacity hover:bg-surface-2 group-hover/row:opacity-100 lg:flex"
       >
         <ChevronRight className="h-4 w-4" />

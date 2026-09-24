@@ -4,43 +4,11 @@ import { useState } from "react";
 import Link from "next/link";
 import { ArrowUpRight, Gift, PackageSearch, Search, SearchX } from "lucide-react";
 import type { Listing } from "@/lib/types";
+import type { Dictionary, Locale } from "@/lib/i18n";
+import { formatItemsCount } from "@/lib/i18n/format";
 import ListingRow from "@/components/ListingRow";
 
 type TabKey = "lost" | "found" | "rewarded";
-
-const TABS: {
-  key: TabKey;
-  label: string;
-  icon: typeof Search;
-  href: string;
-  gradient: string;
-  tint: string;
-}[] = [
-  {
-    key: "lost",
-    label: "Yo'qolgan",
-    icon: Search,
-    href: "/elonlar?kind=lost",
-    gradient: "linear-gradient(135deg, var(--danger), var(--accent-gold-2))",
-    tint: "var(--danger)",
-  },
-  {
-    key: "found",
-    label: "Topilgan",
-    icon: PackageSearch,
-    href: "/elonlar?kind=found",
-    gradient: "linear-gradient(135deg, var(--success), var(--brand-to))",
-    tint: "var(--success)",
-  },
-  {
-    key: "rewarded",
-    label: "Mukofotli",
-    icon: Gift,
-    href: "/mukofotli",
-    gradient: "linear-gradient(135deg, var(--accent-gold), var(--accent-gold-2))",
-    tint: "var(--accent-gold)",
-  },
-];
 
 export default function HomeTabs({
   lost,
@@ -49,6 +17,8 @@ export default function HomeTabs({
   lostCount,
   foundCount,
   rewardedCount,
+  dict,
+  locale,
 }: {
   lost: Listing[];
   found: Listing[];
@@ -56,8 +26,44 @@ export default function HomeTabs({
   lostCount: number;
   foundCount: number;
   rewardedCount: number;
+  dict: Dictionary;
+  locale: Locale;
 }) {
   const [active, setActive] = useState<TabKey | null>(null);
+
+  const TABS: {
+    key: TabKey;
+    label: string;
+    icon: typeof Search;
+    href: string;
+    gradient: string;
+    tint: string;
+  }[] = [
+    {
+      key: "lost",
+      label: dict.tabs.lost,
+      icon: Search,
+      href: "/elonlar?kind=lost",
+      gradient: "linear-gradient(135deg, var(--danger), var(--accent-gold-2))",
+      tint: "var(--danger)",
+    },
+    {
+      key: "found",
+      label: dict.tabs.found,
+      icon: PackageSearch,
+      href: "/elonlar?kind=found",
+      gradient: "linear-gradient(135deg, var(--success), var(--brand-to))",
+      tint: "var(--success)",
+    },
+    {
+      key: "rewarded",
+      label: dict.tabs.rewarded,
+      icon: Gift,
+      href: "/mukofotli",
+      gradient: "linear-gradient(135deg, var(--accent-gold), var(--accent-gold-2))",
+      tint: "var(--accent-gold)",
+    },
+  ];
 
   const listingsByTab: Record<TabKey, Listing[]> = { lost, found, rewarded };
   const countByTab: Record<TabKey, number> = {
@@ -106,7 +112,7 @@ export default function HomeTabs({
                 {tab.label}
               </span>
               <span className="text-[11px] font-medium text-muted">
-                {countByTab[tab.key]} ta e&apos;lon
+                {formatItemsCount(locale, countByTab[tab.key])}
               </span>
             </button>
           );
@@ -121,35 +127,33 @@ export default function HomeTabs({
                 className="h-2 w-2 rounded-full"
                 style={{ backgroundColor: activeTab.tint }}
               />
-              <h2 className="text-lg font-bold sm:text-xl">{activeTab.label} buyumlar</h2>
+              <h2 className="text-lg font-bold sm:text-xl">
+                {activeTab.label} {dict.tabs.itemsSuffix}
+              </h2>
             </div>
             <Link
               href={activeTab.href}
               className="flex shrink-0 items-center gap-1 text-sm font-semibold text-brand-via hover:text-brand-to"
             >
-              Barchasini ko'rish
+              {dict.tabs.viewAll}
               <ArrowUpRight className="h-4 w-4" />
             </Link>
           </div>
 
           {activeListings.length > 0 ? (
             <div className="mt-5">
-              <ListingRow listings={activeListings} />
+              <ListingRow listings={activeListings} dict={dict} />
             </div>
           ) : (
             <div className="mt-5 flex flex-col items-center rounded-2xl border border-dashed border-border bg-surface py-12 text-center">
               <SearchX className="h-7 w-7 text-muted" />
-              <p className="mt-3 text-sm font-semibold">Hozircha e'lonlar yo'q</p>
-              <p className="mt-1 max-w-xs text-sm text-muted">
-                Bu bo'limda hali hech kim e'lon joylashtirmagan.
-              </p>
+              <p className="mt-3 text-sm font-semibold">{dict.tabs.emptyTitle}</p>
+              <p className="mt-1 max-w-xs text-sm text-muted">{dict.tabs.emptyBody}</p>
             </div>
           )}
         </section>
       ) : (
-        <p className="animate-fade-up mt-6 text-center text-sm text-muted">
-          E&apos;lonlarni ko&apos;rish uchun yuqoridagi bo&apos;limlardan birini tanlang
-        </p>
+        <p className="animate-fade-up mt-6 text-center text-sm text-muted">{dict.tabs.selectPrompt}</p>
       )}
     </div>
   );

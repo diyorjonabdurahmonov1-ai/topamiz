@@ -2,18 +2,17 @@ import Link from "next/link";
 import { Globe, Send, Phone } from "lucide-react";
 import Logo from "./Logo";
 import { categories } from "@/lib/data";
+import type { Dictionary, Locale } from "@/lib/i18n";
+import { formatCopyright } from "@/lib/i18n/format";
 
-export default function Footer() {
+export default function Footer({ dict, locale }: { dict: Dictionary; locale: Locale }) {
   return (
     <footer className="border-t border-border bg-bg-elevated">
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
         <div className="grid gap-10 md:grid-cols-4">
           <div>
             <Logo />
-            <p className="mt-4 max-w-xs text-sm leading-relaxed text-muted">
-              Yo'qolgan buyumlarni topish va topilgan buyumlarni egasiga
-              qaytarishni osonlashtiruvchi O'zbekiston platformasi.
-            </p>
+            <p className="mt-4 max-w-xs text-sm leading-relaxed text-muted">{dict.footer.tagline}</p>
             <div className="mt-5 flex gap-2">
               <a
                 href="#"
@@ -40,22 +39,22 @@ export default function Footer() {
           </div>
 
           <div>
-            <h4 className="text-sm font-semibold text-foreground">Bo'limlar</h4>
+            <h4 className="text-sm font-semibold text-foreground">{dict.footer.sectionsHeading}</h4>
             <ul className="mt-4 space-y-2.5 text-sm text-muted">
-              <li><Link href="/elonlar?kind=lost" className="hover:text-foreground">Yo'qolgan buyumlar</Link></li>
-              <li><Link href="/elonlar?kind=found" className="hover:text-foreground">Topilgan buyumlar</Link></li>
-              <li><Link href="/mukofotli" className="hover:text-foreground">Mukofotli e'lonlar</Link></li>
-              <li><Link href="/reklama" className="hover:text-foreground">Reklama taxtachasi</Link></li>
+              <li><Link href="/elonlar?kind=lost" className="hover:text-foreground">{dict.footer.lostItems}</Link></li>
+              <li><Link href="/elonlar?kind=found" className="hover:text-foreground">{dict.footer.foundItems}</Link></li>
+              <li><Link href="/mukofotli" className="hover:text-foreground">{dict.footer.rewardedListings}</Link></li>
+              <li><Link href="/reklama" className="hover:text-foreground">{dict.footer.adBoard}</Link></li>
             </ul>
           </div>
 
           <div>
-            <h4 className="text-sm font-semibold text-foreground">Turkumlar</h4>
+            <h4 className="text-sm font-semibold text-foreground">{dict.footer.categoriesHeading}</h4>
             <ul className="mt-4 space-y-2.5 text-sm text-muted">
               {categories.slice(0, 5).map((c) => (
                 <li key={c.id}>
                   <Link href={`/elonlar?category=${c.id}`} className="hover:text-foreground">
-                    {c.label}
+                    {dict.categories[c.id]}
                   </Link>
                 </li>
               ))}
@@ -63,19 +62,19 @@ export default function Footer() {
           </div>
 
           <div>
-            <h4 className="text-sm font-semibold text-foreground">Yordam</h4>
+            <h4 className="text-sm font-semibold text-foreground">{dict.footer.helpHeading}</h4>
             <ul className="mt-4 space-y-2.5 text-sm text-muted">
-              <li><Link href="/elon-qoshish" className="hover:text-foreground">E'lon qanday joylanadi?</Link></li>
-              <li><a href="#" className="hover:text-foreground">Xavfsizlik qoidalari</a></li>
-              <li><a href="#" className="hover:text-foreground">Foydalanish shartlari</a></li>
+              <li><Link href="/elon-qoshish" className="hover:text-foreground">{dict.footer.howToPost}</Link></li>
+              <li><a href="#" className="hover:text-foreground">{dict.footer.safetyRules}</a></li>
+              <li><a href="#" className="hover:text-foreground">{dict.footer.termsOfUse}</a></li>
               <li><a href="mailto:info@topamiz.uz" className="hover:text-foreground">info@topamiz.uz</a></li>
             </ul>
           </div>
         </div>
 
         <div className="mt-10 flex flex-col items-center justify-between gap-3 border-t border-border pt-6 text-xs text-muted sm:flex-row">
-          <p>© {new Date().getFullYear()} Topamiz. Barcha huquqlar himoyalangan.</p>
-          <p>O'zbekistonda, ❖ g'amxorlik bilan yaratilgan.</p>
+          <p>{formatCopyright(locale, new Date().getFullYear())}</p>
+          <p>{dict.footer.madeIn}</p>
         </div>
       </div>
     </footer>
