@@ -34,4 +34,6 @@ export interface Listing {
   views: number;
   photoUrls: string[];
   country: string;
+  lat: number;
+  lng: number;
 }

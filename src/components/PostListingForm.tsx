@@ -6,6 +6,7 @@ import {
   CheckCircle2,
   ImagePlus,
   Loader2,
+  LocateFixed,
   MapPin,
   Phone,
   Sparkles,
@@ -30,6 +31,29 @@ export default function PostListingForm({ dict, locale }: { dict: Dictionary; lo
   const [imageUrls, setImageUrls] = useState<string[]>([]);
   const [status, setStatus] = useState<Status>("idle");
   const [error, setError] = useState("");
+  const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
+  const [locating, setLocating] = useState(false);
+  const [locateError, setLocateError] = useState("");
+
+  function handleLocateMe() {
+    if (!navigator.geolocation) {
+      setLocateError(dict.postListing.locateMeError);
+      return;
+    }
+    setLocating(true);
+    setLocateError("");
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setCoords({ lat: position.coords.latitude, lng: position.coords.longitude });
+        setLocating(false);
+      },
+      () => {
+        setLocateError(dict.postListing.locateMeError);
+        setLocating(false);
+      },
+      { enableHighAccuracy: true, timeout: 10000 }
+    );
+  }
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -53,6 +77,8 @@ export default function PostListingForm({ dict, locale }: { dict: Dictionary; lo
           contactName,
           contactPhone,
           photoUrls: imageUrls,
+          lat: coords?.lat,
+          lng: coords?.lng,
         }),
       });
       const data = await res.json();
@@ -74,6 +100,8 @@ export default function PostListingForm({ dict, locale }: { dict: Dictionary; lo
     setContactPhone("");
     setImageUrls([]);
     setStatus("idle");
+    setCoords(null);
+    setLocateError("");
   }
 
   if (status === "success") {
@@ -208,6 +236,27 @@ export default function PostListingForm({ dict, locale }: { dict: Dictionary; lo
                 </select>
               </div>
             </div>
+          </div>
+
+          <div>
+            <button
+              type="button"
+              onClick={handleLocateMe}
+              disabled={locating}
+              className={`flex items-center gap-1.5 rounded-xl border px-3.5 py-2 text-xs font-semibold transition-colors disabled:opacity-70 ${
+                coords
+                  ? "border-success/40 bg-success/10 text-success"
+                  : "border-border text-muted hover:text-foreground"
+              }`}
+            >
+              {locating ? (
+                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+              ) : (
+                <LocateFixed className="h-3.5 w-3.5" />
+              )}
+              {coords ? dict.postListing.locateMeSuccess : dict.postListing.locateMeButton}
+            </button>
+            {locateError && <p className="mt-1.5 text-xs font-medium text-danger">{locateError}</p>}
           </div>
         </div>
       </div>

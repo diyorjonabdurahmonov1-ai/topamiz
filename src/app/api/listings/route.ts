@@ -60,6 +60,16 @@ export async function POST(request: Request) {
         .filter((u: unknown): u is string => typeof u === "string" && u.startsWith(OWN_UPLOAD_PREFIX))
         .slice(0, MAX_LISTING_PHOTOS)
     : [];
+  const latRaw = body?.lat;
+  const lngRaw = body?.lng;
+  const lat =
+    typeof latRaw === "number" && Number.isFinite(latRaw) && latRaw >= -90 && latRaw <= 90
+      ? latRaw
+      : undefined;
+  const lng =
+    typeof lngRaw === "number" && Number.isFinite(lngRaw) && lngRaw >= -180 && lngRaw <= 180
+      ? lngRaw
+      : undefined;
 
   if (!kind || !title || !description || !category || !city || !contactName || !contactPhone) {
     return NextResponse.json(
@@ -93,6 +103,8 @@ export async function POST(request: Request) {
     contactPhone,
     photoUrls,
     country: countryForIp(ip),
+    lat,
+    lng,
   });
 
   return NextResponse.json({ listing });

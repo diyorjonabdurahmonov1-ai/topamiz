@@ -1,5 +1,6 @@
 import { db } from "./db";
 import type { CategoryId, Listing, ListingKind } from "./types";
+import { coordinatesForCity } from "./city-coordinates";
 
 export const MAX_LISTING_TITLE_LENGTH = 120;
 export const MAX_LISTING_DESCRIPTION_LENGTH = 2000;
@@ -35,6 +36,8 @@ interface RawListingRow {
   photo_urls: string;
   views: number;
   country: string;
+  lat: number;
+  lng: number;
   created_at: string;
 }
 
@@ -59,6 +62,8 @@ function toListing(row: RawListingRow): Listing {
     views: row.views,
     photoUrls: JSON.parse(row.photo_urls) as string[],
     country: row.country,
+    lat: row.lat,
+    lng: row.lng,
   };
 }
 
@@ -119,12 +124,14 @@ export function createListing(params: {
   contactPhone: string;
   photoUrls: string[];
   country: string;
+  lat?: number;
+  lng?: number;
 }): Listing {
   const info = db
     .prepare(
       `INSERT INTO listings
-        (owner_id, kind, title, description, category, city, reward, contact_name, contact_phone, photo_urls, country)
-       VALUES (@ownerId, @kind, @title, @description, @category, @city, @reward, @contactName, @contactPhone, @photoUrls, @country)`
+        (owner_id, kind, title, description, category, city, reward, contact_name, contact_phone, photo_urls, country, lat, lng)
+       VALUES (@ownerId, @kind, @title, @description, @category, @city, @reward, @contactName, @contactPhone, @photoUrls, @country, @lat, @lng)`
     )
     .run({
       ownerId: params.ownerId,
@@ -138,8 +145,18 @@ export function createListing(params: {
       contactPhone: params.contactPhone,
       photoUrls: JSON.stringify(params.photoUrls),
       country: params.country,
+      lat: params.lat ?? null,
+      lng: params.lng ?? null,
     });
-  const listing = getListingById(String(info.lastInsertRowid));
+  const newId = Number(info.lastInsertRowid);
+  // No precise location supplied (poster skipped "use my location") — fall
+  // back to a jittered point around the city center, seeded by the new row's
+  // own id so repeated calls for the same listing stay stable.
+  if (params.lat === undefined || params.lng === undefined) {
+    const { lat, lng } = coordinatesForCity(params.city, newId);
+    db.prepare("UPDATE listings SET lat = ?, lng = ? WHERE id = ?").run(lat, lng, newId);
+  }
+  const listing = getListingById(String(newId));
   if (!listing) throw new Error("E'lon yaratilmadi");
   return listing;
 }

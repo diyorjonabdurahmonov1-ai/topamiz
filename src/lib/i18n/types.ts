@@ -11,6 +11,7 @@ export interface Dictionary {
     rewardSuffix: string;
     previous: string;
     next: string;
+    close: string;
   };
 
   nav: {
@@ -123,6 +124,10 @@ export interface Dictionary {
     descriptionPlaceholder: string;
     categoryLabel: string;
     cityLabel: string;
+    locateMeButton: string;
+    locating: string;
+    locateMeSuccess: string;
+    locateMeError: string;
     photosHeading: string;
     rewardHeading: string;
     rewardHint: string;
@@ -245,6 +250,16 @@ export interface Dictionary {
     messageRequiredError: string;
     send: string;
     loginHint: string;
+  };
+
+  map: {
+    listView: string;
+    mapView: string;
+    myLocationButton: string;
+    locating: string;
+    locationError: string;
+    viewListing: string;
+    you: string;
   };
 
   ads: {

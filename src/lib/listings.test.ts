@@ -117,6 +117,24 @@ describe("deleteListing", () => {
   });
 });
 
+describe("createListing location", () => {
+  it("falls back to a city-center coordinate when none is supplied", () => {
+    const owner = makeUser("egasi@example.com", "Egasi");
+    const listing = createListing(makeListingParams({ ownerId: owner.id, city: "Toshkent" }));
+
+    expect(listing.lat).toBeCloseTo(41.2995, 1);
+    expect(listing.lng).toBeCloseTo(69.2401, 1);
+  });
+
+  it("uses an explicit lat/lng when the poster shared their location", () => {
+    const owner = makeUser("egasi@example.com", "Egasi");
+    const listing = createListing(makeListingParams({ ownerId: owner.id, lat: 41.31, lng: 69.28 }));
+
+    expect(listing.lat).toBe(41.31);
+    expect(listing.lng).toBe(69.28);
+  });
+});
+
 describe("getListingStats", () => {
   it("counts total and active listings", () => {
     const owner = makeUser("egasi@example.com", "Egasi");

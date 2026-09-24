@@ -20,6 +20,7 @@ const en: Dictionary = {
     rewardSuffix: "reward",
     previous: "Previous",
     next: "Next",
+    close: "Close",
   },
 
   nav: {
@@ -133,6 +134,10 @@ const en: Dictionary = {
     descriptionPlaceholder: "What the item looks like, where and when it was lost/found...",
     categoryLabel: "Category",
     cityLabel: "City",
+    locateMeButton: "Detect my location (optional)",
+    locating: "Detecting...",
+    locateMeSuccess: "Location detected",
+    locateMeError: "Could not detect your location",
     photosHeading: "Add photos",
     rewardHeading: "Offer a reward (optional)",
     rewardHint: "Offering a reward helps your item get found faster.",
@@ -258,6 +263,16 @@ const en: Dictionary = {
     messageRequiredError: "Enter your message",
     send: "Send message",
     loginHint: "If you have an account, sign in so the owner can reply to you directly.",
+  },
+
+  map: {
+    listView: "List",
+    mapView: "Map",
+    myLocationButton: "My location",
+    locating: "Locating...",
+    locationError: "Could not detect your location",
+    viewListing: "View",
+    you: "You",
   },
 
   ads: {

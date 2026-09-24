@@ -20,6 +20,7 @@ const uz: Dictionary = {
     rewardSuffix: "mukofot",
     previous: "Oldingilar",
     next: "Keyingilar",
+    close: "Yopish",
   },
 
   nav: {
@@ -133,6 +134,10 @@ const uz: Dictionary = {
     descriptionPlaceholder: "Buyum qanday ko'rinishga ega, qayerda va qachon yo'qolgan/topilgan...",
     categoryLabel: "Turkum",
     cityLabel: "Shahar",
+    locateMeButton: "Joylashuvimni aniqlash (ixtiyoriy)",
+    locating: "Aniqlanmoqda...",
+    locateMeSuccess: "Joylashuv aniqlandi",
+    locateMeError: "Joylashuvni aniqlab bo'lmadi",
     photosHeading: "Rasm qo'shish",
     rewardHeading: "Mukofot taklif qilish (ixtiyoriy)",
     rewardHint: "Mukofot taklif qilish buyumingiz tezroq topilishiga yordam beradi.",
@@ -259,6 +264,16 @@ const uz: Dictionary = {
     messageRequiredError: "Xabar matnini kiriting",
     send: "Xabar yuborish",
     loginHint: "Hisobingiz bo'lsa, kirib yuborsangiz egasi sizga to'g'ridan-to'g'ri javob yoza oladi.",
+  },
+
+  map: {
+    listView: "Ro'yxat",
+    mapView: "Xarita",
+    myLocationButton: "Mening joylashuvim",
+    locating: "Aniqlanmoqda...",
+    locationError: "Joylashuvni aniqlab bo'lmadi",
+    viewListing: "Ko'rish",
+    you: "Siz",
   },
 
   ads: {

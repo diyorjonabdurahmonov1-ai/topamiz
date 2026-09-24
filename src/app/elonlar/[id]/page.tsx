@@ -13,6 +13,7 @@ import { formatViewsCount } from "@/lib/i18n/format";
 import AiMatches from "@/components/AiMatches";
 import ContactCard from "@/components/ContactCard";
 import ReportListingButton from "@/components/ReportListingButton";
+import ListingGallery from "@/components/ListingGallery";
 
 export async function generateMetadata(props: PageProps<"/elonlar/[id]">): Promise<Metadata> {
   const { id } = await props.params;
@@ -91,30 +92,14 @@ export default async function ListingDetailPage(props: PageProps<"/elonlar/[id]"
             </span>
           </div>
 
-          {listing.photoUrls.length > 0 ? (
-            // eslint-disable-next-line @next/next/no-img-element -- runtime-uploaded file served from /api/uploads, not a build-time asset
-            <img
-              src={listing.photoUrls[0]}
-              alt={listing.title}
-              className="mt-6 h-56 w-full rounded-2xl object-cover sm:h-64"
-            />
-          ) : (
-            <div
-              className="mt-6 flex h-56 items-center justify-center rounded-2xl sm:h-64"
-              style={{
-                backgroundImage: `linear-gradient(135deg, ${listing.colorFrom}22, ${listing.colorTo}22)`,
-              }}
-            >
-              <div
-                className="flex h-20 w-20 items-center justify-center rounded-3xl text-white shadow-xl"
-                style={{
-                  backgroundImage: `linear-gradient(135deg, ${listing.colorFrom}, ${listing.colorTo})`,
-                }}
-              >
-                <Icon className="h-10 w-10" strokeWidth={2} />
-              </div>
-            </div>
-          )}
+          <ListingGallery
+            photoUrls={listing.photoUrls}
+            title={listing.title}
+            colorFrom={listing.colorFrom}
+            colorTo={listing.colorTo}
+            icon={<Icon className="h-10 w-10" strokeWidth={2} />}
+            dict={dict}
+          />
 
           <div className="mt-6 rounded-2xl border border-border bg-surface p-5">
             <p className="text-xs font-semibold uppercase tracking-wide text-muted">

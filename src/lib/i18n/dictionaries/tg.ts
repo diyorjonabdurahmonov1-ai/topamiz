@@ -20,6 +20,7 @@ const tg: Dictionary = {
     rewardSuffix: "мукофот",
     previous: "Қаблӣ",
     next: "Баъдӣ",
+    close: "Пӯшидан",
   },
 
   nav: {
@@ -133,6 +134,10 @@ const tg: Dictionary = {
     descriptionPlaceholder: "Чиз чӣ гуна намуд дорад, дар куҷо ва кай гум/ёфт шудааст...",
     categoryLabel: "Категория",
     cityLabel: "Шаҳр",
+    locateMeButton: "Муайян кардани ҷои ман (ихтиёрӣ)",
+    locating: "Муайян карда истодааст...",
+    locateMeSuccess: "Ҷойгиршавӣ муайян карда шуд",
+    locateMeError: "Муайян кардани ҷойгиршавӣ имконнопазир аст",
     photosHeading: "Илова кардани расм",
     rewardHeading: "Пешниҳоди мукофот (ихтиёрӣ)",
     rewardHint: "Пешниҳоди мукофот ба зудтар ёфта шудани чизи шумо кӯмак мекунад.",
@@ -258,6 +263,16 @@ const tg: Dictionary = {
     messageRequiredError: "Матни паёмро ворид кунед",
     send: "Фиристодани паём",
     loginHint: "Агар ҳисоб дошта бошед, ворид шавед — он гоҳ соҳиб метавонад бевосита ба шумо ҷавоб диҳад.",
+  },
+
+  map: {
+    listView: "Рӯйхат",
+    mapView: "Харита",
+    myLocationButton: "Ҷойгиршавии ман",
+    locating: "Муайян карда истодааст...",
+    locationError: "Муайян кардани ҷойгиршавӣ имконнопазир аст",
+    viewListing: "Дидан",
+    you: "Шумо",
   },
 
   ads: {

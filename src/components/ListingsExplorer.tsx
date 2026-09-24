@@ -1,7 +1,8 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Search, SlidersHorizontal, X } from "lucide-react";
+import dynamic from "next/dynamic";
+import { List, Loader2, Map as MapIcon, Search, SlidersHorizontal, X } from "lucide-react";
 import type { CategoryId, Listing, ListingKind } from "@/lib/types";
 import type { Dictionary, Locale } from "@/lib/i18n";
 import { formatResultsCount } from "@/lib/i18n/format";
@@ -9,7 +10,17 @@ import { categories, cities } from "@/lib/data";
 import { smartSearch } from "@/lib/ai";
 import ListingRow from "./ListingRow";
 
+const ListingsMap = dynamic(() => import("./ListingsMap"), {
+  ssr: false,
+  loading: () => (
+    <div className="flex h-[520px] w-full items-center justify-center rounded-2xl border border-border bg-surface">
+      <Loader2 className="h-6 w-6 animate-spin text-muted" />
+    </div>
+  ),
+});
+
 type KindFilter = "all" | ListingKind;
+type ViewMode = "list" | "map";
 
 export default function ListingsExplorer({
   initialQuery = "",
@@ -33,6 +44,7 @@ export default function ListingsExplorer({
   const [category, setCategory] = useState<CategoryId | "all">(initialCategory);
   const [city, setCity] = useState<string>(initialCity);
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const [view, setView] = useState<ViewMode>("list");
 
   const results = useMemo(() => {
     let pool: Listing[] = listings;
@@ -136,21 +148,51 @@ export default function ListingsExplorer({
         )}
       </div>
 
-      <div className="mt-5 flex items-center justify-between">
+      <div className="mt-5 flex items-center justify-between gap-3">
         <p className="text-sm text-muted">{formatResultsCount(locale, results.length)}</p>
-        {hasActiveFilters && (
-          <button
-            type="button"
-            onClick={resetFilters}
-            className="flex items-center gap-1 text-xs font-semibold text-muted hover:text-foreground"
-          >
-            <X className="h-3.5 w-3.5" />
-            {dict.listingsPage.clearFilters}
-          </button>
-        )}
+        <div className="flex items-center gap-2">
+          {hasActiveFilters && (
+            <button
+              type="button"
+              onClick={resetFilters}
+              className="flex items-center gap-1 text-xs font-semibold text-muted hover:text-foreground"
+            >
+              <X className="h-3.5 w-3.5" />
+              {dict.listingsPage.clearFilters}
+            </button>
+          )}
+          <div className="flex shrink-0 rounded-xl border border-border bg-surface p-1">
+            <button
+              type="button"
+              onClick={() => setView("list")}
+              aria-label={dict.map.listView}
+              className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors ${
+                view === "list" ? "btn-brand text-white" : "text-muted hover:text-foreground"
+              }`}
+            >
+              <List className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">{dict.map.listView}</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setView("map")}
+              aria-label={dict.map.mapView}
+              className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors ${
+                view === "map" ? "btn-brand text-white" : "text-muted hover:text-foreground"
+              }`}
+            >
+              <MapIcon className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">{dict.map.mapView}</span>
+            </button>
+          </div>
+        </div>
       </div>
 
-      {results.length > 0 ? (
+      {view === "map" ? (
+        <div className="mt-5">
+          <ListingsMap listings={results} dict={dict} />
+        </div>
+      ) : results.length > 0 ? (
         <div className="mt-5">
           <ListingRow listings={results} dict={dict} />
         </div>

@@ -20,6 +20,7 @@ const kk: Dictionary = {
     rewardSuffix: "сыйлық",
     previous: "Алдыңғы",
     next: "Келесі",
+    close: "Жабу",
   },
 
   nav: {
@@ -133,6 +134,10 @@ const kk: Dictionary = {
     descriptionPlaceholder: "Зат қандай көрінеді, қашан және қайда жоғалды/табылды...",
     categoryLabel: "Санат",
     cityLabel: "Қала",
+    locateMeButton: "Орналасуымды анықтау (міндетті емес)",
+    locating: "Анықталуда...",
+    locateMeSuccess: "Орналасу анықталды",
+    locateMeError: "Орналасуды анықтау мүмкін болмады",
     photosHeading: "Сурет қосу",
     rewardHeading: "Сыйлық ұсыну (міндетті емес)",
     rewardHint: "Сыйлық ұсыну затыңыздың тезірек табылуына көмектеседі.",
@@ -258,6 +263,16 @@ const kk: Dictionary = {
     messageRequiredError: "Хабар мәтінін енгізіңіз",
     send: "Хабар жіберу",
     loginHint: "Аккаунтыңыз болса, кіріңіз — сонда иесі сізге тікелей жауап бере алады.",
+  },
+
+  map: {
+    listView: "Тізім",
+    mapView: "Карта",
+    myLocationButton: "Менің орналасуым",
+    locating: "Анықталуда...",
+    locationError: "Орналасуды анықтау мүмкін болмады",
+    viewListing: "Көру",
+    you: "Сіз",
   },
 
   ads: {
