@@ -65,8 +65,8 @@ export default function Footer({ dict, locale }: { dict: Dictionary; locale: Loc
             <h4 className="text-sm font-semibold text-foreground">{dict.footer.helpHeading}</h4>
             <ul className="mt-4 space-y-2.5 text-sm text-muted">
               <li><Link href="/elon-qoshish" className="hover:text-foreground">{dict.footer.howToPost}</Link></li>
-              <li><a href="#" className="hover:text-foreground">{dict.footer.safetyRules}</a></li>
-              <li><a href="#" className="hover:text-foreground">{dict.footer.termsOfUse}</a></li>
+              <li><Link href="/xavfsizlik-qoidalari" className="hover:text-foreground">{dict.footer.safetyRules}</Link></li>
+              <li><Link href="/foydalanish-shartlari" className="hover:text-foreground">{dict.footer.termsOfUse}</Link></li>
               <li><a href="mailto:info@findo.net.uz" className="hover:text-foreground">info@findo.net.uz</a></li>
             </ul>
           </div>
