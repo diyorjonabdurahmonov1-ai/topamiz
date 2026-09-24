@@ -1,15 +1,18 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth";
-import LoginForm from "@/components/LoginForm";
+import GoogleLoginButton from "@/components/GoogleLoginButton";
 
 export const metadata: Metadata = {
   title: "Kirish — Topamiz",
 };
 
-export default async function LoginPage() {
+export default async function LoginPage(props: PageProps<"/kirish">) {
   const user = await getCurrentUser();
   if (user) redirect("/profil");
+
+  const searchParams = await props.searchParams;
+  const hasError = typeof searchParams.error === "string";
 
   return (
     <div className="mx-auto max-w-sm px-4 py-14 sm:px-6">
@@ -17,9 +20,18 @@ export default async function LoginPage() {
         <h1 className="text-2xl font-extrabold tracking-tight">
           Xush <span className="gradient-text">kelibsiz</span>
         </h1>
-        <p className="mt-1.5 text-sm text-muted">Hisobingizga kiring.</p>
+        <p className="mt-1.5 text-sm text-muted">
+          Davom etish uchun Google hisobingiz bilan kiring.
+        </p>
       </div>
-      <LoginForm />
+
+      {hasError && (
+        <p className="mb-4 rounded-xl bg-danger/10 px-4 py-3 text-center text-sm font-medium text-danger">
+          Google bilan kirishda xatolik yuz berdi. Qayta urinib ko&apos;ring.
+        </p>
+      )}
+
+      <GoogleLoginButton />
     </div>
   );
 }

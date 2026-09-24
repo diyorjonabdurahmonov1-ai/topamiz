@@ -39,7 +39,7 @@ export default async function ChatPage(props: PageProps<"/xabarlar/[userId]">) {
           <ArrowLeft className="h-4 w-4" />
         </Link>
         <Link href={`/profil/${other.id}`} className="flex items-center gap-2.5">
-          <Avatar name={other.name} color={other.avatarColor} size={36} />
+          <Avatar name={other.name} color={other.avatarColor} avatarUrl={other.avatarUrl} size={36} />
           <span className="text-sm font-bold">{other.name}</span>
         </Link>
       </div>

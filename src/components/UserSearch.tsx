@@ -36,7 +36,7 @@ export default function UserSearch() {
           onChange={(e) => setQuery(e.target.value)}
           onFocus={() => setOpen(true)}
           onBlur={() => setTimeout(() => setOpen(false), 150)}
-          placeholder="Ism yoki telefon raqam bo'yicha izlang..."
+          placeholder="Ism yoki email bo'yicha izlang..."
           className="w-full bg-transparent py-2.5 text-sm focus:outline-none"
         />
         {query && (
@@ -62,10 +62,10 @@ export default function UserSearch() {
                 href={`/xabarlar/${u.id}`}
                 className="flex items-center gap-3 px-4 py-2.5 hover:bg-surface-2"
               >
-                <Avatar name={u.name} color={u.avatarColor} size={32} />
+                <Avatar name={u.name} color={u.avatarColor} avatarUrl={u.avatarUrl} size={32} />
                 <div className="min-w-0">
                   <p className="truncate text-sm font-semibold">{u.name}</p>
-                  <p className="truncate text-xs text-muted">{u.phone}</p>
+                  <p className="truncate text-xs text-muted">{u.email}</p>
                 </div>
               </Link>
             ))

@@ -25,7 +25,7 @@ export default async function PublicProfilePage(props: PageProps<"/profil/[id]">
   return (
     <div className="mx-auto max-w-md px-4 py-14 sm:px-6">
       <div className="flex flex-col items-center rounded-2xl border border-border bg-surface p-8 text-center">
-        <Avatar name={user.name} color={user.avatarColor} size={88} />
+        <Avatar name={user.name} color={user.avatarColor} avatarUrl={user.avatarUrl} size={88} />
         <h1 className="mt-4 text-xl font-extrabold">{user.name}</h1>
         <p className="mt-3 max-w-sm text-sm text-muted">
           {user.bio || "Bu foydalanuvchi hali bio qo'shmagan."}

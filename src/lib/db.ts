@@ -25,11 +25,14 @@ db.pragma("foreign_keys = ON");
 db.exec(`
   CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    phone TEXT UNIQUE NOT NULL,
-    password_hash TEXT NOT NULL,
+    google_id TEXT UNIQUE,
+    email TEXT UNIQUE,
+    phone TEXT UNIQUE,
+    password_hash TEXT,
     name TEXT NOT NULL,
     bio TEXT NOT NULL DEFAULT '',
     avatar_color TEXT NOT NULL,
+    avatar_url TEXT,
     is_premium INTEGER NOT NULL DEFAULT 0,
     created_at TEXT NOT NULL DEFAULT (datetime('now'))
   );
@@ -70,3 +73,41 @@ db.exec(`
   CREATE INDEX IF NOT EXISTS idx_messages_tag ON messages(tag_id);
   CREATE INDEX IF NOT EXISTS idx_tags_owner ON tags(owner_id);
 `);
+
+// Migrate a database created before Google sign-in: the old `users` table
+// required phone+password_hash (NOT NULL) and had no email/google_id/
+// avatar_url columns. SQLite can't relax a NOT NULL constraint in place, so
+// rebuild the table and copy every existing row across untouched.
+const userColumns = db.prepare("PRAGMA table_info(users)").all() as { name: string }[];
+if (!userColumns.some((c) => c.name === "google_id")) {
+  // SQLite can't change a NOT NULL constraint in place, and foreign_keys
+  // can't be toggled inside a transaction — follow SQLite's documented
+  // 12-step procedure for altering a table other tables reference.
+  db.pragma("foreign_keys = OFF");
+  db.exec(`
+    BEGIN TRANSACTION;
+
+    CREATE TABLE users_new (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      google_id TEXT UNIQUE,
+      email TEXT UNIQUE,
+      phone TEXT UNIQUE,
+      password_hash TEXT,
+      name TEXT NOT NULL,
+      bio TEXT NOT NULL DEFAULT '',
+      avatar_color TEXT NOT NULL,
+      avatar_url TEXT,
+      is_premium INTEGER NOT NULL DEFAULT 0,
+      created_at TEXT NOT NULL DEFAULT (datetime('now'))
+    );
+
+    INSERT INTO users_new (id, phone, password_hash, name, bio, avatar_color, is_premium, created_at)
+      SELECT id, phone, password_hash, name, bio, avatar_color, is_premium, created_at FROM users;
+
+    DROP TABLE users;
+    ALTER TABLE users_new RENAME TO users;
+
+    COMMIT;
+  `);
+  db.pragma("foreign_keys = ON");
+}
