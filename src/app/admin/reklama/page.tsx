@@ -1,6 +1,4 @@
 import type { Metadata } from "next";
-import { redirect } from "next/navigation";
-import { getCurrentUser, isAdmin } from "@/lib/auth";
 import { getAllAds } from "@/lib/ads";
 import AdminAdForm from "@/components/AdminAdForm";
 import AdminAdRow from "@/components/AdminAdRow";
@@ -10,13 +8,10 @@ export const metadata: Metadata = {
 };
 
 export default async function AdminAdsPage() {
-  const user = await getCurrentUser();
-  if (!isAdmin(user)) redirect("/");
-
   const ads = getAllAds();
 
   return (
-    <div className="mx-auto max-w-2xl px-4 py-10 sm:px-6 lg:px-8">
+    <div className="mx-auto max-w-2xl">
       <h1 className="text-2xl font-extrabold tracking-tight">Reklama banneri</h1>
       <p className="mt-1.5 text-sm text-muted">
         Rasm, video yoki GIF yuklang, havola qo&apos;shing — bosh sahifadagi

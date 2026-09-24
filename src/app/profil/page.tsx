@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { MessageCircle, Megaphone, QrCode } from "lucide-react";
+import { LayoutDashboard, MessageCircle, QrCode } from "lucide-react";
 import { getCurrentUser, isAdmin } from "@/lib/auth";
 import ProfileEditForm from "@/components/ProfileEditForm";
 import LogoutButton from "@/components/LogoutButton";
@@ -17,9 +17,7 @@ export default async function OwnProfilePage() {
   const links = [
     { href: "/xabarlar", icon: MessageCircle, label: "Xabarlarim" },
     { href: "/mening-belgilarim", icon: QrCode, label: "QR-belgilarim" },
-    ...(isAdmin(user)
-      ? [{ href: "/admin/reklama", icon: Megaphone, label: "Reklama boshqaruvi" }]
-      : []),
+    ...(isAdmin(user) ? [{ href: "/admin", icon: LayoutDashboard, label: "Admin panel" }] : []),
   ];
 
   return (

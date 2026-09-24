@@ -6,8 +6,10 @@ import {
   getUserByGoogleId,
   getUserById,
   isAdmin,
+  isUserBlocked,
   pickAvatarColor,
 } from "./auth";
+import { blockUser, unblockUser } from "./admin-users";
 
 beforeEach(() => {
   db.exec("DELETE FROM sessions; DELETE FROM messages; DELETE FROM tags; DELETE FROM users;");
@@ -78,5 +80,22 @@ describe("isAdmin", () => {
     expect(isAdmin({ email: "owner@example.com" })).toBe(true);
     expect(isAdmin({ email: "SECOND@example.com" })).toBe(true);
     expect(isAdmin({ email: "someone-else@example.com" })).toBe(false);
+  });
+});
+
+describe("isUserBlocked", () => {
+  it("reflects blockUser/unblockUser", () => {
+    const user = findOrCreateGoogleUser({ googleId: "g-1", email: "aziz@example.com", name: "Aziz" });
+    expect(isUserBlocked(user.id)).toBe(false);
+
+    blockUser(user.id);
+    expect(isUserBlocked(user.id)).toBe(true);
+
+    unblockUser(user.id);
+    expect(isUserBlocked(user.id)).toBe(false);
+  });
+
+  it("returns false for a user id that doesn't exist", () => {
+    expect(isUserBlocked(999999)).toBe(false);
   });
 });

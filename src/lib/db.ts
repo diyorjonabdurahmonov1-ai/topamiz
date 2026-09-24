@@ -123,3 +123,13 @@ if (!userColumns.some((c) => c.name === "google_id")) {
   `);
   db.pragma("foreign_keys = ON");
 }
+
+// Admin panel needs online tracking and blocking — both nullable, so a
+// plain ADD COLUMN (no rebuild) is enough.
+const userColumns2 = db.prepare("PRAGMA table_info(users)").all() as { name: string }[];
+if (!userColumns2.some((c) => c.name === "last_seen_at")) {
+  db.exec("ALTER TABLE users ADD COLUMN last_seen_at TEXT");
+}
+if (!userColumns2.some((c) => c.name === "blocked_at")) {
+  db.exec("ALTER TABLE users ADD COLUMN blocked_at TEXT");
+}

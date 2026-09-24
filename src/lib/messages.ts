@@ -3,6 +3,10 @@ import { getUserById, type AuthUser } from "./auth";
 
 export const MAX_MESSAGE_LENGTH = 2000;
 
+export function countAllMessages(): number {
+  return (db.prepare("SELECT COUNT(*) as c FROM messages").get() as { c: number }).c;
+}
+
 export interface MessageRow {
   id: number;
   tagId: number | null;
