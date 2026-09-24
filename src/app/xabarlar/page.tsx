@@ -84,7 +84,7 @@ export default async function MessagesPage() {
                 href={`/xabarlar/${c.otherUser.id}`}
                 className="flex items-center gap-3 px-4 py-3 hover:bg-surface-2"
               >
-                <Avatar name={c.otherUser.name} color={c.otherUser.avatarColor} size={44} />
+                <Avatar name={c.otherUser.name} color={c.otherUser.avatarColor} avatarUrl={c.otherUser.avatarUrl} size={44} />
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center justify-between gap-2">
                     <p className="truncate text-sm font-semibold">{c.otherUser.name}</p>

@@ -6,37 +6,38 @@ const SESSION_COOKIE = "topamiz_session";
 const SESSION_DAYS = 30;
 export const MAX_NAME_LENGTH = 80;
 export const MAX_BIO_LENGTH = 280;
-export const MIN_PASSWORD_LENGTH = 6;
-// scrypt's cost scales with input size — capping this keeps a maliciously
-// huge password from turning every login/register attempt into needless work.
-export const MAX_PASSWORD_LENGTH = 200;
 
 export interface AuthUser {
   id: number;
-  phone: string;
+  email: string;
   name: string;
   bio: string;
   avatarColor: string;
+  avatarUrl: string | null;
   createdAt: string;
 }
 
 interface UserRow {
   id: number;
-  phone: string;
-  password_hash: string;
+  email: string | null;
+  phone: string | null;
   name: string;
   bio: string;
   avatar_color: string;
+  avatar_url: string | null;
   created_at: string;
 }
 
 function rowToUser(row: UserRow): AuthUser {
   return {
     id: row.id,
-    phone: row.phone,
+    // A handful of accounts created before Google sign-in have no email on
+    // file — fall back to their old phone so the field is never blank.
+    email: row.email ?? row.phone ?? "",
     name: row.name,
     bio: row.bio,
     avatarColor: row.avatar_color,
+    avatarUrl: row.avatar_url,
     createdAt: row.created_at,
   };
 }
@@ -50,54 +51,52 @@ export function pickAvatarColor(seed: string): string {
   return AVATAR_COLORS[hash % AVATAR_COLORS.length];
 }
 
-function hashWithSalt(password: string, salt: string): string {
-  return crypto.scryptSync(password, salt, 64).toString("hex");
-}
-
-export function createPasswordHash(password: string): string {
-  const salt = crypto.randomBytes(16).toString("hex");
-  return `${salt}:${hashWithSalt(password, salt)}`;
-}
-
-export function verifyPassword(password: string, stored: string): boolean {
-  const [salt, hash] = stored.split(":");
-  if (!salt || !hash) return false;
-  const candidate = hashWithSalt(password, salt);
-  const a = Buffer.from(candidate, "hex");
-  const b = Buffer.from(hash, "hex");
-  return a.length === b.length && crypto.timingSafeEqual(a, b);
-}
-
-export function normalizePhone(raw: string): string {
-  const digits = raw.replace(/[^\d]/g, "");
-  return digits.startsWith("998") ? `+${digits}` : `+998${digits.replace(/^0+/, "")}`;
-}
-
-export function getUserByPhone(phone: string): AuthUser | null {
-  const row = db.prepare("SELECT * FROM users WHERE phone = ?").get(phone) as UserRow | undefined;
-  return row ? rowToUser(row) : null;
-}
-
-export function getUserPasswordHash(phone: string): string | null {
-  const row = db
-    .prepare("SELECT password_hash FROM users WHERE phone = ?")
-    .get(phone) as { password_hash: string } | undefined;
-  return row?.password_hash ?? null;
-}
-
 export function getUserById(id: number): AuthUser | null {
   const row = db.prepare("SELECT * FROM users WHERE id = ?").get(id) as UserRow | undefined;
   return row ? rowToUser(row) : null;
 }
 
-export function createUser(phone: string, password: string, name: string): AuthUser {
-  const passwordHash = createPasswordHash(password);
-  const avatarColor = pickAvatarColor(phone);
+export function getUserByGoogleId(googleId: string): AuthUser | null {
+  const row = db
+    .prepare("SELECT * FROM users WHERE google_id = ?")
+    .get(googleId) as UserRow | undefined;
+  return row ? rowToUser(row) : null;
+}
+
+export function getUserByEmail(email: string): AuthUser | null {
+  const row = db.prepare("SELECT * FROM users WHERE email = ?").get(email) as UserRow | undefined;
+  return row ? rowToUser(row) : null;
+}
+
+export function findOrCreateGoogleUser(params: {
+  googleId: string;
+  email: string;
+  name: string;
+  avatarUrl?: string | null;
+}): AuthUser {
+  const existingByGoogleId = getUserByGoogleId(params.googleId);
+  if (existingByGoogleId) return existingByGoogleId;
+
+  // An account with this email but no linked Google id shouldn't normally
+  // happen now that Google is the only sign-in path, but link it instead of
+  // erroring on the email UNIQUE constraint if it ever does.
+  const existingByEmail = getUserByEmail(params.email);
+  if (existingByEmail) {
+    db.prepare("UPDATE users SET google_id = ? WHERE id = ?").run(
+      params.googleId,
+      existingByEmail.id
+    );
+    return existingByEmail;
+  }
+
+  const name = params.name.trim().slice(0, MAX_NAME_LENGTH) || params.email.split("@")[0];
+  const avatarColor = pickAvatarColor(params.email);
   const info = db
     .prepare(
-      "INSERT INTO users (phone, password_hash, name, avatar_color) VALUES (?, ?, ?, ?)"
+      `INSERT INTO users (google_id, email, name, avatar_color, avatar_url)
+       VALUES (?, ?, ?, ?, ?)`
     )
-    .run(phone, passwordHash, name, avatarColor);
+    .run(params.googleId, params.email, name, avatarColor, params.avatarUrl ?? null);
   const user = getUserById(Number(info.lastInsertRowid));
   if (!user) throw new Error("Foydalanuvchi yaratilmadi");
   return user;

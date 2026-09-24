@@ -67,24 +67,16 @@ export default function Navbar({
           )}
           {user ? (
             <Link href="/profil" className="flex items-center gap-2 rounded-xl px-1.5 py-1 hover:bg-surface-2">
-              <Avatar name={user.name} color={user.avatarColor} size={30} />
+              <Avatar name={user.name} color={user.avatarColor} avatarUrl={user.avatarUrl} size={30} />
               <span className="max-w-24 truncate text-sm font-semibold">{user.name}</span>
             </Link>
           ) : (
-            <div className="flex items-center gap-1">
-              <Link
-                href="/kirish"
-                className="rounded-lg px-3 py-2 text-sm font-medium text-muted hover:text-foreground"
-              >
-                Kirish
-              </Link>
-              <Link
-                href="/royxatdan-otish"
-                className="rounded-lg px-3 py-2 text-sm font-medium text-muted hover:text-foreground"
-              >
-                Ro'yxatdan o'tish
-              </Link>
-            </div>
+            <Link
+              href="/kirish"
+              className="rounded-lg px-3 py-2 text-sm font-medium text-muted hover:text-foreground"
+            >
+              Kirish
+            </Link>
           )}
           <Link
             href="/elon-qoshish"
@@ -135,7 +127,7 @@ export default function Navbar({
                 onClick={() => setOpen(false)}
                 className="rounded-lg px-3 py-2.5 text-sm font-medium text-muted hover:bg-surface-2 hover:text-foreground"
               >
-                Kirish / Ro'yxatdan o'tish
+                Kirish
               </Link>
             )}
             <Link

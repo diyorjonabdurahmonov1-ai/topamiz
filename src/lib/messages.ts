@@ -46,7 +46,7 @@ export function searchUsers(query: string, excludeUserId: number, limit = 10): A
   if (!trimmed) return [];
   const like = `%${trimmed}%`;
   const rows = db
-    .prepare(`SELECT id FROM users WHERE id != ? AND (name LIKE ? OR phone LIKE ?) LIMIT ?`)
+    .prepare(`SELECT id FROM users WHERE id != ? AND (name LIKE ? OR email LIKE ?) LIMIT ?`)
     .all(excludeUserId, like, like, limit) as { id: number }[];
   return rows.map((r) => getUserById(r.id)).filter((u): u is AuthUser => !!u);
 }

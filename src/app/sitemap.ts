@@ -10,7 +10,6 @@ const ROUTES: Array<{ path: string; priority: number; changeFrequency: MetadataR
   { path: "/reklama", priority: 0.5, changeFrequency: "monthly" },
   { path: "/elon-qoshish", priority: 0.6, changeFrequency: "monthly" },
   { path: "/kirish", priority: 0.3, changeFrequency: "yearly" },
-  { path: "/royxatdan-otish", priority: 0.3, changeFrequency: "yearly" },
 ];
 
 export default function sitemap(): MetadataRoute.Sitemap {

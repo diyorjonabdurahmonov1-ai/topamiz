@@ -38,9 +38,9 @@ export default function ProfileEditForm({ user }: { user: AuthUser }) {
   if (!editing) {
     return (
       <div className="flex flex-col items-center text-center">
-        <Avatar name={user.name} color={user.avatarColor} size={88} />
+        <Avatar name={user.name} color={user.avatarColor} avatarUrl={user.avatarUrl} size={88} />
         <h1 className="mt-4 text-xl font-extrabold">{user.name}</h1>
-        <p className="text-sm text-muted">{user.phone}</p>
+        <p className="text-sm text-muted">{user.email}</p>
         <p className="mt-3 max-w-sm text-sm text-muted">
           {user.bio || "Hali bio qo'shilmagan."}
         </p>
@@ -58,7 +58,7 @@ export default function ProfileEditForm({ user }: { user: AuthUser }) {
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col items-center gap-3 text-center">
-      <Avatar name={name || user.name} color={user.avatarColor} size={88} />
+      <Avatar name={name || user.name} color={user.avatarColor} avatarUrl={user.avatarUrl} size={88} />
       <input
         value={name}
         onChange={(e) => setName(e.target.value)}
