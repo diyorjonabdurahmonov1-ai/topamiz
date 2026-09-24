@@ -2,11 +2,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Megaphone, Users } from "lucide-react";
+import { Flag, LayoutDashboard, Megaphone, Users } from "lucide-react";
 
 const LINKS = [
   { href: "/admin", icon: LayoutDashboard, label: "Statistika" },
   { href: "/admin/foydalanuvchilar", icon: Users, label: "Foydalanuvchilar" },
+  { href: "/admin/shikoyatlar", icon: Flag, label: "Shikoyatlar" },
   { href: "/admin/reklama", icon: Megaphone, label: "Reklama" },
 ];
 
