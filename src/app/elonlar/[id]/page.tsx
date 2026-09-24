@@ -26,7 +26,7 @@ export default async function ListingDetailPage(props: PageProps<"/elonlar/[id]"
   const user = await getCurrentUser();
   const Icon = categoryIcons[listing.category];
   const categoryLabel = categories.find((c) => c.id === listing.category)?.label ?? "";
-  const matches = findMatches(listing, getAllActiveListings());
+  const matches = findMatches(listing, getAllActiveListings(listing.country));
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:px-8">

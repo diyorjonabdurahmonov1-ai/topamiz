@@ -34,6 +34,7 @@ interface RawListingRow {
   status: string;
   photo_urls: string;
   views: number;
+  country: string;
   created_at: string;
 }
 
@@ -57,13 +58,19 @@ function toListing(row: RawListingRow): Listing {
     colorTo: colors.to,
     views: row.views,
     photoUrls: JSON.parse(row.photo_urls) as string[],
+    country: row.country,
   };
 }
 
-export function getAllActiveListings(): Listing[] {
+// `country` filters listings down to the visitor's own country (detected via
+// IP, see lib/geo.ts) so that as this site expands beyond Uzbekistan, users
+// in different countries never see each other's listings mixed together.
+export function getAllActiveListings(country: string): Listing[] {
   const rows = db
-    .prepare("SELECT * FROM listings WHERE status = 'active' ORDER BY created_at DESC, id DESC")
-    .all() as RawListingRow[];
+    .prepare(
+      "SELECT * FROM listings WHERE status = 'active' AND country = ? ORDER BY created_at DESC, id DESC"
+    )
+    .all(country) as RawListingRow[];
   return rows.map(toListing);
 }
 
@@ -76,13 +83,13 @@ export function getListingById(id: string): Listing | null {
   return row ? toListing(row) : null;
 }
 
-export function getRewardedListings(): Listing[] {
+export function getRewardedListings(country: string): Listing[] {
   const rows = db
     .prepare(
-      `SELECT * FROM listings WHERE status = 'active' AND reward IS NOT NULL
+      `SELECT * FROM listings WHERE status = 'active' AND country = ? AND reward IS NOT NULL
        ORDER BY reward DESC, id DESC`
     )
-    .all() as RawListingRow[];
+    .all(country) as RawListingRow[];
   return rows.map(toListing);
 }
 
@@ -111,12 +118,13 @@ export function createListing(params: {
   contactName: string;
   contactPhone: string;
   photoUrls: string[];
+  country: string;
 }): Listing {
   const info = db
     .prepare(
       `INSERT INTO listings
-        (owner_id, kind, title, description, category, city, reward, contact_name, contact_phone, photo_urls)
-       VALUES (@ownerId, @kind, @title, @description, @category, @city, @reward, @contactName, @contactPhone, @photoUrls)`
+        (owner_id, kind, title, description, category, city, reward, contact_name, contact_phone, photo_urls, country)
+       VALUES (@ownerId, @kind, @title, @description, @category, @city, @reward, @contactName, @contactPhone, @photoUrls, @country)`
     )
     .run({
       ownerId: params.ownerId,
@@ -129,6 +137,7 @@ export function createListing(params: {
       contactName: params.contactName,
       contactPhone: params.contactPhone,
       photoUrls: JSON.stringify(params.photoUrls),
+      country: params.country,
     });
   const listing = getListingById(String(info.lastInsertRowid));
   if (!listing) throw new Error("E'lon yaratilmadi");

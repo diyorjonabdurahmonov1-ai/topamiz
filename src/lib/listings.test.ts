@@ -33,6 +33,7 @@ function makeListingParams(overrides: Partial<Parameters<typeof createListing>[0
     contactName: "Test User",
     contactPhone: "+998901234567",
     photoUrls: [],
+    country: "UZ",
     ...overrides,
   };
 }
@@ -66,7 +67,7 @@ describe("getAllActiveListings", () => {
     createListing(makeListingParams({ ownerId: owner.id, title: "B" }));
     db.prepare("UPDATE listings SET status = 'resolved' WHERE id = ?").run(Number(a.id));
 
-    const active = getAllActiveListings();
+    const active = getAllActiveListings("UZ");
     expect(active.map((l) => l.title)).toEqual(["B"]);
   });
 });
@@ -78,7 +79,18 @@ describe("getRewardedListings", () => {
     createListing(makeListingParams({ ownerId: owner.id, title: "Small", reward: 100000 }));
     createListing(makeListingParams({ ownerId: owner.id, title: "Big", reward: 500000 }));
 
-    expect(getRewardedListings().map((l) => l.title)).toEqual(["Big", "Small"]);
+    expect(getRewardedListings("UZ").map((l) => l.title)).toEqual(["Big", "Small"]);
+  });
+});
+
+describe("country segmentation", () => {
+  it("only returns listings from the requested country", () => {
+    const owner = makeUser("egasi@example.com", "Egasi");
+    createListing(makeListingParams({ ownerId: owner.id, title: "Uzbek listing", country: "UZ" }));
+    createListing(makeListingParams({ ownerId: owner.id, title: "Kazakh listing", country: "KZ" }));
+
+    expect(getAllActiveListings("UZ").map((l) => l.title)).toEqual(["Uzbek listing"]);
+    expect(getAllActiveListings("KZ").map((l) => l.title)).toEqual(["Kazakh listing"]);
   });
 });
 

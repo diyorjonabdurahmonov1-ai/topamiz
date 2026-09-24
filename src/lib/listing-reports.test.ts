@@ -25,6 +25,7 @@ function makeListing(ownerId: number, title = "Test e'lon") {
     contactName: "X",
     contactPhone: "+998900000000",
     photoUrls: [],
+    country: "UZ",
   });
 }
 
