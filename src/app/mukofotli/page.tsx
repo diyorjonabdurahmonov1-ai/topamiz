@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Gift, ShieldCheck, TrendingUp } from "lucide-react";
-import ListingRow from "@/components/ListingRow";
+import ListingsGrid from "@/components/ListingsGrid";
 import StatCard from "@/components/StatCard";
 import { formatSom } from "@/lib/data";
 import { getRewardedListings } from "@/lib/listings";
@@ -44,7 +44,7 @@ export default async function RewardedPage() {
         </div>
       ) : (
         <div className="mt-8">
-          <ListingRow listings={rewarded} dict={dict} />
+          <ListingsGrid listings={rewarded} dict={dict} />
         </div>
       )}
     </div>

@@ -6,7 +6,7 @@ import { ArrowUpRight, Gift, PackageSearch, Search, SearchX } from "lucide-react
 import type { Listing } from "@/lib/types";
 import type { Dictionary, Locale } from "@/lib/i18n";
 import { formatItemsCount } from "@/lib/i18n/format";
-import ListingRow from "@/components/ListingRow";
+import ListingsGrid from "@/components/ListingsGrid";
 
 type TabKey = "lost" | "found" | "rewarded";
 
@@ -142,7 +142,7 @@ export default function HomeTabs({
 
           {activeListings.length > 0 ? (
             <div className="mt-5">
-              <ListingRow listings={activeListings} dict={dict} />
+              <ListingsGrid listings={activeListings} dict={dict} />
             </div>
           ) : (
             <div className="mt-5 flex flex-col items-center rounded-2xl border border-dashed border-border bg-surface py-12 text-center">

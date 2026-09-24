@@ -11,10 +11,12 @@ import type { Dictionary } from "@/lib/i18n";
 import { categoryIcons } from "@/lib/icons";
 import { formatSom } from "@/lib/data";
 
-const LIGHT_TILES = "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png";
-const DARK_TILES = "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png";
-const ATTRIBUTION =
-  '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>';
+// CARTO's free basemaps (previously used here) started requiring a signed-up
+// API key in Aug 2026 and watermark every tile "API KEY REQUIRED" without
+// one. Standard OpenStreetMap tiles need no key/signup; dark mode is faked
+// with a CSS filter (see .map-dark in globals.css) since OSM only has one style.
+const TILES = "https://tile.openstreetmap.org/{z}/{x}/{y}.png";
+const ATTRIBUTION = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
 
 function pinIcon(colorFrom: string, colorTo: string) {
   return divIcon({
@@ -112,10 +114,10 @@ export default function ListingsMap({ listings, dict }: { listings: Listing[]; d
         center={center}
         zoom={12}
         scrollWheelZoom
-        className="h-full w-full"
+        className={`h-full w-full ${isDark ? "map-dark" : ""}`}
         style={{ background: isDark ? "#1a1a2e" : "#eef1f6" }}
       >
-        <TileLayer url={isDark ? DARK_TILES : LIGHT_TILES} attribution={ATTRIBUTION} />
+        <TileLayer url={TILES} attribution={ATTRIBUTION} />
         <FitBounds bounds={bounds} />
         <FlyTo target={me} />
 
