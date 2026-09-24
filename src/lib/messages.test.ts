@@ -82,7 +82,7 @@ describe("guest (QR tag) messages", () => {
       ownerId: owner.id,
       title: "Kalitlar",
       description: "Qizil breloklik",
-      photoUrls: [],
+      photoUrls: ["/api/uploads/kalitlar.jpg"],
     });
 
     sendMessage({
@@ -98,6 +98,7 @@ describe("guest (QR tag) messages", () => {
     expect(notifications).toHaveLength(1);
     expect(notifications[0].guestName).toBe("Topuvchi");
     expect(notifications[0].tagTitle).toBe("Kalitlar");
+    expect(notifications[0].tagPhotoUrl).toBe("/api/uploads/kalitlar.jpg");
 
     expect(unreadTotal(owner.id)).toBe(1);
     markAllGuestNotificationsRead(owner.id);

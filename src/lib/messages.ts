@@ -138,18 +138,31 @@ export function markThreadRead(userId: number, otherId: number) {
 export interface GuestNotification extends MessageRow {
   tagTitle: string | null;
   tagCode: string | null;
+  tagPhotoUrl: string | null;
 }
 
 export function getGuestNotifications(userId: number): GuestNotification[] {
   const rows = db
     .prepare(
-      `SELECT m.*, t.title as tag_title, t.code as tag_code
+      `SELECT m.*, t.title as tag_title, t.code as tag_code, t.photo_urls as tag_photo_urls
        FROM messages m LEFT JOIN tags t ON t.id = m.tag_id
        WHERE m.recipient_id = ? AND m.sender_id IS NULL
        ORDER BY m.created_at DESC`
     )
-    .all(userId) as (RawMessageRow & { tag_title: string | null; tag_code: string | null })[];
-  return rows.map((row) => ({ ...toMessage(row), tagTitle: row.tag_title, tagCode: row.tag_code }));
+    .all(userId) as (RawMessageRow & {
+    tag_title: string | null;
+    tag_code: string | null;
+    tag_photo_urls: string | null;
+  })[];
+  return rows.map((row) => {
+    const photos = row.tag_photo_urls ? (JSON.parse(row.tag_photo_urls) as string[]) : [];
+    return {
+      ...toMessage(row),
+      tagTitle: row.tag_title,
+      tagCode: row.tag_code,
+      tagPhotoUrl: photos[0] ?? null,
+    };
+  });
 }
 
 export function markAllGuestNotificationsRead(userId: number) {

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Tag as TagIcon } from "lucide-react";
@@ -34,16 +35,35 @@ export default async function MessagesPage() {
           </h2>
           <div className="space-y-2">
             {guestNotifications.map((n) => (
-              <div key={n.id} className="rounded-xl border border-accent-gold/25 bg-accent-gold/5 p-3.5">
-                <div className="flex items-center gap-2 text-xs font-semibold text-accent-gold">
-                  <TagIcon className="h-3.5 w-3.5" />
-                  {n.tagTitle ?? "Buyum"}
+              <div
+                key={n.id}
+                className="flex gap-3 rounded-xl border border-accent-gold/25 bg-accent-gold/5 p-3.5"
+              >
+                {n.tagPhotoUrl && (
+                  <Link
+                    href={n.tagCode ? `/t/${n.tagCode}` : "#"}
+                    className="relative h-14 w-14 shrink-0 overflow-hidden rounded-lg border border-border"
+                  >
+                    <Image src={n.tagPhotoUrl} alt={n.tagTitle ?? "Buyum"} fill sizes="56px" className="object-cover" />
+                  </Link>
+                )}
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2 text-xs font-semibold text-accent-gold">
+                    <TagIcon className="h-3.5 w-3.5" />
+                    {n.tagCode ? (
+                      <Link href={`/t/${n.tagCode}`} className="hover:underline">
+                        {n.tagTitle ?? "Buyum"}
+                      </Link>
+                    ) : (
+                      n.tagTitle ?? "Buyum"
+                    )}
+                  </div>
+                  <p className="mt-1.5 text-sm text-foreground">{n.body}</p>
+                  <p className="mt-1.5 text-xs text-muted">
+                    {n.guestName ?? "Nomsiz"}
+                    {n.guestPhone ? ` · ${n.guestPhone}` : ""} · {formatDate(n.createdAt.slice(0, 10))}
+                  </p>
                 </div>
-                <p className="mt-1.5 text-sm text-foreground">{n.body}</p>
-                <p className="mt-1.5 text-xs text-muted">
-                  {n.guestName ?? "Nomsiz"}
-                  {n.guestPhone ? ` · ${n.guestPhone}` : ""} · {formatDate(n.createdAt.slice(0, 10))}
-                </p>
               </div>
             ))}
           </div>
