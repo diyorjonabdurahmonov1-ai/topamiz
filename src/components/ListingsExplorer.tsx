@@ -5,7 +5,7 @@ import { Search, SlidersHorizontal, X } from "lucide-react";
 import type { CategoryId, Listing, ListingKind } from "@/lib/types";
 import { categories, cities, listings } from "@/lib/data";
 import { smartSearch } from "@/lib/ai";
-import ListingCard from "./ListingCard";
+import ListingRow from "./ListingRow";
 
 type KindFilter = "all" | ListingKind;
 
@@ -142,10 +142,8 @@ export default function ListingsExplorer({
       </div>
 
       {results.length > 0 ? (
-        <div className="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {results.map((listing) => (
-            <ListingCard key={listing.id} listing={listing} />
-          ))}
+        <div className="mt-5">
+          <ListingRow listings={results} />
         </div>
       ) : (
         <div className="mt-10 flex flex-col items-center rounded-2xl border border-dashed border-border py-16 text-center">

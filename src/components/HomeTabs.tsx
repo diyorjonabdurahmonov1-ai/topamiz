@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { ArrowUpRight, Gift, PackageSearch, Search, SearchX } from "lucide-react";
 import type { Listing } from "@/lib/types";
-import ListingCard from "@/components/ListingCard";
+import ListingRow from "@/components/ListingRow";
 
 type TabKey = "lost" | "found" | "rewarded";
 
@@ -131,10 +131,8 @@ export default function HomeTabs({
           </div>
 
           {activeListings.length > 0 ? (
-            <div className="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
-              {activeListings.map((listing) => (
-                <ListingCard key={listing.id} listing={listing} />
-              ))}
+            <div className="mt-5">
+              <ListingRow listings={activeListings} />
             </div>
           ) : (
             <div className="mt-5 flex flex-col items-center rounded-2xl border border-dashed border-border bg-surface py-12 text-center">

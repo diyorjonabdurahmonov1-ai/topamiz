@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Gift, ShieldCheck, TrendingUp } from "lucide-react";
-import ListingCard from "@/components/ListingCard";
+import ListingRow from "@/components/ListingRow";
 import StatCard from "@/components/StatCard";
 import { formatSom, getRewardedListings } from "@/lib/data";
 
@@ -46,10 +46,8 @@ export default function RewardedPage() {
           </p>
         </div>
       ) : (
-        <div className="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {rewarded.map((listing) => (
-            <ListingCard key={listing.id} listing={listing} />
-          ))}
+        <div className="mt-8">
+          <ListingRow listings={rewarded} />
         </div>
       )}
     </div>
