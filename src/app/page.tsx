@@ -1,4 +1,4 @@
-import AdCarousel from "@/components/AdCarousel";
+import AdShowcase from "@/components/AdShowcase";
 import HomeTabs from "@/components/HomeTabs";
 import { getActiveAds } from "@/lib/ads";
 import { getAllActiveListings, getRewardedListings } from "@/lib/listings";
@@ -39,7 +39,7 @@ export default async function Home() {
       />
 
       <div className="relative mx-auto max-w-7xl px-4 py-6 pb-10 sm:px-6 sm:py-8 lg:px-8">
-        <AdCarousel ads={ads} dict={dict} />
+        <AdShowcase ads={ads} dict={dict} />
         <HomeTabs
           lost={allLost.slice(0, 8)}
           found={allFound.slice(0, 8)}

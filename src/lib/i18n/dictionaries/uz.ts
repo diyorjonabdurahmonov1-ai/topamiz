@@ -281,9 +281,7 @@ const uz: Dictionary = {
     pageSubtitle: "Biznesingizni yo'qolgan buyum qidirayotgan minglab faol foydalanuvchiga ko'rsating.",
     monthlyUsers: "Oylik faol foydalanuvchi",
     monthlyViews: "Oylik sahifa ko'rishi",
-    currentBannerHeading: "Hozirgi reklama banneri",
-    previousAria: "Oldingi reklama",
-    nextAria: "Keyingi reklama",
+    currentBannerHeading: "Reklama bannerlari",
     fallbackAlt: "Reklama",
     inquiryHeading: "Reklama uchun murojaat qiling",
     inquirySubtitle:

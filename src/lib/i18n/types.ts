@@ -268,8 +268,6 @@ export interface Dictionary {
     monthlyUsers: string;
     monthlyViews: string;
     currentBannerHeading: string;
-    previousAria: string;
-    nextAria: string;
     fallbackAlt: string;
     inquiryHeading: string;
     inquirySubtitle: string;

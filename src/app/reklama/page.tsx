@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Megaphone, TrendingUp, Users } from "lucide-react";
-import AdCarousel from "@/components/AdCarousel";
+import AdShowcase from "@/components/AdShowcase";
 import StatCard from "@/components/StatCard";
 import AdInquiryForm from "@/components/AdInquiryForm";
 import { getActiveAds } from "@/lib/ads";
@@ -31,9 +31,9 @@ export default async function AdBoardPage() {
       </div>
 
       {ads.length > 0 && (
-        <div className="mx-auto mt-12 max-w-lg">
+        <div className="mx-auto mt-12 max-w-4xl">
           <h2 className="mb-3 text-center text-xl font-bold">{dict.ads.currentBannerHeading}</h2>
-          <AdCarousel ads={ads} dict={dict} />
+          <AdShowcase ads={ads} dict={dict} />
         </div>
       )}
 
