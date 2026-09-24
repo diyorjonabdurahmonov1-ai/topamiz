@@ -70,7 +70,6 @@ describe("user creation", () => {
     const byPhone = getUserByPhone("+998901112233");
     expect(byPhone?.id).toBe(created.id);
     expect(byPhone?.name).toBe("Aziz Karimov");
-    expect(byPhone?.isPremium).toBe(false);
 
     const byId = getUserById(created.id);
     expect(byId?.phone).toBe("+998901112233");

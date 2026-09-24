@@ -20,6 +20,12 @@ export async function POST(request: Request, ctx: RouteContext<"/api/tags/[code]
 
   const tag = getTagByCode(code);
   if (!tag) return NextResponse.json({ error: "Belgi topilmadi" }, { status: 404 });
+  if (tag.status === "resolved") {
+    return NextResponse.json(
+      { error: "Bu buyum allaqachon topilgan deb belgilangan, xabar yuborib bo'lmaydi" },
+      { status: 400 }
+    );
+  }
 
   const body = await request.json().catch(() => null);
   const message = typeof body?.message === "string" ? body.message.trim().slice(0, MAX_MESSAGE_LENGTH) : "";

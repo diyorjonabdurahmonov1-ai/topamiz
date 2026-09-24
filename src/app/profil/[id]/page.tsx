@@ -27,11 +27,6 @@ export default async function PublicProfilePage(props: PageProps<"/profil/[id]">
       <div className="flex flex-col items-center rounded-2xl border border-border bg-surface p-8 text-center">
         <Avatar name={user.name} color={user.avatarColor} size={88} />
         <h1 className="mt-4 text-xl font-extrabold">{user.name}</h1>
-        {user.isPremium && (
-          <span className="mt-2 rounded-full bg-accent-gold/15 px-3 py-1 text-xs font-semibold text-accent-gold">
-            ⭐ Premium a'zo
-          </span>
-        )}
         <p className="mt-3 max-w-sm text-sm text-muted">
           {user.bio || "Bu foydalanuvchi hali bio qo'shmagan."}
         </p>

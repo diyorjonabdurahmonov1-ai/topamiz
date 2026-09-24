@@ -3,7 +3,7 @@ import { getCurrentUser } from "@/lib/auth";
 import {
   countActiveTags,
   createTag,
-  FREE_TAG_LIMIT,
+  MAX_ACTIVE_TAGS_PER_USER,
   MAX_TAG_DESCRIPTION_LENGTH,
   MAX_TAG_PHOTOS,
   MAX_TAG_TITLE_LENGTH,
@@ -18,12 +18,9 @@ export async function POST(request: Request) {
   const user = await getCurrentUser();
   if (!user) return NextResponse.json({ error: "Kirish talab qilinadi" }, { status: 401 });
 
-  if (!user.isPremium && countActiveTags(user.id) >= FREE_TAG_LIMIT) {
+  if (countActiveTags(user.id) >= MAX_ACTIVE_TAGS_PER_USER) {
     return NextResponse.json(
-      {
-        error: `Bepul rejada faqat ${FREE_TAG_LIMIT} ta QR-belgi yaratish mumkin. Cheksiz belgi uchun Premium oling.`,
-        limitReached: true,
-      },
+      { error: `Faol QR-belgilar soni cheklangan (${MAX_ACTIVE_TAGS_PER_USER} tagacha).` },
       { status: 403 }
     );
   }
@@ -43,6 +40,12 @@ export async function POST(request: Request) {
   if (!title || !description) {
     return NextResponse.json(
       { error: "Buyum nomi va tasnifini kiriting" },
+      { status: 400 }
+    );
+  }
+  if (photoUrls.length === 0) {
+    return NextResponse.json(
+      { error: "Kamida bitta rasm yuklang — bu buyumni tanib olishni osonlashtiradi" },
       { status: 400 }
     );
   }

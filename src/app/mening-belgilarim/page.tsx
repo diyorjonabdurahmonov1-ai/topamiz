@@ -21,6 +21,7 @@ export default async function MyTagsPage() {
     tags.map(async (tag) => ({
       tag,
       qrDataUrl: await generateQrDataUrl(tagUrl(baseUrl, tag.code)),
+      url: tagUrl(baseUrl, tag.code),
     }))
   );
 
@@ -53,8 +54,8 @@ export default async function MyTagsPage() {
         </div>
       ) : (
         <div className="space-y-3">
-          {withQr.map(({ tag, qrDataUrl }) => (
-            <TagCard key={tag.id} tag={tag} qrDataUrl={qrDataUrl} />
+          {withQr.map(({ tag, qrDataUrl, url }) => (
+            <TagCard key={tag.id} tag={tag} qrDataUrl={qrDataUrl} url={url} />
           ))}
         </div>
       )}

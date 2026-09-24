@@ -41,11 +41,6 @@ export default function ProfileEditForm({ user }: { user: AuthUser }) {
         <Avatar name={user.name} color={user.avatarColor} size={88} />
         <h1 className="mt-4 text-xl font-extrabold">{user.name}</h1>
         <p className="text-sm text-muted">{user.phone}</p>
-        {user.isPremium && (
-          <span className="mt-2 rounded-full bg-accent-gold/15 px-3 py-1 text-xs font-semibold text-accent-gold">
-            ⭐ Premium a'zo
-          </span>
-        )}
         <p className="mt-3 max-w-sm text-sm text-muted">
           {user.bio || "Hali bio qo'shilmagan."}
         </p>

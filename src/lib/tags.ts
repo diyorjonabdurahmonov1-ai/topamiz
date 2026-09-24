@@ -2,7 +2,9 @@ import crypto from "node:crypto";
 import { db } from "./db";
 import { getUserById, type AuthUser } from "./auth";
 
-export const FREE_TAG_LIMIT = 2;
+// No paid tier gates this — a flat cap just keeps one account from
+// spamming the QR/DB with unbounded tags.
+export const MAX_ACTIVE_TAGS_PER_USER = 30;
 export const MAX_TAG_TITLE_LENGTH = 100;
 export const MAX_TAG_DESCRIPTION_LENGTH = 1000;
 export const MAX_TAG_PHOTOS = 5;
@@ -90,5 +92,16 @@ export function getTagOwner(tag: ItemTag): AuthUser | null {
 
 export function deleteTag(code: string, ownerId: number): boolean {
   const info = db.prepare("DELETE FROM tags WHERE code = ? AND owner_id = ?").run(code, ownerId);
+  return info.changes > 0;
+}
+
+export function setTagStatus(
+  code: string,
+  ownerId: number,
+  status: "active" | "resolved"
+): boolean {
+  const info = db
+    .prepare("UPDATE tags SET status = ? WHERE code = ? AND owner_id = ?")
+    .run(status, code, ownerId);
   return info.changes > 0;
 }
