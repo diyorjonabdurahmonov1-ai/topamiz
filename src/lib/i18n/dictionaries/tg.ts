@@ -94,6 +94,9 @@ const tg: Dictionary = {
   listingDetail: {
     backLink: "Ҳамаи эълонҳо",
     descriptionLabel: "Тавсиф",
+    showOnMap: "Дар харита нишон додан",
+    hideMap: "Пинҳон кардани харита",
+    getDirections: "Гирифтани роҳ",
   },
 
   contactCard: {
@@ -125,10 +128,14 @@ const tg: Dictionary = {
     descriptionPlaceholder: "Чиз чӣ гуна намуд дорад, дар куҷо ва кай гум/ёфт шудааст...",
     categoryLabel: "Категория",
     cityLabel: "Шаҳр",
+    districtLabel: "Ноҳия (ихтиёрӣ)",
+    districtPlaceholder: "Масалан: Чилонзор",
+    mapPickerHint: "Дар харита нуқтаро нишон диҳед — шаҳр ва ноҳия худкор муайян мешаванд.",
     locateMeButton: "Муайян кардани ҷои ман (ихтиёрӣ)",
     locating: "Муайян карда истодааст...",
     locateMeSuccess: "Ҷойгиршавӣ муайян карда шуд",
     locateMeError: "Муайян кардани ҷойгиршавӣ имконнопазир аст",
+    detectingLocation: "Суроға муайян карда истодааст...",
     photosHeading: "Илова кардани расм",
     rewardHeading: "Пешниҳоди мукофот (ихтиёрӣ)",
     rewardHint: "Пешниҳоди мукофот ба зудтар ёфта шудани чизи шумо кӯмак мекунад.",

@@ -94,6 +94,9 @@ const ky: Dictionary = {
   listingDetail: {
     backLink: "Бардык жарыялар",
     descriptionLabel: "Сүрөттөмө",
+    showOnMap: "Картадан көрсөтүү",
+    hideMap: "Картаны жашыруу",
+    getDirections: "Багыт алуу",
   },
 
   contactCard: {
@@ -125,10 +128,14 @@ const ky: Dictionary = {
     descriptionPlaceholder: "Зат кандай көрүнөт, качан жана кайда жоголгон/табылган...",
     categoryLabel: "Категория",
     cityLabel: "Шаар",
+    districtLabel: "Район (милдеттүү эмес)",
+    districtPlaceholder: "Мисалы: Чиланзар",
+    mapPickerHint: "Картадан чекитти белгилеңиз — шаар жана район автоматтык түрдө аныкталат.",
     locateMeButton: "Жайгашкан жеримди аныктоо (милдеттүү эмес)",
     locating: "Аныкталууда...",
     locateMeSuccess: "Жайгашкан жер аныкталды",
     locateMeError: "Жайгашкан жерди аныктоо мүмкүн болгон жок",
+    detectingLocation: "Дарек аныкталууда...",
     photosHeading: "Сүрөт кошуу",
     rewardHeading: "Сыйлык сунуштоо (милдеттүү эмес)",
     rewardHint: "Сыйлык сунуштоо заттын тезирээк табылышына жардам берет.",

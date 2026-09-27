@@ -94,6 +94,9 @@ const ru: Dictionary = {
   listingDetail: {
     backLink: "Все объявления",
     descriptionLabel: "Описание",
+    showOnMap: "Показать на карте",
+    hideMap: "Скрыть карту",
+    getDirections: "Проложить маршрут",
   },
 
   contactCard: {
@@ -125,10 +128,14 @@ const ru: Dictionary = {
     descriptionPlaceholder: "Как выглядит вещь, где и когда потеряна/найдена...",
     categoryLabel: "Категория",
     cityLabel: "Город",
+    districtLabel: "Район (необязательно)",
+    districtPlaceholder: "Например: Чиланзар",
+    mapPickerHint: "Отметьте точку на карте — город и район определятся автоматически.",
     locateMeButton: "Определить моё местоположение (необязательно)",
     locating: "Определяется...",
     locateMeSuccess: "Местоположение определено",
     locateMeError: "Не удалось определить местоположение",
+    detectingLocation: "Определяется адрес...",
     photosHeading: "Добавить фото",
     rewardHeading: "Предложить награду (необязательно)",
     rewardHint: "Награда поможет быстрее найти вашу вещь.",

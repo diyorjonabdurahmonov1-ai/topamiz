@@ -94,6 +94,9 @@ const uz: Dictionary = {
   listingDetail: {
     backLink: "Barcha e'lonlar",
     descriptionLabel: "Tavsif",
+    showOnMap: "Xaritada ko'rish",
+    hideMap: "Xaritani yashirish",
+    getDirections: "Yo'nalish olish",
   },
 
   contactCard: {
@@ -125,10 +128,14 @@ const uz: Dictionary = {
     descriptionPlaceholder: "Buyum qanday ko'rinishga ega, qayerda va qachon yo'qolgan/topilgan...",
     categoryLabel: "Turkum",
     cityLabel: "Shahar",
+    districtLabel: "Tuman (ixtiyoriy)",
+    districtPlaceholder: "Masalan: Chilonzor",
+    mapPickerHint: "Xaritadan nuqtani belgilang — shahar va tuman avtomatik aniqlanadi.",
     locateMeButton: "Joylashuvimni aniqlash (ixtiyoriy)",
     locating: "Aniqlanmoqda...",
     locateMeSuccess: "Joylashuv aniqlandi",
     locateMeError: "Joylashuvni aniqlab bo'lmadi",
+    detectingLocation: "Manzil aniqlanmoqda...",
     photosHeading: "Rasm qo'shish",
     rewardHeading: "Mukofot taklif qilish (ixtiyoriy)",
     rewardHint: "Mukofot taklif qilish buyumingiz tezroq topilishiga yordam beradi.",

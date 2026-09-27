@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, Calendar1, Eye, Gift, MapPin } from "lucide-react";
+import { ArrowLeft, Calendar1, Eye, Gift } from "lucide-react";
 import { formatDate, formatSom } from "@/lib/data";
 import { categoryIcons } from "@/lib/icons";
 import { getListingById, incrementListingViews } from "@/lib/listings";
@@ -12,6 +12,7 @@ import { formatViewsCount } from "@/lib/i18n/format";
 import ContactCard from "@/components/ContactCard";
 import ReportListingButton from "@/components/ReportListingButton";
 import ListingGallery from "@/components/ListingGallery";
+import ListingLocationMap from "@/components/ListingLocationMap";
 
 export async function generateMetadata(props: PageProps<"/elonlar/[id]">): Promise<Metadata> {
   const { id } = await props.params;
@@ -75,11 +76,6 @@ export default async function ListingDetailPage(props: PageProps<"/elonlar/[id]"
 
           <div className="mt-3 flex flex-wrap items-center gap-4 text-sm text-muted">
             <span className="flex items-center gap-1.5">
-              <MapPin className="h-4 w-4" />
-              {listing.city}
-              {listing.district ? `, ${listing.district}` : ""}
-            </span>
-            <span className="flex items-center gap-1.5">
               <Calendar1 className="h-4 w-4" />
               {formatDate(listing.date)}
             </span>
@@ -87,6 +83,16 @@ export default async function ListingDetailPage(props: PageProps<"/elonlar/[id]"
               <Eye className="h-4 w-4" />
               {formatViewsCount(locale, listing.views)}
             </span>
+          </div>
+
+          <div className="mt-3">
+            <ListingLocationMap
+              lat={listing.lat}
+              lng={listing.lng}
+              city={listing.city}
+              district={listing.district}
+              dict={dict}
+            />
           </div>
 
           <ListingGallery

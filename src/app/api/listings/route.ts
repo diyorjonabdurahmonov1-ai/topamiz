@@ -5,6 +5,7 @@ import {
   createListing,
   MAX_CONTACT_NAME_LENGTH,
   MAX_CONTACT_PHONE_LENGTH,
+  MAX_DISTRICT_LENGTH,
   MAX_LISTING_DESCRIPTION_LENGTH,
   MAX_LISTING_PHOTOS,
   MAX_LISTING_TITLE_LENGTH,
@@ -44,6 +45,10 @@ export async function POST(request: Request) {
       ? (body.category as CategoryId)
       : null;
   const city = typeof body?.city === "string" && cities.includes(body.city) ? body.city : null;
+  const district =
+    typeof body?.district === "string" && body.district.trim()
+      ? body.district.trim().slice(0, MAX_DISTRICT_LENGTH)
+      : null;
   const rewardRaw = body?.reward;
   const reward =
     typeof rewardRaw === "number" && Number.isFinite(rewardRaw) && rewardRaw > 0
@@ -98,6 +103,7 @@ export async function POST(request: Request) {
     description,
     category,
     city,
+    district,
     reward,
     contactName,
     contactPhone,

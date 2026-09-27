@@ -94,6 +94,9 @@ const kk: Dictionary = {
   listingDetail: {
     backLink: "Барлық хабарландырулар",
     descriptionLabel: "Сипаттама",
+    showOnMap: "Картада көрсету",
+    hideMap: "Картаны жасыру",
+    getDirections: "Бағыт алу",
   },
 
   contactCard: {
@@ -125,10 +128,14 @@ const kk: Dictionary = {
     descriptionPlaceholder: "Зат қандай көрінеді, қашан және қайда жоғалды/табылды...",
     categoryLabel: "Санат",
     cityLabel: "Қала",
+    districtLabel: "Аудан (міндетті емес)",
+    districtPlaceholder: "Мысалы: Чиланзар",
+    mapPickerHint: "Картадан нүктені белгілеңіз — қала мен аудан автоматты түрде анықталады.",
     locateMeButton: "Орналасуымды анықтау (міндетті емес)",
     locating: "Анықталуда...",
     locateMeSuccess: "Орналасу анықталды",
     locateMeError: "Орналасуды анықтау мүмкін болмады",
+    detectingLocation: "Мекенжай анықталуда...",
     photosHeading: "Сурет қосу",
     rewardHeading: "Сыйлық ұсыну (міндетті емес)",
     rewardHint: "Сыйлық ұсыну затыңыздың тезірек табылуына көмектеседі.",

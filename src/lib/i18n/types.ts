@@ -84,6 +84,9 @@ export interface Dictionary {
   listingDetail: {
     backLink: string;
     descriptionLabel: string;
+    showOnMap: string;
+    hideMap: string;
+    getDirections: string;
   };
 
   contactCard: {
@@ -115,10 +118,14 @@ export interface Dictionary {
     descriptionPlaceholder: string;
     categoryLabel: string;
     cityLabel: string;
+    districtLabel: string;
+    districtPlaceholder: string;
+    mapPickerHint: string;
     locateMeButton: string;
     locating: string;
     locateMeSuccess: string;
     locateMeError: string;
+    detectingLocation: string;
     photosHeading: string;
     rewardHeading: string;
     rewardHint: string;

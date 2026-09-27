@@ -94,6 +94,9 @@ const en: Dictionary = {
   listingDetail: {
     backLink: "All listings",
     descriptionLabel: "Description",
+    showOnMap: "Show on map",
+    hideMap: "Hide map",
+    getDirections: "Get directions",
   },
 
   contactCard: {
@@ -125,10 +128,14 @@ const en: Dictionary = {
     descriptionPlaceholder: "What the item looks like, where and when it was lost/found...",
     categoryLabel: "Category",
     cityLabel: "City",
+    districtLabel: "District (optional)",
+    districtPlaceholder: "E.g.: Chilonzor",
+    mapPickerHint: "Pick a point on the map — the city and district are detected automatically.",
     locateMeButton: "Detect my location (optional)",
     locating: "Detecting...",
     locateMeSuccess: "Location detected",
     locateMeError: "Could not detect your location",
+    detectingLocation: "Detecting address...",
     photosHeading: "Add photos",
     rewardHeading: "Offer a reward (optional)",
     rewardHint: "Offering a reward helps your item get found faster.",
