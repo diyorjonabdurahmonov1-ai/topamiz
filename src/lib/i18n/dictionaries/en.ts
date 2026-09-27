@@ -277,6 +277,9 @@ const en: Dictionary = {
     locationError: "Could not detect your location",
     viewListing: "View",
     you: "You",
+    tapToInteract: "Tap to interact with the map",
+    nearbyHeading: "Listings near you",
+    nearbyHint: "Tap to view on the map",
   },
 
   myListings: {

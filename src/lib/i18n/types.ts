@@ -264,6 +264,9 @@ export interface Dictionary {
     locationError: string;
     viewListing: string;
     you: string;
+    tapToInteract: string;
+    nearbyHeading: string;
+    nearbyHint: string;
   };
 
   myListings: {

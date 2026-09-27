@@ -277,6 +277,9 @@ const ru: Dictionary = {
     locationError: "Не удалось определить местоположение",
     viewListing: "Посмотреть",
     you: "Вы",
+    tapToInteract: "Нажмите, чтобы управлять картой",
+    nearbyHeading: "Объявления рядом с вами",
+    nearbyHint: "Нажмите, чтобы посмотреть на карте",
   },
 
   myListings: {

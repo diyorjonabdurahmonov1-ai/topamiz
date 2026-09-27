@@ -278,6 +278,9 @@ const uz: Dictionary = {
     locationError: "Joylashuvni aniqlab bo'lmadi",
     viewListing: "Ko'rish",
     you: "Siz",
+    tapToInteract: "Xaritani boshqarish uchun bosing",
+    nearbyHeading: "Yaqiningizdagi e'lonlar",
+    nearbyHint: "Xaritada ko'rish uchun bosing",
   },
 
   myListings: {

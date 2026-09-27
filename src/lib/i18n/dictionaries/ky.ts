@@ -277,6 +277,9 @@ const ky: Dictionary = {
     locationError: "Жайгашкан жерди аныктоо мүмкүн болгон жок",
     viewListing: "Көрүү",
     you: "Сиз",
+    tapToInteract: "Картаны башкаруу үчүн басыңыз",
+    nearbyHeading: "Жаныңыздагы жарыялар",
+    nearbyHint: "Картадан көрүү үчүн басыңыз",
   },
 
   myListings: {

@@ -277,6 +277,9 @@ const kk: Dictionary = {
     locationError: "Орналасуды анықтау мүмкін болмады",
     viewListing: "Көру",
     you: "Сіз",
+    tapToInteract: "Картаны басқару үшін басыңыз",
+    nearbyHeading: "Жаныңыздағы хабарландырулар",
+    nearbyHint: "Картада көру үшін басыңыз",
   },
 
   myListings: {
