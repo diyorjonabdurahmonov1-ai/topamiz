@@ -187,11 +187,16 @@ export interface Dictionary {
     pushEnabled: string;
     pushDenied: string;
     pushError: string;
+    changePhoto: string;
+    findPeopleHeading: string;
+    findPeoplePlaceholder: string;
   };
 
   publicProfile: {
     noBio: string;
     writeMessage: string;
+    listingsHeading: string;
+    noListings: string;
   };
 
   messages: {

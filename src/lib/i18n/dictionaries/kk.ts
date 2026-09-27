@@ -198,11 +198,16 @@ const kk: Dictionary = {
     pushEnabled: "Хабарландырулар қосылған",
     pushDenied: "Хабарландыруларға рұқсат берілмеді",
     pushError: "Хабарландыруларды қосу мүмкін болмады",
+    changePhoto: "Суретті ауыстыру",
+    findPeopleHeading: "Пайдаланушыны іздеу",
+    findPeoplePlaceholder: "Аты бойынша іздеу...",
   },
 
   publicProfile: {
     noBio: "Бұл пайдаланушы әлі био қоспаған.",
     writeMessage: "Хабар жазу",
+    listingsHeading: "Хабарландырулары",
+    noListings: "Бұл пайдаланушының әзірге хабарландырулары жоқ.",
   },
 
   messages: {

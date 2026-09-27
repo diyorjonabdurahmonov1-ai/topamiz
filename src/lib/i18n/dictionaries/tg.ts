@@ -198,11 +198,16 @@ const tg: Dictionary = {
     pushEnabled: "Огоҳиномаҳо фаъоланд",
     pushDenied: "Иҷозат ба огоҳиномаҳо дода нашуд",
     pushError: "Фаъол кардани огоҳиномаҳо имконнопазир аст",
+    changePhoto: "Ивази акс",
+    findPeopleHeading: "Ҷустуҷӯи корбар",
+    findPeoplePlaceholder: "Бо ном ҷустуҷӯ кунед...",
   },
 
   publicProfile: {
     noBio: "Ин корбар то ҳол био илова накардааст.",
     writeMessage: "Паём навиштан",
+    listingsHeading: "Эълонҳо",
+    noListings: "Ин корбар то ҳол эълон надорад.",
   },
 
   messages: {

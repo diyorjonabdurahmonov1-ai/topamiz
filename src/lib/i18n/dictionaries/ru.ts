@@ -198,11 +198,16 @@ const ru: Dictionary = {
     pushEnabled: "Уведомления включены",
     pushDenied: "Доступ к уведомлениям не предоставлен",
     pushError: "Не удалось включить уведомления",
+    changePhoto: "Изменить фото",
+    findPeopleHeading: "Поиск пользователя",
+    findPeoplePlaceholder: "Поиск по имени...",
   },
 
   publicProfile: {
     noBio: "Этот пользователь ещё не добавил биографию.",
     writeMessage: "Написать сообщение",
+    listingsHeading: "Объявления",
+    noListings: "У этого пользователя пока нет объявлений.",
   },
 
   messages: {

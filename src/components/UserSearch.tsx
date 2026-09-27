@@ -7,7 +7,15 @@ import type { AuthUser } from "@/lib/auth";
 import type { Dictionary } from "@/lib/i18n";
 import Avatar from "./Avatar";
 
-export default function UserSearch({ dict }: { dict: Dictionary }) {
+export default function UserSearch({
+  dict,
+  mode = "message",
+}: {
+  dict: Dictionary;
+  // "message" (default) links each result to starting a conversation;
+  // "profile" links to the user's public profile page instead.
+  mode?: "message" | "profile";
+}) {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<AuthUser[]>([]);
   const [open, setOpen] = useState(false);
@@ -37,7 +45,7 @@ export default function UserSearch({ dict }: { dict: Dictionary }) {
           onChange={(e) => setQuery(e.target.value)}
           onFocus={() => setOpen(true)}
           onBlur={() => setTimeout(() => setOpen(false), 150)}
-          placeholder={dict.messages.searchPlaceholder}
+          placeholder={mode === "profile" ? dict.profile.findPeoplePlaceholder : dict.messages.searchPlaceholder}
           className="w-full bg-transparent py-2.5 text-sm focus:outline-none"
         />
         {query && (
@@ -60,13 +68,13 @@ export default function UserSearch({ dict }: { dict: Dictionary }) {
             results.map((u) => (
               <Link
                 key={u.id}
-                href={`/xabarlar/${u.id}`}
+                href={mode === "profile" ? `/profil/${u.id}` : `/xabarlar/${u.id}`}
                 className="flex items-center gap-3 px-4 py-2.5 hover:bg-surface-2"
               >
                 <Avatar name={u.name} color={u.avatarColor} avatarUrl={u.avatarUrl} size={32} />
                 <div className="min-w-0">
                   <p className="truncate text-sm font-semibold">{u.name}</p>
-                  <p className="truncate text-xs text-muted">{u.email}</p>
+                  {mode !== "profile" && <p className="truncate text-xs text-muted">{u.email}</p>}
                 </div>
               </Link>
             ))

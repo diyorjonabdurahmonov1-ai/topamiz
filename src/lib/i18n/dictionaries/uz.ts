@@ -198,11 +198,16 @@ const uz: Dictionary = {
     pushEnabled: "Bildirishnomalar yoqilgan",
     pushDenied: "Bildirishnomalarga ruxsat berilmadi",
     pushError: "Bildirishnomani yoqib bo'lmadi",
+    changePhoto: "Rasmni almashtirish",
+    findPeopleHeading: "Foydalanuvchi qidirish",
+    findPeoplePlaceholder: "Ism bo'yicha qidiring...",
   },
 
   publicProfile: {
     noBio: "Bu foydalanuvchi hali bio qo'shmagan.",
     writeMessage: "Xabar yozish",
+    listingsHeading: "E'lonlari",
+    noListings: "Bu foydalanuvchining hozircha e'lonlari yo'q.",
   },
 
   messages: {

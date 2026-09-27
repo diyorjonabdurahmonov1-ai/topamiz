@@ -198,11 +198,16 @@ const ky: Dictionary = {
     pushEnabled: "Билдирүүлөр иштетилди",
     pushDenied: "Билдирүүлөргө уруксат берилген жок",
     pushError: "Билдирүүлөрдү иштетүү мүмкүн болгон жок",
+    changePhoto: "Сүрөттү алмаштыруу",
+    findPeopleHeading: "Колдонуучуну издөө",
+    findPeoplePlaceholder: "Аты боюнча издөө...",
   },
 
   publicProfile: {
     noBio: "Бул колдонуучу азырынча био кошкон эмес.",
     writeMessage: "Билдирүү жазуу",
+    listingsHeading: "Жарыялары",
+    noListings: "Бул колдонуучунун азырынча жарыялары жок.",
   },
 
   messages: {

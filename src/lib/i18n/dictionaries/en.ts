@@ -198,11 +198,16 @@ const en: Dictionary = {
     pushEnabled: "Notifications enabled",
     pushDenied: "Notification permission was denied",
     pushError: "Couldn't enable notifications",
+    changePhoto: "Change photo",
+    findPeopleHeading: "Find a user",
+    findPeoplePlaceholder: "Search by name...",
   },
 
   publicProfile: {
     noBio: "This user hasn't added a bio yet.",
     writeMessage: "Send a message",
+    listingsHeading: "Listings",
+    noListings: "This user doesn't have any listings yet.",
   },
 
   messages: {
