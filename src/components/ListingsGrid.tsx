@@ -14,7 +14,7 @@ export default function ListingsGrid({ listings, dict }: { listings: Listing[]; 
 
   return (
     <div>
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
         {visible.map((listing) => (
           <ListingCard key={listing.id} listing={listing} dict={dict} />
         ))}
