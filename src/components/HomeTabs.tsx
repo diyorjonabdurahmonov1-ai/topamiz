@@ -29,7 +29,7 @@ export default function HomeTabs({
   dict: Dictionary;
   locale: Locale;
 }) {
-  const [active, setActive] = useState<TabKey | null>(null);
+  const [active, setActive] = useState<TabKey | null>("lost");
 
   const TABS: {
     key: TabKey;

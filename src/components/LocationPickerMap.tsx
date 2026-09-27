@@ -4,6 +4,7 @@ import "leaflet/dist/leaflet.css";
 import { useEffect, useState } from "react";
 import { divIcon } from "leaflet";
 import { MapContainer, Marker, TileLayer, useMap, useMapEvents } from "react-leaflet";
+import type { Dictionary } from "@/lib/i18n";
 
 const TILES = "https://tile.openstreetmap.org/{z}/{x}/{y}.png";
 const ATTRIBUTION = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
@@ -42,10 +43,10 @@ function Recenter({ target }: { target: [number, number] | null }) {
   return null;
 }
 
-function ClickToPlace({ onPick }: { onPick: (lat: number, lng: number) => void }) {
+function ClickToPlace({ enabled, onPick }: { enabled: boolean; onPick: (lat: number, lng: number) => void }) {
   useMapEvents({
     click(e) {
-      onPick(e.latlng.lat, e.latlng.lng);
+      if (enabled) onPick(e.latlng.lat, e.latlng.lng);
     },
   });
   return null;
@@ -54,30 +55,38 @@ function ClickToPlace({ onPick }: { onPick: (lat: number, lng: number) => void }
 export default function LocationPickerMap({
   value,
   onChange,
+  dict,
 }: {
   value: { lat: number; lng: number } | null;
   onChange: (coords: { lat: number; lng: number }) => void;
+  dict: Dictionary;
 }) {
   const isDark = useIsDark();
+  const [active, setActive] = useState(false);
   const point: [number, number] | null = value ? [value.lat, value.lng] : null;
 
   return (
-    <div className="h-64 w-full overflow-hidden rounded-xl border border-border">
+    <div className="relative h-64 w-full overflow-hidden rounded-xl border border-border">
       <MapContainer
         center={point ?? UZBEKISTAN_CENTER}
         zoom={point ? 13 : 6}
-        scrollWheelZoom
+        dragging={active}
+        touchZoom={active}
+        scrollWheelZoom={active}
+        doubleClickZoom={active}
+        boxZoom={active}
+        keyboard={active}
         className={`h-full w-full ${isDark ? "map-dark" : ""}`}
         style={{ background: isDark ? "#1a1a2e" : "#eef1f6" }}
       >
         <TileLayer url={TILES} attribution={ATTRIBUTION} />
-        <ClickToPlace onPick={(lat, lng) => onChange({ lat, lng })} />
+        <ClickToPlace enabled={active} onPick={(lat, lng) => onChange({ lat, lng })} />
         <Recenter target={point} />
         {point && (
           <Marker
             position={point}
             icon={PIN_ICON}
-            draggable
+            draggable={active}
             eventHandlers={{
               dragend: (e) => {
                 const marker = e.target;
@@ -88,6 +97,18 @@ export default function LocationPickerMap({
           />
         )}
       </MapContainer>
+
+      {!active && (
+        <button
+          type="button"
+          onClick={() => setActive(true)}
+          className="absolute inset-0 z-[600] flex items-center justify-center bg-bg/10"
+        >
+          <span className="rounded-full bg-bg/80 px-4 py-2 text-xs font-semibold text-foreground shadow-lg backdrop-blur">
+            {dict.map.tapToInteract}
+          </span>
+        </button>
+      )}
     </div>
   );
 }

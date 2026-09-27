@@ -1,5 +1,6 @@
 import AdShowcase from "@/components/AdShowcase";
 import HomeTabs from "@/components/HomeTabs";
+import HomeMapPreview from "@/components/HomeMapPreview";
 import { getActiveAds } from "@/lib/ads";
 import { getAllActiveListings, getRewardedListings } from "@/lib/listings";
 import { getVisitorCountry } from "@/lib/geo";
@@ -19,6 +20,7 @@ export default async function Home() {
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
   const allRewarded = getRewardedListings(country);
   const ads = getActiveAds();
+  const nearby = active.slice(0, 12);
 
   return (
     <div className="relative overflow-hidden">
@@ -50,6 +52,7 @@ export default async function Home() {
           dict={dict}
           locale={locale}
         />
+        <HomeMapPreview listings={nearby} dict={dict} />
       </div>
     </div>
   );

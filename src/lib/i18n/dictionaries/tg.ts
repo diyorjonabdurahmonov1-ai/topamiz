@@ -277,6 +277,9 @@ const tg: Dictionary = {
     locationError: "Муайян кардани ҷойгиршавӣ имконнопазир аст",
     viewListing: "Дидан",
     you: "Шумо",
+    tapToInteract: "Барои идора кардани харита пахш кунед",
+    nearbyHeading: "Эълонҳои наздики шумо",
+    nearbyHint: "Дар харита дидан барои пахш кунед",
   },
 
   myListings: {

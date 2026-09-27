@@ -75,8 +75,23 @@ function FlyTo({ target }: { target: [number, number] | null }) {
   return null;
 }
 
-export default function ListingsMap({ listings, dict }: { listings: Listing[]; dict: Dictionary }) {
+export default function ListingsMap({
+  listings,
+  dict,
+  interactive = true,
+  heightClassName = "h-[520px]",
+}: {
+  listings: Listing[];
+  dict: Dictionary;
+  // false renders a purely decorative preview (no dragging/zoom/locate
+  // button) — used for the home page teaser, which is wrapped in its own
+  // link so the map itself never needs to capture touch gestures.
+  interactive?: boolean;
+  heightClassName?: string;
+}) {
   const isDark = useIsDark();
+  const [active, setActive] = useState(false);
+  const dragEnabled = interactive && active;
   const [me, setMe] = useState<[number, number] | null>(null);
   const [locating, setLocating] = useState(false);
   const [locateError, setLocateError] = useState("");
@@ -109,11 +124,18 @@ export default function ListingsMap({ listings, dict }: { listings: Listing[]; d
   }
 
   return (
-    <div className="relative h-[520px] w-full overflow-hidden rounded-2xl border border-border">
+    <div className={`relative w-full overflow-hidden rounded-2xl border border-border ${heightClassName}`}>
       <MapContainer
         center={center}
         zoom={12}
-        scrollWheelZoom
+        dragging={dragEnabled}
+        touchZoom={dragEnabled}
+        scrollWheelZoom={dragEnabled}
+        doubleClickZoom={dragEnabled}
+        boxZoom={dragEnabled}
+        keyboard={dragEnabled}
+        zoomControl={interactive}
+        attributionControl={interactive}
         className={`h-full w-full ${isDark ? "map-dark" : ""}`}
         style={{ background: isDark ? "#1a1a2e" : "#eef1f6" }}
       >
@@ -172,23 +194,37 @@ export default function ListingsMap({ listings, dict }: { listings: Listing[]; d
         )}
       </MapContainer>
 
-      <button
-        type="button"
-        onClick={handleLocateMe}
-        disabled={locating}
-        className="absolute bottom-3 right-3 z-[1000] flex items-center gap-1.5 rounded-xl border border-border bg-surface/95 px-3 py-2 text-xs font-semibold text-foreground shadow-lg backdrop-blur transition-colors hover:bg-surface-2 disabled:opacity-70"
-      >
-        <LocateFixed className={`h-3.5 w-3.5 ${locating ? "animate-pulse" : ""}`} />
-        {dict.map.myLocationButton}
-      </button>
+      {interactive && !active && (
+        <button
+          type="button"
+          onClick={() => setActive(true)}
+          className="absolute inset-0 z-[600] flex items-center justify-center bg-bg/10"
+        >
+          <span className="rounded-full bg-bg/80 px-4 py-2 text-xs font-semibold text-foreground shadow-lg backdrop-blur">
+            {dict.map.tapToInteract}
+          </span>
+        </button>
+      )}
 
-      {locateError && (
+      {interactive && (
+        <button
+          type="button"
+          onClick={handleLocateMe}
+          disabled={locating}
+          className="absolute bottom-3 right-3 z-[1000] flex items-center gap-1.5 rounded-xl border border-border bg-surface/95 px-3 py-2 text-xs font-semibold text-foreground shadow-lg backdrop-blur transition-colors hover:bg-surface-2 disabled:opacity-70"
+        >
+          <LocateFixed className={`h-3.5 w-3.5 ${locating ? "animate-pulse" : ""}`} />
+          {dict.map.myLocationButton}
+        </button>
+      )}
+
+      {interactive && locateError && (
         <p className="absolute bottom-14 right-3 z-[1000] max-w-[220px] rounded-lg bg-danger px-3 py-1.5 text-xs font-medium text-white shadow-lg">
           {locateError}
         </p>
       )}
 
-      {listings.length === 0 && (
+      {interactive && listings.length === 0 && (
         <div className="pointer-events-none absolute inset-0 z-[500] flex items-center justify-center">
           <div className="flex items-center gap-2 rounded-xl border border-border bg-surface/95 px-4 py-2.5 text-sm font-semibold text-muted shadow-lg backdrop-blur">
             <MapPin className="h-4 w-4" />
