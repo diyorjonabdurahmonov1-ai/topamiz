@@ -6,6 +6,9 @@ function makeListing(overrides: Partial<Listing>): Listing {
   return {
     id: "1",
     ownerId: null,
+    ownerName: null,
+    ownerAvatarColor: null,
+    ownerAvatarUrl: null,
     kind: "found",
     title: "",
     description: "",

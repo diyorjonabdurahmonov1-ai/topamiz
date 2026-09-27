@@ -208,6 +208,10 @@ const ky: Dictionary = {
     writeMessage: "Билдирүү жазуу",
     listingsHeading: "Жарыялары",
     noListings: "Бул колдонуучунун азырынча жарыялары жок.",
+    addFriend: "Досторго кошуу",
+    friendAdded: "Досуңуз",
+    friendsHeading: "Достор",
+    noFriends: "Азырынча достор жок.",
   },
 
   messages: {

@@ -3,8 +3,10 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { LayoutDashboard, List, MessageCircle, QrCode } from "lucide-react";
 import { getCurrentUser, isAdmin } from "@/lib/auth";
+import { getFriendCount } from "@/lib/friends";
 import { getLocale } from "@/lib/i18n/server";
 import { getDictionary } from "@/lib/i18n";
+import { formatFriendsCount } from "@/lib/i18n/format";
 import ProfileEditForm from "@/components/ProfileEditForm";
 import LogoutButton from "@/components/LogoutButton";
 import PushNotificationToggle from "@/components/PushNotificationToggle";
@@ -17,7 +19,9 @@ export const metadata: Metadata = {
 export default async function OwnProfilePage() {
   const user = await getCurrentUser();
   if (!user) redirect("/kirish");
-  const dict = getDictionary(await getLocale());
+  const locale = await getLocale();
+  const dict = getDictionary(locale);
+  const friendCount = getFriendCount(user.id);
 
   const links = [
     { href: "/xabarlar", icon: MessageCircle, label: dict.profile.myMessages },
@@ -30,6 +34,14 @@ export default async function OwnProfilePage() {
     <div className="mx-auto max-w-md px-4 py-10 sm:px-6">
       <div className="rounded-2xl border border-border bg-surface p-6">
         <ProfileEditForm user={user} dict={dict} />
+        <div className="mt-4 flex justify-center">
+          <Link
+            href={`/profil/${user.id}/dostlar`}
+            className="flex items-center gap-1.5 rounded-full border border-border bg-bg-elevated px-4 py-1.5 text-sm font-semibold hover:bg-surface-2"
+          >
+            {formatFriendsCount(locale, friendCount)}
+          </Link>
+        </div>
       </div>
 
       <div className="mt-6">

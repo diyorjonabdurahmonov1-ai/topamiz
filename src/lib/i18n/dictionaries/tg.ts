@@ -208,6 +208,10 @@ const tg: Dictionary = {
     writeMessage: "Паём навиштан",
     listingsHeading: "Эълонҳо",
     noListings: "Ин корбар то ҳол эълон надорад.",
+    addFriend: "Ба дӯстон илова кардан",
+    friendAdded: "Дӯсти шумо",
+    friendsHeading: "Дӯстон",
+    noFriends: "То ҳол дӯст нест.",
   },
 
   messages: {

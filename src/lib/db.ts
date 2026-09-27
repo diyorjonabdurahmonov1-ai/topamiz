@@ -125,6 +125,14 @@ db.exec(`
     visit_count INTEGER NOT NULL DEFAULT 1
   );
 
+  CREATE TABLE IF NOT EXISTS friendships (
+    follower_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    followed_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    created_at TEXT NOT NULL DEFAULT (datetime('now')),
+    PRIMARY KEY (follower_id, followed_id)
+  );
+  CREATE INDEX IF NOT EXISTS idx_friendships_followed ON friendships(followed_id);
+
   CREATE TABLE IF NOT EXISTS push_subscriptions (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,

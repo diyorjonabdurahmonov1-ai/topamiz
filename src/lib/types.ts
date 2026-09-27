@@ -19,6 +19,9 @@ export interface Category {
 export interface Listing {
   id: string;
   ownerId: number | null;
+  ownerName: string | null;
+  ownerAvatarColor: string | null;
+  ownerAvatarUrl: string | null;
   kind: ListingKind;
   title: string;
   description: string;
