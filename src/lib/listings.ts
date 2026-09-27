@@ -100,6 +100,21 @@ export function getRewardedListings(country: string): Listing[] {
   return rows.map(toListing);
 }
 
+// Admin oversight — unlike every other listing query, deliberately has no
+// country or status filter, so admin sees the whole site at once.
+export function getAllListingsForAdmin(): Listing[] {
+  const rows = db
+    .prepare("SELECT * FROM listings ORDER BY created_at DESC, id DESC")
+    .all() as RawListingRow[];
+  return rows.map(toListing);
+}
+
+export function getListingCountsByCountry(): { country: string; count: number }[] {
+  return db
+    .prepare("SELECT country, COUNT(*) as count FROM listings GROUP BY country ORDER BY count DESC")
+    .all() as { country: string; count: number }[];
+}
+
 export function getListingsByOwner(ownerId: number): Listing[] {
   const rows = db
     .prepare("SELECT * FROM listings WHERE owner_id = ? ORDER BY created_at DESC, id DESC")

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { Search } from "lucide-react";
+import Link from "next/link";
+import { Search, X } from "lucide-react";
 import { listUsers } from "@/lib/admin-users";
 import AdminUserRow from "@/components/AdminUserRow";
 
@@ -10,15 +11,33 @@ export const metadata: Metadata = {
 export default async function AdminUsersPage(props: PageProps<"/admin/foydalanuvchilar">) {
   const searchParams = await props.searchParams;
   const q = typeof searchParams.q === "string" ? searchParams.q : "";
-  const users = listUsers(q);
-  const onlineCount = users.filter((u) => u.online).length;
+  const filter = typeof searchParams.filter === "string" ? searchParams.filter : "";
+  const allUsers = listUsers(q);
+  const onlineCount = allUsers.filter((u) => u.online).length;
+  const users =
+    filter === "online"
+      ? allUsers.filter((u) => u.online)
+      : filter === "blocked"
+        ? allUsers.filter((u) => !!u.blockedAt)
+        : allUsers;
+  const filterLabel = filter === "online" ? " — hozir onlayn" : filter === "blocked" ? " — bloklangan" : "";
 
   return (
     <div>
-      <h1 className="text-2xl font-extrabold tracking-tight">Foydalanuvchilar</h1>
+      <h1 className="text-2xl font-extrabold tracking-tight">Foydalanuvchilar{filterLabel}</h1>
       <p className="mt-1.5 text-sm text-muted">
-        Jami {users.length} ta{q ? " (qidiruv natijasi)" : ""} · {onlineCount} tasi hozir onlayn.
+        Jami {users.length} ta{q ? " (qidiruv natijasi)" : ""}
+        {!filter ? ` · ${onlineCount} tasi hozir onlayn.` : "."}
       </p>
+      {filter && (
+        <Link
+          href="/admin/foydalanuvchilar"
+          className="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-muted hover:text-foreground"
+        >
+          <X className="h-3.5 w-3.5" />
+          Filtrni tozalash
+        </Link>
+      )}
 
       <form method="GET" className="mt-5 flex items-center gap-2 rounded-xl border border-border bg-surface px-3">
         <Search className="h-4 w-4 shrink-0 text-muted" />

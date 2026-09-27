@@ -2,12 +2,26 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Flag, LayoutDashboard, Mail, Megaphone, Users } from "lucide-react";
+import {
+  Flag,
+  LayoutDashboard,
+  List,
+  Mail,
+  Megaphone,
+  MessageCircle,
+  QrCode,
+  UserRoundSearch,
+  Users,
+} from "lucide-react";
 
 const LINKS = [
   { href: "/admin", icon: LayoutDashboard, label: "Statistika" },
   { href: "/admin/foydalanuvchilar", icon: Users, label: "Foydalanuvchilar" },
+  { href: "/admin/elonlar", icon: List, label: "Barcha e'lonlar" },
   { href: "/admin/shikoyatlar", icon: Flag, label: "Shikoyatlar" },
+  { href: "/admin/qr-belgilar", icon: QrCode, label: "QR-belgilar" },
+  { href: "/admin/xabarlar", icon: MessageCircle, label: "Xabarlar" },
+  { href: "/admin/mehmonlar", icon: UserRoundSearch, label: "Mehmonlar" },
   { href: "/admin/reklama", icon: Megaphone, label: "Reklama" },
   { href: "/admin/reklama-arizalari", icon: Mail, label: "Reklama arizalari" },
 ];

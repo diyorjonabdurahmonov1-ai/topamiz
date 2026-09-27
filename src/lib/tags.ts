@@ -103,6 +103,26 @@ export function getTagStats(): { total: number; active: number; resolved: number
   return { total, active, resolved: total - active };
 }
 
+export interface AdminTagRow extends ItemTag {
+  ownerName: string;
+  ownerEmail: string;
+}
+
+export function getAllTagsForAdmin(): AdminTagRow[] {
+  const rows = db
+    .prepare(
+      `SELECT t.*, u.name as owner_name, u.email as owner_email
+       FROM tags t JOIN users u ON u.id = t.owner_id
+       ORDER BY t.created_at DESC`
+    )
+    .all() as (RawTagRow & { owner_name: string; owner_email: string | null })[];
+  return rows.map((row) => ({
+    ...toTag(row),
+    ownerName: row.owner_name,
+    ownerEmail: row.owner_email ?? "",
+  }));
+}
+
 export function setTagStatus(
   code: string,
   ownerId: number,

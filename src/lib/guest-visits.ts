@@ -20,3 +20,22 @@ export function recordGuestVisit(guestId: string): void {
 export function countGuestVisitors(): number {
   return (db.prepare("SELECT COUNT(*) as c FROM guest_visits").get() as { c: number }).c;
 }
+
+export interface GuestVisitRow {
+  guestId: string;
+  firstSeenAt: string;
+  lastSeenAt: string;
+  visitCount: number;
+}
+
+export function getAllGuestVisits(): GuestVisitRow[] {
+  const rows = db
+    .prepare("SELECT * FROM guest_visits ORDER BY last_seen_at DESC")
+    .all() as { guest_id: string; first_seen_at: string; last_seen_at: string; visit_count: number }[];
+  return rows.map((row) => ({
+    guestId: row.guest_id,
+    firstSeenAt: row.first_seen_at,
+    lastSeenAt: row.last_seen_at,
+    visitCount: row.visit_count,
+  }));
+}
