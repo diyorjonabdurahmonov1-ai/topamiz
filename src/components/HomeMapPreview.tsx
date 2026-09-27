@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { ArrowUpRight, Loader2, MapPin } from "lucide-react";
@@ -31,15 +32,28 @@ export default function HomeMapPreview({
   dict: Dictionary;
   locale: Locale;
 }) {
+  const [me, setMe] = useState<[number, number] | null>(null);
+
+  useEffect(() => {
+    if (!navigator.geolocation) return;
+    navigator.geolocation.getCurrentPosition(
+      (position) => setMe([position.coords.latitude, position.coords.longitude]),
+      () => {},
+      { enableHighAccuracy: false, timeout: 5000, maximumAge: 5 * 60 * 1000 }
+    );
+  }, []);
+
   if (listings.length === 0) return null;
+
+  const href = me ? `/elonlar?view=map&lat=${me[0]}&lng=${me[1]}` : "/elonlar?view=map";
 
   return (
     <Link
-      href="/elonlar"
-      className="card-hover group relative mt-6 block h-[38dvh] max-h-80 min-h-[220px] overflow-hidden rounded-2xl border border-border sm:h-64 sm:max-h-none"
+      href={href}
+      className="card-hover group relative mt-6 block h-[30dvh] max-h-60 min-h-[190px] overflow-hidden rounded-2xl border border-border sm:h-64 sm:max-h-none"
     >
       <div className="pointer-events-none absolute inset-0">
-        <ListingsMap listings={listings} dict={dict} interactive={false} bare />
+        <ListingsMap listings={listings} dict={dict} interactive={false} bare initialMe={me} />
       </div>
 
       {/* subtle color wash so the map reads as part of the app, not a raw embed */}

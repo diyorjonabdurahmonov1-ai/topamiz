@@ -22,6 +22,11 @@ export default async function ElonlarPage(props: PageProps<"/elonlar">) {
   const category = categoryIds.has(categoryRaw as CategoryId)
     ? (categoryRaw as CategoryId)
     : "all";
+  const view = searchParams.view === "map" ? "map" : "list";
+  const lat = typeof searchParams.lat === "string" ? Number(searchParams.lat) : NaN;
+  const lng = typeof searchParams.lng === "string" ? Number(searchParams.lng) : NaN;
+  const focus: [number, number] | null =
+    Number.isFinite(lat) && Number.isFinite(lng) ? [lat, lng] : null;
   const locale = await getLocale();
   const dict = getDictionary(locale);
 
@@ -37,6 +42,8 @@ export default async function ElonlarPage(props: PageProps<"/elonlar">) {
         initialQuery={q}
         initialKind={kind}
         initialCategory={category}
+        initialView={view}
+        initialFocus={focus}
         listings={getAllActiveListings(await getVisitorCountry())}
         dict={dict}
         locale={locale}

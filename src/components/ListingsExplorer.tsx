@@ -27,6 +27,8 @@ export default function ListingsExplorer({
   initialKind = "all",
   initialCategory = "all",
   initialCity = "all",
+  initialView = "list",
+  initialFocus = null,
   listings,
   dict,
   locale,
@@ -35,6 +37,8 @@ export default function ListingsExplorer({
   initialKind?: KindFilter;
   initialCategory?: CategoryId | "all";
   initialCity?: string;
+  initialView?: ViewMode;
+  initialFocus?: [number, number] | null;
   listings: Listing[];
   dict: Dictionary;
   locale: Locale;
@@ -44,7 +48,7 @@ export default function ListingsExplorer({
   const [category, setCategory] = useState<CategoryId | "all">(initialCategory);
   const [city, setCity] = useState<string>(initialCity);
   const [filtersOpen, setFiltersOpen] = useState(false);
-  const [view, setView] = useState<ViewMode>("list");
+  const [view, setView] = useState<ViewMode>(initialView);
 
   const results = useMemo(() => {
     let pool: Listing[] = listings;
@@ -190,7 +194,7 @@ export default function ListingsExplorer({
 
       {view === "map" ? (
         <div className="mt-5">
-          <ListingsMap listings={results} dict={dict} />
+          <ListingsMap listings={results} dict={dict} initialMe={initialFocus} />
         </div>
       ) : results.length > 0 ? (
         <div className="mt-5">

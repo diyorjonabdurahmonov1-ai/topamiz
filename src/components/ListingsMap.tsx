@@ -81,6 +81,7 @@ export default function ListingsMap({
   interactive = true,
   heightClassName = "h-[520px]",
   bare = false,
+  initialMe = null,
 }: {
   listings: Listing[];
   dict: Dictionary;
@@ -93,11 +94,20 @@ export default function ListingsMap({
   // for embedding inside a parent that already provides its own frame
   // (the home page teaser card).
   bare?: boolean;
+  // Seeds the "you are here" marker/fly-to without waiting on the manual
+  // locate-me button — used to auto-center on the visitor's own location
+  // (home page teaser, and continuing into the full map from it).
+  initialMe?: [number, number] | null;
 }) {
   const isDark = useIsDark();
   const [active, setActive] = useState(false);
   const dragEnabled = interactive && active;
-  const [me, setMe] = useState<[number, number] | null>(null);
+  // `initialMe` often arrives after mount (async geolocation lookup
+  // upstream) — read it directly rather than copying it into state, so a
+  // later prop update still takes effect. A manual locate-me tap overrides
+  // it via `meOverride`.
+  const [meOverride, setMeOverride] = useState<[number, number] | null>(null);
+  const me = meOverride ?? initialMe;
   const [locating, setLocating] = useState(false);
   const [locateError, setLocateError] = useState("");
 
@@ -117,7 +127,7 @@ export default function ListingsMap({
     setLocateError("");
     navigator.geolocation.getCurrentPosition(
       (position) => {
-        setMe([position.coords.latitude, position.coords.longitude]);
+        setMeOverride([position.coords.latitude, position.coords.longitude]);
         setLocating(false);
       },
       () => {
