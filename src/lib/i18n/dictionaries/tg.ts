@@ -97,6 +97,7 @@ const tg: Dictionary = {
     showOnMap: "Дар харита нишон додан",
     hideMap: "Пинҳон кардани харита",
     getDirections: "Гирифтани роҳ",
+    postedBy: "Муаллифи эълон",
   },
 
   contactCard: {
@@ -188,6 +189,7 @@ const tg: Dictionary = {
     cancel: "Бекор кардан",
     save: "Захира кардан",
     myMessages: "Паёмҳои ман",
+    myListings: "Эълонҳои ман",
     myQrTags: "Нишонаҳои QR-и ман",
     adminPanel: "Панели админ",
     logout: "Баромадан",
@@ -271,6 +273,13 @@ const tg: Dictionary = {
     locationError: "Муайян кардани ҷойгиршавӣ имконнопазир аст",
     viewListing: "Дидан",
     you: "Шумо",
+  },
+
+  myListings: {
+    title: "Эълонҳои ман",
+    emptyBody: "Шумо ҳанӯз ягон эълон нагузоштаед.",
+    deleteConfirm: "Ин эълонро нест кунед?",
+    delete: "Нест кардани эълон",
   },
 
   ads: {

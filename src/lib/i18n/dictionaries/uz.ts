@@ -97,6 +97,7 @@ const uz: Dictionary = {
     showOnMap: "Xaritada ko'rish",
     hideMap: "Xaritani yashirish",
     getDirections: "Yo'nalish olish",
+    postedBy: "E'lon egasi",
   },
 
   contactCard: {
@@ -188,6 +189,7 @@ const uz: Dictionary = {
     cancel: "Bekor qilish",
     save: "Saqlash",
     myMessages: "Xabarlarim",
+    myListings: "Mening e'lonlarim",
     myQrTags: "QR-belgilarim",
     adminPanel: "Admin panel",
     logout: "Chiqish",
@@ -272,6 +274,13 @@ const uz: Dictionary = {
     locationError: "Joylashuvni aniqlab bo'lmadi",
     viewListing: "Ko'rish",
     you: "Siz",
+  },
+
+  myListings: {
+    title: "Mening e'lonlarim",
+    emptyBody: "Siz hali e'lon joylashtirmagansiz.",
+    deleteConfirm: "Bu e'lonni o'chirmoqchimisiz?",
+    delete: "E'lonni o'chirish",
   },
 
   ads: {

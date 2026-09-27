@@ -97,6 +97,7 @@ const en: Dictionary = {
     showOnMap: "Show on map",
     hideMap: "Hide map",
     getDirections: "Get directions",
+    postedBy: "Posted by",
   },
 
   contactCard: {
@@ -188,6 +189,7 @@ const en: Dictionary = {
     cancel: "Cancel",
     save: "Save",
     myMessages: "My messages",
+    myListings: "My listings",
     myQrTags: "My QR tags",
     adminPanel: "Admin panel",
     logout: "Log out",
@@ -271,6 +273,13 @@ const en: Dictionary = {
     locationError: "Could not detect your location",
     viewListing: "View",
     you: "You",
+  },
+
+  myListings: {
+    title: "My listings",
+    emptyBody: "You haven't posted any listings yet.",
+    deleteConfirm: "Delete this listing?",
+    delete: "Delete listing",
   },
 
   ads: {

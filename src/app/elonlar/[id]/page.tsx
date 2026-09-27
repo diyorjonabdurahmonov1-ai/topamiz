@@ -5,7 +5,7 @@ import { ArrowLeft, Calendar1, Eye, Gift } from "lucide-react";
 import { formatDate, formatSom } from "@/lib/data";
 import { categoryIcons } from "@/lib/icons";
 import { getListingById, incrementListingViews } from "@/lib/listings";
-import { getCurrentUser } from "@/lib/auth";
+import { displayIdentity, getCurrentUser, getUserById } from "@/lib/auth";
 import { getLocale } from "@/lib/i18n/server";
 import { getDictionary } from "@/lib/i18n";
 import { formatViewsCount } from "@/lib/i18n/format";
@@ -13,6 +13,7 @@ import ContactCard from "@/components/ContactCard";
 import ReportListingButton from "@/components/ReportListingButton";
 import ListingGallery from "@/components/ListingGallery";
 import ListingLocationMap from "@/components/ListingLocationMap";
+import ListingOwnerCard from "@/components/ListingOwnerCard";
 
 export async function generateMetadata(props: PageProps<"/elonlar/[id]">): Promise<Metadata> {
   const { id } = await props.params;
@@ -31,6 +32,8 @@ export default async function ListingDetailPage(props: PageProps<"/elonlar/[id]"
   const dict = getDictionary(locale);
   const Icon = categoryIcons[listing.category];
   const categoryLabel = dict.categories[listing.category];
+  const owner = listing.ownerId ? getUserById(listing.ownerId) : null;
+  const ownerIdentity = owner ? displayIdentity(owner) : null;
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:px-8">
@@ -116,6 +119,16 @@ export default async function ListingDetailPage(props: PageProps<"/elonlar/[id]"
         </div>
 
         <div className="space-y-5">
+          {owner && ownerIdentity && (
+            <ListingOwnerCard
+              ownerId={owner.id}
+              name={ownerIdentity.name}
+              avatarColor={ownerIdentity.avatarColor}
+              avatarUrl={ownerIdentity.avatarUrl}
+              viewerIsOwner={user?.id === owner.id}
+              dict={dict}
+            />
+          )}
           <ContactCard name={listing.contactName} phone={listing.contactPhone} dict={dict} />
         </div>
       </div>

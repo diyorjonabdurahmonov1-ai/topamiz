@@ -47,6 +47,7 @@ function toListing(row: RawListingRow): Listing {
   const colors = CATEGORY_COLORS[category] ?? CATEGORY_COLORS.boshqa;
   return {
     id: String(row.id),
+    ownerId: row.owner_id,
     kind: row.kind as ListingKind,
     title: row.title,
     description: row.description,
@@ -96,6 +97,13 @@ export function getRewardedListings(country: string): Listing[] {
        ORDER BY reward DESC, id DESC`
     )
     .all(country) as RawListingRow[];
+  return rows.map(toListing);
+}
+
+export function getListingsByOwner(ownerId: number): Listing[] {
+  const rows = db
+    .prepare("SELECT * FROM listings WHERE owner_id = ? ORDER BY created_at DESC, id DESC")
+    .all(ownerId) as RawListingRow[];
   return rows.map(toListing);
 }
 

@@ -87,6 +87,7 @@ export interface Dictionary {
     showOnMap: string;
     hideMap: string;
     getDirections: string;
+    postedBy: string;
   };
 
   contactCard: {
@@ -177,6 +178,7 @@ export interface Dictionary {
     cancel: string;
     save: string;
     myMessages: string;
+    myListings: string;
     myQrTags: string;
     adminPanel: string;
     logout: string;
@@ -258,6 +260,13 @@ export interface Dictionary {
     locationError: string;
     viewListing: string;
     you: string;
+  };
+
+  myListings: {
+    title: string;
+    emptyBody: string;
+    deleteConfirm: string;
+    delete: string;
   };
 
   ads: {

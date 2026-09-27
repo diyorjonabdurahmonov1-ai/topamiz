@@ -118,6 +118,13 @@ db.exec(`
     created_at TEXT NOT NULL DEFAULT (datetime('now'))
   );
 
+  CREATE TABLE IF NOT EXISTS guest_visits (
+    guest_id TEXT PRIMARY KEY,
+    first_seen_at TEXT NOT NULL DEFAULT (datetime('now')),
+    last_seen_at TEXT NOT NULL DEFAULT (datetime('now')),
+    visit_count INTEGER NOT NULL DEFAULT 1
+  );
+
   CREATE INDEX IF NOT EXISTS idx_sessions_user ON sessions(user_id);
   CREATE INDEX IF NOT EXISTS idx_messages_recipient ON messages(recipient_id);
   CREATE INDEX IF NOT EXISTS idx_messages_sender ON messages(sender_id);
