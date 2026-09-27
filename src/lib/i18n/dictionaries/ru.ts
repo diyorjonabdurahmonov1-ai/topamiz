@@ -208,6 +208,10 @@ const ru: Dictionary = {
     writeMessage: "Написать сообщение",
     listingsHeading: "Объявления",
     noListings: "У этого пользователя пока нет объявлений.",
+    addFriend: "Добавить в друзья",
+    friendAdded: "Ваш друг",
+    friendsHeading: "Друзья",
+    noFriends: "Пока нет друзей.",
   },
 
   messages: {

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { MessageCircle } from "lucide-react";
 import type { Dictionary } from "@/lib/i18n";
 import Avatar from "./Avatar";
+import FriendButton from "./FriendButton";
 
 export default function ListingOwnerCard({
   ownerId,
@@ -9,6 +10,8 @@ export default function ListingOwnerCard({
   avatarColor,
   avatarUrl,
   viewerIsOwner,
+  viewerIsLoggedIn,
+  viewerIsFriend,
   dict,
 }: {
   ownerId: number;
@@ -16,6 +19,8 @@ export default function ListingOwnerCard({
   avatarColor: string;
   avatarUrl: string | null;
   viewerIsOwner: boolean;
+  viewerIsLoggedIn: boolean;
+  viewerIsFriend: boolean;
   dict: Dictionary;
 }) {
   return (
@@ -31,13 +36,18 @@ export default function ListingOwnerCard({
         <span className="text-sm font-semibold">{name}</span>
       </Link>
       {!viewerIsOwner && (
-        <Link
-          href={`/xabarlar/${ownerId}`}
-          className="btn-brand mt-4 flex w-full items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold text-white"
-        >
-          <MessageCircle className="h-4 w-4" />
-          {dict.publicProfile.writeMessage}
-        </Link>
+        <div className="mt-4 flex gap-2">
+          <Link
+            href={`/xabarlar/${ownerId}`}
+            className="btn-brand flex flex-1 items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold text-white"
+          >
+            <MessageCircle className="h-4 w-4" />
+            {dict.publicProfile.writeMessage}
+          </Link>
+          {viewerIsLoggedIn && (
+            <FriendButton targetId={ownerId} initialIsFriend={viewerIsFriend} dict={dict} />
+          )}
+        </div>
       )}
     </div>
   );

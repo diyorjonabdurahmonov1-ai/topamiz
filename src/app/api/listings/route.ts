@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
-import { getCurrentUser } from "@/lib/auth";
+import { displayIdentity, getCurrentUser } from "@/lib/auth";
 import { categories, cities } from "@/lib/data";
+import { getFollowerIds } from "@/lib/friends";
+import { sendPushToUser } from "@/lib/push";
 import {
   createListing,
   MAX_CONTACT_NAME_LENGTH,
@@ -112,6 +114,15 @@ export async function POST(request: Request) {
     lat,
     lng,
   });
+
+  const posterIdentity = displayIdentity(user);
+  for (const friendId of getFollowerIds(user.id)) {
+    void sendPushToUser(friendId, {
+      title: posterIdentity.name,
+      body: `Yangi e'lon qo'ydi: ${listing.title}`,
+      url: `/elonlar/${listing.id}`,
+    });
+  }
 
   return NextResponse.json({ listing });
 }

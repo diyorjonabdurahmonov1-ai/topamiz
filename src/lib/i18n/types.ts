@@ -197,6 +197,10 @@ export interface Dictionary {
     writeMessage: string;
     listingsHeading: string;
     noListings: string;
+    addFriend: string;
+    friendAdded: string;
+    friendsHeading: string;
+    noFriends: string;
   };
 
   messages: {

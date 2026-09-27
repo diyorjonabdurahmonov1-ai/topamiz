@@ -6,6 +6,7 @@ import { formatDate, formatSom } from "@/lib/data";
 import { categoryIcons } from "@/lib/icons";
 import { getListingById, incrementListingViews } from "@/lib/listings";
 import { displayIdentity, getCurrentUser, getUserById } from "@/lib/auth";
+import { isFriend } from "@/lib/friends";
 import { getLocale } from "@/lib/i18n/server";
 import { getDictionary } from "@/lib/i18n";
 import { formatViewsCount } from "@/lib/i18n/format";
@@ -34,6 +35,7 @@ export default async function ListingDetailPage(props: PageProps<"/elonlar/[id]"
   const categoryLabel = dict.categories[listing.category];
   const owner = listing.ownerId ? getUserById(listing.ownerId) : null;
   const ownerIdentity = owner ? displayIdentity(owner) : null;
+  const viewerIsFriend = user && owner ? isFriend(user.id, owner.id) : false;
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:px-8">
@@ -126,6 +128,8 @@ export default async function ListingDetailPage(props: PageProps<"/elonlar/[id]"
               avatarColor={ownerIdentity.avatarColor}
               avatarUrl={ownerIdentity.avatarUrl}
               viewerIsOwner={user?.id === owner.id}
+              viewerIsLoggedIn={!!user}
+              viewerIsFriend={viewerIsFriend}
               dict={dict}
             />
           )}

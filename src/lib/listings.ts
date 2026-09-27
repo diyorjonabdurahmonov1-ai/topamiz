@@ -1,6 +1,7 @@
 import { db } from "./db";
 import type { CategoryId, Listing, ListingKind } from "./types";
 import { coordinatesForCity } from "./city-coordinates";
+import { displayIdentity } from "./auth";
 
 export const MAX_LISTING_TITLE_LENGTH = 120;
 export const MAX_LISTING_DESCRIPTION_LENGTH = 2000;
@@ -40,14 +41,44 @@ interface RawListingRow {
   lat: number;
   lng: number;
   created_at: string;
+  owner_name: string | null;
+  owner_email: string | null;
+  owner_avatar_color: string | null;
+  owner_avatar_url: string | null;
 }
+
+// Every listing query joins in just enough of the owner's identity to show
+// an Instagram-style byline on the card without a listing view — routed
+// through displayIdentity() so an admin's own listing still shows as the
+// Findo brand instead of their personal account, same as everywhere else.
+const LISTING_SELECT = `
+  SELECT listings.*,
+    users.name AS owner_name,
+    users.email AS owner_email,
+    users.avatar_color AS owner_avatar_color,
+    users.avatar_url AS owner_avatar_url
+  FROM listings
+  LEFT JOIN users ON users.id = listings.owner_id
+`;
 
 function toListing(row: RawListingRow): Listing {
   const category = row.category as CategoryId;
   const colors = CATEGORY_COLORS[category] ?? CATEGORY_COLORS.boshqa;
+  const ownerIdentity =
+    row.owner_id && row.owner_name
+      ? displayIdentity({
+          email: row.owner_email ?? "",
+          name: row.owner_name,
+          avatarColor: row.owner_avatar_color ?? "#6366f1",
+          avatarUrl: row.owner_avatar_url,
+        })
+      : null;
   return {
     id: String(row.id),
     ownerId: row.owner_id,
+    ownerName: ownerIdentity?.name ?? null,
+    ownerAvatarColor: ownerIdentity?.avatarColor ?? null,
+    ownerAvatarUrl: ownerIdentity?.avatarUrl ?? null,
     kind: row.kind as ListingKind,
     title: row.title,
     description: row.description,
@@ -75,7 +106,8 @@ function toListing(row: RawListingRow): Listing {
 export function getAllActiveListings(country: string): Listing[] {
   const rows = db
     .prepare(
-      "SELECT * FROM listings WHERE status = 'active' AND country = ? ORDER BY created_at DESC, id DESC"
+      `${LISTING_SELECT} WHERE listings.status = 'active' AND listings.country = ?
+       ORDER BY listings.created_at DESC, listings.id DESC`
     )
     .all(country) as RawListingRow[];
   return rows.map(toListing);
@@ -84,7 +116,7 @@ export function getAllActiveListings(country: string): Listing[] {
 export function getListingById(id: string): Listing | null {
   const numId = Number(id);
   if (!Number.isInteger(numId)) return null;
-  const row = db.prepare("SELECT * FROM listings WHERE id = ?").get(numId) as
+  const row = db.prepare(`${LISTING_SELECT} WHERE listings.id = ?`).get(numId) as
     | RawListingRow
     | undefined;
   return row ? toListing(row) : null;
@@ -93,8 +125,8 @@ export function getListingById(id: string): Listing | null {
 export function getRewardedListings(country: string): Listing[] {
   const rows = db
     .prepare(
-      `SELECT * FROM listings WHERE status = 'active' AND country = ? AND reward IS NOT NULL
-       ORDER BY reward DESC, id DESC`
+      `${LISTING_SELECT} WHERE listings.status = 'active' AND listings.country = ? AND listings.reward IS NOT NULL
+       ORDER BY listings.reward DESC, listings.id DESC`
     )
     .all(country) as RawListingRow[];
   return rows.map(toListing);
@@ -104,7 +136,7 @@ export function getRewardedListings(country: string): Listing[] {
 // country or status filter, so admin sees the whole site at once.
 export function getAllListingsForAdmin(): Listing[] {
   const rows = db
-    .prepare("SELECT * FROM listings ORDER BY created_at DESC, id DESC")
+    .prepare(`${LISTING_SELECT} ORDER BY listings.created_at DESC, listings.id DESC`)
     .all() as RawListingRow[];
   return rows.map(toListing);
 }
@@ -117,7 +149,9 @@ export function getListingCountsByCountry(): { country: string; count: number }[
 
 export function getListingsByOwner(ownerId: number): Listing[] {
   const rows = db
-    .prepare("SELECT * FROM listings WHERE owner_id = ? ORDER BY created_at DESC, id DESC")
+    .prepare(
+      `${LISTING_SELECT} WHERE listings.owner_id = ? ORDER BY listings.created_at DESC, listings.id DESC`
+    )
     .all(ownerId) as RawListingRow[];
   return rows.map(toListing);
 }

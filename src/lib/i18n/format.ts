@@ -64,6 +64,23 @@ export function formatViewsCount(locale: Locale, n: number): string {
   }
 }
 
+export function formatFriendsCount(locale: Locale, n: number): string {
+  switch (locale) {
+    case "ru":
+      return `${n} ${pluralRu(n, "друг", "друга", "друзей")}`;
+    case "en":
+      return `${n} friend${n === 1 ? "" : "s"}`;
+    case "kk":
+      return `${n} дос`;
+    case "tg":
+      return `${n} дӯст`;
+    case "ky":
+      return `${n} дос`;
+    default:
+      return `${n} ta do'st`;
+  }
+}
+
 export function formatCopyright(locale: Locale, year: number): string {
   switch (locale) {
     case "ru":

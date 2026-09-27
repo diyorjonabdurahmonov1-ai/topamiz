@@ -208,6 +208,10 @@ const en: Dictionary = {
     writeMessage: "Send a message",
     listingsHeading: "Listings",
     noListings: "This user doesn't have any listings yet.",
+    addFriend: "Add friend",
+    friendAdded: "Friend",
+    friendsHeading: "Friends",
+    noFriends: "No friends yet.",
   },
 
   messages: {

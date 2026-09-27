@@ -208,6 +208,10 @@ const uz: Dictionary = {
     writeMessage: "Xabar yozish",
     listingsHeading: "E'lonlari",
     noListings: "Bu foydalanuvchining hozircha e'lonlari yo'q.",
+    addFriend: "Do'stlarga qo'shish",
+    friendAdded: "Do'stingiz",
+    friendsHeading: "Do'stlar",
+    noFriends: "Hozircha do'stlar yo'q.",
   },
 
   messages: {
