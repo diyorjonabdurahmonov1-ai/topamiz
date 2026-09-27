@@ -97,6 +97,7 @@ const kk: Dictionary = {
     showOnMap: "Картада көрсету",
     hideMap: "Картаны жасыру",
     getDirections: "Бағыт алу",
+    postedBy: "Хабарландыру авторы",
   },
 
   contactCard: {
@@ -188,6 +189,7 @@ const kk: Dictionary = {
     cancel: "Бас тарту",
     save: "Сақтау",
     myMessages: "Хабарларым",
+    myListings: "Менің хабарландыруларым",
     myQrTags: "QR-белгілерім",
     adminPanel: "Админ панель",
     logout: "Шығу",
@@ -271,6 +273,13 @@ const kk: Dictionary = {
     locationError: "Орналасуды анықтау мүмкін болмады",
     viewListing: "Көру",
     you: "Сіз",
+  },
+
+  myListings: {
+    title: "Менің хабарландыруларым",
+    emptyBody: "Сіз әлі ешқандай хабарландыру бермегенсіз.",
+    deleteConfirm: "Бұл хабарландыруды жойғыңыз келеді ме?",
+    delete: "Хабарландыруды жою",
   },
 
   ads: {

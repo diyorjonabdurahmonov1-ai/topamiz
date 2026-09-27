@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
-import { Flag, Gift, List, Mail, MessageCircle, QrCode, ShieldOff, Users, Wifi } from "lucide-react";
+import { Flag, Gift, List, Mail, MessageCircle, QrCode, ShieldOff, UserRoundSearch, Users, Wifi } from "lucide-react";
 import { countBlockedUsers, countOnlineUsers, countUsers } from "@/lib/admin-users";
 import { getTagStats } from "@/lib/tags";
 import { countAllMessages } from "@/lib/messages";
 import { getActiveAds, getAllAds } from "@/lib/ads";
 import { countUnhandledAdInquiries } from "@/lib/ad-inquiries";
+import { countGuestVisitors } from "@/lib/guest-visits";
 import { getListingStats } from "@/lib/listings";
 import { getReportedListings } from "@/lib/listing-reports";
 import StatCard from "@/components/StatCard";
@@ -24,6 +25,7 @@ export default function AdminDashboardPage() {
   const listingStats = getListingStats();
   const reportedCount = getReportedListings().length;
   const unhandledInquiries = countUnhandledAdInquiries();
+  const guestVisitors = countGuestVisitors();
 
   return (
     <div>
@@ -40,6 +42,7 @@ export default function AdminDashboardPage() {
         <StatCard icon={MessageCircle} value={String(totalMessages)} label="Jami xabarlar" />
         <StatCard icon={Gift} value={`${activeAds} / ${allAds}`} label="Faol reklamalar" />
         <StatCard icon={Mail} value={String(unhandledInquiries)} label="Yangi reklama arizalari" />
+        <StatCard icon={UserRoundSearch} value={String(guestVisitors)} label="Ro'yxatdan o'tmagan mehmonlar" />
       </div>
     </div>
   );

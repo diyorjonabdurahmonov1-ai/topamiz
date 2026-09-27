@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { LayoutDashboard, MessageCircle, QrCode } from "lucide-react";
+import { LayoutDashboard, List, MessageCircle, QrCode } from "lucide-react";
 import { getCurrentUser, isAdmin } from "@/lib/auth";
 import { getLocale } from "@/lib/i18n/server";
 import { getDictionary } from "@/lib/i18n";
@@ -19,6 +19,7 @@ export default async function OwnProfilePage() {
 
   const links = [
     { href: "/xabarlar", icon: MessageCircle, label: dict.profile.myMessages },
+    { href: "/mening-elonlarim", icon: List, label: dict.profile.myListings },
     { href: "/mening-belgilarim", icon: QrCode, label: dict.profile.myQrTags },
     ...(isAdmin(user) ? [{ href: "/admin", icon: LayoutDashboard, label: dict.profile.adminPanel }] : []),
   ];

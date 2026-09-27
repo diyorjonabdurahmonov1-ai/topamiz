@@ -97,6 +97,7 @@ const ky: Dictionary = {
     showOnMap: "Картадан көрсөтүү",
     hideMap: "Картаны жашыруу",
     getDirections: "Багыт алуу",
+    postedBy: "Жарыя автору",
   },
 
   contactCard: {
@@ -188,6 +189,7 @@ const ky: Dictionary = {
     cancel: "Жокко чыгаруу",
     save: "Сактоо",
     myMessages: "Билдирүүлөрүм",
+    myListings: "Менин жарыяларым",
     myQrTags: "QR-белгилерим",
     adminPanel: "Админ панели",
     logout: "Чыгуу",
@@ -271,6 +273,13 @@ const ky: Dictionary = {
     locationError: "Жайгашкан жерди аныктоо мүмкүн болгон жок",
     viewListing: "Көрүү",
     you: "Сиз",
+  },
+
+  myListings: {
+    title: "Менин жарыяларым",
+    emptyBody: "Сиз азырынча эч кандай жарыя жайгаштырган жоксуз.",
+    deleteConfirm: "Бул жарыяны өчүрөсүзбү?",
+    delete: "Жарыяны өчүрүү",
   },
 
   ads: {

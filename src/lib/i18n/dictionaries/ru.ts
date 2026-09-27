@@ -97,6 +97,7 @@ const ru: Dictionary = {
     showOnMap: "Показать на карте",
     hideMap: "Скрыть карту",
     getDirections: "Проложить маршрут",
+    postedBy: "Автор объявления",
   },
 
   contactCard: {
@@ -188,6 +189,7 @@ const ru: Dictionary = {
     cancel: "Отмена",
     save: "Сохранить",
     myMessages: "Мои сообщения",
+    myListings: "Мои объявления",
     myQrTags: "Мои QR-метки",
     adminPanel: "Админ-панель",
     logout: "Выйти",
@@ -271,6 +273,13 @@ const ru: Dictionary = {
     locationError: "Не удалось определить местоположение",
     viewListing: "Посмотреть",
     you: "Вы",
+  },
+
+  myListings: {
+    title: "Мои объявления",
+    emptyBody: "Вы ещё не разместили ни одного объявления.",
+    deleteConfirm: "Удалить это объявление?",
+    delete: "Удалить объявление",
   },
 
   ads: {

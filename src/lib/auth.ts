@@ -2,7 +2,7 @@ import { cookies } from "next/headers";
 import crypto from "node:crypto";
 import { db } from "./db";
 
-const SESSION_COOKIE = "topamiz_session";
+export const SESSION_COOKIE = "topamiz_session";
 const SESSION_DAYS = 30;
 export const MAX_NAME_LENGTH = 80;
 export const MAX_BIO_LENGTH = 280;

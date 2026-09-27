@@ -18,6 +18,7 @@ export interface Category {
 
 export interface Listing {
   id: string;
+  ownerId: number | null;
   kind: ListingKind;
   title: string;
   description: string;
