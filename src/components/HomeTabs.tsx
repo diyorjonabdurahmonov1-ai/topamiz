@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import Link from "next/link";
 import { ArrowUpRight, Gift, PackageSearch, Search, SearchX } from "lucide-react";
 import type { Listing } from "@/lib/types";
@@ -19,6 +19,7 @@ export default function HomeTabs({
   rewardedCount,
   dict,
   locale,
+  mapPreview,
 }: {
   lost: Listing[];
   found: Listing[];
@@ -28,6 +29,7 @@ export default function HomeTabs({
   rewardedCount: number;
   dict: Dictionary;
   locale: Locale;
+  mapPreview?: ReactNode;
 }) {
   const [active, setActive] = useState<TabKey | null>("lost");
 
@@ -118,6 +120,8 @@ export default function HomeTabs({
           );
         })}
       </div>
+
+      {mapPreview}
 
       {active && activeTab ? (
         <section key={active} className="animate-fade-up mt-6">
