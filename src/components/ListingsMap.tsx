@@ -80,6 +80,7 @@ export default function ListingsMap({
   dict,
   interactive = true,
   heightClassName = "h-[520px]",
+  bare = false,
 }: {
   listings: Listing[];
   dict: Dictionary;
@@ -88,6 +89,10 @@ export default function ListingsMap({
   // link so the map itself never needs to capture touch gestures.
   interactive?: boolean;
   heightClassName?: string;
+  // true drops this component's own border/rounded-corner/height chrome —
+  // for embedding inside a parent that already provides its own frame
+  // (the home page teaser card).
+  bare?: boolean;
 }) {
   const isDark = useIsDark();
   const [active, setActive] = useState(false);
@@ -124,7 +129,13 @@ export default function ListingsMap({
   }
 
   return (
-    <div className={`relative w-full overflow-hidden rounded-2xl border border-border ${heightClassName}`}>
+    <div
+      className={
+        bare
+          ? "relative h-full w-full"
+          : `relative w-full overflow-hidden rounded-2xl border border-border ${heightClassName}`
+      }
+    >
       <MapContainer
         center={center}
         zoom={12}

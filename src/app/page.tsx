@@ -51,8 +51,8 @@ export default async function Home() {
           rewardedCount={allRewarded.length}
           dict={dict}
           locale={locale}
+          mapPreview={<HomeMapPreview listings={nearby} dict={dict} locale={locale} />}
         />
-        <HomeMapPreview listings={nearby} dict={dict} />
       </div>
     </div>
   );
