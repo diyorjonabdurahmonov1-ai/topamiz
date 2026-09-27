@@ -1,89 +1,74 @@
 import Link from "next/link";
-import { MapPin, Calendar1, Gift } from "lucide-react";
+import { Gift } from "lucide-react";
 import type { Listing } from "@/lib/types";
 import type { Dictionary } from "@/lib/i18n";
 import { categoryIcons } from "@/lib/icons";
-import { formatDate, formatSom } from "@/lib/data";
+import { formatSom } from "@/lib/data";
 
 export default function ListingCard({ listing, dict }: { listing: Listing; dict: Dictionary }) {
   const Icon = categoryIcons[listing.category];
-  const categoryLabel = dict.categories[listing.category];
 
   return (
     <Link
       href={`/elonlar/${listing.id}`}
-      className="card-hover group relative flex flex-col overflow-hidden rounded-2xl border border-border bg-surface p-4"
+      className="card-hover group relative flex flex-col overflow-hidden rounded-xl border border-border bg-surface"
     >
       {listing.status === "resolved" && (
         <div className="absolute inset-0 z-10 flex items-center justify-center bg-bg/70 backdrop-blur-[2px]">
-          <span className="rounded-full border border-border bg-surface px-4 py-1.5 text-xs font-semibold text-muted">
+          <span className="rounded-full border border-border bg-surface px-3 py-1 text-[11px] font-semibold text-muted">
             {dict.listingCard.resolved}
           </span>
         </div>
       )}
 
-      <div className="flex items-start justify-between">
+      <div className="relative">
+        {listing.photoUrls.length > 0 ? (
+          // eslint-disable-next-line @next/next/no-img-element -- runtime-uploaded file served from /api/uploads, not a build-time asset
+          <img
+            src={listing.photoUrls[0]}
+            alt={listing.title}
+            className="h-28 w-full object-cover"
+          />
+        ) : (
+          <div
+            className="flex h-28 items-center justify-center"
+            style={{
+              backgroundImage: `linear-gradient(135deg, ${listing.colorFrom}22, ${listing.colorTo}22)`,
+            }}
+          >
+            <div
+              className="flex h-11 w-11 items-center justify-center rounded-xl text-white shadow-lg"
+              style={{
+                backgroundImage: `linear-gradient(135deg, ${listing.colorFrom}, ${listing.colorTo})`,
+              }}
+            >
+              <Icon className="h-5 w-5" strokeWidth={2} />
+            </div>
+          </div>
+        )}
+
         <span
-          className={`rounded-full px-2.5 py-1 text-xs font-semibold ${
+          className={`absolute left-1.5 top-1.5 rounded-full px-2 py-0.5 text-[10px] font-semibold shadow ${
             listing.kind === "lost"
-              ? "bg-danger/10 text-danger"
-              : "bg-success/10 text-success"
+              ? "bg-danger/90 text-white"
+              : "bg-success/90 text-white"
           }`}
         >
           {listing.kind === "lost" ? dict.common.lost : dict.common.found}
         </span>
+
         {listing.reward ? (
-          <span className="flex items-center gap-1 rounded-full bg-accent-gold/15 px-2.5 py-1 text-xs font-semibold text-accent-gold">
+          <span className="absolute right-1.5 top-1.5 flex items-center gap-1 rounded-full bg-accent-gold px-2 py-0.5 text-[10px] font-semibold text-white shadow">
             <Gift className="h-3 w-3" />
             {formatSom(listing.reward)}
           </span>
         ) : null}
       </div>
 
-      {listing.photoUrls.length > 0 ? (
-        // eslint-disable-next-line @next/next/no-img-element -- runtime-uploaded file served from /api/uploads, not a build-time asset
-        <img
-          src={listing.photoUrls[0]}
-          alt={listing.title}
-          className="mt-4 h-32 w-full rounded-xl object-cover"
-        />
-      ) : (
-        <div
-          className="mt-4 flex h-32 items-center justify-center rounded-xl"
-          style={{
-            backgroundImage: `linear-gradient(135deg, ${listing.colorFrom}22, ${listing.colorTo}22)`,
-          }}
-        >
-          <div
-            className="flex h-14 w-14 items-center justify-center rounded-2xl text-white shadow-lg"
-            style={{
-              backgroundImage: `linear-gradient(135deg, ${listing.colorFrom}, ${listing.colorTo})`,
-            }}
-          >
-            <Icon className="h-7 w-7" strokeWidth={2} />
-          </div>
-        </div>
-      )}
-
-      <div className="mt-4 flex-1">
-        <p className="text-[11px] font-medium uppercase tracking-wide text-muted">
-          {categoryLabel}
-        </p>
-        <h3 className="mt-1 line-clamp-2 text-base font-semibold text-foreground">
+      <div className="p-2.5">
+        <h3 className="line-clamp-2 text-xs font-semibold leading-snug text-foreground">
           {listing.title}
         </h3>
-        <p className="mt-1.5 line-clamp-2 text-sm text-muted">{listing.description}</p>
-      </div>
-
-      <div className="mt-4 flex items-center gap-3 border-t border-border pt-3 text-xs text-muted">
-        <span className="flex items-center gap-1">
-          <MapPin className="h-3.5 w-3.5" />
-          {listing.city}
-        </span>
-        <span className="flex items-center gap-1">
-          <Calendar1 className="h-3.5 w-3.5" />
-          {formatDate(listing.date)}
-        </span>
       </div>
     </Link>
   );
