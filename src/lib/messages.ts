@@ -176,6 +176,38 @@ export function markAllGuestNotificationsRead(userId: number) {
   ).run(userId);
 }
 
+export interface AdminConversationSummary {
+  userA: AuthUser;
+  userB: AuthUser;
+  messageCount: number;
+  lastMessageAt: string;
+}
+
+// Admin oversight into who is messaging whom and how much — deliberately
+// leaves out message bodies, since private conversation content isn't
+// something admin needs (or should default to being able to read) to keep
+// an eye on activity levels.
+export function getAllConversationsForAdmin(): AdminConversationSummary[] {
+  const rows = db
+    .prepare(
+      `SELECT sender_id, recipient_id, COUNT(*) as count, MAX(created_at) as last_at
+       FROM messages
+       WHERE sender_id IS NOT NULL
+       GROUP BY MIN(sender_id, recipient_id), MAX(sender_id, recipient_id)
+       ORDER BY last_at DESC`
+    )
+    .all() as { sender_id: number; recipient_id: number; count: number; last_at: string }[];
+
+  const result: AdminConversationSummary[] = [];
+  for (const row of rows) {
+    const userA = getUserById(row.sender_id);
+    const userB = getUserById(row.recipient_id);
+    if (!userA || !userB) continue;
+    result.push({ userA, userB, messageCount: row.count, lastMessageAt: row.last_at });
+  }
+  return result;
+}
+
 export function unreadTotal(userId: number): number {
   const row = db
     .prepare(`SELECT COUNT(*) as c FROM messages WHERE recipient_id = ? AND read_at IS NULL`)
