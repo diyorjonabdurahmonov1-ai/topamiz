@@ -8,6 +8,7 @@ import { getDictionary } from "@/lib/i18n";
 import ProfileEditForm from "@/components/ProfileEditForm";
 import LogoutButton from "@/components/LogoutButton";
 import PushNotificationToggle from "@/components/PushNotificationToggle";
+import UserSearch from "@/components/UserSearch";
 
 export const metadata: Metadata = {
   title: "Mening profilim — Findo",
@@ -29,6 +30,13 @@ export default async function OwnProfilePage() {
     <div className="mx-auto max-w-md px-4 py-10 sm:px-6">
       <div className="rounded-2xl border border-border bg-surface p-6">
         <ProfileEditForm user={user} dict={dict} />
+      </div>
+
+      <div className="mt-6">
+        <h2 className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted">
+          {dict.profile.findPeopleHeading}
+        </h2>
+        <UserSearch dict={dict} mode="profile" />
       </div>
 
       <div className="mt-5 grid grid-cols-2 gap-3">

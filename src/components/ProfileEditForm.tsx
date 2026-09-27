@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useRef, useState, type ChangeEvent, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
-import { Loader2, Pencil, X } from "lucide-react";
+import { Camera, Loader2, Pencil, X } from "lucide-react";
 import type { AuthUser } from "@/lib/auth";
 import type { Dictionary } from "@/lib/i18n";
 import Avatar from "./Avatar";
@@ -14,6 +14,69 @@ export default function ProfileEditForm({ user, dict }: { user: AuthUser; dict: 
   const [bio, setBio] = useState(user.bio);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  const avatarInputRef = useRef<HTMLInputElement>(null);
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+  const [avatarUploading, setAvatarUploading] = useState(false);
+  const [avatarError, setAvatarError] = useState("");
+  const avatarUrl = avatarPreview ?? user.avatarUrl;
+
+  async function handleAvatarChange(e: ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+
+    setAvatarUploading(true);
+    setAvatarError("");
+    try {
+      const body = new FormData();
+      body.append("file", file);
+      const uploadRes = await fetch("/api/upload", { method: "POST", body });
+      const uploadData = await uploadRes.json();
+      if (!uploadRes.ok) throw new Error(uploadData.error ?? dict.profile.genericError);
+
+      const patchRes = await fetch("/api/profile", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ avatarUrl: uploadData.url }),
+      });
+      const patchData = await patchRes.json();
+      if (!patchRes.ok) throw new Error(patchData.error ?? dict.profile.genericError);
+
+      setAvatarPreview(uploadData.url as string);
+      router.refresh();
+    } catch (err) {
+      setAvatarError(err instanceof Error ? err.message : dict.profile.genericError);
+    } finally {
+      setAvatarUploading(false);
+    }
+  }
+
+  const avatarPicker = (
+    <div className="relative">
+      <Avatar name={name || user.name} color={user.avatarColor} avatarUrl={avatarUrl} size={88} />
+      {avatarUploading && (
+        <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/50">
+          <Loader2 className="h-5 w-5 animate-spin text-white" />
+        </div>
+      )}
+      <button
+        type="button"
+        onClick={() => avatarInputRef.current?.click()}
+        aria-label={dict.profile.changePhoto}
+        className="btn-brand absolute bottom-0 right-0 flex h-8 w-8 items-center justify-center rounded-full text-white shadow-lg"
+      >
+        <Camera className="h-3.5 w-3.5" />
+      </button>
+      <input
+        ref={avatarInputRef}
+        type="file"
+        accept="image/jpeg,image/png,image/webp,image/gif"
+        hidden
+        onChange={handleAvatarChange}
+      />
+    </div>
+  );
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -39,7 +102,8 @@ export default function ProfileEditForm({ user, dict }: { user: AuthUser; dict: 
   if (!editing) {
     return (
       <div className="flex flex-col items-center text-center">
-        <Avatar name={user.name} color={user.avatarColor} avatarUrl={user.avatarUrl} size={88} />
+        {avatarPicker}
+        {avatarError && <p className="mt-2 text-xs font-medium text-danger">{avatarError}</p>}
         <h1 className="mt-4 text-xl font-extrabold">{user.name}</h1>
         <p className="text-sm text-muted">{user.email}</p>
         <p className="mt-3 max-w-sm text-sm text-muted">{user.bio || dict.profile.noBio}</p>
@@ -57,7 +121,8 @@ export default function ProfileEditForm({ user, dict }: { user: AuthUser; dict: 
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col items-center gap-3 text-center">
-      <Avatar name={name || user.name} color={user.avatarColor} avatarUrl={user.avatarUrl} size={88} />
+      {avatarPicker}
+      {avatarError && <p className="text-xs font-medium text-danger">{avatarError}</p>}
       <input
         value={name}
         onChange={(e) => setName(e.target.value)}

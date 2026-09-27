@@ -3,9 +3,11 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { MessageCircle } from "lucide-react";
 import { getCurrentUser, getUserById } from "@/lib/auth";
+import { getListingsByOwner } from "@/lib/listings";
 import { getLocale } from "@/lib/i18n/server";
 import { getDictionary } from "@/lib/i18n";
 import Avatar from "@/components/Avatar";
+import ListingsGrid from "@/components/ListingsGrid";
 
 export async function generateMetadata(props: PageProps<"/profil/[id]">): Promise<Metadata> {
   const { id } = await props.params;
@@ -24,10 +26,11 @@ export default async function PublicProfilePage(props: PageProps<"/profil/[id]">
   const user = getUserById(userId);
   if (!user) notFound();
   const dict = getDictionary(await getLocale());
+  const listings = getListingsByOwner(user.id).filter((l) => l.status === "active");
 
   return (
-    <div className="mx-auto max-w-md px-4 py-14 sm:px-6">
-      <div className="flex flex-col items-center rounded-2xl border border-border bg-surface p-8 text-center">
+    <div className="mx-auto max-w-4xl px-4 py-14 sm:px-6">
+      <div className="mx-auto flex max-w-md flex-col items-center rounded-2xl border border-border bg-surface p-8 text-center">
         <Avatar name={user.name} color={user.avatarColor} avatarUrl={user.avatarUrl} size={88} />
         <h1 className="mt-4 text-xl font-extrabold">{user.name}</h1>
         <p className="mt-3 max-w-sm text-sm text-muted">{user.bio || dict.publicProfile.noBio}</p>
@@ -39,6 +42,19 @@ export default async function PublicProfilePage(props: PageProps<"/profil/[id]">
           <MessageCircle className="h-4 w-4" />
           {dict.publicProfile.writeMessage}
         </Link>
+      </div>
+
+      <div className="mt-10">
+        <h2 className="text-lg font-bold">{dict.publicProfile.listingsHeading}</h2>
+        {listings.length > 0 ? (
+          <div className="mt-4">
+            <ListingsGrid listings={listings} dict={dict} />
+          </div>
+        ) : (
+          <p className="mt-4 rounded-2xl border border-dashed border-border py-10 text-center text-sm text-muted">
+            {dict.publicProfile.noListings}
+          </p>
+        )}
       </div>
     </div>
   );
