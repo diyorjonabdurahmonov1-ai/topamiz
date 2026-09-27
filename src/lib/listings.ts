@@ -7,6 +7,7 @@ export const MAX_LISTING_DESCRIPTION_LENGTH = 2000;
 export const MAX_LISTING_PHOTOS = 6;
 export const MAX_CONTACT_NAME_LENGTH = 80;
 export const MAX_CONTACT_PHONE_LENGTH = 30;
+export const MAX_DISTRICT_LENGTH = 80;
 
 // Listings no longer store a color pair — it's derived from category so
 // creating one doesn't need a color picker, and it stays consistent site-wide.
@@ -119,6 +120,7 @@ export function createListing(params: {
   description: string;
   category: CategoryId;
   city: string;
+  district?: string | null;
   reward: number | null;
   contactName: string;
   contactPhone: string;
@@ -130,8 +132,8 @@ export function createListing(params: {
   const info = db
     .prepare(
       `INSERT INTO listings
-        (owner_id, kind, title, description, category, city, reward, contact_name, contact_phone, photo_urls, country, lat, lng)
-       VALUES (@ownerId, @kind, @title, @description, @category, @city, @reward, @contactName, @contactPhone, @photoUrls, @country, @lat, @lng)`
+        (owner_id, kind, title, description, category, city, district, reward, contact_name, contact_phone, photo_urls, country, lat, lng)
+       VALUES (@ownerId, @kind, @title, @description, @category, @city, @district, @reward, @contactName, @contactPhone, @photoUrls, @country, @lat, @lng)`
     )
     .run({
       ownerId: params.ownerId,
@@ -140,6 +142,7 @@ export function createListing(params: {
       description: params.description,
       category: params.category,
       city: params.city,
+      district: params.district ?? null,
       reward: params.reward,
       contactName: params.contactName,
       contactPhone: params.contactPhone,

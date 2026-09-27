@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import {
   CheckCircle2,
@@ -17,6 +18,15 @@ import { formatPostSuccessBody } from "@/lib/i18n/format";
 import { categories, cities } from "@/lib/data";
 import ImageUploader from "./ImageUploader";
 
+const LocationPickerMap = dynamic(() => import("./LocationPickerMap"), {
+  ssr: false,
+  loading: () => (
+    <div className="flex h-64 w-full items-center justify-center rounded-xl border border-border bg-bg-elevated">
+      <Loader2 className="h-5 w-5 animate-spin text-muted" />
+    </div>
+  ),
+});
+
 type Status = "idle" | "submitting" | "success";
 
 export default function PostListingForm({ dict, locale }: { dict: Dictionary; locale: Locale }) {
@@ -25,6 +35,7 @@ export default function PostListingForm({ dict, locale }: { dict: Dictionary; lo
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState<CategoryId>("hujjatlar");
   const [city, setCity] = useState(cities[0]);
+  const [district, setDistrict] = useState("");
   const [reward, setReward] = useState("");
   const [contactName, setContactName] = useState("");
   const [contactPhone, setContactPhone] = useState("");
@@ -34,6 +45,25 @@ export default function PostListingForm({ dict, locale }: { dict: Dictionary; lo
   const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
   const [locating, setLocating] = useState(false);
   const [locateError, setLocateError] = useState("");
+  const [detecting, setDetecting] = useState(false);
+
+  async function handleCoordsChange(next: { lat: number; lng: number }) {
+    setCoords(next);
+    setDetecting(true);
+    try {
+      const res = await fetch(`/api/geocode/reverse?lat=${next.lat}&lng=${next.lng}`);
+      if (res.ok) {
+        const data = await res.json();
+        if (data.city && cities.includes(data.city)) setCity(data.city);
+        if (data.district) setDistrict(data.district);
+      }
+    } catch {
+      // Reverse geocoding is a convenience, not a requirement — the poster
+      // can still fill city/district in manually if this fails.
+    } finally {
+      setDetecting(false);
+    }
+  }
 
   function handleLocateMe() {
     if (!navigator.geolocation) {
@@ -44,7 +74,7 @@ export default function PostListingForm({ dict, locale }: { dict: Dictionary; lo
     setLocateError("");
     navigator.geolocation.getCurrentPosition(
       (position) => {
-        setCoords({ lat: position.coords.latitude, lng: position.coords.longitude });
+        handleCoordsChange({ lat: position.coords.latitude, lng: position.coords.longitude });
         setLocating(false);
       },
       () => {
@@ -73,6 +103,7 @@ export default function PostListingForm({ dict, locale }: { dict: Dictionary; lo
           description,
           category,
           city,
+          district: district.trim() || undefined,
           reward: reward ? Number(reward) : null,
           contactName,
           contactPhone,
@@ -95,6 +126,7 @@ export default function PostListingForm({ dict, locale }: { dict: Dictionary; lo
     setDescription("");
     setCategory("hujjatlar");
     setCity(cities[0]);
+    setDistrict("");
     setReward("");
     setContactName("");
     setContactPhone("");
@@ -236,26 +268,47 @@ export default function PostListingForm({ dict, locale }: { dict: Dictionary; lo
                 </select>
               </div>
             </div>
+            <div className="sm:col-span-2">
+              <label className="mb-1.5 block text-xs font-semibold text-muted">
+                {dict.postListing.districtLabel}
+              </label>
+              <input
+                value={district}
+                onChange={(e) => setDistrict(e.target.value)}
+                placeholder={dict.postListing.districtPlaceholder}
+                className="w-full rounded-xl border border-border bg-bg-elevated px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-via/40"
+              />
+            </div>
           </div>
 
           <div>
-            <button
-              type="button"
-              onClick={handleLocateMe}
-              disabled={locating}
-              className={`flex items-center gap-1.5 rounded-xl border px-3.5 py-2 text-xs font-semibold transition-colors disabled:opacity-70 ${
-                coords
-                  ? "border-success/40 bg-success/10 text-success"
-                  : "border-border text-muted hover:text-foreground"
-              }`}
-            >
-              {locating ? (
-                <Loader2 className="h-3.5 w-3.5 animate-spin" />
-              ) : (
-                <LocateFixed className="h-3.5 w-3.5" />
+            <p className="mb-2 text-xs text-muted">{dict.postListing.mapPickerHint}</p>
+            <LocationPickerMap value={coords} onChange={handleCoordsChange} />
+            <div className="mt-3 flex flex-wrap items-center gap-2">
+              <button
+                type="button"
+                onClick={handleLocateMe}
+                disabled={locating}
+                className={`flex items-center gap-1.5 rounded-xl border px-3.5 py-2 text-xs font-semibold transition-colors disabled:opacity-70 ${
+                  coords
+                    ? "border-success/40 bg-success/10 text-success"
+                    : "border-border text-muted hover:text-foreground"
+                }`}
+              >
+                {locating ? (
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                ) : (
+                  <LocateFixed className="h-3.5 w-3.5" />
+                )}
+                {coords ? dict.postListing.locateMeSuccess : dict.postListing.locateMeButton}
+              </button>
+              {detecting && (
+                <span className="flex items-center gap-1.5 text-xs font-medium text-muted">
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                  {dict.postListing.detectingLocation}
+                </span>
               )}
-              {coords ? dict.postListing.locateMeSuccess : dict.postListing.locateMeButton}
-            </button>
+            </div>
             {locateError && <p className="mt-1.5 text-xs font-medium text-danger">{locateError}</p>}
           </div>
         </div>
