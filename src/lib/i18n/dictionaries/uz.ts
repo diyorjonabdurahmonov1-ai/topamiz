@@ -194,6 +194,10 @@ const uz: Dictionary = {
     adminPanel: "Admin panel",
     logout: "Chiqish",
     genericError: "Xatolik yuz berdi",
+    pushEnable: "Bildirishnomalarni yoqish",
+    pushEnabled: "Bildirishnomalar yoqilgan",
+    pushDenied: "Bildirishnomalarga ruxsat berilmadi",
+    pushError: "Bildirishnomani yoqib bo'lmadi",
   },
 
   publicProfile: {

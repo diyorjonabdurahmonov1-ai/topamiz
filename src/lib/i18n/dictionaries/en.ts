@@ -194,6 +194,10 @@ const en: Dictionary = {
     adminPanel: "Admin panel",
     logout: "Log out",
     genericError: "Something went wrong",
+    pushEnable: "Enable notifications",
+    pushEnabled: "Notifications enabled",
+    pushDenied: "Notification permission was denied",
+    pushError: "Couldn't enable notifications",
   },
 
   publicProfile: {

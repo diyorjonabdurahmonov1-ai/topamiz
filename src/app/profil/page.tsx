@@ -7,6 +7,7 @@ import { getLocale } from "@/lib/i18n/server";
 import { getDictionary } from "@/lib/i18n";
 import ProfileEditForm from "@/components/ProfileEditForm";
 import LogoutButton from "@/components/LogoutButton";
+import PushNotificationToggle from "@/components/PushNotificationToggle";
 
 export const metadata: Metadata = {
   title: "Mening profilim — Findo",
@@ -46,6 +47,10 @@ export default async function OwnProfilePage() {
       </div>
 
       <div className="mt-6 flex justify-center">
+        <PushNotificationToggle dict={dict} />
+      </div>
+
+      <div className="mt-4 flex justify-center">
         <LogoutButton label={dict.profile.logout} />
       </div>
     </div>
