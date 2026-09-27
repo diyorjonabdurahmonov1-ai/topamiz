@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
-import { getCurrentUser, getUserById } from "@/lib/auth";
+import { displayIdentity, getCurrentUser, getUserById } from "@/lib/auth";
 import { getThread, markThreadRead, MAX_MESSAGE_LENGTH, sendMessage } from "@/lib/messages";
 import { rateLimit } from "@/lib/rate-limit";
+import { sendPushToUser } from "@/lib/push";
 
 export async function GET(_request: Request, ctx: RouteContext<"/api/messages/[userId]">) {
   const user = await getCurrentUser();
@@ -44,5 +45,13 @@ export async function POST(request: Request, ctx: RouteContext<"/api/messages/[u
   if (!text) return NextResponse.json({ error: "Xabar bo'sh bo'lishi mumkin emas" }, { status: 400 });
 
   const message = sendMessage({ senderId: user.id, recipientId: otherId, body: text });
+
+  const senderIdentity = displayIdentity(user);
+  void sendPushToUser(otherId, {
+    title: senderIdentity.name,
+    body: text,
+    url: `/xabarlar/${user.id}`,
+  });
+
   return NextResponse.json({ message });
 }

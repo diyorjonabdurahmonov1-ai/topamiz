@@ -194,6 +194,10 @@ const ru: Dictionary = {
     adminPanel: "Админ-панель",
     logout: "Выйти",
     genericError: "Произошла ошибка",
+    pushEnable: "Включить уведомления",
+    pushEnabled: "Уведомления включены",
+    pushDenied: "Доступ к уведомлениям не предоставлен",
+    pushError: "Не удалось включить уведомления",
   },
 
   publicProfile: {

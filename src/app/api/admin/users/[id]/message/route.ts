@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
-import { getCurrentUser, getUserById, isAdmin } from "@/lib/auth";
+import { BRAND_NAME, getCurrentUser, getUserById, isAdmin } from "@/lib/auth";
 import { MAX_MESSAGE_LENGTH, sendMessage } from "@/lib/messages";
+import { sendPushToUser } from "@/lib/push";
 
 export async function POST(request: Request, ctx: RouteContext<"/api/admin/users/[id]/message">) {
   const admin = await getCurrentUser();
@@ -16,6 +17,12 @@ export async function POST(request: Request, ctx: RouteContext<"/api/admin/users
   if (!message) return NextResponse.json({ error: "Xabar matnini kiriting" }, { status: 400 });
 
   sendMessage({ senderId: admin.id, recipientId: targetId, body: message });
+
+  void sendPushToUser(targetId, {
+    title: BRAND_NAME,
+    body: message,
+    url: `/xabarlar/${admin.id}`,
+  });
 
   return NextResponse.json({ ok: true });
 }

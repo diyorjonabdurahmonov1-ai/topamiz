@@ -194,6 +194,10 @@ const kk: Dictionary = {
     adminPanel: "Админ панель",
     logout: "Шығу",
     genericError: "Қате орын алды",
+    pushEnable: "Хабарландыруларды қосу",
+    pushEnabled: "Хабарландырулар қосылған",
+    pushDenied: "Хабарландыруларға рұқсат берілмеді",
+    pushError: "Хабарландыруларды қосу мүмкін болмады",
   },
 
   publicProfile: {

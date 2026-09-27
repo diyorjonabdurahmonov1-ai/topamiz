@@ -194,6 +194,10 @@ const tg: Dictionary = {
     adminPanel: "Панели админ",
     logout: "Баромадан",
     genericError: "Хатогӣ рӯй дод",
+    pushEnable: "Фаъол кардани огоҳиномаҳо",
+    pushEnabled: "Огоҳиномаҳо фаъоланд",
+    pushDenied: "Иҷозат ба огоҳиномаҳо дода нашуд",
+    pushError: "Фаъол кардани огоҳиномаҳо имконнопазир аст",
   },
 
   publicProfile: {

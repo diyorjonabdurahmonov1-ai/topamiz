@@ -183,6 +183,10 @@ export interface Dictionary {
     adminPanel: string;
     logout: string;
     genericError: string;
+    pushEnable: string;
+    pushEnabled: string;
+    pushDenied: string;
+    pushError: string;
   };
 
   publicProfile: {

@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
-import { getCurrentUser } from "@/lib/auth";
+import { displayIdentity, getCurrentUser } from "@/lib/auth";
 import { getTagByCode } from "@/lib/tags";
 import { MAX_MESSAGE_LENGTH, sendMessage } from "@/lib/messages";
 import { getClientIp, rateLimit } from "@/lib/rate-limit";
+import { sendPushToUser } from "@/lib/push";
 
 export async function POST(request: Request, ctx: RouteContext<"/api/tags/[code]/contact">) {
   const { code } = await ctx.params;
@@ -48,6 +49,12 @@ export async function POST(request: Request, ctx: RouteContext<"/api/tags/[code]
     tagId: tag.id,
     guestName: currentUser ? undefined : guestName || "Nomsiz",
     guestPhone: currentUser ? undefined : guestPhone || undefined,
+  });
+
+  void sendPushToUser(tag.ownerId, {
+    title: currentUser ? displayIdentity(currentUser).name : guestName || "Nomsiz",
+    body: message,
+    url: currentUser ? `/xabarlar/${currentUser.id}` : "/xabarlar",
   });
 
   return NextResponse.json({ ok: true });

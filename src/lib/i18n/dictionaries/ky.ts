@@ -194,6 +194,10 @@ const ky: Dictionary = {
     adminPanel: "Админ панели",
     logout: "Чыгуу",
     genericError: "Ката кетти",
+    pushEnable: "Билдирүүлөрдү иштетүү",
+    pushEnabled: "Билдирүүлөр иштетилди",
+    pushDenied: "Билдирүүлөргө уруксат берилген жок",
+    pushError: "Билдирүүлөрдү иштетүү мүмкүн болгон жок",
   },
 
   publicProfile: {
