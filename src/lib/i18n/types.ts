@@ -17,6 +17,7 @@ export interface Dictionary {
   nav: {
     listings: string;
     rewarded: string;
+    mysteryBox: string;
     ads: string;
     messages: string;
     login: string;
@@ -79,6 +80,7 @@ export interface Dictionary {
 
   listingCard: {
     resolved: string;
+    mysteryBox: string;
   };
 
   listingDetail: {
@@ -161,6 +163,14 @@ export interface Dictionary {
     activeCount: string;
     totalReward: string;
     safetyNote: string;
+    emptyTitle: string;
+    emptyBody: string;
+  };
+
+  mysteryBox: {
+    title: string;
+    subtitle: string;
+    activeCount: string;
     emptyTitle: string;
     emptyBody: string;
   };

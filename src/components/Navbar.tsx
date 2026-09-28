@@ -28,6 +28,7 @@ export default function Navbar({
   const links = [
     { href: "/elonlar", label: dict.nav.listings },
     { href: "/mukofotli", label: dict.nav.rewarded },
+    { href: "/sirli-quti", label: dict.nav.mysteryBox },
     { href: "/reklama", label: dict.nav.ads },
   ];
 

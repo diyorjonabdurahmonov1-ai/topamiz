@@ -40,4 +40,5 @@ export interface Listing {
   country: string;
   lat: number;
   lng: number;
+  isMysteryBox: boolean;
 }

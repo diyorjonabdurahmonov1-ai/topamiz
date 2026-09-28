@@ -40,6 +40,7 @@ interface RawListingRow {
   country: string;
   lat: number;
   lng: number;
+  is_mystery_box: number;
   created_at: string;
   owner_name: string | null;
   owner_email: string | null;
@@ -97,6 +98,7 @@ function toListing(row: RawListingRow): Listing {
     country: row.country,
     lat: row.lat,
     lng: row.lng,
+    isMysteryBox: !!row.is_mystery_box,
   };
 }
 
@@ -144,6 +146,28 @@ export function getRewardedListings(country: string): Listing[] {
     )
     .all(country) as RawListingRow[];
   return rows.map(toListing);
+}
+
+// "Sirli quti" — admin-flagged promotional listings (a hidden prize, a
+// partner's discount code) get their own dedicated page, separate from
+// ordinary lost/found browsing.
+export function getMysteryBoxListings(country: string): Listing[] {
+  const rows = db
+    .prepare(
+      `${LISTING_SELECT} WHERE listings.status = 'active' AND listings.country = ? AND listings.is_mystery_box = 1
+       ORDER BY listings.created_at DESC, listings.id DESC`
+    )
+    .all(country) as RawListingRow[];
+  return rows.map(toListing);
+}
+
+export function setMysteryBox(id: string, value: boolean): boolean {
+  const numId = Number(id);
+  if (!Number.isInteger(numId)) return false;
+  const info = db
+    .prepare("UPDATE listings SET is_mystery_box = ? WHERE id = ?")
+    .run(value ? 1 : 0, numId);
+  return info.changes > 0;
 }
 
 // Admin oversight — unlike every other listing query, deliberately has no
