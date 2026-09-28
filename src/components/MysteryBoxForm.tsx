@@ -222,7 +222,7 @@ export default function MysteryBoxForm({ dict }: { dict: Dictionary }) {
 
           <div>
             <p className="mb-2 text-xs text-muted">{dict.mysteryBoxForm.mapPickerHint}</p>
-            <LocationPickerMap value={coords} onChange={handleCoordsChange} dict={dict} />
+            <LocationPickerMap value={coords} onChange={handleCoordsChange} />
             <div className="mt-3 flex flex-wrap items-center gap-2">
               <button
                 type="button"

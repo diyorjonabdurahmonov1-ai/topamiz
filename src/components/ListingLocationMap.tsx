@@ -46,7 +46,7 @@ export default function ListingLocationMap({
 
       {open && (
         <div className="animate-fade-up mt-3">
-          <LeafletPinMap lat={lat} lng={lng} dict={dict} />
+          <LeafletPinMap lat={lat} lng={lng} />
           <a
             href={directionsUrl}
             target="_blank"

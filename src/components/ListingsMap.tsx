@@ -79,8 +79,11 @@ function FlyTo({ target }: { target: [number, number] | null }) {
 // mount — it never re-applies it as the prop object changes on later
 // renders. Leaflet's own touch handlers also don't reliably reclaim
 // pinch-zoom from the browser (which otherwise treats it as native
-// page/image zoom) on their own, so this reaches into the live container
-// directly whenever `active` actually changes.
+// page/image zoom) on their own, so this reaches in and sets it directly on
+// the live container whenever `active` (fully interactive, not the
+// decorative preview) changes. An interactive map is meant to be
+// immediately draggable, at the cost of the page being harder to scroll
+// past while a finger is on it.
 function TouchActionSync({ active }: { active: boolean }) {
   const map = useMap();
   useEffect(() => {
@@ -114,8 +117,7 @@ export default function ListingsMap({
   initialMe?: [number, number] | null;
 }) {
   const isDark = useIsDark();
-  const [active, setActive] = useState(false);
-  const dragEnabled = interactive && active;
+  const dragEnabled = interactive;
   // `initialMe` often arrives after mount (async geolocation lookup
   // upstream) — read it directly rather than copying it into state, so a
   // later prop update still takes effect. A manual locate-me tap overrides
@@ -234,18 +236,6 @@ export default function ListingsMap({
           </Marker>
         )}
       </MapContainer>
-
-      {interactive && !active && (
-        <button
-          type="button"
-          onClick={() => setActive(true)}
-          className="absolute inset-0 z-[600] flex items-center justify-center bg-bg/10"
-        >
-          <span className="rounded-full bg-bg/80 px-4 py-2 text-xs font-semibold text-foreground shadow-lg backdrop-blur">
-            {dict.map.tapToInteract}
-          </span>
-        </button>
-      )}
 
       {interactive && (
         <button

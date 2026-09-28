@@ -109,7 +109,7 @@ const en: Dictionary = {
     foundItRequiredError: "Please write a message",
     foundItGenericError: "Couldn't send the message",
     mysteryBoxNotice:
-      "This is a Mystery box! For safety, you only see the location, description, and photos. If you found it, let the poster know using the button below.",
+      "This is a Mystery box! For safety, no phone number is shown. If you found it, let the poster know using the button below.",
     mysteryBoxExpiredNotice: "This mystery box has expired and can no longer be marked as found.",
   },
 
@@ -357,7 +357,6 @@ const en: Dictionary = {
       "Location access was denied. Allow location access for this site in your browser settings.",
     viewListing: "View",
     you: "You",
-    tapToInteract: "Tap to interact with the map",
     nearbyHeading: "Listings near you",
     nearbyHint: "Tap to view on the map",
   },
