@@ -98,6 +98,13 @@ const kk: Dictionary = {
     hideMap: "Картаны жасыру",
     getDirections: "Бағыт алу",
     postedBy: "Хабарландыру авторы",
+    foundItButton: "Мен мұны таптым!",
+    foundItPlaceholder: "Қайдан және қалай тапқаныңызды жазыңыз...",
+    foundItPhotosLabel: "Дәлел үшін сурет қосыңыз (міндетті емес)",
+    foundItSend: "Жіберу",
+    foundItSuccess: "Хабарлама жіберілді! Иесі сізбен байланысады.",
+    foundItRequiredError: "Хабарлама жазыңыз",
+    foundItGenericError: "Хабарламаны жіберу мүмкін болмады",
   },
 
   contactCard: {
@@ -300,6 +307,8 @@ const kk: Dictionary = {
     emptyBody: "Сіз әлі ешқандай хабарландыру бермегенсіз.",
     deleteConfirm: "Бұл хабарландыруды жойғыңыз келеді ме?",
     delete: "Хабарландыруды жою",
+    markResolved: "Табылды деп белгілеу",
+    markActive: "Қайта белсендіру",
   },
 
   ads: {

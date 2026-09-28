@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import ListingsExplorer from "@/components/ListingsExplorer";
 import type { CategoryId, ListingKind } from "@/lib/types";
 import { categories } from "@/lib/data";
-import { getAllActiveListings } from "@/lib/listings";
+import { getAllListings } from "@/lib/listings";
 import { getVisitorCountry } from "@/lib/geo";
 import { getLocale } from "@/lib/i18n/server";
 import { getDictionary } from "@/lib/i18n";
@@ -44,7 +44,7 @@ export default async function ElonlarPage(props: PageProps<"/elonlar">) {
         initialCategory={category}
         initialView={view}
         initialFocus={focus}
-        listings={getAllActiveListings(await getVisitorCountry())}
+        listings={getAllListings(await getVisitorCountry())}
         dict={dict}
         locale={locale}
       />

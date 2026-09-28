@@ -98,6 +98,13 @@ const uz: Dictionary = {
     hideMap: "Xaritani yashirish",
     getDirections: "Yo'nalish olish",
     postedBy: "E'lon egasi",
+    foundItButton: "Men buni topdim!",
+    foundItPlaceholder: "Qayerda va qanday topganingizni yozing...",
+    foundItPhotosLabel: "Isbot uchun rasm qo'shing (ixtiyoriy)",
+    foundItSend: "Yuborish",
+    foundItSuccess: "Xabar yuborildi! Endi e'lon egasi siz bilan bog'lanadi.",
+    foundItRequiredError: "Iltimos, xabar matnini kiriting",
+    foundItGenericError: "Xabarni yuborib bo'lmadi",
   },
 
   contactCard: {
@@ -301,6 +308,8 @@ const uz: Dictionary = {
     emptyBody: "Siz hali e'lon joylashtirmagansiz.",
     deleteConfirm: "Bu e'lonni o'chirmoqchimisiz?",
     delete: "E'lonni o'chirish",
+    markResolved: "Topildi deb belgilash",
+    markActive: "Qayta faollashtirish",
   },
 
   ads: {

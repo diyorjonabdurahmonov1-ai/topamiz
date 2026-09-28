@@ -88,6 +88,13 @@ export interface Dictionary {
     hideMap: string;
     getDirections: string;
     postedBy: string;
+    foundItButton: string;
+    foundItPlaceholder: string;
+    foundItPhotosLabel: string;
+    foundItSend: string;
+    foundItSuccess: string;
+    foundItRequiredError: string;
+    foundItGenericError: string;
   };
 
   contactCard: {
@@ -285,6 +292,8 @@ export interface Dictionary {
     emptyBody: string;
     deleteConfirm: string;
     delete: string;
+    markResolved: string;
+    markActive: string;
   };
 
   ads: {

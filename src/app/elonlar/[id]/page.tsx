@@ -15,6 +15,8 @@ import ReportListingButton from "@/components/ReportListingButton";
 import ListingGallery from "@/components/ListingGallery";
 import ListingLocationMap from "@/components/ListingLocationMap";
 import ListingOwnerCard from "@/components/ListingOwnerCard";
+import FoundItForm from "@/components/FoundItForm";
+import ResolveToggleButton from "@/components/ResolveToggleButton";
 
 export async function generateMetadata(props: PageProps<"/elonlar/[id]">): Promise<Metadata> {
   const { id } = await props.params;
@@ -121,6 +123,20 @@ export default async function ListingDetailPage(props: PageProps<"/elonlar/[id]"
         </div>
 
         <div className="space-y-5">
+          {owner && user?.id === owner.id && (
+            <ResolveToggleButton
+              listingId={listing.id}
+              status={listing.status}
+              dict={dict}
+              className="w-full justify-center py-2.5"
+            />
+          )}
+          {owner &&
+            user?.id !== owner.id &&
+            listing.kind === "lost" &&
+            listing.status === "active" && (
+              <FoundItForm ownerId={owner.id} loggedIn={!!user} dict={dict} />
+            )}
           {owner && ownerIdentity && (
             <ListingOwnerCard
               ownerId={owner.id}

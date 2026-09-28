@@ -113,6 +113,20 @@ export function getAllActiveListings(country: string): Listing[] {
   return rows.map(toListing);
 }
 
+// Same as above but also includes resolved ("found it!") listings — used
+// only by the main browse/search page, so someone who finds a listing via
+// search still sees it (with the resolved overlay) instead of it silently
+// vanishing, which would look like it never existed.
+export function getAllListings(country: string): Listing[] {
+  const rows = db
+    .prepare(
+      `${LISTING_SELECT} WHERE listings.country = ?
+       ORDER BY listings.created_at DESC, listings.id DESC`
+    )
+    .all(country) as RawListingRow[];
+  return rows.map(toListing);
+}
+
 export function getListingById(id: string): Listing | null {
   const numId = Number(id);
   if (!Number.isInteger(numId)) return null;
@@ -235,4 +249,11 @@ export function getListingOwnerId(id: string): number | null {
     | { owner_id: number | null }
     | undefined;
   return row?.owner_id ?? null;
+}
+
+export function setListingStatus(id: string, status: Listing["status"]): boolean {
+  const numId = Number(id);
+  if (!Number.isInteger(numId)) return false;
+  const info = db.prepare("UPDATE listings SET status = ? WHERE id = ?").run(status, numId);
+  return info.changes > 0;
 }

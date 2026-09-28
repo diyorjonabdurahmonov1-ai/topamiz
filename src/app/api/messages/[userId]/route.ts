@@ -1,8 +1,12 @@
 import { NextResponse } from "next/server";
 import { displayIdentity, getCurrentUser, getUserById } from "@/lib/auth";
-import { getThread, markThreadRead, MAX_MESSAGE_LENGTH, sendMessage } from "@/lib/messages";
+import { getThread, markThreadRead, MAX_MESSAGE_LENGTH, MAX_MESSAGE_PHOTOS, sendMessage } from "@/lib/messages";
 import { rateLimit } from "@/lib/rate-limit";
 import { sendPushToUser } from "@/lib/push";
+
+// Uploaded photos only ever come back from POST /api/upload as this prefix —
+// anything else is a client claiming an arbitrary external URL is one of ours.
+const OWN_UPLOAD_PREFIX = "/api/uploads/";
 
 export async function GET(_request: Request, ctx: RouteContext<"/api/messages/[userId]">) {
   const user = await getCurrentUser();
@@ -43,8 +47,13 @@ export async function POST(request: Request, ctx: RouteContext<"/api/messages/[u
   const body = await request.json().catch(() => null);
   const text = typeof body?.body === "string" ? body.body.trim().slice(0, MAX_MESSAGE_LENGTH) : "";
   if (!text) return NextResponse.json({ error: "Xabar bo'sh bo'lishi mumkin emas" }, { status: 400 });
+  const photoUrls = Array.isArray(body?.photoUrls)
+    ? body.photoUrls
+        .filter((u: unknown): u is string => typeof u === "string" && u.startsWith(OWN_UPLOAD_PREFIX))
+        .slice(0, MAX_MESSAGE_PHOTOS)
+    : [];
 
-  const message = sendMessage({ senderId: user.id, recipientId: otherId, body: text });
+  const message = sendMessage({ senderId: user.id, recipientId: otherId, body: text, photoUrls });
 
   const senderIdentity = displayIdentity(user);
   void sendPushToUser(otherId, {

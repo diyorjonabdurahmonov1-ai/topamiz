@@ -98,6 +98,13 @@ const tg: Dictionary = {
     hideMap: "Пинҳон кардани харита",
     getDirections: "Гирифтани роҳ",
     postedBy: "Муаллифи эълон",
+    foundItButton: "Ман инро ёфтам!",
+    foundItPlaceholder: "Дар куҷо ва чӣ тавр ёфтанатонро нависед...",
+    foundItPhotosLabel: "Барои исбот акс илова кунед (ихтиёрӣ)",
+    foundItSend: "Фиристодан",
+    foundItSuccess: "Паём фиристода шуд! Соҳиби эълон бо шумо тамос мегирад.",
+    foundItRequiredError: "Лутфан, паём нависед",
+    foundItGenericError: "Фиристодани паём имконнопазир аст",
   },
 
   contactCard: {
@@ -300,6 +307,8 @@ const tg: Dictionary = {
     emptyBody: "Шумо ҳанӯз ягон эълон нагузоштаед.",
     deleteConfirm: "Ин эълонро нест кунед?",
     delete: "Нест кардани эълон",
+    markResolved: "Ёфт шуд гуфта нишон додан",
+    markActive: "Аз нав фаъол кардан",
   },
 
   ads: {
