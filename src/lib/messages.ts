@@ -11,6 +11,7 @@ export function countAllMessages(): number {
 export interface MessageRow {
   id: number;
   tagId: number | null;
+  listingId: number | null;
   senderId: number | null;
   recipientId: number;
   guestName: string | null;
@@ -24,6 +25,7 @@ export interface MessageRow {
 interface RawMessageRow {
   id: number;
   tag_id: number | null;
+  listing_id: number | null;
   sender_id: number | null;
   recipient_id: number;
   guest_name: string | null;
@@ -38,6 +40,7 @@ function toMessage(row: RawMessageRow): MessageRow {
   return {
     id: row.id,
     tagId: row.tag_id,
+    listingId: row.listing_id,
     senderId: row.sender_id,
     recipientId: row.recipient_id,
     guestName: row.guest_name,
@@ -114,17 +117,19 @@ export function sendMessage(params: {
   recipientId: number;
   body: string;
   tagId?: number;
+  listingId?: number;
   guestName?: string;
   guestPhone?: string;
   photoUrls?: string[];
 }): MessageRow {
   const info = db
     .prepare(
-      `INSERT INTO messages (tag_id, sender_id, recipient_id, guest_name, guest_phone, body, photo_urls)
-       VALUES (?, ?, ?, ?, ?, ?, ?)`
+      `INSERT INTO messages (tag_id, listing_id, sender_id, recipient_id, guest_name, guest_phone, body, photo_urls)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
     )
     .run(
       params.tagId ?? null,
+      params.listingId ?? null,
       params.senderId,
       params.recipientId,
       params.guestName ?? null,
@@ -136,6 +141,43 @@ export function sendMessage(params: {
     .prepare("SELECT * FROM messages WHERE id = ?")
     .get(info.lastInsertRowid) as RawMessageRow;
   return toMessage(row);
+}
+
+export interface ListingClaimant {
+  sender: AuthUser;
+  body: string;
+  photoUrls: string[];
+  createdAt: string;
+}
+
+// The finder claims ("I found this!") submitted on a listing, one per
+// sender (their most recent claim if they sent more than one) — lets the
+// owner see everyone who says they found it and pick who to credit,
+// instead of a claim silently resolving the listing on its own.
+export function getListingClaimants(listingId: number, ownerId: number): ListingClaimant[] {
+  // SQLite's documented bare-column behavior: with a single MAX() in the
+  // result set and a GROUP BY, every other selected column is drawn from
+  // the same row that produced the max — the reliable way to get "the
+  // latest message per sender" without a self-join. MAX(id) rather than
+  // MAX(created_at), since created_at only has second precision and two
+  // claims from the same sender in the same second would otherwise tie.
+  const rows = db
+    .prepare(
+      `SELECT *, MAX(id) AS latest_id FROM messages
+       WHERE listing_id = ? AND recipient_id = ? AND sender_id IS NOT NULL
+       GROUP BY sender_id
+       ORDER BY latest_id ASC`
+    )
+    .all(listingId, ownerId) as RawMessageRow[];
+
+  return rows
+    .map((row) => {
+      const sender = row.sender_id ? getUserById(row.sender_id) : null;
+      if (!sender) return null;
+      const message = toMessage(row);
+      return { sender, body: message.body, photoUrls: message.photoUrls, createdAt: message.createdAt };
+    })
+    .filter((c): c is ListingClaimant => !!c);
 }
 
 export function markThreadRead(userId: number, otherId: number) {

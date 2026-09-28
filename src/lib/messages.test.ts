@@ -5,6 +5,7 @@ import {
   countAllMessages,
   getConversations,
   getGuestNotifications,
+  getListingClaimants,
   getThread,
   markAllGuestNotificationsRead,
   markThreadRead,
@@ -130,6 +131,35 @@ describe("searchUsers", () => {
   it("returns nothing for a blank query", () => {
     const a = makeUser("aziz@example.com", "Aziz");
     expect(searchUsers("   ", a.id)).toEqual([]);
+  });
+});
+
+describe("getListingClaimants", () => {
+  it("lists distinct claimants tied to a listing, most recent claim per sender", () => {
+    const owner = makeUser("egasi@example.com", "Egasi");
+    const a = makeUser("aziz@example.com", "Aziz");
+    const b = makeUser("malika@example.com", "Malika");
+
+    sendMessage({ senderId: a.id, recipientId: owner.id, body: "Men topdim, bog'da", listingId: 1 });
+    sendMessage({ senderId: b.id, recipientId: owner.id, body: "Men ham topdim", listingId: 1 });
+    // Aziz sends a follow-up claim on the same listing — should collapse to one, latest, entry.
+    sendMessage({ senderId: a.id, recipientId: owner.id, body: "Aniqlashtirdim: metro yonida", listingId: 1 });
+    // An unrelated message to the same owner about a different listing must not leak in.
+    sendMessage({ senderId: b.id, recipientId: owner.id, body: "Boshqa elon haqida", listingId: 2 });
+
+    const claimants = getListingClaimants(1, owner.id);
+    expect(claimants).toHaveLength(2);
+    const aziz = claimants.find((c) => c.sender.id === a.id);
+    expect(aziz?.body).toBe("Aniqlashtirdim: metro yonida");
+  });
+
+  it("does not include a claim addressed to someone else", () => {
+    const owner = makeUser("egasi@example.com", "Egasi");
+    const impostor = makeUser("boshqa@example.com", "Boshqa");
+    const finder = makeUser("topuvchi@example.com", "Topuvchi");
+    sendMessage({ senderId: finder.id, recipientId: impostor.id, body: "Men topdim", listingId: 1 });
+
+    expect(getListingClaimants(1, owner.id)).toEqual([]);
   });
 });
 

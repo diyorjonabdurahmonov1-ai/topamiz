@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getCurrentUser, isAdmin } from "@/lib/auth";
 import { deleteListing, getListingById, setListingStatus } from "@/lib/listings";
+import { getListingClaimants } from "@/lib/messages";
 
 export async function DELETE(_request: Request, ctx: RouteContext<"/api/listings/[id]">) {
   const user = await getCurrentUser();
@@ -34,6 +35,17 @@ export async function PATCH(request: Request, ctx: RouteContext<"/api/listings/[
   const status = body?.status === "active" || body?.status === "resolved" ? body.status : null;
   if (!status) return NextResponse.json({ error: "Noto'g'ri holat" }, { status: 400 });
 
-  setListingStatus(id, status);
+  // Crediting a specific finder only ever comes from the owner picking one
+  // of the actual "found it!" claims on this listing — never an arbitrary
+  // user id — so a fabricated request can't credit someone who never claimed it.
+  let resolvedBy: number | null = null;
+  if (status === "resolved" && typeof body?.resolvedBy === "number") {
+    const isRealClaimant = getListingClaimants(Number(id), listing.ownerId ?? -1).some(
+      (c) => c.sender.id === body.resolvedBy
+    );
+    if (isRealClaimant) resolvedBy = body.resolvedBy;
+  }
+
+  setListingStatus(id, status, resolvedBy);
   return NextResponse.json({ ok: true });
 }

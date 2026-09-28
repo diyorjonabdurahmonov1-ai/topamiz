@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { displayIdentity, getCurrentUser, getUserById } from "@/lib/auth";
+import { getListingById } from "@/lib/listings";
 import { getThread, markThreadRead, MAX_MESSAGE_LENGTH, MAX_MESSAGE_PHOTOS, sendMessage } from "@/lib/messages";
 import { rateLimit } from "@/lib/rate-limit";
 import { sendPushToUser } from "@/lib/push";
@@ -53,7 +54,19 @@ export async function POST(request: Request, ctx: RouteContext<"/api/messages/[u
         .slice(0, MAX_MESSAGE_PHOTOS)
     : [];
 
-  const message = sendMessage({ senderId: user.id, recipientId: otherId, body: text, photoUrls });
+  // A "found it" claim only gets tied to the listing when it's genuinely
+  // about it — sent to that listing's own owner while it's still active —
+  // so a claimant can't tag an arbitrary listing onto an unrelated message.
+  const listingIdRaw = body?.listingId;
+  let listingId: number | undefined;
+  if (typeof listingIdRaw === "number" && Number.isInteger(listingIdRaw)) {
+    const listing = getListingById(String(listingIdRaw));
+    if (listing && listing.ownerId === otherId && listing.status === "active") {
+      listingId = listingIdRaw;
+    }
+  }
+
+  const message = sendMessage({ senderId: user.id, recipientId: otherId, body: text, photoUrls, listingId });
 
   const senderIdentity = displayIdentity(user);
   void sendPushToUser(otherId, {

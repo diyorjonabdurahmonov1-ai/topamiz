@@ -42,4 +42,8 @@ export interface Listing {
   lng: number;
   isMysteryBox: boolean;
   expiresAt: string | null;
+  resolvedById: number | null;
+  resolvedByName: string | null;
+  resolvedByAvatarColor: string | null;
+  resolvedByAvatarUrl: string | null;
 }

@@ -17,6 +17,7 @@ import ListingLocationMap from "@/components/ListingLocationMap";
 import ListingOwnerCard from "@/components/ListingOwnerCard";
 import FoundItForm from "@/components/FoundItForm";
 import ResolveToggleButton from "@/components/ResolveToggleButton";
+import ListingClaimants from "@/components/ListingClaimants";
 import CountdownTimer from "@/components/CountdownTimer";
 
 export async function generateMetadata(props: PageProps<"/elonlar/[id]">): Promise<Metadata> {
@@ -78,6 +79,14 @@ export default async function ListingDetailPage(props: PageProps<"/elonlar/[id]"
               <span className="rounded-full border border-border px-3 py-1 text-xs font-semibold text-muted">
                 {dict.common.resolved}
               </span>
+            )}
+            {listing.status === "resolved" && listing.resolvedByName && (
+              <Link
+                href={`/profil/${listing.resolvedById}`}
+                className="flex items-center gap-1 rounded-full border border-success/40 bg-success/10 px-3 py-1 text-xs font-semibold text-success hover:bg-success/20"
+              >
+                {dict.listingDetail.resolvedByLabel}: {listing.resolvedByName}
+              </Link>
             )}
             {!listing.isMysteryBox && listing.reward ? (
               <span className="flex items-center gap-1 rounded-full bg-accent-gold/15 px-3 py-1 text-xs font-semibold text-accent-gold">
@@ -149,12 +158,20 @@ export default async function ListingDetailPage(props: PageProps<"/elonlar/[id]"
               className="w-full justify-center py-2.5"
             />
           )}
+          {owner && user?.id === owner.id && listing.status === "active" && (
+            <ListingClaimants listingId={listing.id} dict={dict} />
+          )}
           {owner &&
             user?.id !== owner.id &&
             listing.status === "active" &&
             !isExpiredMysteryBox &&
             (listing.kind === "lost" || listing.isMysteryBox) && (
-              <FoundItForm ownerId={owner.id} loggedIn={!!user} dict={dict} />
+              <FoundItForm
+                ownerId={owner.id}
+                listingId={Number(listing.id)}
+                loggedIn={!!user}
+                dict={dict}
+              />
             )}
           {owner && ownerIdentity && (
             <ListingOwnerCard

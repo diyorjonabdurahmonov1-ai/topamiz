@@ -9,10 +9,12 @@ import ImageUploader from "./ImageUploader";
 
 export default function FoundItForm({
   ownerId,
+  listingId,
   loggedIn,
   dict,
 }: {
   ownerId: number;
+  listingId: number;
   loggedIn: boolean;
   dict: Dictionary;
 }) {
@@ -52,7 +54,7 @@ export default function FoundItForm({
       const res = await fetch(`/api/messages/${ownerId}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ body: message, photoUrls }),
+        body: JSON.stringify({ body: message, photoUrls, listingId }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? dict.listingDetail.foundItGenericError);

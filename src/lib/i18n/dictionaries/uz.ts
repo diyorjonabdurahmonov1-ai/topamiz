@@ -112,6 +112,11 @@ const uz: Dictionary = {
       "Bu — Sirli quti! Xavfsizlik uchun telefon raqami ko'rsatilmaydi. Topib olsangiz, pastdagi tugma orqali bildiring.",
     mysteryBoxExpiredNotice:
       "Bu Sirli qutining muddati tugagan, endi uni \"topdim\" deb belgilab bo'lmaydi.",
+    claimantsHeading: "Kim topdim deb da'vo qilmoqda?",
+    claimantsHint: "Ulardan birini tanlab tasdiqlagach, e'lon yopiladi. Aldashdan ehtiyot bo'ling.",
+    claimantConfirmButton: "Shu odam topgan, tasdiqlash",
+    claimantConfirming: "Tasdiqlanmoqda...",
+    resolvedByLabel: "Topib bergan",
   },
 
   countdown: {
