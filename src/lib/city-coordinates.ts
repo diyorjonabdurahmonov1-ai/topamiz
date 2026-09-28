@@ -22,6 +22,24 @@ function jitter(seed: number): number {
   return (pseudoRandom - Math.floor(pseudoRandom)) * 2 - 1;
 }
 
+// Reverse-geocoding (see /api/geocode/reverse) can't always match the
+// visitor's address text to one of our fixed cities — this guarantees a
+// result anyway by picking whichever known city center is physically
+// closest to the point they chose, so posting a listing never needs a
+// manual city picker as a fallback.
+export function nearestCityForCoordinates(lat: number, lng: number): string {
+  let closest = "Toshkent";
+  let closestDistance = Infinity;
+  for (const [city, coord] of Object.entries(CITY_COORDINATES)) {
+    const distance = (coord.lat - lat) ** 2 + (coord.lng - lng) ** 2;
+    if (distance < closestDistance) {
+      closestDistance = distance;
+      closest = city;
+    }
+  }
+  return closest;
+}
+
 export function coordinatesForCity(city: string, jitterSeed: number): { lat: number; lng: number } {
   const base = CITY_COORDINATES[city] ?? DEFAULT_COORDINATE;
   const jitterDegrees = 0.012; // ~1.3km at these latitudes

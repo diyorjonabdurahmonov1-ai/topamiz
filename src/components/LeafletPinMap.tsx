@@ -3,7 +3,7 @@
 import "leaflet/dist/leaflet.css";
 import { useEffect, useState } from "react";
 import { divIcon } from "leaflet";
-import { MapContainer, Marker, TileLayer } from "react-leaflet";
+import { MapContainer, Marker, TileLayer, useMap } from "react-leaflet";
 import type { Dictionary } from "@/lib/i18n";
 
 const TILES = "https://tile.openstreetmap.org/{z}/{x}/{y}.png";
@@ -33,6 +33,20 @@ function useIsDark() {
   return isDark;
 }
 
+// react-leaflet only applies MapContainer's `style` prop once, at initial
+// mount — it never re-applies it as the prop object changes on later
+// renders. Leaflet's own touch handlers also don't reliably reclaim
+// pinch-zoom from the browser (which otherwise treats it as native
+// page/image zoom) on their own, so this reaches into the live container
+// directly whenever `active` actually changes.
+function TouchActionSync({ active }: { active: boolean }) {
+  const map = useMap();
+  useEffect(() => {
+    map.getContainer().style.touchAction = active ? "none" : "";
+  }, [active, map]);
+  return null;
+}
+
 export default function LeafletPinMap({ lat, lng, dict }: { lat: number; lng: number; dict: Dictionary }) {
   const isDark = useIsDark();
   const [active, setActive] = useState(false);
@@ -52,6 +66,7 @@ export default function LeafletPinMap({ lat, lng, dict }: { lat: number; lng: nu
         style={{ background: isDark ? "#1a1a2e" : "#eef1f6" }}
       >
         <TileLayer url={TILES} attribution={ATTRIBUTION} />
+        <TouchActionSync active={active} />
         <Marker position={[lat, lng]} icon={PIN_ICON} />
       </MapContainer>
 

@@ -52,6 +52,20 @@ function ClickToPlace({ enabled, onPick }: { enabled: boolean; onPick: (lat: num
   return null;
 }
 
+// react-leaflet only applies MapContainer's `style` prop once, at initial
+// mount — it never re-applies it as the prop object changes on later
+// renders. Leaflet's own touch handlers also don't reliably reclaim
+// pinch-zoom from the browser (which otherwise treats it as native
+// page/image zoom) on their own, so this reaches into the live container
+// directly whenever `active` actually changes.
+function TouchActionSync({ active }: { active: boolean }) {
+  const map = useMap();
+  useEffect(() => {
+    map.getContainer().style.touchAction = active ? "none" : "";
+  }, [active, map]);
+  return null;
+}
+
 export default function LocationPickerMap({
   value,
   onChange,
@@ -80,6 +94,7 @@ export default function LocationPickerMap({
         style={{ background: isDark ? "#1a1a2e" : "#eef1f6" }}
       >
         <TileLayer url={TILES} attribution={ATTRIBUTION} />
+        <TouchActionSync active={active} />
         <ClickToPlace enabled={active} onPick={(lat, lng) => onChange({ lat, lng })} />
         <Recenter target={point} />
         {point && (
