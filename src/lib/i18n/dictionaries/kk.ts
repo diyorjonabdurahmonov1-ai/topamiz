@@ -111,6 +111,11 @@ const kk: Dictionary = {
     mysteryBoxNotice:
       "Бұл — Сырлы қорап! Қауіпсіздік үшін телефон нөмірі көрсетілмейді. Тапсаңыз, төмендегі түйме арқылы хабарлаңыз.",
     mysteryBoxExpiredNotice: "Бұл сырлы қораптың мерзімі аяқталды, оны «таптым» деп белгілеу мүмкін емес.",
+    claimantsHeading: "Кім таптым деп мәлімдеп жатыр?",
+    claimantsHint: "Бірін таңдап растасаңыз, хабарландыру жабылады. Алдануға сақ болыңыз.",
+    claimantConfirmButton: "Осы адам тапты, растау",
+    claimantConfirming: "Расталуда...",
+    resolvedByLabel: "Тапқан",
   },
 
   countdown: {

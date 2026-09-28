@@ -100,6 +100,11 @@ export interface Dictionary {
     foundItGenericError: string;
     mysteryBoxNotice: string;
     mysteryBoxExpiredNotice: string;
+    claimantsHeading: string;
+    claimantsHint: string;
+    claimantConfirmButton: string;
+    claimantConfirming: string;
+    resolvedByLabel: string;
   };
 
   countdown: {

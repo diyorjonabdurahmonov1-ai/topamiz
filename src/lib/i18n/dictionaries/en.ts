@@ -111,6 +111,11 @@ const en: Dictionary = {
     mysteryBoxNotice:
       "This is a Mystery box! For safety, no phone number is shown. If you found it, let the poster know using the button below.",
     mysteryBoxExpiredNotice: "This mystery box has expired and can no longer be marked as found.",
+    claimantsHeading: "Who's claiming to have found it?",
+    claimantsHint: "Pick one and confirm to close the listing. Be careful — someone might be lying.",
+    claimantConfirmButton: "Confirm this person found it",
+    claimantConfirming: "Confirming...",
+    resolvedByLabel: "Found by",
   },
 
   countdown: {

@@ -10,6 +10,7 @@ import {
   getListingStats,
   getRewardedListings,
   incrementListingViews,
+  setListingStatus,
 } from "./listings";
 
 beforeEach(() => {
@@ -132,6 +133,35 @@ describe("createListing location", () => {
 
     expect(listing.lat).toBe(41.31);
     expect(listing.lng).toBe(69.28);
+  });
+});
+
+describe("setListingStatus resolvedBy", () => {
+  it("credits the confirmed finder when resolving", () => {
+    const owner = makeUser("egasi@example.com", "Egasi");
+    const finder = makeUser("topuvchi@example.com", "Topuvchi");
+    const listing = createListing(makeListingParams({ ownerId: owner.id }));
+
+    setListingStatus(listing.id, "resolved", finder.id);
+
+    const resolved = getListingById(listing.id);
+    expect(resolved?.status).toBe("resolved");
+    expect(resolved?.resolvedById).toBe(finder.id);
+    expect(resolved?.resolvedByName).toBe("Topuvchi");
+  });
+
+  it("clears the credited finder on reactivation", () => {
+    const owner = makeUser("egasi@example.com", "Egasi");
+    const finder = makeUser("topuvchi@example.com", "Topuvchi");
+    const listing = createListing(makeListingParams({ ownerId: owner.id }));
+
+    setListingStatus(listing.id, "resolved", finder.id);
+    setListingStatus(listing.id, "active");
+
+    const reactivated = getListingById(listing.id);
+    expect(reactivated?.status).toBe("active");
+    expect(reactivated?.resolvedById).toBeNull();
+    expect(reactivated?.resolvedByName).toBeNull();
   });
 });
 

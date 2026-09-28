@@ -111,6 +111,11 @@ const ky: Dictionary = {
     mysteryBoxNotice:
       "Бул — Сырдуу кутуча! Коопсуздук үчүн телефон номери көрсөтүлбөйт. Тапсаңыз, төмөнкү баскыч аркылуу билдириңиз.",
     mysteryBoxExpiredNotice: "Бул сырдуу кутучанын мөөнөтү бүттү, аны «таптым» деп белгилөө мүмкүн эмес.",
+    claimantsHeading: "Ким таптым деп жатат?",
+    claimantsHint: "Бирин тандап ырастасаңыз, жарыя жабылат. Алдангыдан этият болуңуз.",
+    claimantConfirmButton: "Ушул адам тапты, ырастоо",
+    claimantConfirming: "Ырасталууда...",
+    resolvedByLabel: "Тапкан",
   },
 
   countdown: {

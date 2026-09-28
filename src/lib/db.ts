@@ -213,6 +213,14 @@ const messageColumns = db.prepare("PRAGMA table_info(messages)").all() as { name
 if (!messageColumns.some((c) => c.name === "photo_urls")) {
   db.exec("ALTER TABLE messages ADD COLUMN photo_urls TEXT NOT NULL DEFAULT '[]'");
 }
+// Ties a "I found this" message to the specific listing it's a claim on —
+// added via ALTER rather than the CREATE TABLE above since `listings` (the
+// table it conceptually references) isn't defined until further down this
+// same file on a fresh install.
+if (!messageColumns.some((c) => c.name === "listing_id")) {
+  db.exec("ALTER TABLE messages ADD COLUMN listing_id INTEGER");
+  db.exec("CREATE INDEX IF NOT EXISTS idx_messages_listing ON messages(listing_id)");
+}
 
 // Country-based listing segmentation: existing rows predate this column,
 // so default them to 'UZ' — this app has only ever served Uzbekistan.
@@ -231,6 +239,12 @@ if (!listingColumns.some((c) => c.name === "is_mystery_box")) {
 // no background jobs) once its creator-chosen deadline passes.
 if (!listingColumns.some((c) => c.name === "expires_at")) {
   db.exec("ALTER TABLE listings ADD COLUMN expires_at TEXT");
+}
+// Records which claimed finder the owner confirmed when resolving a
+// listing — cleared back to NULL on reactivation, since a stale credit
+// would otherwise linger on a listing that's active again.
+if (!listingColumns.some((c) => c.name === "resolved_by")) {
+  db.exec("ALTER TABLE listings ADD COLUMN resolved_by INTEGER");
 }
 // Created here rather than in the block above so it works whether `country`
 // came from a fresh install's CREATE TABLE or the ALTER TABLE just above.

@@ -42,25 +42,37 @@ interface RawListingRow {
   lng: number;
   is_mystery_box: number;
   expires_at: string | null;
+  resolved_by: number | null;
   created_at: string;
   owner_name: string | null;
   owner_email: string | null;
   owner_avatar_color: string | null;
   owner_avatar_url: string | null;
+  resolver_name: string | null;
+  resolver_email: string | null;
+  resolver_avatar_color: string | null;
+  resolver_avatar_url: string | null;
 }
 
 // Every listing query joins in just enough of the owner's identity to show
 // an Instagram-style byline on the card without a listing view — routed
 // through displayIdentity() so an admin's own listing still shows as the
 // Findo brand instead of their personal account, same as everywhere else.
+// A second join brings in whichever claimed finder the owner confirmed
+// (resolved_by), so a resolved listing can credit them by name too.
 const LISTING_SELECT = `
   SELECT listings.*,
     users.name AS owner_name,
     users.email AS owner_email,
     users.avatar_color AS owner_avatar_color,
-    users.avatar_url AS owner_avatar_url
+    users.avatar_url AS owner_avatar_url,
+    resolver.name AS resolver_name,
+    resolver.email AS resolver_email,
+    resolver.avatar_color AS resolver_avatar_color,
+    resolver.avatar_url AS resolver_avatar_url
   FROM listings
   LEFT JOIN users ON users.id = listings.owner_id
+  LEFT JOIN users resolver ON resolver.id = listings.resolved_by
 `;
 
 function toListing(row: RawListingRow): Listing {
@@ -73,6 +85,15 @@ function toListing(row: RawListingRow): Listing {
           name: row.owner_name,
           avatarColor: row.owner_avatar_color ?? "#6366f1",
           avatarUrl: row.owner_avatar_url,
+        })
+      : null;
+  const resolverIdentity =
+    row.resolved_by && row.resolver_name
+      ? displayIdentity({
+          email: row.resolver_email ?? "",
+          name: row.resolver_name,
+          avatarColor: row.resolver_avatar_color ?? "#6366f1",
+          avatarUrl: row.resolver_avatar_url,
         })
       : null;
   return {
@@ -105,6 +126,10 @@ function toListing(row: RawListingRow): Listing {
     // parses that exact shape as local time, not UTC, in browsers. Appending
     // a 'Z' makes it an unambiguous ISO instant for every consumer.
     expiresAt: row.expires_at ? `${row.expires_at.replace(" ", "T")}Z` : null,
+    resolvedById: row.resolved_by,
+    resolvedByName: resolverIdentity?.name ?? null,
+    resolvedByAvatarColor: resolverIdentity?.avatarColor ?? null,
+    resolvedByAvatarUrl: resolverIdentity?.avatarUrl ?? null,
   };
 }
 
@@ -287,9 +312,14 @@ export function getListingOwnerId(id: string): number | null {
   return row?.owner_id ?? null;
 }
 
-export function setListingStatus(id: string, status: Listing["status"]): boolean {
+// `resolvedBy` credits the specific claimed finder the owner confirmed —
+// only meaningful when resolving, so it's always cleared back to NULL on
+// reactivation rather than left stale on a listing that's active again.
+export function setListingStatus(id: string, status: Listing["status"], resolvedBy?: number | null): boolean {
   const numId = Number(id);
   if (!Number.isInteger(numId)) return false;
-  const info = db.prepare("UPDATE listings SET status = ? WHERE id = ?").run(status, numId);
+  const info = db
+    .prepare("UPDATE listings SET status = ?, resolved_by = ? WHERE id = ?")
+    .run(status, status === "resolved" ? (resolvedBy ?? null) : null, numId);
   return info.changes > 0;
 }
