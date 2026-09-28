@@ -98,6 +98,13 @@ const ru: Dictionary = {
     hideMap: "Скрыть карту",
     getDirections: "Проложить маршрут",
     postedBy: "Автор объявления",
+    foundItButton: "Я нашёл это!",
+    foundItPlaceholder: "Опишите, где и как вы это нашли...",
+    foundItPhotosLabel: "Добавьте фото в подтверждение (необязательно)",
+    foundItSend: "Отправить",
+    foundItSuccess: "Сообщение отправлено! Владелец свяжется с вами.",
+    foundItRequiredError: "Пожалуйста, напишите сообщение",
+    foundItGenericError: "Не удалось отправить сообщение",
   },
 
   contactCard: {
@@ -300,6 +307,8 @@ const ru: Dictionary = {
     emptyBody: "Вы ещё не разместили ни одного объявления.",
     deleteConfirm: "Удалить это объявление?",
     delete: "Удалить объявление",
+    markResolved: "Отметить как найденное",
+    markActive: "Возобновить",
   },
 
   ads: {

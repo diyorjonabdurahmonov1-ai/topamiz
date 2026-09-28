@@ -2,6 +2,7 @@ import { db } from "./db";
 import { getUserById, type AuthUser } from "./auth";
 
 export const MAX_MESSAGE_LENGTH = 2000;
+export const MAX_MESSAGE_PHOTOS = 3;
 
 export function countAllMessages(): number {
   return (db.prepare("SELECT COUNT(*) as c FROM messages").get() as { c: number }).c;
@@ -15,6 +16,7 @@ export interface MessageRow {
   guestName: string | null;
   guestPhone: string | null;
   body: string;
+  photoUrls: string[];
   createdAt: string;
   readAt: string | null;
 }
@@ -27,6 +29,7 @@ interface RawMessageRow {
   guest_name: string | null;
   guest_phone: string | null;
   body: string;
+  photo_urls: string;
   created_at: string;
   read_at: string | null;
 }
@@ -40,6 +43,7 @@ function toMessage(row: RawMessageRow): MessageRow {
     guestName: row.guest_name,
     guestPhone: row.guest_phone,
     body: row.body,
+    photoUrls: JSON.parse(row.photo_urls) as string[],
     createdAt: row.created_at,
     readAt: row.read_at,
   };
@@ -112,11 +116,12 @@ export function sendMessage(params: {
   tagId?: number;
   guestName?: string;
   guestPhone?: string;
+  photoUrls?: string[];
 }): MessageRow {
   const info = db
     .prepare(
-      `INSERT INTO messages (tag_id, sender_id, recipient_id, guest_name, guest_phone, body)
-       VALUES (?, ?, ?, ?, ?, ?)`
+      `INSERT INTO messages (tag_id, sender_id, recipient_id, guest_name, guest_phone, body, photo_urls)
+       VALUES (?, ?, ?, ?, ?, ?, ?)`
     )
     .run(
       params.tagId ?? null,
@@ -124,7 +129,8 @@ export function sendMessage(params: {
       params.recipientId,
       params.guestName ?? null,
       params.guestPhone ?? null,
-      params.body
+      params.body,
+      JSON.stringify(params.photoUrls ?? [])
     );
   const row = db
     .prepare("SELECT * FROM messages WHERE id = ?")

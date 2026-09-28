@@ -98,6 +98,13 @@ const en: Dictionary = {
     hideMap: "Hide map",
     getDirections: "Get directions",
     postedBy: "Posted by",
+    foundItButton: "I found this!",
+    foundItPlaceholder: "Describe where and how you found it...",
+    foundItPhotosLabel: "Add a photo as proof (optional)",
+    foundItSend: "Send",
+    foundItSuccess: "Message sent! The owner will get in touch with you.",
+    foundItRequiredError: "Please write a message",
+    foundItGenericError: "Couldn't send the message",
   },
 
   contactCard: {
@@ -300,6 +307,8 @@ const en: Dictionary = {
     emptyBody: "You haven't posted any listings yet.",
     deleteConfirm: "Delete this listing?",
     delete: "Delete listing",
+    markResolved: "Mark as found",
+    markActive: "Reactivate",
   },
 
   ads: {

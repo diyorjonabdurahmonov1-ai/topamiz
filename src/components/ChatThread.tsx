@@ -71,6 +71,20 @@ export default function ChatThread({
                       : "rounded-tl-sm bg-surface-2 text-foreground"
                   }`}
                 >
+                  {m.photoUrls.length > 0 && (
+                    <div className="mb-2 flex flex-wrap gap-1.5">
+                      {m.photoUrls.map((url) => (
+                        <a key={url} href={url} target="_blank" rel="noopener noreferrer">
+                          {/* eslint-disable-next-line @next/next/no-img-element -- runtime-uploaded file served from /api/uploads, not a build-time asset */}
+                          <img
+                            src={url}
+                            alt=""
+                            className="h-20 w-20 rounded-lg border border-white/20 object-cover"
+                          />
+                        </a>
+                      ))}
+                    </div>
+                  )}
                   {m.body}
                 </div>
               </div>

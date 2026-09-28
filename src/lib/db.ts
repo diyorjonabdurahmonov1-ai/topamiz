@@ -64,6 +64,7 @@ db.exec(`
     guest_name TEXT,
     guest_phone TEXT,
     body TEXT NOT NULL,
+    photo_urls TEXT NOT NULL DEFAULT '[]',
     created_at TEXT NOT NULL DEFAULT (datetime('now')),
     read_at TEXT
   );
@@ -203,6 +204,13 @@ if (!userColumns2.some((c) => c.name === "blocked_at")) {
 }
 if (!userColumns2.some((c) => c.name === "moderation_strikes")) {
   db.exec("ALTER TABLE users ADD COLUMN moderation_strikes INTEGER NOT NULL DEFAULT 0");
+}
+
+// Lets a message carry proof photos — used by the "I found this" flow on a
+// lost listing, so a finder can attach a picture instead of just text.
+const messageColumns = db.prepare("PRAGMA table_info(messages)").all() as { name: string }[];
+if (!messageColumns.some((c) => c.name === "photo_urls")) {
+  db.exec("ALTER TABLE messages ADD COLUMN photo_urls TEXT NOT NULL DEFAULT '[]'");
 }
 
 // Country-based listing segmentation: existing rows predate this column,
