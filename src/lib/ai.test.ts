@@ -10,6 +10,7 @@ function makeListing(overrides: Partial<Listing>): Listing {
     ownerAvatarColor: null,
     ownerAvatarUrl: null,
     isMysteryBox: false,
+    expiresAt: null,
     kind: "found",
     title: "",
     description: "",

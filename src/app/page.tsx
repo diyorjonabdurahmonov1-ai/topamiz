@@ -2,7 +2,7 @@ import AdShowcase from "@/components/AdShowcase";
 import HomeTabs from "@/components/HomeTabs";
 import HomeMapPreview from "@/components/HomeMapPreview";
 import { getActiveAds } from "@/lib/ads";
-import { getAllActiveListings, getRewardedListings } from "@/lib/listings";
+import { getAllActiveListings, getMysteryBoxListings, getRewardedListings } from "@/lib/listings";
 import { getVisitorCountry } from "@/lib/geo";
 import { getLocale } from "@/lib/i18n/server";
 import { getDictionary } from "@/lib/i18n";
@@ -19,6 +19,7 @@ export default async function Home() {
     .filter((l) => l.kind === "found")
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
   const allRewarded = getRewardedListings(country);
+  const allMysteryBox = getMysteryBoxListings(country);
   const ads = getActiveAds();
   const nearby = active.slice(0, 12);
 
@@ -46,9 +47,11 @@ export default async function Home() {
           lost={allLost.slice(0, 8)}
           found={allFound.slice(0, 8)}
           rewarded={allRewarded.slice(0, 8)}
+          mysteryBox={allMysteryBox.slice(0, 8)}
           lostCount={allLost.length}
           foundCount={allFound.length}
           rewardedCount={allRewarded.length}
+          mysteryBoxCount={allMysteryBox.length}
           dict={dict}
           locale={locale}
           mapPreview={<HomeMapPreview listings={nearby} dict={dict} locale={locale} />}

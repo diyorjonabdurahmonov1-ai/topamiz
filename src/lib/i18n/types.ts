@@ -54,6 +54,7 @@ export interface Dictionary {
     lost: string;
     found: string;
     rewarded: string;
+    mysteryBox: string;
     viewAll: string;
     itemsSuffix: string;
     emptyTitle: string;
@@ -97,6 +98,17 @@ export interface Dictionary {
     foundItSuccess: string;
     foundItRequiredError: string;
     foundItGenericError: string;
+    mysteryBoxNotice: string;
+    mysteryBoxExpiredNotice: string;
+  };
+
+  countdown: {
+    label: string;
+    days: string;
+    hours: string;
+    minutes: string;
+    seconds: string;
+    expired: string;
   };
 
   contactCard: {
@@ -155,6 +167,42 @@ export interface Dictionary {
     successKindFound: string;
     postAnother: string;
     viewAllListings: string;
+    mysteryBoxCalloutTitle: string;
+    mysteryBoxCalloutBody: string;
+    mysteryBoxCalloutButton: string;
+  };
+
+  mysteryBoxForm: {
+    pageTitle: string;
+    pageSubtitle: string;
+    explainHeading: string;
+    explainBody: string;
+    explainBullet1: string;
+    explainBullet2: string;
+    explainBullet3: string;
+    titleLabel: string;
+    titlePlaceholder: string;
+    descriptionLabel: string;
+    descriptionPlaceholder: string;
+    extraInfoLabel: string;
+    extraInfoPlaceholder: string;
+    photosHeading: string;
+    photosRequiredError: string;
+    mapPickerHint: string;
+    locationRequiredError: string;
+    expiryLabel: string;
+    expiryHint: string;
+    expiryRequiredError: string;
+    expiryPastError: string;
+    expiryTooFarError: string;
+    requiredFieldsError: string;
+    genericError: string;
+    submitting: string;
+    submit: string;
+    successTitle: string;
+    successBody: string;
+    backToNormalLink: string;
+    viewMysteryBoxLink: string;
   };
 
   rewarded: {

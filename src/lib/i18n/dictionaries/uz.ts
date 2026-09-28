@@ -64,6 +64,7 @@ const uz: Dictionary = {
     lost: "Yo'qolgan",
     found: "Topilgan",
     rewarded: "Mukofotli",
+    mysteryBox: "Sirli quti",
     viewAll: "Barchasini ko'rish",
     itemsSuffix: "buyumlar",
     emptyTitle: "Hozircha e'lonlar yo'q",
@@ -107,6 +108,19 @@ const uz: Dictionary = {
     foundItSuccess: "Xabar yuborildi! Endi e'lon egasi siz bilan bog'lanadi.",
     foundItRequiredError: "Iltimos, xabar matnini kiriting",
     foundItGenericError: "Xabarni yuborib bo'lmadi",
+    mysteryBoxNotice:
+      "Bu — Sirli quti! Xavfsizlik uchun faqat lokatsiya, tavsif va rasmlarni ko'rasiz. Topib olsangiz, pastdagi tugma orqali bildiring.",
+    mysteryBoxExpiredNotice:
+      "Bu Sirli qutining muddati tugagan, endi uni \"topdim\" deb belgilab bo'lmaydi.",
+  },
+
+  countdown: {
+    label: "Tugashiga qoldi:",
+    days: "kun",
+    hours: "soat",
+    minutes: "daq",
+    seconds: "son",
+    expired: "Muddati tugagan",
   },
 
   contactCard: {
@@ -166,6 +180,45 @@ const uz: Dictionary = {
     successKindFound: "topilgan",
     postAnother: "Yana e'lon joylash",
     viewAllListings: "Barcha e'lonlarni ko'rish",
+    mysteryBoxCalloutTitle: "Sirli quti yaratmoqchimisiz?",
+    mysteryBoxCalloutBody: "Sovg'a, chegirma yoki qiziqarli topilma yashiring — odamlar uni qidirib topsin!",
+    mysteryBoxCalloutButton: "Sirli quti yaratish",
+  },
+
+  mysteryBoxForm: {
+    pageTitle: "Sirli quti yaratish",
+    pageSubtitle:
+      "Odamlar qidirib topadigan qiziqarli e'lon joylang — oddiy yo'qolgan yoki topilgan buyum uchun emas.",
+    explainHeading: "Bu bo'lim nima uchun?",
+    explainBody:
+      "Sirli quti — o'yin va targ'ibot uchun maxsus bo'lim: masalan, biror joyga sovg'a yoki pul yashirib, odamlarni uni topishga taklif qilasiz, yoki hamkor kafe chegirma kodini shu yerda joylaydi. Bu YO'QOLGAN yoki TOPILGAN haqiqiy buyumlar uchun emas — ular uchun oddiy e'lon bo'limidan foydalaning.",
+    explainBullet1: "Faqat lokatsiya, tavsif va rasmlar ko'rinadi — telefon raqami so'ralmaydi.",
+    explainBullet2: "E'lon siz belgilagan muddatgacha faol bo'ladi, so'ng avtomatik yashiriladi.",
+    explainBullet3:
+      "Kimdir uni topsa, \"Men buni topdim!\" tugmasi orqali sizga to'g'ridan-to'g'ri xabar yozadi.",
+    titleLabel: "Sarlavha *",
+    titlePlaceholder: "Masalan: Instagramdagi Sirli quti #1",
+    descriptionLabel: "Tavsif *",
+    descriptionPlaceholder: "Nima yashiringan, qanday topish mumkinligini yozing...",
+    extraInfoLabel: "Qo'shimcha ma'lumot (ixtiyoriy)",
+    extraInfoPlaceholder: "Masalan: qo'shimcha maslahat yoki shart-sharoitlar...",
+    photosHeading: "Rasm qo'shish *",
+    photosRequiredError: "Kamida bitta rasm yuklang",
+    mapPickerHint: "Xaritadan aniq nuqtani belgilang — shahar avtomatik aniqlanadi.",
+    locationRequiredError: "Iltimos, xaritadan joylashuvni belgilang",
+    expiryLabel: "Amal qilish muddati *",
+    expiryHint: "Bu vaqtdan keyin e'lon ro'yxatdan avtomatik yashiriladi.",
+    expiryRequiredError: "Iltimos, amal qilish muddatini tanlang",
+    expiryPastError: "Amal qilish muddati kelajakda bo'lishi kerak",
+    expiryTooFarError: "Amal qilish muddati juda uzoq tanlangan",
+    requiredFieldsError: "Iltimos, * bilan belgilangan barcha maydonlarni to'ldiring.",
+    genericError: "Xatolik yuz berdi",
+    submitting: "Joylanmoqda...",
+    submit: "Sirli qutini joylash",
+    successTitle: "Sirli quti joylandi!",
+    successBody: "E'loningiz Sirli quti bo'limida ko'rinadi. Kimdir uni topganda sizga xabar keladi.",
+    backToNormalLink: "Oddiy e'lon joylashga qaytish",
+    viewMysteryBoxLink: "Sirli quti bo'limini ko'rish",
   },
 
   rewarded: {

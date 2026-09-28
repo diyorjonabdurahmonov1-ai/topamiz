@@ -41,4 +41,5 @@ export interface Listing {
   lat: number;
   lng: number;
   isMysteryBox: boolean;
+  expiresAt: string | null;
 }

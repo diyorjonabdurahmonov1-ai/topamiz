@@ -41,6 +41,7 @@ interface RawListingRow {
   lat: number;
   lng: number;
   is_mystery_box: number;
+  expires_at: string | null;
   created_at: string;
   owner_name: string | null;
   owner_email: string | null;
@@ -99,6 +100,7 @@ function toListing(row: RawListingRow): Listing {
     lat: row.lat,
     lng: row.lng,
     isMysteryBox: !!row.is_mystery_box,
+    expiresAt: row.expires_at,
   };
 }
 
@@ -148,13 +150,15 @@ export function getRewardedListings(country: string): Listing[] {
   return rows.map(toListing);
 }
 
-// "Sirli quti" — admin-flagged promotional listings (a hidden prize, a
-// partner's discount code) get their own dedicated page, separate from
-// ordinary lost/found browsing.
+// "Sirli quti" — creative promotional listings (a hidden prize, a partner's
+// discount code) get their own dedicated page, separate from ordinary
+// lost/found browsing. No background jobs run in this app, so an expired
+// box is filtered out here at query time rather than deactivated by a cron.
 export function getMysteryBoxListings(country: string): Listing[] {
   const rows = db
     .prepare(
       `${LISTING_SELECT} WHERE listings.status = 'active' AND listings.country = ? AND listings.is_mystery_box = 1
+       AND (listings.expires_at IS NULL OR listings.expires_at > datetime('now'))
        ORDER BY listings.created_at DESC, listings.id DESC`
     )
     .all(country) as RawListingRow[];
@@ -223,12 +227,14 @@ export function createListing(params: {
   country: string;
   lat?: number;
   lng?: number;
+  isMysteryBox?: boolean;
+  expiresAt?: string | null;
 }): Listing {
   const info = db
     .prepare(
       `INSERT INTO listings
-        (owner_id, kind, title, description, category, city, district, reward, contact_name, contact_phone, photo_urls, country, lat, lng)
-       VALUES (@ownerId, @kind, @title, @description, @category, @city, @district, @reward, @contactName, @contactPhone, @photoUrls, @country, @lat, @lng)`
+        (owner_id, kind, title, description, category, city, district, reward, contact_name, contact_phone, photo_urls, country, lat, lng, is_mystery_box, expires_at)
+       VALUES (@ownerId, @kind, @title, @description, @category, @city, @district, @reward, @contactName, @contactPhone, @photoUrls, @country, @lat, @lng, @isMysteryBox, @expiresAt)`
     )
     .run({
       ownerId: params.ownerId,
@@ -245,6 +251,8 @@ export function createListing(params: {
       country: params.country,
       lat: params.lat ?? null,
       lng: params.lng ?? null,
+      isMysteryBox: params.isMysteryBox ? 1 : 0,
+      expiresAt: params.expiresAt ?? null,
     });
   const newId = Number(info.lastInsertRowid);
   // No precise location supplied (poster skipped "use my location") — fall

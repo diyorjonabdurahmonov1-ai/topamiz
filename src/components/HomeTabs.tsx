@@ -2,21 +2,23 @@
 
 import { useState, type ReactNode } from "react";
 import Link from "next/link";
-import { ArrowUpRight, Gift, PackageSearch, Search, SearchX } from "lucide-react";
+import { ArrowUpRight, Gift, PackageSearch, Search, SearchX, Sparkles } from "lucide-react";
 import type { Listing } from "@/lib/types";
 import type { Dictionary, Locale } from "@/lib/i18n";
 import { formatItemsCount } from "@/lib/i18n/format";
 import ListingsGrid from "@/components/ListingsGrid";
 
-type TabKey = "lost" | "found" | "rewarded";
+type TabKey = "lost" | "found" | "rewarded" | "mysteryBox";
 
 export default function HomeTabs({
   lost,
   found,
   rewarded,
+  mysteryBox,
   lostCount,
   foundCount,
   rewardedCount,
+  mysteryBoxCount,
   dict,
   locale,
   mapPreview,
@@ -24,9 +26,11 @@ export default function HomeTabs({
   lost: Listing[];
   found: Listing[];
   rewarded: Listing[];
+  mysteryBox: Listing[];
   lostCount: number;
   foundCount: number;
   rewardedCount: number;
+  mysteryBoxCount: number;
   dict: Dictionary;
   locale: Locale;
   mapPreview?: ReactNode;
@@ -65,20 +69,29 @@ export default function HomeTabs({
       gradient: "linear-gradient(135deg, var(--accent-gold), var(--accent-gold-2))",
       tint: "var(--accent-gold)",
     },
+    {
+      key: "mysteryBox",
+      label: dict.tabs.mysteryBox,
+      icon: Sparkles,
+      href: "/sirli-quti",
+      gradient: "linear-gradient(135deg, var(--accent-gold), var(--brand-via))",
+      tint: "var(--brand-via)",
+    },
   ];
 
-  const listingsByTab: Record<TabKey, Listing[]> = { lost, found, rewarded };
+  const listingsByTab: Record<TabKey, Listing[]> = { lost, found, rewarded, mysteryBox };
   const countByTab: Record<TabKey, number> = {
     lost: lostCount,
     found: foundCount,
     rewarded: rewardedCount,
+    mysteryBox: mysteryBoxCount,
   };
   const activeTab = TABS.find((t) => t.key === active);
   const activeListings = active ? listingsByTab[active] : [];
 
   return (
     <div className="mt-8">
-      <div className="grid grid-cols-3 gap-3 sm:gap-4">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
         {TABS.map((tab) => {
           const isActive = active === tab.key;
           return (
