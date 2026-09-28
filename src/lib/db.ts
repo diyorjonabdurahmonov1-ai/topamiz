@@ -219,6 +219,13 @@ const listingColumns = db.prepare("PRAGMA table_info(listings)").all() as { name
 if (!listingColumns.some((c) => c.name === "country")) {
   db.exec("ALTER TABLE listings ADD COLUMN country TEXT NOT NULL DEFAULT 'UZ'");
 }
+
+// "Sirli quti" (mystery box) — admin-flagged promotional listings (a hidden
+// cash prize, a partner cafe's discount code, etc.) that get their own
+// section instead of blending into ordinary lost/found listings.
+if (!listingColumns.some((c) => c.name === "is_mystery_box")) {
+  db.exec("ALTER TABLE listings ADD COLUMN is_mystery_box INTEGER NOT NULL DEFAULT 0");
+}
 // Created here rather than in the block above so it works whether `country`
 // came from a fresh install's CREATE TABLE or the ALTER TABLE just above.
 db.exec("CREATE INDEX IF NOT EXISTS idx_listings_status_country ON listings(status, country)");

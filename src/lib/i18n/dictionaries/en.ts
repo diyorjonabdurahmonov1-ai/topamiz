@@ -26,6 +26,7 @@ const en: Dictionary = {
   nav: {
     listings: "Listings",
     rewarded: "Rewarded",
+    mysteryBox: "Mystery box",
     ads: "Ads",
     messages: "Messages",
     login: "Log in",
@@ -89,6 +90,7 @@ const en: Dictionary = {
 
   listingCard: {
     resolved: "Resolved ✓",
+    mysteryBox: "Mystery box",
   },
 
   listingDetail: {
@@ -175,6 +177,14 @@ const en: Dictionary = {
     safetyNote: "Only collect a reward by meeting the owner in person, in an open, safe place.",
     emptyTitle: "No rewarded listings yet",
     emptyBody: "If you offer a reward for a lost item, it will appear here.",
+  },
+
+  mysteryBox: {
+    title: "Mystery box",
+    subtitle: "Find rewards and discounts hidden by Findo's partners — head to the spot and claim yours!",
+    activeCount: "Active mystery boxes",
+    emptyTitle: "No mystery boxes yet",
+    emptyBody: "New games and rewards will appear here soon.",
   },
 
   login: {

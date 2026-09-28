@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Gift } from "lucide-react";
+import { Gift, Sparkles } from "lucide-react";
 import type { Listing } from "@/lib/types";
 import type { Dictionary } from "@/lib/i18n";
 import { categoryIcons } from "@/lib/icons";
@@ -10,7 +10,11 @@ export default function ListingCard({ listing, dict }: { listing: Listing; dict:
   const Icon = categoryIcons[listing.category];
 
   return (
-    <div className="card-hover group relative flex flex-col overflow-hidden rounded-xl border border-border bg-surface">
+    <div
+      className={`card-hover group relative flex flex-col overflow-hidden rounded-xl border bg-surface ${
+        listing.isMysteryBox ? "border-accent-gold/60 ring-1 ring-accent-gold/40" : "border-border"
+      }`}
+    >
       {/* Full-card "go to listing" link, laid under everything else — the
           owner byline below sits on top of it with pointer-events-auto so
           its own tap goes to the profile instead, without nesting anchors. */}
@@ -54,15 +58,22 @@ export default function ListingCard({ listing, dict }: { listing: Listing; dict:
           </div>
         )}
 
-        <span
-          className={`absolute left-1.5 top-1.5 rounded-full px-2 py-0.5 text-[10px] font-semibold shadow ${
-            listing.kind === "lost"
-              ? "bg-danger/90 text-white"
-              : "bg-success/90 text-white"
-          }`}
-        >
-          {listing.kind === "lost" ? dict.common.lost : dict.common.found}
-        </span>
+        {listing.isMysteryBox ? (
+          <span className="absolute left-1.5 top-1.5 flex items-center gap-1 rounded-full bg-gradient-to-r from-accent-gold to-brand-via px-2 py-0.5 text-[10px] font-semibold text-white shadow">
+            <Sparkles className="h-3 w-3" />
+            {dict.listingCard.mysteryBox}
+          </span>
+        ) : (
+          <span
+            className={`absolute left-1.5 top-1.5 rounded-full px-2 py-0.5 text-[10px] font-semibold shadow ${
+              listing.kind === "lost"
+                ? "bg-danger/90 text-white"
+                : "bg-success/90 text-white"
+            }`}
+          >
+            {listing.kind === "lost" ? dict.common.lost : dict.common.found}
+          </span>
+        )}
 
         {listing.reward ? (
           <span className="absolute right-1.5 top-1.5 flex items-center gap-1 rounded-full bg-accent-gold px-2 py-0.5 text-[10px] font-semibold text-white shadow">

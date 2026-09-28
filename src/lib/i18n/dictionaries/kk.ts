@@ -26,6 +26,7 @@ const kk: Dictionary = {
   nav: {
     listings: "Хабарландырулар",
     rewarded: "Сыйлықты",
+    mysteryBox: "Сырлы қорап",
     ads: "Жарнама",
     messages: "Хабарлар",
     login: "Кіру",
@@ -89,6 +90,7 @@ const kk: Dictionary = {
 
   listingCard: {
     resolved: "Шешілді ✓",
+    mysteryBox: "Сырлы қорап",
   },
 
   listingDetail: {
@@ -175,6 +177,14 @@ const kk: Dictionary = {
     safetyNote: "Сыйлықты тек зат иесімен ашық және қауіпсіз жерде жүздесіп алыңыз.",
     emptyTitle: "Әзірге сыйлықты хабарландыру жоқ",
     emptyBody: "Жоғалған затыңызға сыйлық ұсынсаңыз, ол осы жерде көрінеді.",
+  },
+
+  mysteryBox: {
+    title: "Сырлы қорап",
+    subtitle: "Findo серіктестері жасырған сыйлықтар мен жеңілдіктерді табыңыз — жерге барып, өзіңізге алыңыз!",
+    activeCount: "Белсенді сырлы қораптар",
+    emptyTitle: "Әзірге сырлы қорап жоқ",
+    emptyBody: "Жақында мұнда жаңа ойындар мен сыйлықтар пайда болады.",
   },
 
   login: {

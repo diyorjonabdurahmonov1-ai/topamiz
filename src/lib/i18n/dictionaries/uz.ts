@@ -26,6 +26,7 @@ const uz: Dictionary = {
   nav: {
     listings: "E'lonlar",
     rewarded: "Mukofotli",
+    mysteryBox: "Sirli quti",
     ads: "Reklama",
     messages: "Xabarlar",
     login: "Kirish",
@@ -89,6 +90,7 @@ const uz: Dictionary = {
 
   listingCard: {
     resolved: "Hal qilindi ✓",
+    mysteryBox: "Sirli quti",
   },
 
   listingDetail: {
@@ -175,6 +177,14 @@ const uz: Dictionary = {
     safetyNote: "Mukofotni faqat buyum egasi bilan bevosita, ochiq va xavfsiz joyda uchrashib oling.",
     emptyTitle: "Hozircha mukofotli e'lon yo'q",
     emptyBody: "Yo'qolgan buyumingizga mukofot taklif qilsangiz, u shu yerda ko'rinadi.",
+  },
+
+  mysteryBox: {
+    title: "Sirli quti",
+    subtitle: "Findo hamkorlari yashirgan mukofot va chegirmalarni toping — lokatsiyaga boring, topib oling!",
+    activeCount: "Faol Sirli quti",
+    emptyTitle: "Hozircha Sirli quti yo'q",
+    emptyBody: "Tez orada yangi o'yin va mukofotlar shu yerda paydo bo'ladi.",
   },
 
   login: {
