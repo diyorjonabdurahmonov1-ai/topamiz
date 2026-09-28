@@ -100,7 +100,11 @@ function toListing(row: RawListingRow): Listing {
     lat: row.lat,
     lng: row.lng,
     isMysteryBox: !!row.is_mystery_box,
-    expiresAt: row.expires_at,
+    // Stored as a naive "YYYY-MM-DD HH:MM:SS" UTC string (to compare directly
+    // against SQLite's own datetime('now') at query time) — but `new Date()`
+    // parses that exact shape as local time, not UTC, in browsers. Appending
+    // a 'Z' makes it an unambiguous ISO instant for every consumer.
+    expiresAt: row.expires_at ? `${row.expires_at.replace(" ", "T")}Z` : null,
   };
 }
 
