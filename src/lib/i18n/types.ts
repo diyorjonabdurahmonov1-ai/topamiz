@@ -340,7 +340,6 @@ export interface Dictionary {
     locationPermissionDenied: string;
     viewListing: string;
     you: string;
-    tapToInteract: string;
     nearbyHeading: string;
     nearbyHint: string;
   };

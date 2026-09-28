@@ -109,7 +109,7 @@ const uz: Dictionary = {
     foundItRequiredError: "Iltimos, xabar matnini kiriting",
     foundItGenericError: "Xabarni yuborib bo'lmadi",
     mysteryBoxNotice:
-      "Bu — Sirli quti! Xavfsizlik uchun faqat lokatsiya, tavsif va rasmlarni ko'rasiz. Topib olsangiz, pastdagi tugma orqali bildiring.",
+      "Bu — Sirli quti! Xavfsizlik uchun telefon raqami ko'rsatilmaydi. Topib olsangiz, pastdagi tugma orqali bildiring.",
     mysteryBoxExpiredNotice:
       "Bu Sirli qutining muddati tugagan, endi uni \"topdim\" deb belgilab bo'lmaydi.",
   },
@@ -361,7 +361,6 @@ const uz: Dictionary = {
       "Joylashuvga ruxsat berilmagan. Brauzeringiz sozlamalaridan bu sayt uchun joylashuvga ruxsat bering.",
     viewListing: "Ko'rish",
     you: "Siz",
-    tapToInteract: "Xaritani boshqarish uchun bosing",
     nearbyHeading: "Yaqiningizdagi e'lonlar",
     nearbyHint: "Xaritada ko'rish uchun bosing",
   },

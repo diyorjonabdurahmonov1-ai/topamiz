@@ -156,6 +156,18 @@ export default async function ListingDetailPage(props: PageProps<"/elonlar/[id]"
             (listing.kind === "lost" || listing.isMysteryBox) && (
               <FoundItForm ownerId={owner.id} loggedIn={!!user} dict={dict} />
             )}
+          {owner && ownerIdentity && (
+            <ListingOwnerCard
+              ownerId={owner.id}
+              name={ownerIdentity.name}
+              avatarColor={ownerIdentity.avatarColor}
+              avatarUrl={ownerIdentity.avatarUrl}
+              viewerIsOwner={user?.id === owner.id}
+              viewerIsLoggedIn={!!user}
+              viewerIsFriend={viewerIsFriend}
+              dict={dict}
+            />
+          )}
           {listing.isMysteryBox ? (
             <div className="rounded-2xl border border-accent-gold/30 bg-accent-gold/5 p-5 text-xs leading-relaxed text-muted">
               <p className="flex items-center gap-1.5 font-semibold text-accent-gold">
@@ -169,21 +181,7 @@ export default async function ListingDetailPage(props: PageProps<"/elonlar/[id]"
               </p>
             </div>
           ) : (
-            <>
-              {owner && ownerIdentity && (
-                <ListingOwnerCard
-                  ownerId={owner.id}
-                  name={ownerIdentity.name}
-                  avatarColor={ownerIdentity.avatarColor}
-                  avatarUrl={ownerIdentity.avatarUrl}
-                  viewerIsOwner={user?.id === owner.id}
-                  viewerIsLoggedIn={!!user}
-                  viewerIsFriend={viewerIsFriend}
-                  dict={dict}
-                />
-              )}
-              <ContactCard name={listing.contactName} phone={listing.contactPhone} dict={dict} />
-            </>
+            <ContactCard name={listing.contactName} phone={listing.contactPhone} dict={dict} />
           )}
         </div>
       </div>
