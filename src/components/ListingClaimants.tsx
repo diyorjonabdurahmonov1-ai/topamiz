@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { CheckCircle2, Loader2, Users } from "lucide-react";
 import type { Dictionary } from "@/lib/i18n";
 import Avatar from "./Avatar";
+import PhotoLightbox from "./PhotoLightbox";
 
 interface Claimant {
   id: number;
@@ -23,6 +24,7 @@ export default function ListingClaimants({ listingId, dict }: { listingId: strin
   const router = useRouter();
   const [claimants, setClaimants] = useState<Claimant[] | null>(null);
   const [confirmingId, setConfirmingId] = useState<number | null>(null);
+  const [lightboxUrl, setLightboxUrl] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -81,13 +83,14 @@ export default function ListingClaimants({ listingId, dict }: { listingId: strin
             {claimant.photoUrls.length > 0 && (
               <div className="mt-2 flex flex-wrap gap-2">
                 {claimant.photoUrls.map((url) => (
-                  // eslint-disable-next-line @next/next/no-img-element -- uploaded to /api/uploads at runtime, not a build-time asset
-                  <img
-                    key={url}
-                    src={url}
-                    alt=""
-                    className="h-16 w-16 rounded-lg border border-border object-cover"
-                  />
+                  <button key={url} type="button" onClick={() => setLightboxUrl(url)}>
+                    {/* eslint-disable-next-line @next/next/no-img-element -- uploaded to /api/uploads at runtime, not a build-time asset */}
+                    <img
+                      src={url}
+                      alt=""
+                      className="h-16 w-16 rounded-lg border border-border object-cover"
+                    />
+                  </button>
                 ))}
               </div>
             )}
@@ -109,6 +112,10 @@ export default function ListingClaimants({ listingId, dict }: { listingId: strin
           </div>
         ))}
       </div>
+
+      {lightboxUrl && (
+        <PhotoLightbox url={lightboxUrl} dict={dict} onClose={() => setLightboxUrl(null)} />
+      )}
     </div>
   );
 }
