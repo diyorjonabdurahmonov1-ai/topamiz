@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import dynamic from "next/dynamic";
-import { ChevronDown, Loader2, MapPin, Navigation } from "lucide-react";
+import { ChevronDown, Loader2, Navigation } from "lucide-react";
 import type { Dictionary } from "@/lib/i18n";
 
 const LeafletPinMap = dynamic(() => import("./LeafletPinMap"), {
@@ -32,16 +32,24 @@ export default function ListingLocationMap({
 
   return (
     <div>
+      {/* Uses the same "Navigation" icon and accent color as the Get
+          Directions button below it, so it visually reads as the start of
+          that same action rather than a plain, easy-to-miss location label —
+          people were not realizing this was clickable at all. */}
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        aria-label={open ? dict.listingDetail.hideMap : dict.listingDetail.showOnMap}
-        className="flex items-center gap-1.5 text-sm text-muted hover:text-foreground"
+        className="inline-flex items-center gap-2 rounded-xl border border-brand-via/30 bg-brand-via/5 px-4 py-2.5 text-sm font-semibold text-brand-via transition-colors hover:bg-brand-via/10"
       >
-        <MapPin className="h-4 w-4" />
-        {city}
-        {district ? `, ${district}` : ""}
-        <ChevronDown className={`h-3.5 w-3.5 transition-transform ${open ? "rotate-180" : ""}`} />
+        <Navigation className="h-4 w-4 shrink-0" />
+        <span>
+          {city}
+          {district ? `, ${district}` : ""}
+        </span>
+        <span className="text-xs font-medium text-muted">
+          · {open ? dict.listingDetail.hideMap : dict.listingDetail.showOnMap}
+        </span>
+        <ChevronDown className={`h-3.5 w-3.5 shrink-0 transition-transform ${open ? "rotate-180" : ""}`} />
       </button>
 
       {open && (
