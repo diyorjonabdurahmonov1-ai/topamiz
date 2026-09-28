@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, type FormEvent } from "react";
 import { Send } from "lucide-react";
 import type { MessageRow } from "@/lib/messages";
 import type { Dictionary } from "@/lib/i18n";
+import PhotoLightbox from "./PhotoLightbox";
 
 export default function ChatThread({
   otherUserId,
@@ -19,6 +20,7 @@ export default function ChatThread({
   const [messages, setMessages] = useState<MessageRow[]>(initialMessages);
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
+  const [lightboxUrl, setLightboxUrl] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -74,14 +76,14 @@ export default function ChatThread({
                   {m.photoUrls.length > 0 && (
                     <div className="mb-2 flex flex-wrap gap-1.5">
                       {m.photoUrls.map((url) => (
-                        <a key={url} href={url} target="_blank" rel="noopener noreferrer">
+                        <button key={url} type="button" onClick={() => setLightboxUrl(url)}>
                           {/* eslint-disable-next-line @next/next/no-img-element -- runtime-uploaded file served from /api/uploads, not a build-time asset */}
                           <img
                             src={url}
                             alt=""
                             className="h-20 w-20 rounded-lg border border-white/20 object-cover"
                           />
-                        </a>
+                        </button>
                       ))}
                     </div>
                   )}
@@ -109,6 +111,10 @@ export default function ChatThread({
           <Send className="h-4 w-4" />
         </button>
       </form>
+
+      {lightboxUrl && (
+        <PhotoLightbox url={lightboxUrl} dict={dict} onClose={() => setLightboxUrl(null)} />
+      )}
     </div>
   );
 }
