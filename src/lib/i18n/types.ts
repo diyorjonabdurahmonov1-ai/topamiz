@@ -118,7 +118,6 @@ export interface Dictionary {
     descriptionLabel: string;
     descriptionPlaceholder: string;
     categoryLabel: string;
-    cityLabel: string;
     districtLabel: string;
     districtPlaceholder: string;
     mapPickerHint: string;
@@ -126,7 +125,9 @@ export interface Dictionary {
     locating: string;
     locateMeSuccess: string;
     locateMeError: string;
+    locateMePermissionDenied: string;
     detectingLocation: string;
+    locationRequiredError: string;
     photosHeading: string;
     rewardHeading: string;
     rewardHint: string;
@@ -271,6 +272,7 @@ export interface Dictionary {
     myLocationButton: string;
     locating: string;
     locationError: string;
+    locationPermissionDenied: string;
     viewListing: string;
     you: string;
     tapToInteract: string;

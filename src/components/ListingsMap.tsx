@@ -75,6 +75,20 @@ function FlyTo({ target }: { target: [number, number] | null }) {
   return null;
 }
 
+// react-leaflet only applies MapContainer's `style` prop once, at initial
+// mount — it never re-applies it as the prop object changes on later
+// renders. Leaflet's own touch handlers also don't reliably reclaim
+// pinch-zoom from the browser (which otherwise treats it as native
+// page/image zoom) on their own, so this reaches into the live container
+// directly whenever `active` actually changes.
+function TouchActionSync({ active }: { active: boolean }) {
+  const map = useMap();
+  useEffect(() => {
+    map.getContainer().style.touchAction = active ? "none" : "";
+  }, [active, map]);
+  return null;
+}
+
 export default function ListingsMap({
   listings,
   dict,
@@ -130,8 +144,13 @@ export default function ListingsMap({
         setMeOverride([position.coords.latitude, position.coords.longitude]);
         setLocating(false);
       },
-      () => {
-        setLocateError(dict.map.locationError);
+      (err) => {
+        // A browser never re-shows its permission prompt after the visitor
+        // has already denied it once — the only way forward is for them to
+        // flip it back on themselves in the browser's own site settings.
+        setLocateError(
+          err.code === err.PERMISSION_DENIED ? dict.map.locationPermissionDenied : dict.map.locationError
+        );
         setLocating(false);
       },
       { enableHighAccuracy: true, timeout: 10000 }
@@ -161,6 +180,7 @@ export default function ListingsMap({
         style={{ background: isDark ? "#1a1a2e" : "#eef1f6" }}
       >
         <TileLayer url={TILES} attribution={ATTRIBUTION} />
+        <TouchActionSync active={dragEnabled} />
         <FitBounds bounds={bounds} />
         <FlyTo target={me} />
 

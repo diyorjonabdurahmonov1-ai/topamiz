@@ -34,7 +34,7 @@ export default function PostListingForm({ dict, locale }: { dict: Dictionary; lo
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState<CategoryId>("hujjatlar");
-  const [city, setCity] = useState(cities[0]);
+  const [city, setCity] = useState("");
   const [district, setDistrict] = useState("");
   const [reward, setReward] = useState("");
   const [contactName, setContactName] = useState("");
@@ -77,8 +77,15 @@ export default function PostListingForm({ dict, locale }: { dict: Dictionary; lo
         handleCoordsChange({ lat: position.coords.latitude, lng: position.coords.longitude });
         setLocating(false);
       },
-      () => {
-        setLocateError(dict.postListing.locateMeError);
+      (err) => {
+        // A browser never re-shows its permission prompt after the visitor
+        // has already denied it once — the only way forward is for them to
+        // flip it back on themselves in the browser's own site settings.
+        setLocateError(
+          err.code === err.PERMISSION_DENIED
+            ? dict.postListing.locateMePermissionDenied
+            : dict.postListing.locateMeError
+        );
         setLocating(false);
       },
       { enableHighAccuracy: true, timeout: 10000 }
@@ -89,6 +96,10 @@ export default function PostListingForm({ dict, locale }: { dict: Dictionary; lo
     e.preventDefault();
     if (!title.trim() || !description.trim() || !contactName.trim() || !contactPhone.trim()) {
       setError(dict.postListing.requiredFieldsError);
+      return;
+    }
+    if (!city) {
+      setError(dict.postListing.locationRequiredError);
       return;
     }
     setError("");
@@ -125,7 +136,7 @@ export default function PostListingForm({ dict, locale }: { dict: Dictionary; lo
     setTitle("");
     setDescription("");
     setCategory("hujjatlar");
-    setCity(cities[0]);
+    setCity("");
     setDistrict("");
     setReward("");
     setContactName("");
@@ -251,25 +262,6 @@ export default function PostListingForm({ dict, locale }: { dict: Dictionary; lo
             </div>
             <div>
               <label className="mb-1.5 block text-xs font-semibold text-muted">
-                {dict.postListing.cityLabel}
-              </label>
-              <div className="relative">
-                <MapPin className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
-                <select
-                  value={city}
-                  onChange={(e) => setCity(e.target.value)}
-                  className="w-full rounded-xl border border-border bg-bg-elevated px-9 py-2.5 text-sm focus:outline-none"
-                >
-                  {cities.map((c) => (
-                    <option key={c} value={c}>
-                      {c}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-            <div className="sm:col-span-2">
-              <label className="mb-1.5 block text-xs font-semibold text-muted">
                 {dict.postListing.districtLabel}
               </label>
               <input
@@ -306,6 +298,12 @@ export default function PostListingForm({ dict, locale }: { dict: Dictionary; lo
                 <span className="flex items-center gap-1.5 text-xs font-medium text-muted">
                   <Loader2 className="h-3.5 w-3.5 animate-spin" />
                   {dict.postListing.detectingLocation}
+                </span>
+              )}
+              {!detecting && city && (
+                <span className="flex items-center gap-1.5 rounded-xl border border-success/40 bg-success/10 px-3.5 py-2 text-xs font-semibold text-success">
+                  <MapPin className="h-3.5 w-3.5" />
+                  {city}
                 </span>
               )}
             </div>
