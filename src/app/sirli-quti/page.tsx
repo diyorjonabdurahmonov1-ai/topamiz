@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { Sparkles } from "lucide-react";
+import Link from "next/link";
+import { Plus, Sparkles } from "lucide-react";
 import ListingsGrid from "@/components/ListingsGrid";
 import StatCard from "@/components/StatCard";
 import { getMysteryBoxListings } from "@/lib/listings";
@@ -26,6 +27,13 @@ export default async function MysteryBoxPage() {
         <div className="mx-auto mt-7 max-w-xs">
           <StatCard icon={Sparkles} value={String(boxes.length)} label={dict.mysteryBox.activeCount} />
         </div>
+        <Link
+          href="/elon-qoshish/sirli-quti"
+          className="mt-6 inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-accent-gold to-brand-via px-5 py-2.5 text-sm font-bold text-white"
+        >
+          <Plus className="h-4 w-4" />
+          {dict.postListing.mysteryBoxCalloutButton}
+        </Link>
       </div>
 
       {boxes.length === 0 ? (

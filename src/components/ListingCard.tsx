@@ -5,6 +5,7 @@ import type { Dictionary } from "@/lib/i18n";
 import { categoryIcons } from "@/lib/icons";
 import { formatSom } from "@/lib/data";
 import Avatar from "./Avatar";
+import CountdownTimer from "./CountdownTimer";
 
 export default function ListingCard({ listing, dict }: { listing: Listing; dict: Dictionary }) {
   const Icon = categoryIcons[listing.category];
@@ -75,7 +76,9 @@ export default function ListingCard({ listing, dict }: { listing: Listing; dict:
           </span>
         )}
 
-        {listing.reward ? (
+        {listing.isMysteryBox && listing.expiresAt ? (
+          <CountdownTimer expiresAt={listing.expiresAt} dict={dict} size="compact" />
+        ) : listing.reward ? (
           <span className="absolute right-1.5 top-1.5 flex items-center gap-1 rounded-full bg-accent-gold px-2 py-0.5 text-[10px] font-semibold text-white shadow">
             <Gift className="h-3 w-3" />
             {formatSom(listing.reward)}

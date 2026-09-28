@@ -98,6 +98,7 @@ db.exec(`
     country TEXT NOT NULL DEFAULT 'UZ',
     lat REAL,
     lng REAL,
+    expires_at TEXT,
     created_at TEXT NOT NULL DEFAULT (datetime('now'))
   );
 
@@ -225,6 +226,11 @@ if (!listingColumns.some((c) => c.name === "country")) {
 // section instead of blending into ordinary lost/found listings.
 if (!listingColumns.some((c) => c.name === "is_mystery_box")) {
   db.exec("ALTER TABLE listings ADD COLUMN is_mystery_box INTEGER NOT NULL DEFAULT 0");
+}
+// Lets a Sirli quti listing auto-expire (query-time filtered — this app has
+// no background jobs) once its creator-chosen deadline passes.
+if (!listingColumns.some((c) => c.name === "expires_at")) {
+  db.exec("ALTER TABLE listings ADD COLUMN expires_at TEXT");
 }
 // Created here rather than in the block above so it works whether `country`
 // came from a fresh install's CREATE TABLE or the ALTER TABLE just above.
