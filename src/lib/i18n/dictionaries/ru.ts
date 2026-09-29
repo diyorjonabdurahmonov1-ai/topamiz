@@ -187,6 +187,11 @@ const ru: Dictionary = {
     mysteryBoxCalloutTitle: "Хотите создать тайную коробку?",
     mysteryBoxCalloutButton: "Создать тайную коробку",
     mysteryBoxCalloutBody: "Спрячьте приз, скидку или интересную находку — пусть люди её ищут!",
+    redactHeading: "Скройте конфиденциальные данные",
+    redactHint: "Закрасьте пальцем номер документа, серию или другой конфиденциальный текст чёрным.",
+    redactUndo: "Отменить",
+    redactSkip: "Загрузить как есть",
+    redactDone: "Готово",
   },
 
   mysteryBoxForm: {

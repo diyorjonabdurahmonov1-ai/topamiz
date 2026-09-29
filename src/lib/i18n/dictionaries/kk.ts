@@ -187,6 +187,11 @@ const kk: Dictionary = {
     mysteryBoxCalloutTitle: "Сырлы қорап жасағыңыз келе ме?",
     mysteryBoxCalloutButton: "Сырлы қорап жасау",
     mysteryBoxCalloutBody: "Сыйлық, жеңілдік немесе қызықты олжаны жасырыңыз — адамдар оны іздеп тапсын!",
+    redactHeading: "Нәзік ақпаратты жасырыңыз",
+    redactHint: "Құжат нөмірі, сериясы немесе басқа нәзік жазуларды саусағыңызбен сызып, қара түспен жабыңыз.",
+    redactUndo: "Болдырмау",
+    redactSkip: "Өзгеріссіз жүктеу",
+    redactDone: "Дайын",
   },
 
   mysteryBoxForm: {

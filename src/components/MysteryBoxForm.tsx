@@ -265,7 +265,7 @@ export default function MysteryBoxForm({ dict }: { dict: Dictionary }) {
           {dict.mysteryBoxForm.photosHeading}
         </h2>
         <div className="mt-3">
-          <ImageUploader onChange={setImageUrls} />
+          <ImageUploader onChange={setImageUrls} dict={dict} />
         </div>
       </div>
 

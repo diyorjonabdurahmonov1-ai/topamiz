@@ -187,6 +187,11 @@ const tg: Dictionary = {
     mysteryBoxCalloutTitle: "Мехоҳед қуттии асроромез созед?",
     mysteryBoxCalloutButton: "Сохтани қуттии асроромез",
     mysteryBoxCalloutBody: "Мукофот, тахфиф ё ёфтаи ҷолибро пинҳон кунед — бигзор мардум онро ҷустуҷӯ кунанд!",
+    redactHeading: "Маълумоти ҳассосро пинҳон кунед",
+    redactHint: "Рақами ҳуҷҷат, силсила ё дигар навиштаҳои ҳассосро бо ангушт кашида, бо ранги сиёҳ пӯшонед.",
+    redactUndo: "Бекор кардан",
+    redactSkip: "Бе тағйирот бор кардан",
+    redactDone: "Тайёр",
   },
 
   mysteryBoxForm: {

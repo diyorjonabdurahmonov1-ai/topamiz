@@ -318,7 +318,7 @@ export default function PostListingForm({ dict, locale }: { dict: Dictionary; lo
           {dict.postListing.photosHeading}
         </h2>
         <div className="mt-3">
-          <ImageUploader onChange={setImageUrls} />
+          <ImageUploader onChange={setImageUrls} dict={dict} allowRedaction={category === "hujjatlar"} />
         </div>
       </div>
 

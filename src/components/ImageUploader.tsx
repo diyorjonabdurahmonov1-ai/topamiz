@@ -2,6 +2,8 @@
 
 import { useRef, useState } from "react";
 import { AlertCircle, ImagePlus, Loader2, X } from "lucide-react";
+import type { Dictionary } from "@/lib/i18n";
+import PhotoRedactModal from "./PhotoRedactModal";
 
 interface UploadImage {
   id: string;
@@ -15,11 +17,19 @@ const MAX_IMAGES = 5;
 
 export default function ImageUploader({
   onChange,
+  dict,
+  allowRedaction = false,
 }: {
   onChange?: (urls: string[]) => void;
+  dict: Dictionary;
+  // Offers a black-out-before-upload editor for each selected photo — only
+  // worth the extra step for document/card photos, which is why callers
+  // opt in rather than every photo upload in the app getting it.
+  allowRedaction?: boolean;
 }) {
   const [images, setImages] = useState<UploadImage[]>([]);
   const [dragActive, setDragActive] = useState(false);
+  const [pendingQueue, setPendingQueue] = useState<{ id: string; file: File }[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
 
   function report(list: UploadImage[]) {
@@ -66,7 +76,12 @@ export default function ImageUploader({
       status: "uploading",
     }));
     setImages((prev) => [...prev, ...added]);
-    added.forEach((img, i) => uploadFile(img.id, files[i]));
+
+    if (allowRedaction) {
+      setPendingQueue((prev) => [...prev, ...added.map((img, i) => ({ id: img.id, file: files[i] }))]);
+    } else {
+      added.forEach((img, i) => uploadFile(img.id, files[i]));
+    }
   }
 
   function removeImage(id: string) {
@@ -75,6 +90,23 @@ export default function ImageUploader({
       report(next);
       return next;
     });
+  }
+
+  const pending = pendingQueue[0] ?? null;
+
+  function advanceQueue(id: string, file: File) {
+    // The visible thumbnail should reflect what actually gets uploaded —
+    // swap it to the (possibly redacted) final file rather than leaving the
+    // original preview showing.
+    setImages((prev) =>
+      prev.map((img) => {
+        if (img.id !== id) return img;
+        URL.revokeObjectURL(img.previewUrl);
+        return { ...img, previewUrl: URL.createObjectURL(file) };
+      })
+    );
+    uploadFile(id, file);
+    setPendingQueue((prev) => prev.slice(1));
   }
 
   const canAddMore = images.length < MAX_IMAGES;
@@ -150,6 +182,16 @@ export default function ImageUploader({
             </div>
           ))}
         </div>
+      )}
+
+      {pending && (
+        <PhotoRedactModal
+          key={pending.id}
+          file={pending.file}
+          dict={dict}
+          onDone={(redacted) => advanceQueue(pending.id, redacted)}
+          onSkip={() => advanceQueue(pending.id, pending.file)}
+        />
       )}
     </div>
   );
