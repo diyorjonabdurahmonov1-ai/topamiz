@@ -187,6 +187,11 @@ const ky: Dictionary = {
     mysteryBoxCalloutTitle: "Сырдуу кутуча түзгүңүз келеби?",
     mysteryBoxCalloutButton: "Сырдуу кутуча түзүү",
     mysteryBoxCalloutBody: "Сыйлык, арзандатуу же кызыктуу олжону жашырыңыз — адамдар аны издеп табышсын!",
+    redactHeading: "Нозик маалыматты жашырыңыз",
+    redactHint: "Документ номери, сериясы же башка нозик жазууларды манжаңыз менен сызып, кара түс менен жабыңыз.",
+    redactUndo: "Жокко чыгаруу",
+    redactSkip: "Өзгөртүүсүз жүктөө",
+    redactDone: "Даяр",
   },
 
   mysteryBoxForm: {

@@ -113,7 +113,7 @@ export default function TagForm({ dict }: { dict: Dictionary }) {
           {dict.tags.photoHeading}
         </h2>
         <div className="mt-3">
-          <ImageUploader onChange={setImageUrls} />
+          <ImageUploader onChange={setImageUrls} dict={dict} />
         </div>
       </div>
 

@@ -188,6 +188,12 @@ const uz: Dictionary = {
     mysteryBoxCalloutTitle: "Sirli quti yaratmoqchimisiz?",
     mysteryBoxCalloutBody: "Sovg'a, chegirma yoki qiziqarli topilma yashiring — odamlar uni qidirib topsin!",
     mysteryBoxCalloutButton: "Sirli quti yaratish",
+    redactHeading: "Nozik ma'lumotlarni yashiring",
+    redactHint:
+      "Hujjat raqami, seriya yoki boshqa nozik yozuvlar ustidan barmog'ingiz bilan chizib, qora rang bilan yoping.",
+    redactUndo: "Bekor qilish",
+    redactSkip: "O'zgarishsiz yuklash",
+    redactDone: "Tayyor",
   },
 
   mysteryBoxForm: {

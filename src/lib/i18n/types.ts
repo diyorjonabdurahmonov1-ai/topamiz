@@ -175,6 +175,11 @@ export interface Dictionary {
     mysteryBoxCalloutTitle: string;
     mysteryBoxCalloutBody: string;
     mysteryBoxCalloutButton: string;
+    redactHeading: string;
+    redactHint: string;
+    redactUndo: string;
+    redactSkip: string;
+    redactDone: string;
   };
 
   mysteryBoxForm: {

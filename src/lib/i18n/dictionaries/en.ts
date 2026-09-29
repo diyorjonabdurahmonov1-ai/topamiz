@@ -187,6 +187,11 @@ const en: Dictionary = {
     mysteryBoxCalloutTitle: "Want to create a mystery box?",
     mysteryBoxCalloutButton: "Create a mystery box",
     mysteryBoxCalloutBody: "Hide a prize, discount, or fun find — let people hunt it down!",
+    redactHeading: "Hide sensitive information",
+    redactHint: "Draw over the document number, series, or any other sensitive text to black it out.",
+    redactUndo: "Undo",
+    redactSkip: "Upload as-is",
+    redactDone: "Done",
   },
 
   mysteryBoxForm: {

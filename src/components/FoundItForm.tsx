@@ -97,7 +97,7 @@ export default function FoundItForm({
       <p className="mb-1.5 mt-3 text-xs font-semibold text-muted">
         {dict.listingDetail.foundItPhotosLabel}
       </p>
-      <ImageUploader onChange={setPhotoUrls} />
+      <ImageUploader onChange={setPhotoUrls} dict={dict} />
       {error && <p className="mt-2 text-xs font-medium text-danger">{error}</p>}
       <div className="mt-3 flex gap-2">
         <button
