@@ -136,10 +136,13 @@ function toListing(row: RawListingRow): Listing {
 // `country` filters listings down to the visitor's own country (detected via
 // IP, see lib/geo.ts) so that as this site expands beyond Uzbekistan, users
 // in different countries never see each other's listings mixed together.
+// Excludes Sirli quti listings — they have their own dedicated, login-gated
+// page (getMysteryBoxListings) and must never surface in the general
+// lost/found feed this powers (home page tabs, etc).
 export function getAllActiveListings(country: string): Listing[] {
   const rows = db
     .prepare(
-      `${LISTING_SELECT} WHERE listings.status = 'active' AND listings.country = ?
+      `${LISTING_SELECT} WHERE listings.status = 'active' AND listings.country = ? AND listings.is_mystery_box = 0
        ORDER BY listings.created_at DESC, listings.id DESC`
     )
     .all(country) as RawListingRow[];
@@ -149,11 +152,12 @@ export function getAllActiveListings(country: string): Listing[] {
 // Same as above but also includes resolved ("found it!") listings — used
 // only by the main browse/search page, so someone who finds a listing via
 // search still sees it (with the resolved overlay) instead of it silently
-// vanishing, which would look like it never existed.
+// vanishing, which would look like it never existed. Also excludes Sirli
+// quti listings, same reason as getAllActiveListings above.
 export function getAllListings(country: string): Listing[] {
   const rows = db
     .prepare(
-      `${LISTING_SELECT} WHERE listings.country = ?
+      `${LISTING_SELECT} WHERE listings.country = ? AND listings.is_mystery_box = 0
        ORDER BY listings.created_at DESC, listings.id DESC`
     )
     .all(country) as RawListingRow[];

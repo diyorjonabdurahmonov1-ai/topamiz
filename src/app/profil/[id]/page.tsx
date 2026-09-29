@@ -30,7 +30,9 @@ export default async function PublicProfilePage(props: PageProps<"/profil/[id]">
   if (!user) notFound();
   const locale = await getLocale();
   const dict = getDictionary(locale);
-  const listings = getListingsByOwner(user.id).filter((l) => l.status === "active");
+  const listings = getListingsByOwner(user.id)
+    .filter((l) => l.status === "active")
+    .filter((l) => currentUser || !l.isMysteryBox);
   const friendCount = getFriendCount(user.id);
   const viewerIsFriend = currentUser ? isFriend(currentUser.id, user.id) : false;
 

@@ -243,6 +243,8 @@ const uz: Dictionary = {
     activeCount: "Faol Sirli quti",
     emptyTitle: "Hozircha Sirli quti yo'q",
     emptyBody: "Tez orada yangi o'yin va mukofotlar shu yerda paydo bo'ladi.",
+    loginRequiredTitle: "Sirli qutini ko'rish uchun kiring",
+    loginRequiredBody: "Bu bo'lim faqat ro'yxatdan o'tgan foydalanuvchilar uchun ochiq.",
   },
 
   login: {

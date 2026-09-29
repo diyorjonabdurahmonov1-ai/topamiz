@@ -240,6 +240,8 @@ const en: Dictionary = {
     activeCount: "Active mystery boxes",
     emptyTitle: "No mystery boxes yet",
     emptyBody: "New games and rewards will appear here soon.",
+    loginRequiredTitle: "Sign in to see the Mystery box",
+    loginRequiredBody: "This section is only open to signed-in users.",
   },
 
   login: {
