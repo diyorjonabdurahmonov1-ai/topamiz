@@ -3,14 +3,18 @@ import HomeTabs from "@/components/HomeTabs";
 import HomeMapPreview from "@/components/HomeMapPreview";
 import { getActiveAds } from "@/lib/ads";
 import { getAllActiveListings, getMysteryBoxListings, getRewardedListings } from "@/lib/listings";
+import { getCurrentUser } from "@/lib/auth";
 import { getVisitorCountry } from "@/lib/geo";
 import { getLocale } from "@/lib/i18n/server";
 import { getDictionary } from "@/lib/i18n";
+
+const TAB_PREVIEW_SIZE = 4;
 
 export default async function Home() {
   const country = await getVisitorCountry();
   const locale = await getLocale();
   const dict = getDictionary(locale);
+  const user = await getCurrentUser();
   const active = getAllActiveListings(country);
   const allLost = [...active]
     .filter((l) => l.kind === "lost")
@@ -19,7 +23,9 @@ export default async function Home() {
     .filter((l) => l.kind === "found")
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
   const allRewarded = getRewardedListings(country);
-  const allMysteryBox = getMysteryBoxListings(country);
+  // Sirli quti is login-gated — a guest never gets this data at all, not
+  // just a hidden UI element.
+  const allMysteryBox = user ? getMysteryBoxListings(country) : [];
   const ads = getActiveAds();
   const nearby = active.slice(0, 12);
 
@@ -44,16 +50,12 @@ export default async function Home() {
       <div className="relative mx-auto max-w-7xl px-4 py-6 pb-10 sm:px-6 sm:py-8 lg:px-8">
         <AdShowcase ads={ads} dict={dict} />
         <HomeTabs
-          lost={allLost.slice(0, 8)}
-          found={allFound.slice(0, 8)}
-          rewarded={allRewarded.slice(0, 8)}
-          mysteryBox={allMysteryBox.slice(0, 8)}
-          lostCount={allLost.length}
-          foundCount={allFound.length}
-          rewardedCount={allRewarded.length}
-          mysteryBoxCount={allMysteryBox.length}
+          lost={allLost.slice(0, TAB_PREVIEW_SIZE)}
+          found={allFound.slice(0, TAB_PREVIEW_SIZE)}
+          rewarded={allRewarded.slice(0, TAB_PREVIEW_SIZE)}
+          mysteryBox={allMysteryBox.slice(0, TAB_PREVIEW_SIZE)}
+          mysteryBoxLoggedIn={!!user}
           dict={dict}
-          locale={locale}
           mapPreview={<HomeMapPreview listings={nearby} dict={dict} locale={locale} />}
         />
       </div>

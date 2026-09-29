@@ -226,6 +226,8 @@ export interface Dictionary {
     activeCount: string;
     emptyTitle: string;
     emptyBody: string;
+    loginRequiredTitle: string;
+    loginRequiredBody: string;
   };
 
   login: {

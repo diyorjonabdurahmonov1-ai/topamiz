@@ -5,7 +5,7 @@ import type { Listing } from "@/lib/types";
 import type { Dictionary } from "@/lib/i18n";
 import ListingCard from "./ListingCard";
 
-const PAGE_SIZE = 12;
+const PAGE_SIZE = 16;
 
 export default function ListingsGrid({ listings, dict }: { listings: Listing[]; dict: Dictionary }) {
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);

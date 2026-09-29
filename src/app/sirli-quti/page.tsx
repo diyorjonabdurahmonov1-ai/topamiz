@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { Plus, Sparkles } from "lucide-react";
 import ListingsGrid from "@/components/ListingsGrid";
 import StatCard from "@/components/StatCard";
 import { getMysteryBoxListings } from "@/lib/listings";
+import { getCurrentUser } from "@/lib/auth";
 import { getVisitorCountry } from "@/lib/geo";
 import { getLocale } from "@/lib/i18n/server";
 import { getDictionary } from "@/lib/i18n";
@@ -13,6 +15,8 @@ export const metadata: Metadata = {
 };
 
 export default async function MysteryBoxPage() {
+  const user = await getCurrentUser();
+  if (!user) redirect("/kirish");
   const boxes = getMysteryBoxListings(await getVisitorCountry());
   const dict = getDictionary(await getLocale());
 

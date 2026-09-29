@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { ArrowLeft, Calendar1, Eye, Gift, Sparkles } from "lucide-react";
 import { formatDate, formatSom } from "@/lib/data";
 import { categoryIcons } from "@/lib/icons";
@@ -31,8 +31,10 @@ export default async function ListingDetailPage(props: PageProps<"/elonlar/[id]"
   const listing = getListingById(id);
   if (!listing) notFound();
 
-  incrementListingViews(id);
   const user = await getCurrentUser();
+  if (listing.isMysteryBox && !user) redirect("/kirish");
+
+  incrementListingViews(id);
   const locale = await getLocale();
   const dict = getDictionary(locale);
   const Icon = categoryIcons[listing.category];

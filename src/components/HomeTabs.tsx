@@ -2,10 +2,9 @@
 
 import { useState, type ReactNode } from "react";
 import Link from "next/link";
-import { ArrowUpRight, Gift, PackageSearch, Search, SearchX, Sparkles } from "lucide-react";
+import { ArrowUpRight, Gift, Lock, PackageSearch, Search, SearchX, Sparkles } from "lucide-react";
 import type { Listing } from "@/lib/types";
-import type { Dictionary, Locale } from "@/lib/i18n";
-import { formatItemsCount } from "@/lib/i18n/format";
+import type { Dictionary } from "@/lib/i18n";
 import ListingsGrid from "@/components/ListingsGrid";
 
 type TabKey = "lost" | "found" | "rewarded" | "mysteryBox";
@@ -15,24 +14,19 @@ export default function HomeTabs({
   found,
   rewarded,
   mysteryBox,
-  lostCount,
-  foundCount,
-  rewardedCount,
-  mysteryBoxCount,
+  mysteryBoxLoggedIn,
   dict,
-  locale,
   mapPreview,
 }: {
   lost: Listing[];
   found: Listing[];
   rewarded: Listing[];
   mysteryBox: Listing[];
-  lostCount: number;
-  foundCount: number;
-  rewardedCount: number;
-  mysteryBoxCount: number;
+  // Sirli quti listings are only ever fetched for a signed-in visitor (see
+  // the home page) — a guest selecting this tab sees a login prompt instead
+  // of the (always empty, for them) grid.
+  mysteryBoxLoggedIn: boolean;
   dict: Dictionary;
-  locale: Locale;
   mapPreview?: ReactNode;
 }) {
   const [active, setActive] = useState<TabKey | null>("lost");
@@ -80,14 +74,9 @@ export default function HomeTabs({
   ];
 
   const listingsByTab: Record<TabKey, Listing[]> = { lost, found, rewarded, mysteryBox };
-  const countByTab: Record<TabKey, number> = {
-    lost: lostCount,
-    found: foundCount,
-    rewarded: rewardedCount,
-    mysteryBox: mysteryBoxCount,
-  };
   const activeTab = TABS.find((t) => t.key === active);
   const activeListings = active ? listingsByTab[active] : [];
+  const showMysteryBoxLoginPrompt = active === "mysteryBox" && !mysteryBoxLoggedIn;
 
   return (
     <div className="mt-8">
@@ -126,9 +115,6 @@ export default function HomeTabs({
               >
                 {tab.label}
               </span>
-              <span className="text-[11px] font-medium text-muted">
-                {formatItemsCount(locale, countByTab[tab.key])}
-              </span>
             </button>
           );
         })}
@@ -148,16 +134,30 @@ export default function HomeTabs({
                 {activeTab.label} {dict.tabs.itemsSuffix}
               </h2>
             </div>
-            <Link
-              href={activeTab.href}
-              className="flex shrink-0 items-center gap-1 text-sm font-semibold text-brand-via hover:text-brand-to"
-            >
-              {dict.tabs.viewAll}
-              <ArrowUpRight className="h-4 w-4" />
-            </Link>
+            {!showMysteryBoxLoginPrompt && (
+              <Link
+                href={activeTab.href}
+                className="flex shrink-0 items-center gap-1 text-sm font-semibold text-brand-via hover:text-brand-to"
+              >
+                {dict.tabs.viewAll}
+                <ArrowUpRight className="h-4 w-4" />
+              </Link>
+            )}
           </div>
 
-          {activeListings.length > 0 ? (
+          {showMysteryBoxLoginPrompt ? (
+            <div className="mt-5 flex flex-col items-center rounded-2xl border border-dashed border-brand-via/30 bg-brand-via/5 py-12 text-center">
+              <Lock className="h-7 w-7 text-brand-via" />
+              <p className="mt-3 text-sm font-semibold">{dict.mysteryBox.loginRequiredTitle}</p>
+              <p className="mt-1 max-w-xs text-sm text-muted">{dict.mysteryBox.loginRequiredBody}</p>
+              <Link
+                href="/kirish"
+                className="btn-brand mt-4 rounded-xl px-5 py-2.5 text-sm font-semibold text-white"
+              >
+                {dict.nav.login}
+              </Link>
+            </div>
+          ) : activeListings.length > 0 ? (
             <div className="mt-5">
               <ListingsGrid listings={activeListings} dict={dict} />
             </div>
