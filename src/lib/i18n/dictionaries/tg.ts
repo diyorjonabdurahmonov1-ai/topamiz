@@ -77,8 +77,6 @@ const tg: Dictionary = {
     categoryHujjatlar: "Ҳуҷҷатҳо",
     categoryTelefon: "Телефон",
     categoryKalitlar: "Калидҳо",
-    categoryHamyon: "Ҳамён",
-    categoryHayvon: "Ҳайвони хонагӣ",
     nearbyTitle: "Дар наздикии шумо",
     qrTitle: "Тамғаи QR",
     qrSubtitle: "Чизи худро муҳофизат кунед",

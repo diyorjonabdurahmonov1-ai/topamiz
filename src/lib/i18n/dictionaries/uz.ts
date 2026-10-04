@@ -77,8 +77,6 @@ const uz: Dictionary = {
     categoryHujjatlar: "Hujjatlar",
     categoryTelefon: "Telefon",
     categoryKalitlar: "Kalitlar",
-    categoryHamyon: "Hamyon",
-    categoryHayvon: "Hayvon",
     nearbyTitle: "Yaqiningizda",
     qrTitle: "QR-belgi",
     qrSubtitle: "Buyumni himoyalang",

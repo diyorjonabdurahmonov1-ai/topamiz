@@ -1,33 +1,22 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { useState } from "react";
 import Link from "next/link";
-import { ArrowUpRight, Gift, Lock, PackageSearch, Search, SearchX, Sparkles } from "lucide-react";
+import { ArrowUpRight, PackageSearch, Search, SearchX } from "lucide-react";
 import type { Listing } from "@/lib/types";
 import type { Dictionary } from "@/lib/i18n";
 import ListingsGrid from "@/components/ListingsGrid";
 
-type TabKey = "lost" | "found" | "rewarded" | "mysteryBox";
+type TabKey = "lost" | "found";
 
 export default function HomeTabs({
   lost,
   found,
-  rewarded,
-  mysteryBox,
-  mysteryBoxLoggedIn,
   dict,
-  mapPreview,
 }: {
   lost: Listing[];
   found: Listing[];
-  rewarded: Listing[];
-  mysteryBox: Listing[];
-  // Sirli quti listings are only ever fetched for a signed-in visitor (see
-  // the home page) — a guest selecting this tab sees a login prompt instead
-  // of the (always empty, for them) grid.
-  mysteryBoxLoggedIn: boolean;
   dict: Dictionary;
-  mapPreview?: ReactNode;
 }) {
   const [active, setActive] = useState<TabKey | null>("lost");
 
@@ -55,32 +44,15 @@ export default function HomeTabs({
       gradient: "linear-gradient(135deg, var(--success), var(--brand-to))",
       tint: "var(--success)",
     },
-    {
-      key: "rewarded",
-      label: dict.tabs.rewarded,
-      icon: Gift,
-      href: "/mukofotli",
-      gradient: "linear-gradient(135deg, var(--accent-gold), var(--accent-gold-2))",
-      tint: "var(--accent-gold)",
-    },
-    {
-      key: "mysteryBox",
-      label: dict.tabs.mysteryBox,
-      icon: Sparkles,
-      href: "/sirli-quti",
-      gradient: "linear-gradient(135deg, var(--accent-gold), var(--brand-via))",
-      tint: "var(--brand-via)",
-    },
   ];
 
-  const listingsByTab: Record<TabKey, Listing[]> = { lost, found, rewarded, mysteryBox };
+  const listingsByTab: Record<TabKey, Listing[]> = { lost, found };
   const activeTab = TABS.find((t) => t.key === active);
   const activeListings = active ? listingsByTab[active] : [];
-  const showMysteryBoxLoginPrompt = active === "mysteryBox" && !mysteryBoxLoggedIn;
 
   return (
     <div className="mt-8">
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
+      <div className="grid grid-cols-2 gap-3">
         {TABS.map((tab) => {
           const isActive = active === tab.key;
           return (
@@ -120,8 +92,6 @@ export default function HomeTabs({
         })}
       </div>
 
-      {mapPreview}
-
       {active && activeTab ? (
         <section key={active} className="animate-fade-up mt-6">
           <div className="flex items-center justify-between">
@@ -134,30 +104,16 @@ export default function HomeTabs({
                 {activeTab.label} {dict.tabs.itemsSuffix}
               </h2>
             </div>
-            {!showMysteryBoxLoginPrompt && (
-              <Link
-                href={activeTab.href}
-                className="flex shrink-0 items-center gap-1 text-sm font-semibold text-brand-via hover:text-brand-to"
-              >
-                {dict.tabs.viewAll}
-                <ArrowUpRight className="h-4 w-4" />
-              </Link>
-            )}
+            <Link
+              href={activeTab.href}
+              className="flex shrink-0 items-center gap-1 text-sm font-semibold text-brand-via hover:text-brand-to"
+            >
+              {dict.tabs.viewAll}
+              <ArrowUpRight className="h-4 w-4" />
+            </Link>
           </div>
 
-          {showMysteryBoxLoginPrompt ? (
-            <div className="mt-5 flex flex-col items-center rounded-2xl border border-dashed border-brand-via/30 bg-brand-via/5 py-12 text-center">
-              <Lock className="h-7 w-7 text-brand-via" />
-              <p className="mt-3 text-sm font-semibold">{dict.mysteryBox.loginRequiredTitle}</p>
-              <p className="mt-1 max-w-xs text-sm text-muted">{dict.mysteryBox.loginRequiredBody}</p>
-              <Link
-                href="/kirish"
-                className="btn-brand mt-4 rounded-xl px-5 py-2.5 text-sm font-semibold text-white"
-              >
-                {dict.nav.login}
-              </Link>
-            </div>
-          ) : activeListings.length > 0 ? (
+          {activeListings.length > 0 ? (
             <div className="mt-5">
               <ListingsGrid listings={activeListings} dict={dict} />
             </div>
