@@ -67,6 +67,10 @@ export interface Dictionary {
     categoryHujjatlar: string;
     categoryTelefon: string;
     categoryKalitlar: string;
+    categoryHamyon: string;
+    categoryHayvon: string;
+    categoryKiyim: string;
+    categoryBoshqa: string;
     nearbyTitle: string;
     qrTitle: string;
     qrSubtitle: string;
