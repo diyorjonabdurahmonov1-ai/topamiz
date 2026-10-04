@@ -1,29 +1,46 @@
+"use client";
+
+import { useState } from "react";
 import Link from "next/link";
-import { Gift, QrCode, Search, Sparkles } from "lucide-react";
+import { ArrowUpRight, Gift, Search, SearchX, Sparkles } from "lucide-react";
 import type { CategoryId, Listing } from "@/lib/types";
 import type { Dictionary } from "@/lib/i18n";
 import { categoryIcons } from "@/lib/icons";
 import { formatSom } from "@/lib/data";
 import NearbyMapCard from "@/components/NearbyMapCard";
+import LostFoundTabCard, { type HomeTabKey } from "@/components/LostFoundTabCard";
+import ListingsGrid from "@/components/ListingsGrid";
 
 const QUICK_CATEGORIES: { id: CategoryId; color: string; label: (dict: Dictionary) => string }[] = [
   { id: "hujjatlar", color: "#2563eb", label: (dict) => dict.homeQuickAccess.categoryHujjatlar },
   { id: "texnika", color: "#1e293b", label: (dict) => dict.homeQuickAccess.categoryTelefon },
   { id: "kalitlar", color: "#c2410c", label: (dict) => dict.homeQuickAccess.categoryKalitlar },
+  { id: "sumka", color: "#78350f", label: (dict) => dict.homeQuickAccess.categoryHamyon },
+  { id: "hayvonlar", color: "#15803d", label: (dict) => dict.homeQuickAccess.categoryHayvon },
+  { id: "kiyim", color: "#be185d", label: (dict) => dict.homeQuickAccess.categoryKiyim },
+  { id: "boshqa", color: "#475569", label: (dict) => dict.homeQuickAccess.categoryBoshqa },
 ];
 
 export default function HomeQuickAccess({
   dict,
   nearby,
+  lost,
+  found,
   rewarded,
   mysteryBoxTeaser,
 }: {
   dict: Dictionary;
   nearby: Listing[];
+  lost: Listing[];
+  found: Listing[];
   rewarded: Listing[];
   mysteryBoxTeaser: Listing | null;
 }) {
+  const [activeTab, setActiveTab] = useState<HomeTabKey>("lost");
   const totalReward = rewarded.reduce((sum, l) => sum + (l.reward ?? 0), 0);
+  const activeListings = activeTab === "lost" ? lost : found;
+  const activeHref = activeTab === "lost" ? "/elonlar?kind=lost" : "/elonlar?kind=found";
+  const activeLabel = activeTab === "lost" ? dict.tabs.lost : dict.tabs.found;
 
   return (
     <div className="mt-6 space-y-4">
@@ -44,7 +61,7 @@ export default function HomeQuickAccess({
         </button>
       </form>
 
-      <div className="flex justify-center gap-8">
+      <div className="scrollbar-thin -mx-4 flex gap-5 overflow-x-auto px-4 sm:-mx-6 sm:px-6 lg:mx-0 lg:px-0">
         {QUICK_CATEGORIES.map(({ id, color, label }) => {
           const Icon = categoryIcons[id];
           return (
@@ -66,7 +83,7 @@ export default function HomeQuickAccess({
       </div>
 
       <div className="grid grid-cols-2 gap-3">
-        <NearbyMapCard listings={nearby} dict={dict} />
+        <LostFoundTabCard active={activeTab} onChange={setActiveTab} dict={dict} />
 
         {mysteryBoxTeaser ? (
           <Link
@@ -94,16 +111,7 @@ export default function HomeQuickAccess({
           </Link>
         )}
 
-        <Link
-          href="/belgilash"
-          className="card-hover flex flex-col justify-center gap-1.5 rounded-2xl border border-border bg-surface p-4"
-        >
-          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-brand-via/15 text-brand-via">
-            <QrCode className="h-3.5 w-3.5" />
-          </span>
-          <p className="text-sm font-bold">{dict.homeQuickAccess.qrTitle}</p>
-          <p className="text-[11px] text-muted">{dict.homeQuickAccess.qrSubtitle}</p>
-        </Link>
+        <NearbyMapCard listings={nearby} dict={dict} />
 
         <Link
           href="/mukofotli"
@@ -119,6 +127,33 @@ export default function HomeQuickAccess({
           </span>
         </Link>
       </div>
+
+      <section className="animate-fade-up">
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-bold sm:text-xl">
+            {activeLabel} {dict.tabs.itemsSuffix}
+          </h2>
+          <Link
+            href={activeHref}
+            className="flex shrink-0 items-center gap-1 text-sm font-semibold text-brand-via hover:text-brand-to"
+          >
+            {dict.tabs.viewAll}
+            <ArrowUpRight className="h-4 w-4" />
+          </Link>
+        </div>
+
+        {activeListings.length > 0 ? (
+          <div className="mt-5">
+            <ListingsGrid listings={activeListings} dict={dict} />
+          </div>
+        ) : (
+          <div className="mt-5 flex flex-col items-center rounded-2xl border border-dashed border-border bg-surface py-12 text-center">
+            <SearchX className="h-7 w-7 text-muted" />
+            <p className="mt-3 text-sm font-semibold">{dict.tabs.emptyTitle}</p>
+            <p className="mt-1 max-w-xs text-sm text-muted">{dict.tabs.emptyBody}</p>
+          </div>
+        )}
+      </section>
     </div>
   );
 }
