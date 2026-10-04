@@ -72,6 +72,20 @@ const en: Dictionary = {
     selectPrompt: "Choose one of the sections above to see listings",
   },
 
+  homeQuickAccess: {
+    searchButtonLabel: "Search",
+    categoryHujjatlar: "Documents",
+    categoryTelefon: "Phone",
+    categoryKalitlar: "Keys",
+    categoryHamyon: "Wallet",
+    categoryHayvon: "Pet",
+    nearbyTitle: "Near you",
+    qrTitle: "QR tag",
+    qrSubtitle: "Protect your item",
+    mysteryBoxEmptyTitle: "Mystery box",
+    mysteryBoxEmptySubtitle: "See new prizes",
+  },
+
   listingsPage: {
     title: "Lost and found",
     titleHighlight: "listings",

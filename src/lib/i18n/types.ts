@@ -62,6 +62,20 @@ export interface Dictionary {
     selectPrompt: string;
   };
 
+  homeQuickAccess: {
+    searchButtonLabel: string;
+    categoryHujjatlar: string;
+    categoryTelefon: string;
+    categoryKalitlar: string;
+    categoryHamyon: string;
+    categoryHayvon: string;
+    nearbyTitle: string;
+    qrTitle: string;
+    qrSubtitle: string;
+    mysteryBoxEmptyTitle: string;
+    mysteryBoxEmptySubtitle: string;
+  };
+
   listingsPage: {
     title: string;
     titleHighlight: string;

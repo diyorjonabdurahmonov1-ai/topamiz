@@ -72,6 +72,20 @@ const kk: Dictionary = {
     selectPrompt: "Хабарландыруларды көру үшін жоғарыдағы бөлімдердің бірін таңдаңыз",
   },
 
+  homeQuickAccess: {
+    searchButtonLabel: "Іздеу",
+    categoryHujjatlar: "Құжаттар",
+    categoryTelefon: "Телефон",
+    categoryKalitlar: "Кілттер",
+    categoryHamyon: "Әмиян",
+    categoryHayvon: "Үй жануары",
+    nearbyTitle: "Жаныңызда",
+    qrTitle: "QR-белгі",
+    qrSubtitle: "Затыңызды қорғаңыз",
+    mysteryBoxEmptyTitle: "Сырлы қорап",
+    mysteryBoxEmptySubtitle: "Жаңа сыйлықтарды көріңіз",
+  },
+
   listingsPage: {
     title: "Жоғалған және табылған",
     titleHighlight: "хабарландырулар",

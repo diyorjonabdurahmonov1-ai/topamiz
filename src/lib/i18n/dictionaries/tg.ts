@@ -72,6 +72,20 @@ const tg: Dictionary = {
     selectPrompt: "Барои дидани эълонҳо яке аз бахшҳои болоро интихоб кунед",
   },
 
+  homeQuickAccess: {
+    searchButtonLabel: "Ҷустуҷӯ",
+    categoryHujjatlar: "Ҳуҷҷатҳо",
+    categoryTelefon: "Телефон",
+    categoryKalitlar: "Калидҳо",
+    categoryHamyon: "Ҳамён",
+    categoryHayvon: "Ҳайвони хонагӣ",
+    nearbyTitle: "Дар наздикии шумо",
+    qrTitle: "Тамғаи QR",
+    qrSubtitle: "Чизи худро муҳофизат кунед",
+    mysteryBoxEmptyTitle: "Қуттии сирнок",
+    mysteryBoxEmptySubtitle: "Ҷоизаҳои навро бинед",
+  },
+
   listingsPage: {
     title: "Эълонҳои гумшуда ва",
     titleHighlight: "ёфтшуда",

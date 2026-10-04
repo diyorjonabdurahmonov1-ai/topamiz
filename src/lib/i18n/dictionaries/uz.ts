@@ -72,6 +72,20 @@ const uz: Dictionary = {
     selectPrompt: "E'lonlarni ko'rish uchun yuqoridagi bo'limlardan birini tanlang",
   },
 
+  homeQuickAccess: {
+    searchButtonLabel: "Qidirish",
+    categoryHujjatlar: "Hujjatlar",
+    categoryTelefon: "Telefon",
+    categoryKalitlar: "Kalitlar",
+    categoryHamyon: "Hamyon",
+    categoryHayvon: "Hayvon",
+    nearbyTitle: "Yaqiningizda",
+    qrTitle: "QR-belgi",
+    qrSubtitle: "Buyumni himoyalang",
+    mysteryBoxEmptyTitle: "Sirli quti",
+    mysteryBoxEmptySubtitle: "Yangi sovg'alarni ko'ring",
+  },
+
   listingsPage: {
     title: "Yo'qolgan va topilgan",
     titleHighlight: "e'lonlar",
