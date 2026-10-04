@@ -46,6 +46,11 @@ cold start or an ephemeral filesystem.
   whoever's Google account email is listed in `ADMIN_EMAILS` (comma-separated
   if more than one), also in `.env.production.local`. Anyone else hitting
   `/admin/reklama` is redirected to `/`.
+- Visitor analytics (`src/components/Analytics.tsx`, admin's `/admin/tahlil`)
+  are optional — site works fine with neither set. Add `NEXT_PUBLIC_GA_MEASUREMENT_ID`
+  (a GA4 Measurement ID from analytics.google.com) and/or
+  `NEXT_PUBLIC_YANDEX_METRIKA_ID` (a counter number from metrika.yandex.ru) to
+  `.env.production.local` to turn either one on; both can run at once.
 
 ### Another project shares this server — do not touch it
 
