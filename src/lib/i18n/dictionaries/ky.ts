@@ -72,6 +72,20 @@ const ky: Dictionary = {
     selectPrompt: "Жарыяларды көрүү үчүн жогорудагы бөлүмдөрдүн бирин тандаңыз",
   },
 
+  homeQuickAccess: {
+    searchButtonLabel: "Издөө",
+    categoryHujjatlar: "Документтер",
+    categoryTelefon: "Телефон",
+    categoryKalitlar: "Ачкычтар",
+    categoryHamyon: "Капчык",
+    categoryHayvon: "Үй жаныбары",
+    nearbyTitle: "Жаныңызда",
+    qrTitle: "QR-белги",
+    qrSubtitle: "Буюмуңузду коргоңуз",
+    mysteryBoxEmptyTitle: "Сырдуу кутуча",
+    mysteryBoxEmptySubtitle: "Жаңы белектерди көрүңүз",
+  },
+
   listingsPage: {
     title: "Жоголгон жана табылган",
     titleHighlight: "жарыялар",

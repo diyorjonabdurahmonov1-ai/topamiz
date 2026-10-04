@@ -72,6 +72,20 @@ const ru: Dictionary = {
     selectPrompt: "Выберите один из разделов выше, чтобы увидеть объявления",
   },
 
+  homeQuickAccess: {
+    searchButtonLabel: "Искать",
+    categoryHujjatlar: "Документы",
+    categoryTelefon: "Телефон",
+    categoryKalitlar: "Ключи",
+    categoryHamyon: "Кошелёк",
+    categoryHayvon: "Питомец",
+    nearbyTitle: "Рядом с вами",
+    qrTitle: "QR-метка",
+    qrSubtitle: "Защитите вашу вещь",
+    mysteryBoxEmptyTitle: "Загадочная коробка",
+    mysteryBoxEmptySubtitle: "Посмотрите новые призы",
+  },
+
   listingsPage: {
     title: "Потерянные и найденные",
     titleHighlight: "объявления",
