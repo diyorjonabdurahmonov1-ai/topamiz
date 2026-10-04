@@ -77,8 +77,6 @@ const ky: Dictionary = {
     categoryHujjatlar: "Документтер",
     categoryTelefon: "Телефон",
     categoryKalitlar: "Ачкычтар",
-    categoryHamyon: "Капчык",
-    categoryHayvon: "Үй жаныбары",
     nearbyTitle: "Жаныңызда",
     qrTitle: "QR-белги",
     qrSubtitle: "Буюмуңузду коргоңуз",

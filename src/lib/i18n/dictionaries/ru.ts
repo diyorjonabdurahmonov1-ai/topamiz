@@ -77,8 +77,6 @@ const ru: Dictionary = {
     categoryHujjatlar: "Документы",
     categoryTelefon: "Телефон",
     categoryKalitlar: "Ключи",
-    categoryHamyon: "Кошелёк",
-    categoryHayvon: "Питомец",
     nearbyTitle: "Рядом с вами",
     qrTitle: "QR-метка",
     qrSubtitle: "Защитите вашу вещь",

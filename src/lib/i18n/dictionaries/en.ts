@@ -77,8 +77,6 @@ const en: Dictionary = {
     categoryHujjatlar: "Documents",
     categoryTelefon: "Phone",
     categoryKalitlar: "Keys",
-    categoryHamyon: "Wallet",
-    categoryHayvon: "Pet",
     nearbyTitle: "Near you",
     qrTitle: "QR tag",
     qrSubtitle: "Protect your item",

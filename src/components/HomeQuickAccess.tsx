@@ -1,25 +1,30 @@
 import Link from "next/link";
-import { Navigation, QrCode, Search, Sparkles } from "lucide-react";
+import { Gift, QrCode, Search, Sparkles } from "lucide-react";
 import type { CategoryId, Listing } from "@/lib/types";
 import type { Dictionary } from "@/lib/i18n";
 import { categoryIcons } from "@/lib/icons";
 import { formatSom } from "@/lib/data";
+import NearbyMapCard from "@/components/NearbyMapCard";
 
 const QUICK_CATEGORIES: { id: CategoryId; color: string; label: (dict: Dictionary) => string }[] = [
   { id: "hujjatlar", color: "#2563eb", label: (dict) => dict.homeQuickAccess.categoryHujjatlar },
   { id: "texnika", color: "#1e293b", label: (dict) => dict.homeQuickAccess.categoryTelefon },
   { id: "kalitlar", color: "#c2410c", label: (dict) => dict.homeQuickAccess.categoryKalitlar },
-  { id: "sumka", color: "#78350f", label: (dict) => dict.homeQuickAccess.categoryHamyon },
-  { id: "hayvonlar", color: "#15803d", label: (dict) => dict.homeQuickAccess.categoryHayvon },
 ];
 
 export default function HomeQuickAccess({
   dict,
+  nearby,
+  rewarded,
   mysteryBoxTeaser,
 }: {
   dict: Dictionary;
+  nearby: Listing[];
+  rewarded: Listing[];
   mysteryBoxTeaser: Listing | null;
 }) {
+  const totalReward = rewarded.reduce((sum, l) => sum + (l.reward ?? 0), 0);
+
   return (
     <div className="mt-6 space-y-4">
       <form action="/elonlar" className="flex items-center gap-2 rounded-2xl border border-border bg-surface pl-4 pr-1.5 py-1.5">
@@ -39,7 +44,7 @@ export default function HomeQuickAccess({
         </button>
       </form>
 
-      <div className="flex justify-between gap-1 overflow-x-auto sm:justify-center sm:gap-8">
+      <div className="flex justify-center gap-8">
         {QUICK_CATEGORIES.map(({ id, color, label }) => {
           const Icon = categoryIcons[id];
           return (
@@ -61,14 +66,7 @@ export default function HomeQuickAccess({
       </div>
 
       <div className="grid grid-cols-2 gap-3">
-        <Link
-          href="/elonlar?view=map"
-          className="card-hover relative row-span-2 flex min-h-[150px] flex-col justify-end overflow-hidden rounded-2xl border border-border bg-surface-2 p-4"
-        >
-          <Navigation className="absolute right-4 top-4 h-5 w-5 text-brand-via" />
-          <p className="text-sm font-bold">{dict.homeQuickAccess.nearbyTitle}</p>
-          <p className="text-xs text-muted">{dict.listingDetail.showOnMap}</p>
-        </Link>
+        <NearbyMapCard listings={nearby} dict={dict} />
 
         {mysteryBoxTeaser ? (
           <Link
@@ -105,6 +103,20 @@ export default function HomeQuickAccess({
           </span>
           <p className="text-sm font-bold">{dict.homeQuickAccess.qrTitle}</p>
           <p className="text-[11px] text-muted">{dict.homeQuickAccess.qrSubtitle}</p>
+        </Link>
+
+        <Link
+          href="/mukofotli"
+          className="card-hover flex flex-col gap-1 rounded-2xl border border-accent-gold/30 bg-accent-gold/5 p-4"
+        >
+          <span className="flex items-center gap-1 text-[10px] font-extrabold uppercase tracking-wide text-accent-gold">
+            <Gift className="h-3 w-3" />
+            {dict.tabs.rewarded}
+          </span>
+          <span className="text-lg font-extrabold">{formatSom(totalReward)}</span>
+          <span className="text-xs font-semibold text-muted">
+            {rewarded.length} {dict.rewarded.activeCount}
+          </span>
         </Link>
       </div>
     </div>

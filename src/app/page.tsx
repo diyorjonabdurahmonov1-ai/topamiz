@@ -1,6 +1,5 @@
 import AdShowcase from "@/components/AdShowcase";
 import HomeTabs from "@/components/HomeTabs";
-import HomeMapPreview from "@/components/HomeMapPreview";
 import HomeQuickAccess from "@/components/HomeQuickAccess";
 import { getActiveAds } from "@/lib/ads";
 import { getAllActiveListings, getMysteryBoxListings, getRewardedListings } from "@/lib/listings";
@@ -50,15 +49,11 @@ export default async function Home() {
 
       <div className="relative mx-auto max-w-7xl px-4 py-6 pb-10 sm:px-6 sm:py-8 lg:px-8">
         <AdShowcase ads={ads} dict={dict} />
-        <HomeQuickAccess dict={dict} mysteryBoxTeaser={allMysteryBox[0] ?? null} />
+        <HomeQuickAccess dict={dict} nearby={nearby} rewarded={allRewarded} mysteryBoxTeaser={allMysteryBox[0] ?? null} />
         <HomeTabs
           lost={allLost.slice(0, TAB_PREVIEW_SIZE)}
           found={allFound.slice(0, TAB_PREVIEW_SIZE)}
-          rewarded={allRewarded.slice(0, TAB_PREVIEW_SIZE)}
-          mysteryBox={allMysteryBox.slice(0, TAB_PREVIEW_SIZE)}
-          mysteryBoxLoggedIn={!!user}
           dict={dict}
-          mapPreview={<HomeMapPreview listings={nearby} dict={dict} locale={locale} />}
         />
       </div>
     </div>

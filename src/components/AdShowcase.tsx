@@ -52,9 +52,9 @@ export default function AdShowcase({ ads, dict }: { ads: AdBanner[]; dict: Dicti
             href={ad.linkUrl}
             target="_blank"
             rel="noopener noreferrer nofollow sponsored"
-            className="card-hover w-[78%] shrink-0 snap-start overflow-hidden rounded-2xl border border-border bg-surface sm:w-72 lg:w-80"
+            className="card-hover w-[62%] shrink-0 snap-start overflow-hidden rounded-2xl border border-border bg-surface sm:w-64 lg:w-72"
           >
-            <div className="relative aspect-[4/3] w-full overflow-hidden bg-surface-2">
+            <div className="relative aspect-[16/9] w-full overflow-hidden bg-surface-2">
               {ad.mediaType === "video" ? (
                 <video
                   src={ad.mediaUrl}
@@ -77,7 +77,7 @@ export default function AdShowcase({ ads, dict }: { ads: AdBanner[]; dict: Dicti
               </span>
             </div>
             {ad.title && (
-              <p className="line-clamp-2 px-3.5 py-3 text-sm font-semibold leading-snug text-foreground">
+              <p className="line-clamp-1 px-3 py-2 text-xs font-semibold leading-snug text-foreground">
                 {ad.title}
               </p>
             )}
