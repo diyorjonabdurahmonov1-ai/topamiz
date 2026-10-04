@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
+  BarChart3,
   Flag,
   LayoutDashboard,
   List,
@@ -24,6 +25,7 @@ const LINKS = [
   { href: "/admin/mehmonlar", icon: UserRoundSearch, label: "Mehmonlar" },
   { href: "/admin/reklama", icon: Megaphone, label: "Reklama" },
   { href: "/admin/reklama-arizalari", icon: Mail, label: "Reklama arizalari" },
+  { href: "/admin/tahlil", icon: BarChart3, label: "Tahlil" },
 ];
 
 export default function AdminNav() {

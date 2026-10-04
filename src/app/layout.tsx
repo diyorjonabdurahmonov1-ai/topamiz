@@ -4,6 +4,7 @@ import Script from "next/script";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import BottomNav from "@/components/BottomNav";
+import Analytics from "@/components/Analytics";
 import { getCurrentUser } from "@/lib/auth";
 import { unreadTotal } from "@/lib/messages";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
@@ -84,6 +85,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
             else document.documentElement.classList.add('dark');
           } catch (e) {}`}
         </Script>
+        <Analytics />
       </head>
       <body className="min-h-full flex flex-col bg-bg text-foreground antialiased selection:bg-brand-via/30">
         <Navbar user={user} unreadCount={unreadCount} locale={locale} dict={dict} />
