@@ -21,6 +21,10 @@ export default function ReelsFeed({
 }) {
   const [listings, setListings] = useState(initialListings);
   const [activeId, setActiveId] = useState(initialListings[0]?.id ?? null);
+  // Shared across every slide rather than per-video — unmuting one video
+  // should unmute the whole feed, and vice versa, matching how a single tap
+  // on Instagram/TikTok's mute button affects every reel from then on.
+  const [muted, setMuted] = useState(true);
   const [commentCounts, setCommentCounts] = useState<Record<string, number>>(() =>
     Object.fromEntries(initialListings.map((l) => [l.id, l.commentCount]))
   );
@@ -118,6 +122,8 @@ export default function ReelsFeed({
             dict={dict}
             commentCount={commentCounts[listing.id] ?? listing.commentCount}
             onOpenComments={() => setOpenCommentsFor(listing.id)}
+            muted={muted}
+            onToggleMuted={() => setMuted((m) => !m)}
           />
         </div>
       ))}
