@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, MessageCircle, Plus, QrCode, Search, User } from "lucide-react";
+import { Clapperboard, Home, MessageCircle, Plus, QrCode, Search, User } from "lucide-react";
 import type { AuthUser } from "@/lib/auth";
 import type { Dictionary } from "@/lib/i18n";
 
@@ -21,6 +21,7 @@ export default function BottomNav({
   const items = [
     { href: "/", icon: Home, label: dict.bottomNav.home },
     { href: "/elonlar", icon: Search, label: dict.bottomNav.listings },
+    { href: "/reels", icon: Clapperboard, label: dict.social.reelsNavLabel },
     { href: "/belgilash", icon: QrCode, label: dict.bottomNav.mark, primary: true },
     {
       href: user ? "/xabarlar" : "/kirish",

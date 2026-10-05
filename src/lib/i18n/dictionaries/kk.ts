@@ -413,6 +413,28 @@ const kk: Dictionary = {
     markActive: "Қайта белсендіру",
   },
 
+  social: {
+    commentsHeading: "Пікірлер",
+    commentsEmpty: "Әзірге пікір жоқ. Бірінші болыңыз!",
+    commentPlaceholder: "Пікір жазыңыз...",
+    commentSend: "Жіберу",
+    commentLoginPrompt: "Пікір қалдыру үшін кіріңіз",
+    commentGenericError: "Пікірді жіберуде қате шықты",
+    shareButton: "Бөлісу",
+    shareToFriend: "Findo қолданушысына жіберу",
+    shareExternal: "Басқа қолданбаға бөлісу",
+    shareLinkCopied: "Сілтеме көшірілді",
+    shareSearchPlaceholder: "Аты бойынша іздеу...",
+    shareSentTitle: "Жіберілді",
+    shareSentBody: "Хабарландыру сәтті жіберілді",
+    shareGenericError: "Жіберуде қате шықты",
+    reelsNavLabel: "Қысқа видеолар",
+    reelsEmptyTitle: "Әзірге видеолы хабарландырулар жоқ",
+    reelsEmptyBody: "Видео қосқан алғашқы адам болыңыз!",
+    reelsViewListing: "Хабарландыруни ашу",
+    reelsLoginPrompt: "Лайк басу және пікір қалдыру үшін кіріңіз",
+  },
+
   ads: {
     pageTitle: "Жарнама тақтасы",
     pageSubtitle: "Бизнесіңізді жоғалған затты іздеп жүрген мыңдаған белсенді пайдаланушыға көрсетіңіз.",

@@ -305,3 +305,27 @@ if (listingCount === 0) {
   ];
   for (const listing of seedListings) insertSeed.run(listing);
 }
+
+// Instagram-style likes/comments on listings — fresh tables (unlike the
+// patches above, these didn't exist before this column set, so a plain
+// CREATE TABLE IF NOT EXISTS covers both a brand-new install and an
+// existing database with no ALTER TABLE dance needed) added after
+// `listings` so they can reference it directly.
+db.exec(`
+  CREATE TABLE IF NOT EXISTS listing_likes (
+    listing_id INTEGER NOT NULL REFERENCES listings(id) ON DELETE CASCADE,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    created_at TEXT NOT NULL DEFAULT (datetime('now')),
+    PRIMARY KEY (listing_id, user_id)
+  );
+  CREATE INDEX IF NOT EXISTS idx_listing_likes_listing ON listing_likes(listing_id);
+
+  CREATE TABLE IF NOT EXISTS listing_comments (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    listing_id INTEGER NOT NULL REFERENCES listings(id) ON DELETE CASCADE,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    body TEXT NOT NULL,
+    created_at TEXT NOT NULL DEFAULT (datetime('now'))
+  );
+  CREATE INDEX IF NOT EXISTS idx_listing_comments_listing ON listing_comments(listing_id);
+`);

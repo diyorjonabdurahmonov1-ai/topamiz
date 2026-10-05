@@ -30,6 +30,8 @@ function makeListing(overrides: Partial<Listing>): Listing {
     photoUrls: [],
     videoUrl: null,
     videoThumbnailUrl: null,
+    likeCount: 0,
+    commentCount: 0,
     country: "UZ",
     lat: 41.3,
     lng: 69.2,

@@ -39,6 +39,8 @@ export interface Listing {
   photoUrls: string[];
   videoUrl: string | null;
   videoThumbnailUrl: string | null;
+  likeCount: number;
+  commentCount: number;
   country: string;
   lat: number;
   lng: number;

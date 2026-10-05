@@ -54,6 +54,8 @@ interface RawListingRow {
   resolver_email: string | null;
   resolver_avatar_color: string | null;
   resolver_avatar_url: string | null;
+  like_count: number;
+  comment_count: number;
 }
 
 // Every listing query joins in just enough of the owner's identity to show
@@ -71,7 +73,9 @@ const LISTING_SELECT = `
     resolver.name AS resolver_name,
     resolver.email AS resolver_email,
     resolver.avatar_color AS resolver_avatar_color,
-    resolver.avatar_url AS resolver_avatar_url
+    resolver.avatar_url AS resolver_avatar_url,
+    (SELECT COUNT(*) FROM listing_likes WHERE listing_likes.listing_id = listings.id) AS like_count,
+    (SELECT COUNT(*) FROM listing_comments WHERE listing_comments.listing_id = listings.id) AS comment_count
   FROM listings
   LEFT JOIN users ON users.id = listings.owner_id
   LEFT JOIN users resolver ON resolver.id = listings.resolved_by
@@ -121,6 +125,8 @@ function toListing(row: RawListingRow): Listing {
     photoUrls: JSON.parse(row.photo_urls) as string[],
     videoUrl: row.video_url,
     videoThumbnailUrl: row.video_thumbnail_url,
+    likeCount: row.like_count,
+    commentCount: row.comment_count,
     country: row.country,
     lat: row.lat,
     lng: row.lng,
@@ -199,6 +205,25 @@ export function getMysteryBoxListings(country: string): Listing[] {
        ORDER BY listings.created_at DESC, listings.id DESC`
     )
     .all(country) as RawListingRow[];
+  return rows.map(toListing);
+}
+
+// Reels-style feed: every active, non-mystery-box listing that has a video,
+// shuffled at query time so the order is different (and unpredictable) on
+// each load — there's no "trending" ranking here, just a random walk
+// through whatever video content exists. `excludeIds` keeps a client that's
+// already scrolled through a batch from being handed the same ones again.
+export function getVideoListings(country: string, excludeIds: string[] = []): Listing[] {
+  const placeholders = excludeIds.map(() => "?").join(",");
+  const excludeClause = excludeIds.length > 0 ? `AND listings.id NOT IN (${placeholders})` : "";
+  const rows = db
+    .prepare(
+      `${LISTING_SELECT} WHERE listings.status = 'active' AND listings.country = ?
+       AND listings.is_mystery_box = 0 AND listings.video_url IS NOT NULL
+       ${excludeClause}
+       ORDER BY RANDOM() LIMIT 30`
+    )
+    .all(country, ...excludeIds.map(Number)) as RawListingRow[];
   return rows.map(toListing);
 }
 

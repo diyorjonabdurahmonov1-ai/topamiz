@@ -3,6 +3,29 @@ import { getCurrentUser, isAdmin } from "@/lib/auth";
 import { deleteListing, getListingById, setListingStatus } from "@/lib/listings";
 import { getListingClaimants } from "@/lib/messages";
 
+// Public, read-only, and deliberately thin — just enough for a forwarded
+// listing's share-card preview in a chat thread, never the full record
+// (contact details, exact coordinates) a stranger shouldn't get via a bare
+// fetch.
+export async function GET(_request: Request, ctx: RouteContext<"/api/listings/[id]">) {
+  const { id } = await ctx.params;
+  const listing = getListingById(id);
+  if (!listing) return NextResponse.json({ error: "Topilmadi" }, { status: 404 });
+
+  return NextResponse.json({
+    listing: {
+      id: listing.id,
+      title: listing.title,
+      city: listing.city,
+      reward: listing.reward ?? null,
+      kind: listing.kind,
+      isMysteryBox: listing.isMysteryBox,
+      status: listing.status,
+      thumbnailUrl: listing.videoThumbnailUrl ?? listing.photoUrls[0] ?? null,
+    },
+  });
+}
+
 export async function DELETE(_request: Request, ctx: RouteContext<"/api/listings/[id]">) {
   const user = await getCurrentUser();
   if (!user) return NextResponse.json({ error: "Kirish talab qilinadi" }, { status: 401 });

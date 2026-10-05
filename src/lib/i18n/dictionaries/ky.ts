@@ -413,6 +413,28 @@ const ky: Dictionary = {
     markActive: "Кайра активдештирүү",
   },
 
+  social: {
+    commentsHeading: "Комментарийлер",
+    commentsEmpty: "Азырынча комментарий жок. Биринчи болуңуз!",
+    commentPlaceholder: "Комментарий жазыңыз...",
+    commentSend: "Жөнөтүү",
+    commentLoginPrompt: "Комментарий калтыруу үчүн кириңиз",
+    commentGenericError: "Комментарийди жөнөтүүдө ката кетти",
+    shareButton: "Бөлүшүү",
+    shareToFriend: "Findo колдонуучусуна жөнөтүү",
+    shareExternal: "Башка колдонмого бөлүшүү",
+    shareLinkCopied: "Шилтеме көчүрүлдү",
+    shareSearchPlaceholder: "Аты боюнча издөө...",
+    shareSentTitle: "Жөнөтүлдү",
+    shareSentBody: "Жарыя ийгиликтүү жөнөтүлдү",
+    shareGenericError: "Жөнөтүүдө ката кетти",
+    reelsNavLabel: "Кыска видеолор",
+    reelsEmptyTitle: "Азырынча видеолуу жарыялар жок",
+    reelsEmptyBody: "Видео кошкон биринчи адам болуңуз!",
+    reelsViewListing: "Жарыяны ачуу",
+    reelsLoginPrompt: "Лайк басуу жана комментарий калтыруу үчүн кириңиз",
+  },
+
   ads: {
     pageTitle: "Жарнама тактасы",
     pageSubtitle: "Бизнесиңизди жоголгон затты издеген миңдеген активдүү колдонуучуга көрсөтүңүз.",

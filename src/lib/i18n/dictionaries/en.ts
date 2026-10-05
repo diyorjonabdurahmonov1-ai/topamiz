@@ -412,6 +412,28 @@ const en: Dictionary = {
     markActive: "Reactivate",
   },
 
+  social: {
+    commentsHeading: "Comments",
+    commentsEmpty: "No comments yet. Be the first!",
+    commentPlaceholder: "Write a comment...",
+    commentSend: "Send",
+    commentLoginPrompt: "Log in to leave a comment",
+    commentGenericError: "Something went wrong posting the comment",
+    shareButton: "Share",
+    shareToFriend: "Send to a Findo user",
+    shareExternal: "Share to another app",
+    shareLinkCopied: "Link copied",
+    shareSearchPlaceholder: "Search by name...",
+    shareSentTitle: "Sent",
+    shareSentBody: "The listing was sent successfully",
+    shareGenericError: "Something went wrong sending it",
+    reelsNavLabel: "Reels",
+    reelsEmptyTitle: "No video listings yet",
+    reelsEmptyBody: "Be the first to post a listing with a video!",
+    reelsViewListing: "View listing",
+    reelsLoginPrompt: "Log in to like and comment",
+  },
+
   ads: {
     pageTitle: "Ad board",
     pageSubtitle: "Show your business to thousands of active users searching for lost items.",

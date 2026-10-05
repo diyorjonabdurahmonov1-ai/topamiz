@@ -5,6 +5,12 @@ import { Send } from "lucide-react";
 import type { MessageRow } from "@/lib/messages";
 import type { Dictionary } from "@/lib/i18n";
 import PhotoLightbox from "./PhotoLightbox";
+import SharedListingCard from "./SharedListingCard";
+
+// A forwarded listing's message body is always "<title>\n<url ending in
+// /elonlar/<id>>" (see ShareMenu) — pull the id back out so the link can
+// render as a real preview card instead of a bare pasted URL.
+const LISTING_LINK_RE = /\/elonlar\/(\d+)\s*$/;
 
 export default function ChatThread({
   otherUserId,
@@ -87,7 +93,12 @@ export default function ChatThread({
                       ))}
                     </div>
                   )}
-                  {m.body}
+                  {(() => {
+                    const match = m.body.match(LISTING_LINK_RE);
+                    if (!match) return m.body;
+                    const title = m.body.slice(0, match.index).trim();
+                    return <SharedListingCard listingId={match[1]} fallbackTitle={title} dict={dict} />;
+                  })()}
                 </div>
               </div>
             );
