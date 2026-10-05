@@ -106,7 +106,6 @@ export interface Dictionary {
     showOnMap: string;
     hideMap: string;
     getDirections: string;
-    postedBy: string;
     foundItButton: string;
     foundItPlaceholder: string;
     foundItPhotosLabel: string;

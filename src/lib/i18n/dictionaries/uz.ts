@@ -116,7 +116,6 @@ const uz: Dictionary = {
     showOnMap: "Xaritada ko'rish",
     hideMap: "Xaritani yashirish",
     getDirections: "Yo'nalish olish",
-    postedBy: "E'lon egasi",
     foundItButton: "Men buni topdim!",
     foundItPlaceholder: "Qayerda va qanday topganingizni yozing...",
     foundItPhotosLabel: "Isbot uchun rasm qo'shing (ixtiyoriy)",

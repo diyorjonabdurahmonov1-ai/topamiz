@@ -24,31 +24,27 @@ export default function ListingOwnerCard({
   dict: Dictionary;
 }) {
   return (
-    <div className="rounded-2xl border border-border bg-surface p-5">
-      <p className="text-xs font-semibold uppercase tracking-wide text-muted">
-        {dict.listingDetail.postedBy}
-      </p>
-      <Link
-        href={`/profil/${ownerId}`}
-        className="mt-3 flex items-center gap-3 hover:opacity-90"
-      >
-        <Avatar name={name} color={avatarColor} avatarUrl={avatarUrl} size={44} />
-        <span className="text-sm font-semibold">{name}</span>
-      </Link>
-      {!viewerIsOwner && (
-        <div className="mt-4 flex gap-2">
-          <Link
-            href={`/xabarlar/${ownerId}`}
-            className="btn-brand flex flex-1 items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold text-white"
-          >
-            <MessageCircle className="h-4 w-4" />
-            {dict.publicProfile.writeMessage}
-          </Link>
-          {viewerIsLoggedIn && (
-            <FriendButton targetId={ownerId} initialIsFriend={viewerIsFriend} dict={dict} />
-          )}
-        </div>
-      )}
+    <div>
+      <div className="flex items-center justify-between gap-3">
+        <Link href={`/profil/${ownerId}`} className="flex min-w-0 items-center gap-2.5 hover:opacity-90">
+          <Avatar name={name} color={avatarColor} avatarUrl={avatarUrl} size={40} />
+          <span className="truncate text-sm font-bold">{name}</span>
+        </Link>
+        {!viewerIsOwner && (
+          <div className="flex shrink-0 items-center gap-2">
+            <Link
+              href={`/xabarlar/${ownerId}`}
+              aria-label={dict.publicProfile.writeMessage}
+              className="flex h-9 w-9 items-center justify-center rounded-xl border border-border text-muted hover:text-foreground"
+            >
+              <MessageCircle className="h-4 w-4" />
+            </Link>
+            {viewerIsLoggedIn && (
+              <FriendButton targetId={ownerId} initialIsFriend={viewerIsFriend} dict={dict} compact />
+            )}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

@@ -9,10 +9,15 @@ export default function FriendButton({
   targetId,
   initialIsFriend,
   dict,
+  compact = false,
 }: {
   targetId: number;
   initialIsFriend: boolean;
   dict: Dictionary;
+  // Icon-only, sized to sit next to the message button in a tight header
+  // row (e.g. the listing page's Instagram-style owner line) instead of
+  // the full-width labeled button used in a profile's own action row.
+  compact?: boolean;
 }) {
   const router = useRouter();
   const [isFriend, setIsFriend] = useState(initialIsFriend);
@@ -31,6 +36,30 @@ export default function FriendButton({
     } finally {
       setLoading(false);
     }
+  }
+
+  if (compact) {
+    return (
+      <button
+        type="button"
+        onClick={toggle}
+        disabled={loading}
+        aria-label={isFriend ? dict.publicProfile.friendAdded : dict.publicProfile.addFriend}
+        className={`flex h-9 w-9 items-center justify-center rounded-xl border disabled:opacity-70 ${
+          isFriend
+            ? "border-border text-foreground"
+            : "border-brand-via/40 bg-brand-via/10 text-brand-via"
+        }`}
+      >
+        {loading ? (
+          <Loader2 className="h-4 w-4 animate-spin" />
+        ) : isFriend ? (
+          <UserCheck className="h-4 w-4" />
+        ) : (
+          <UserPlus className="h-4 w-4" />
+        )}
+      </button>
+    );
   }
 
   return (

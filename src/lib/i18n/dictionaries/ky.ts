@@ -116,7 +116,6 @@ const ky: Dictionary = {
     showOnMap: "Картадан көрсөтүү",
     hideMap: "Картаны жашыруу",
     getDirections: "Багыт алуу",
-    postedBy: "Жарыя автору",
     foundItButton: "Мен муну таптым!",
     foundItPlaceholder: "Кайдан жана кантип тапканыңызды жазыңыз...",
     foundItPhotosLabel: "Далил үчүн сүрөт кошуңуз (милдеттүү эмес)",

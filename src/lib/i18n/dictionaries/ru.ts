@@ -116,7 +116,6 @@ const ru: Dictionary = {
     showOnMap: "Показать на карте",
     hideMap: "Скрыть карту",
     getDirections: "Проложить маршрут",
-    postedBy: "Автор объявления",
     foundItButton: "Я нашёл это!",
     foundItPlaceholder: "Опишите, где и как вы это нашли...",
     foundItPhotosLabel: "Добавьте фото в подтверждение (необязательно)",
