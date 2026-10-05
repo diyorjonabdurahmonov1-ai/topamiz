@@ -302,6 +302,10 @@ const uz: Dictionary = {
     changePhoto: "Rasmni almashtirish",
     findPeopleHeading: "Foydalanuvchi qidirish",
     findPeoplePlaceholder: "Ism bo'yicha qidiring...",
+    deleteAccount: "Hisobni o'chirish",
+    deleteAccountConfirm:
+      "Hisobingizni butunlay o'chirmoqchimisiz? Profilingiz, xabarlaringiz va QR-belgilaringiz qaytarib bo'lmas tarzda o'chiriladi. E'lonlaringiz saytda qoladi, lekin egasiz bo'lib qoladi.",
+    deleteAccountError: "Hisobni o'chirishda xatolik yuz berdi. Birozdan keyin qayta urinib ko'ring.",
   },
 
   publicProfile: {

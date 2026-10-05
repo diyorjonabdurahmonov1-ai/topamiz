@@ -42,14 +42,15 @@ export default function LostFoundTabCard({
       <button
         type="button"
         onClick={() => onChange(inactiveKey)}
-        className="absolute inset-x-3 top-0 flex h-7 items-center justify-center gap-1 rounded-t-xl text-[10px] font-bold text-white"
+        aria-label={inactiveMeta.label(dict)}
+        className="absolute inset-x-2 top-0 flex h-11 items-center justify-center gap-1.5 rounded-t-2xl text-xs font-bold text-white transition-transform active:scale-[0.97]"
         style={{ backgroundImage: inactiveMeta.gradient }}
       >
-        <InactiveIcon className="h-3 w-3" strokeWidth={2.5} />
+        <InactiveIcon className="h-3.5 w-3.5" strokeWidth={2.5} />
         {inactiveMeta.label(dict)}
       </button>
       <div
-        className="card-hover absolute inset-x-0 bottom-0 top-5 flex flex-col items-center justify-center gap-1.5 rounded-2xl text-white shadow-lg"
+        className="card-hover absolute inset-x-0 bottom-0 top-9 flex flex-col items-center justify-center gap-1.5 rounded-2xl text-white shadow-lg"
         style={{ backgroundImage: activeMeta.gradient }}
       >
         <ActiveIcon className="h-5 w-5" strokeWidth={2.25} />

@@ -284,6 +284,9 @@ export interface Dictionary {
     changePhoto: string;
     findPeopleHeading: string;
     findPeoplePlaceholder: string;
+    deleteAccount: string;
+    deleteAccountConfirm: string;
+    deleteAccountError: string;
   };
 
   publicProfile: {

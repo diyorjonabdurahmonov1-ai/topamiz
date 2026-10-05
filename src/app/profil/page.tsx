@@ -9,6 +9,7 @@ import { getDictionary } from "@/lib/i18n";
 import { formatFriendsCount } from "@/lib/i18n/format";
 import ProfileEditForm from "@/components/ProfileEditForm";
 import LogoutButton from "@/components/LogoutButton";
+import DeleteAccountButton from "@/components/DeleteAccountButton";
 import PushNotificationToggle from "@/components/PushNotificationToggle";
 import UserSearch from "@/components/UserSearch";
 
@@ -72,6 +73,14 @@ export default async function OwnProfilePage() {
 
       <div className="mt-4 flex justify-center">
         <LogoutButton label={dict.profile.logout} />
+      </div>
+
+      <div className="mt-6 flex justify-center">
+        <DeleteAccountButton
+          label={dict.profile.deleteAccount}
+          confirmText={dict.profile.deleteAccountConfirm}
+          errorText={dict.profile.deleteAccountError}
+        />
       </div>
     </div>
   );

@@ -299,6 +299,10 @@ const ru: Dictionary = {
     changePhoto: "Изменить фото",
     findPeopleHeading: "Поиск пользователя",
     findPeoplePlaceholder: "Поиск по имени...",
+    deleteAccount: "Удалить аккаунт",
+    deleteAccountConfirm:
+      "Вы точно хотите навсегда удалить аккаунт? Ваш профиль, сообщения и QR-метки будут удалены безвозвратно. Ваши объявления останутся на сайте, но без владельца.",
+    deleteAccountError: "Не удалось удалить аккаунт. Попробуйте ещё раз позже.",
   },
 
   publicProfile: {

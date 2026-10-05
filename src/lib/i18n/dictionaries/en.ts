@@ -298,6 +298,10 @@ const en: Dictionary = {
     changePhoto: "Change photo",
     findPeopleHeading: "Find a user",
     findPeoplePlaceholder: "Search by name...",
+    deleteAccount: "Delete account",
+    deleteAccountConfirm:
+      "Permanently delete your account? Your profile, messages, and QR tags will be removed and cannot be recovered. Your listings will stay on the site but become ownerless.",
+    deleteAccountError: "Couldn't delete your account. Please try again shortly.",
   },
 
   publicProfile: {
