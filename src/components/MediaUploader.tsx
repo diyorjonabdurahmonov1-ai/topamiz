@@ -4,7 +4,7 @@ import { useState } from "react";
 import { ImagePlus, Video } from "lucide-react";
 import type { Dictionary } from "@/lib/i18n";
 import ImageUploader from "./ImageUploader";
-import VideoUploader from "./VideoUploader";
+import VideoUploader, { type VideoUploadStatus } from "./VideoUploader";
 
 type MediaTab = "photo" | "video";
 
@@ -15,11 +15,13 @@ type MediaTab = "photo" | "video";
 export default function MediaUploader({
   onImagesChange,
   onVideoChange,
+  onVideoStatusChange,
   dict,
   allowRedaction = false,
 }: {
   onImagesChange: (urls: string[]) => void;
   onVideoChange: (video: { videoUrl: string; thumbnailUrl: string } | null) => void;
+  onVideoStatusChange?: (status: VideoUploadStatus) => void;
   dict: Dictionary;
   allowRedaction?: boolean;
 }) {
@@ -47,7 +49,7 @@ export default function MediaUploader({
         {tab === "photo" ? (
           <ImageUploader onChange={onImagesChange} dict={dict} allowRedaction={allowRedaction} />
         ) : (
-          <VideoUploader onChange={onVideoChange} dict={dict} />
+          <VideoUploader onChange={onVideoChange} onStatusChange={onVideoStatusChange} dict={dict} />
         )}
       </div>
     </div>

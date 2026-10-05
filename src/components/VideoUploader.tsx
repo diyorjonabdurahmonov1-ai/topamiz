@@ -7,19 +7,30 @@ import type { Dictionary } from "@/lib/i18n";
 const MAX_DURATION_SECONDS = 120;
 const ACCEPTED_TYPES = "video/mp4,video/quicktime,video/webm,video/x-matroska";
 
-type Status = "idle" | "checking" | "uploading" | "done" | "error";
+export type VideoUploadStatus = "idle" | "checking" | "uploading" | "done" | "error";
 
 export default function VideoUploader({
   onChange,
+  onStatusChange,
   dict,
 }: {
   onChange?: (video: { videoUrl: string; thumbnailUrl: string } | null) => void;
+  // Lets the post form know a video is still mid-upload, so it can hold off
+  // actually submitting the listing until this resolves — otherwise a quick
+  // tap on "post" right after picking a video ships the listing with no
+  // video at all, since the upload hasn't produced a URL yet.
+  onStatusChange?: (status: VideoUploadStatus) => void;
   dict: Dictionary;
 }) {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const [status, setStatus] = useState<Status>("idle");
+  const [status, setStatus] = useState<VideoUploadStatus>("idle");
   const [error, setError] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
+
+  function updateStatus(next: VideoUploadStatus) {
+    setStatus(next);
+    onStatusChange?.(next);
+  }
 
   function readDuration(file: File): Promise<number> {
     return new Promise((resolve, reject) => {
@@ -48,7 +59,7 @@ export default function VideoUploader({
     // exist before any of them can show up (otherwise a rejected file never
     // gets to tell the poster why).
     setPreviewUrl(URL.createObjectURL(file));
-    setStatus("checking");
+    updateStatus("checking");
     try {
       // The browser can only report a duration for codecs it can itself
       // decode — a phone's HEVC/H.265 clip, or an unusual AI-generated
@@ -59,7 +70,7 @@ export default function VideoUploader({
       // the server's own ffprobe check be the real judge.
       const duration = await readDuration(file);
       if (duration > MAX_DURATION_SECONDS) {
-        setStatus("error");
+        updateStatus("error");
         setError(`${dict.postListing.videoUploadFailedPrefix}: ${dict.postListing.videoTooLongError}`);
         return;
       }
@@ -67,17 +78,17 @@ export default function VideoUploader({
       // Fall through to uploading anyway — see comment above.
     }
 
-    setStatus("uploading");
+    updateStatus("uploading");
     const body = new FormData();
     body.append("file", file);
     try {
       const res = await fetch("/api/upload-video", { method: "POST", body });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? dict.postListing.videoGenericError);
-      setStatus("done");
+      updateStatus("done");
       onChange?.({ videoUrl: data.videoUrl, thumbnailUrl: data.thumbnailUrl });
     } catch (err) {
-      setStatus("error");
+      updateStatus("error");
       setError(
         `${dict.postListing.videoUploadFailedPrefix}: ${
           err instanceof Error ? err.message : dict.postListing.videoGenericError
@@ -89,7 +100,7 @@ export default function VideoUploader({
   function removeVideo() {
     if (previewUrl) URL.revokeObjectURL(previewUrl);
     setPreviewUrl(null);
-    setStatus("idle");
+    updateStatus("idle");
     setError("");
     onChange?.(null);
   }

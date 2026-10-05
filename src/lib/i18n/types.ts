@@ -183,6 +183,8 @@ export interface Dictionary {
     requiredFieldsError: string;
     genericError: string;
     submitting: string;
+    waitingForVideo: string;
+    videoBlockingError: string;
     submit: string;
     successTitle: string;
     successKindLost: string;
