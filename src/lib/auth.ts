@@ -132,6 +132,21 @@ export async function clearSessionCookie() {
   store.delete(SESSION_COOKIE);
 }
 
+// Permanent: removes the account and everything FK-cascades from it
+// (sessions, tags, listing_reports, friendships, push subscriptions, and
+// messages where they're the recipient; messages they sent keep the thread
+// with sender_id set null). Listings they owned persist ownerless
+// (owner_id is ON DELETE SET NULL) so other users' history on them isn't
+// disrupted. resolved_by has no FK (added via a later ALTER TABLE), so it
+// needs clearing by hand first to avoid a dangling reference.
+export function deleteUserAccount(userId: number): void {
+  const tx = db.transaction(() => {
+    db.prepare("UPDATE listings SET resolved_by = NULL WHERE resolved_by = ?").run(userId);
+    db.prepare("DELETE FROM users WHERE id = ?").run(userId);
+  });
+  tx();
+}
+
 export function isUserBlocked(id: number): boolean {
   const row = db.prepare("SELECT blocked_at FROM users WHERE id = ?").get(id) as
     | { blocked_at: string | null }

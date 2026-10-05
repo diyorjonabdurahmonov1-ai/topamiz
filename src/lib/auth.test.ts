@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { db } from "./db";
 import {
+  deleteUserAccount,
   findOrCreateGoogleUser,
   getUserByEmail,
   getUserByGoogleId,
@@ -10,9 +11,14 @@ import {
   pickAvatarColor,
 } from "./auth";
 import { blockUser, unblockUser } from "./admin-users";
+import { createListing, setListingStatus } from "./listings";
+import { sendMessage } from "./messages";
+import { createTag } from "./tags";
 
 beforeEach(() => {
-  db.exec("DELETE FROM sessions; DELETE FROM messages; DELETE FROM tags; DELETE FROM users;");
+  db.exec(
+    "DELETE FROM sessions; DELETE FROM messages; DELETE FROM tags; DELETE FROM listings; DELETE FROM users;"
+  );
 });
 
 describe("pickAvatarColor", () => {
@@ -97,5 +103,60 @@ describe("isUserBlocked", () => {
 
   it("returns false for a user id that doesn't exist", () => {
     expect(isUserBlocked(999999)).toBe(false);
+  });
+});
+
+describe("deleteUserAccount", () => {
+  it("removes the account and cascades per table, without orphaning other users' data", () => {
+    const owner = findOrCreateGoogleUser({ googleId: "g-owner", email: "owner@example.com", name: "Owner" });
+    const finder = findOrCreateGoogleUser({ googleId: "g-finder", email: "finder@example.com", name: "Finder" });
+
+    const listing = createListing({
+      ownerId: owner.id,
+      kind: "lost",
+      title: "Qora hamyon",
+      description: "test",
+      category: "sumka",
+      city: "Toshkent",
+      reward: 50000,
+      contactName: "Owner",
+      contactPhone: "+998901234567",
+      photoUrls: [],
+      country: "UZ",
+    });
+
+    sendMessage({ senderId: finder.id, recipientId: owner.id, body: "Men topdim", listingId: Number(listing.id) });
+    setListingStatus(listing.id, "resolved", finder.id);
+    const tag = createTag({ ownerId: finder.id, title: "Kalit", description: "test", photoUrls: [] });
+
+    // Deleting the finder clears their listings.resolved_by credit (no FK on
+    // that column) and cascades their own tag, but the message they sent
+    // only loses its sender_id (ON DELETE SET NULL) since the recipient
+    // (owner) still exists.
+    deleteUserAccount(finder.id);
+
+    expect(getUserById(finder.id)).toBeNull();
+    expect(db.prepare("SELECT resolved_by FROM listings WHERE id = ?").get(listing.id)).toEqual({
+      resolved_by: null,
+    });
+    expect(db.prepare("SELECT COUNT(*) c FROM tags WHERE id = ?").get(tag.id)).toEqual({ c: 0 });
+    const message = db
+      .prepare("SELECT sender_id, recipient_id FROM messages WHERE listing_id = ?")
+      .get(listing.id) as { sender_id: number | null; recipient_id: number };
+    expect(message.sender_id).toBeNull();
+    expect(message.recipient_id).toBe(owner.id);
+
+    // Deleting the owner (the listing's only remaining link) leaves the
+    // listing itself in place, just ownerless, and cascades the message
+    // where they were the recipient.
+    deleteUserAccount(owner.id);
+
+    expect(getUserById(owner.id)).toBeNull();
+    expect(db.prepare("SELECT owner_id FROM listings WHERE id = ?").get(listing.id)).toEqual({
+      owner_id: null,
+    });
+    expect(db.prepare("SELECT COUNT(*) c FROM messages WHERE listing_id = ?").get(listing.id)).toEqual({
+      c: 0,
+    });
   });
 });

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Globe, Send, Phone } from "lucide-react";
+import { Phone } from "lucide-react";
 import Logo from "./Logo";
 import { categories } from "@/lib/data";
 import type { Dictionary, Locale } from "@/lib/i18n";
@@ -14,20 +14,6 @@ export default function Footer({ dict, locale }: { dict: Dictionary; locale: Loc
             <Logo />
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-muted">{dict.footer.tagline}</p>
             <div className="mt-5 flex gap-2">
-              <a
-                href="#"
-                aria-label="Telegram"
-                className="flex h-9 w-9 items-center justify-center rounded-xl border border-border bg-surface text-muted transition-colors hover:text-foreground hover:border-brand-via/50"
-              >
-                <Send className="h-4 w-4" />
-              </a>
-              <a
-                href="#"
-                aria-label="Ijtimoiy tarmoq"
-                className="flex h-9 w-9 items-center justify-center rounded-xl border border-border bg-surface text-muted transition-colors hover:text-foreground hover:border-brand-via/50"
-              >
-                <Globe className="h-4 w-4" />
-              </a>
               <a
                 href="tel:+998712001122"
                 aria-label="Qo'llab-quvvatlash"
@@ -67,6 +53,8 @@ export default function Footer({ dict, locale }: { dict: Dictionary; locale: Loc
               <li><Link href="/elon-qoshish" className="hover:text-foreground">{dict.footer.howToPost}</Link></li>
               <li><Link href="/xavfsizlik-qoidalari" className="hover:text-foreground">{dict.footer.safetyRules}</Link></li>
               <li><Link href="/foydalanish-shartlari" className="hover:text-foreground">{dict.footer.termsOfUse}</Link></li>
+              <li><Link href="/maxfiylik-siyosati" className="hover:text-foreground">Maxfiylik siyosati</Link></li>
+              <li><Link href="/hisobni-ochirish" className="hover:text-foreground">Hisobni o'chirish</Link></li>
               <li><a href="mailto:info@findo.net.uz" className="hover:text-foreground">info@findo.net.uz</a></li>
             </ul>
           </div>

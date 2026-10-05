@@ -12,6 +12,8 @@ const ROUTES: Array<{ path: string; priority: number; changeFrequency: MetadataR
   { path: "/kirish", priority: 0.3, changeFrequency: "yearly" },
   { path: "/xavfsizlik-qoidalari", priority: 0.3, changeFrequency: "yearly" },
   { path: "/foydalanish-shartlari", priority: 0.3, changeFrequency: "yearly" },
+  { path: "/maxfiylik-siyosati", priority: 0.3, changeFrequency: "yearly" },
+  { path: "/hisobni-ochirish", priority: 0.3, changeFrequency: "yearly" },
 ];
 
 export default function sitemap(): MetadataRoute.Sitemap {
