@@ -426,7 +426,7 @@ const en: Dictionary = {
     shareSentTitle: "Sent",
     shareSentBody: "The listing was sent successfully",
     shareGenericError: "Something went wrong sending it",
-    reelsNavLabel: "Reels",
+    reelsNavLabel: "Videos",
     reelsEmptyTitle: "No video listings yet",
     reelsEmptyBody: "Be the first to post a listing with a video!",
     reelsViewListing: "View listing",

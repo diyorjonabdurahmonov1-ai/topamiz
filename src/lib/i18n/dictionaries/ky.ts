@@ -427,7 +427,7 @@ const ky: Dictionary = {
     shareSentTitle: "Жөнөтүлдү",
     shareSentBody: "Жарыя ийгиликтүү жөнөтүлдү",
     shareGenericError: "Жөнөтүүдө ката кетти",
-    reelsNavLabel: "Кыска видеолор",
+    reelsNavLabel: "Видео жазуулар",
     reelsEmptyTitle: "Азырынча видеолуу жарыялар жок",
     reelsEmptyBody: "Видео кошкон биринчи адам болуңуз!",
     reelsViewListing: "Жарыяны ачуу",

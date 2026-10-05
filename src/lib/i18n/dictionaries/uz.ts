@@ -431,7 +431,7 @@ const uz: Dictionary = {
     shareSentTitle: "Yuborildi",
     shareSentBody: "Elon muvaffaqiyatli yuborildi",
     shareGenericError: "Yuborishda xatolik yuz berdi",
-    reelsNavLabel: "Qisqa videolar",
+    reelsNavLabel: "Video yozuvlar",
     reelsEmptyTitle: "Hozircha video elonlar yo'q",
     reelsEmptyBody: "Video bilan birinchi elon qo'shgan siz bo'ling!",
     reelsViewListing: "Elonni ko'rish",

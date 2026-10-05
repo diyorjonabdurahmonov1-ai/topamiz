@@ -427,7 +427,7 @@ const ru: Dictionary = {
     shareSentTitle: "Отправлено",
     shareSentBody: "Объявление успешно отправлено",
     shareGenericError: "Ошибка при отправке",
-    reelsNavLabel: "Короткие видео",
+    reelsNavLabel: "Видеозаписи",
     reelsEmptyTitle: "Пока нет объявлений с видео",
     reelsEmptyBody: "Станьте первым, кто добавит объявление с видео!",
     reelsViewListing: "Открыть объявление",
