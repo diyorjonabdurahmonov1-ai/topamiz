@@ -52,6 +52,8 @@ export default function ReelSlide({
   dict,
   commentCount,
   onOpenComments,
+  muted,
+  onToggleMuted,
 }: {
   listing: Listing;
   likedByMe: boolean;
@@ -60,9 +62,12 @@ export default function ReelSlide({
   dict: Dictionary;
   commentCount: number;
   onOpenComments: () => void;
+  // Lifted to the feed so toggling it on one video applies to every video —
+  // Instagram/TikTok-style shared mute state, not a per-slide setting.
+  muted: boolean;
+  onToggleMuted: () => void;
 }) {
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [muted, setMuted] = useState(true);
   const isVideo = !!listing.videoUrl;
 
   useEffect(() => {
@@ -125,7 +130,7 @@ export default function ReelSlide({
       {isVideo && (
         <button
           type="button"
-          onClick={() => setMuted((m) => !m)}
+          onClick={onToggleMuted}
           aria-label={muted ? "Ovozni yoqish" : "Ovozni o'chirish"}
           className="absolute right-4 top-[calc(1rem+env(safe-area-inset-top))] z-10 flex h-9 w-9 items-center justify-center rounded-full bg-black/40 text-white backdrop-blur-sm"
         >
