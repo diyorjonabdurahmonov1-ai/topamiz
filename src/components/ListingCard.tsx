@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Gift, Sparkles } from "lucide-react";
+import { Gift, Play, Sparkles } from "lucide-react";
 import type { Listing } from "@/lib/types";
 import type { Dictionary } from "@/lib/i18n";
 import { categoryIcons } from "@/lib/icons";
@@ -34,7 +34,21 @@ export default function ListingCard({ listing, dict }: { listing: Listing; dict:
       )}
 
       <div className="pointer-events-none relative">
-        {listing.photoUrls.length > 0 ? (
+        {listing.videoThumbnailUrl ? (
+          <>
+            {/* eslint-disable-next-line @next/next/no-img-element -- hosted on Cloudflare R2, not a build-time asset */}
+            <img
+              src={listing.videoThumbnailUrl}
+              alt={listing.title}
+              className="h-28 w-full object-cover"
+            />
+            <span className="absolute inset-0 flex items-center justify-center bg-black/10">
+              <span className="flex h-8 w-8 items-center justify-center rounded-full bg-black/55 text-white backdrop-blur-sm">
+                <Play className="h-3.5 w-3.5 fill-white" />
+              </span>
+            </span>
+          </>
+        ) : listing.photoUrls.length > 0 ? (
           // eslint-disable-next-line @next/next/no-img-element -- runtime-uploaded file served from /api/uploads, not a build-time asset
           <img
             src={listing.photoUrls[0]}

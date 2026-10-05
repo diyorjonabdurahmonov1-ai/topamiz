@@ -11,12 +11,14 @@ import {
   MapPin,
   Phone,
   Sparkles,
+  Video,
 } from "lucide-react";
 import type { CategoryId, ListingKind } from "@/lib/types";
 import type { Dictionary, Locale } from "@/lib/i18n";
 import { formatPostSuccessBody } from "@/lib/i18n/format";
 import { categories, cities } from "@/lib/data";
 import ImageUploader from "./ImageUploader";
+import VideoUploader from "./VideoUploader";
 
 const LocationPickerMap = dynamic(() => import("./LocationPickerMap"), {
   ssr: false,
@@ -40,6 +42,7 @@ export default function PostListingForm({ dict, locale }: { dict: Dictionary; lo
   const [contactName, setContactName] = useState("");
   const [contactPhone, setContactPhone] = useState("");
   const [imageUrls, setImageUrls] = useState<string[]>([]);
+  const [video, setVideo] = useState<{ videoUrl: string; thumbnailUrl: string } | null>(null);
   const [status, setStatus] = useState<Status>("idle");
   const [error, setError] = useState("");
   const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
@@ -119,6 +122,8 @@ export default function PostListingForm({ dict, locale }: { dict: Dictionary; lo
           contactName,
           contactPhone,
           photoUrls: imageUrls,
+          videoUrl: video?.videoUrl,
+          videoThumbnailUrl: video?.thumbnailUrl,
           lat: coords?.lat,
           lng: coords?.lng,
         }),
@@ -142,6 +147,7 @@ export default function PostListingForm({ dict, locale }: { dict: Dictionary; lo
     setContactName("");
     setContactPhone("");
     setImageUrls([]);
+    setVideo(null);
     setStatus("idle");
     setCoords(null);
     setLocateError("");
@@ -319,6 +325,17 @@ export default function PostListingForm({ dict, locale }: { dict: Dictionary; lo
         </h2>
         <div className="mt-3">
           <ImageUploader onChange={setImageUrls} dict={dict} allowRedaction={category === "hujjatlar"} />
+        </div>
+      </div>
+
+      <div className="rounded-2xl border border-border bg-surface p-5 sm:p-6">
+        <h2 className="flex items-center gap-2 text-sm font-bold">
+          <Video className="h-4 w-4" />
+          {dict.postListing.videoHeading}
+        </h2>
+        <p className="mt-1 text-xs text-muted">{dict.postListing.videoHint}</p>
+        <div className="mt-3">
+          <VideoUploader onChange={setVideo} dict={dict} />
         </div>
       </div>
 

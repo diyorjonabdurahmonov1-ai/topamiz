@@ -15,6 +15,7 @@ import {
 import { containsProhibitedContent, recordModerationViolation } from "@/lib/moderation";
 import { getClientIp, rateLimit } from "@/lib/rate-limit";
 import { countryForIp } from "@/lib/geo";
+import { R2_PUBLIC_URL } from "@/lib/r2";
 import type { CategoryId, ListingKind } from "@/lib/types";
 
 // Uploaded photos only ever come back from POST /api/upload as this prefix —
@@ -67,6 +68,19 @@ export async function POST(request: Request) {
         .filter((u: unknown): u is string => typeof u === "string" && u.startsWith(OWN_UPLOAD_PREFIX))
         .slice(0, MAX_LISTING_PHOTOS)
     : [];
+  // Uploaded videos/thumbnails only ever come back from POST /api/upload-video
+  // pointed at our own R2 bucket — anything else is a client claiming an
+  // arbitrary external URL is one of ours.
+  const videoUrl =
+    typeof body?.videoUrl === "string" && R2_PUBLIC_URL && body.videoUrl.startsWith(R2_PUBLIC_URL)
+      ? body.videoUrl
+      : null;
+  const videoThumbnailUrl =
+    typeof body?.videoThumbnailUrl === "string" &&
+    R2_PUBLIC_URL &&
+    body.videoThumbnailUrl.startsWith(R2_PUBLIC_URL)
+      ? body.videoThumbnailUrl
+      : null;
   const latRaw = body?.lat;
   const lngRaw = body?.lng;
   const lat =
@@ -110,6 +124,8 @@ export async function POST(request: Request) {
     contactName,
     contactPhone,
     photoUrls,
+    videoUrl,
+    videoThumbnailUrl,
     country: countryForIp(ip),
     lat,
     lng,

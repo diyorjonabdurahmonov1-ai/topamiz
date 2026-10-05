@@ -210,6 +210,16 @@ const uz: Dictionary = {
     redactUndo: "Bekor qilish",
     redactSkip: "O'zgarishsiz yuklash",
     redactDone: "Tayyor",
+    videoHeading: "Video (ixtiyoriy)",
+    videoHint: "Buyumni ko'rsatuvchi qisqa video qo'shing — 2 daqiqagacha.",
+    videoUploadPrompt: "Videoni shu yerga tashlang yoki bosib tanlang",
+    videoUploadHint: "MP4, MOV yoki WEBM · 2 daqiqagacha",
+    videoChecking: "Tekshirilmoqda...",
+    videoCompressing: "Video siqilmoqda...",
+    videoRemove: "Videoni o'chirish",
+    videoInvalidError: "Fayl mazmuni haqiqiy videoga mos kelmadi",
+    videoTooLongError: "Video 2 daqiqadan oshmasligi kerak",
+    videoGenericError: "Video yuklashda xatolik yuz berdi",
   },
 
   mysteryBoxForm: {

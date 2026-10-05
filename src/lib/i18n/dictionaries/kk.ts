@@ -208,6 +208,16 @@ const kk: Dictionary = {
     redactUndo: "Болдырмау",
     redactSkip: "Өзгеріссіз жүктеу",
     redactDone: "Дайын",
+    videoHeading: "Бейне (міндетті емес)",
+    videoHint: "Затты көрсететін қысқа бейне қосыңыз — 2 минутқа дейін.",
+    videoUploadPrompt: "Бейнені осы жерге тастаңыз немесе таңдау үшін басыңыз",
+    videoUploadHint: "MP4, MOV немесе WEBM · 2 минутқа дейін",
+    videoChecking: "Тексерілуде...",
+    videoCompressing: "Бейне сығылуда...",
+    videoRemove: "Бейнені жою",
+    videoInvalidError: "Файл мазмұны нақты бейнеге сәйкес келмейді",
+    videoTooLongError: "Бейне 2 минуттан аспауы керек",
+    videoGenericError: "Бейнені жүктеуде қате шықты",
   },
 
   mysteryBoxForm: {

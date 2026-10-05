@@ -208,6 +208,16 @@ const ky: Dictionary = {
     redactUndo: "Жокко чыгаруу",
     redactSkip: "Өзгөртүүсүз жүктөө",
     redactDone: "Даяр",
+    videoHeading: "Видео (милдеттүү эмес)",
+    videoHint: "Буюмду көрсөткөн кыска видео кошуңуз — 2 мүнөткө чейин.",
+    videoUploadPrompt: "Видеону бул жерге таштаңыз же тандоо үчүн басыңыз",
+    videoUploadHint: "MP4, MOV же WEBM · 2 мүнөткө чейин",
+    videoChecking: "Текшерилүүдө...",
+    videoCompressing: "Видео кысылууда...",
+    videoRemove: "Видеону өчүрүү",
+    videoInvalidError: "Файлдын мазмуну чыныгы видеого дал келбейт",
+    videoTooLongError: "Видео 2 мүнөттөн ашпашы керек",
+    videoGenericError: "Видеону жүктөөдө ката кетти",
   },
 
   mysteryBoxForm: {
