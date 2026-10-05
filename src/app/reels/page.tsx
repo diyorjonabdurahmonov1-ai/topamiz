@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { getVideoListings } from "@/lib/listings";
+import { getReelsListings } from "@/lib/listings";
 import { getLikedListingIds } from "@/lib/listing-likes";
 import { getCurrentUser } from "@/lib/auth";
 import { getVisitorCountry } from "@/lib/geo";
@@ -17,7 +17,7 @@ export default async function ReelsPage() {
   const locale = await getLocale();
   const dict = getDictionary(locale);
 
-  const listings = getVideoListings(country);
+  const listings = getReelsListings(country);
   const likedIds = user ? getLikedListingIds(user.id, listings.map((l) => Number(l.id))) : new Set<number>();
   const initialListings = listings.map((l) => ({ ...l, likedByMe: likedIds.has(Number(l.id)) }));
 

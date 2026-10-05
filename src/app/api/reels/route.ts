@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth";
-import { getVideoListings } from "@/lib/listings";
+import { getReelsListings } from "@/lib/listings";
 import { getLikedListingIds } from "@/lib/listing-likes";
 import { countryForIp } from "@/lib/geo";
 import { getClientIp } from "@/lib/rate-limit";
@@ -13,7 +13,7 @@ export async function GET(request: Request) {
     .filter((s) => /^\d+$/.test(s));
 
   const ip = getClientIp(request);
-  const listings = getVideoListings(countryForIp(ip), excludeIds);
+  const listings = getReelsListings(countryForIp(ip), excludeIds);
 
   const user = await getCurrentUser();
   const likedIds = user ? getLikedListingIds(user.id, listings.map((l) => Number(l.id))) : new Set<number>();

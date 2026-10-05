@@ -208,18 +208,23 @@ export function getMysteryBoxListings(country: string): Listing[] {
   return rows.map(toListing);
 }
 
-// Reels-style feed: every active, non-mystery-box listing that has a video,
-// shuffled at query time so the order is different (and unpredictable) on
-// each load — there's no "trending" ranking here, just a random walk
-// through whatever video content exists. `excludeIds` keeps a client that's
-// already scrolled through a batch from being handed the same ones again.
-export function getVideoListings(country: string, excludeIds: string[] = []): Listing[] {
+// Reels-style feed: every active, non-mystery-box listing that has either a
+// video or at least one photo, shuffled at query time so the order is
+// different (and unpredictable) on each load — there's no "trending"
+// ranking here, just a random walk through whatever visual content exists.
+// Video and photo listings are deliberately mixed together rather than
+// shown in separate feeds, so a photo-only listing still gets the same
+// swipeable Reels exposure a video one gets. `excludeIds` keeps a client
+// that's already scrolled through a batch from being handed the same ones
+// again.
+export function getReelsListings(country: string, excludeIds: string[] = []): Listing[] {
   const placeholders = excludeIds.map(() => "?").join(",");
   const excludeClause = excludeIds.length > 0 ? `AND listings.id NOT IN (${placeholders})` : "";
   const rows = db
     .prepare(
       `${LISTING_SELECT} WHERE listings.status = 'active' AND listings.country = ?
-       AND listings.is_mystery_box = 0 AND listings.video_url IS NOT NULL
+       AND listings.is_mystery_box = 0
+       AND (listings.video_url IS NOT NULL OR listings.photo_urls != '[]')
        ${excludeClause}
        ORDER BY RANDOM() LIMIT 30`
     )

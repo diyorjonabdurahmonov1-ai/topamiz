@@ -4,6 +4,7 @@ import Script from "next/script";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import BottomNav from "@/components/BottomNav";
+import AppChrome from "@/components/AppChrome";
 import Analytics from "@/components/Analytics";
 import { getCurrentUser } from "@/lib/auth";
 import { unreadTotal } from "@/lib/messages";
@@ -88,12 +89,13 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
         <Analytics />
       </head>
       <body className="min-h-full flex flex-col bg-bg text-foreground antialiased selection:bg-brand-via/30">
-        <Navbar user={user} unreadCount={unreadCount} locale={locale} dict={dict} />
-        <main className="flex-1 pb-16 sm:pb-0">{children}</main>
-        <div className="hidden sm:block">
-          <Footer dict={dict} locale={locale} />
-        </div>
-        <BottomNav user={user} unreadCount={unreadCount} dict={dict} />
+        <AppChrome
+          navbar={<Navbar user={user} unreadCount={unreadCount} locale={locale} dict={dict} />}
+          footer={<Footer dict={dict} locale={locale} />}
+          bottomNav={<BottomNav user={user} unreadCount={unreadCount} dict={dict} />}
+        >
+          {children}
+        </AppChrome>
       </body>
     </html>
   );

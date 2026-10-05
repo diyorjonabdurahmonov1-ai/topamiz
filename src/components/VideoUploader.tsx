@@ -37,24 +37,31 @@ export default function VideoUploader({
     });
   }
 
+  // Deliberately one status for the whole pipeline (duration check, ffmpeg
+  // compression, R2 upload) — the poster doesn't need a play-by-play of what
+  // the server is doing to their file, just whether it worked in the end.
   async function handleFile(file: File | undefined) {
     if (!file) return;
     setError("");
+    // Set the preview immediately — the duration check and the error/done
+    // states that follow all render inside that preview box, so it has to
+    // exist before any of them can show up (otherwise a rejected file never
+    // gets to tell the poster why).
+    setPreviewUrl(URL.createObjectURL(file));
     setStatus("checking");
     try {
       const duration = await readDuration(file);
       if (duration > MAX_DURATION_SECONDS) {
         setStatus("error");
-        setError(dict.postListing.videoTooLongError);
+        setError(`${dict.postListing.videoUploadFailedPrefix}: ${dict.postListing.videoTooLongError}`);
         return;
       }
     } catch {
       setStatus("error");
-      setError(dict.postListing.videoInvalidError);
+      setError(`${dict.postListing.videoUploadFailedPrefix}: ${dict.postListing.videoInvalidError}`);
       return;
     }
 
-    setPreviewUrl(URL.createObjectURL(file));
     setStatus("uploading");
     const body = new FormData();
     body.append("file", file);
@@ -66,7 +73,11 @@ export default function VideoUploader({
       onChange?.({ videoUrl: data.videoUrl, thumbnailUrl: data.thumbnailUrl });
     } catch (err) {
       setStatus("error");
-      setError(err instanceof Error ? err.message : dict.postListing.videoGenericError);
+      setError(
+        `${dict.postListing.videoUploadFailedPrefix}: ${
+          err instanceof Error ? err.message : dict.postListing.videoGenericError
+        }`
+      );
     }
   }
 
@@ -109,7 +120,7 @@ export default function VideoUploader({
       {(status === "checking" || status === "uploading") && (
         <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-black/60 text-center text-xs font-medium text-white">
           <Loader2 className="h-6 w-6 animate-spin" />
-          {status === "checking" ? dict.postListing.videoChecking : dict.postListing.videoCompressing}
+          {dict.postListing.videoUploading}
         </div>
       )}
       {status === "error" && (

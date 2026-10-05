@@ -57,8 +57,9 @@ export async function POST(request: Request) {
     typeof rewardRaw === "number" && Number.isFinite(rewardRaw) && rewardRaw > 0
       ? Math.round(rewardRaw)
       : null;
-  const contactName =
-    typeof body?.contactName === "string" ? body.contactName.trim().slice(0, MAX_CONTACT_NAME_LENGTH) : "";
+  // The poster's contact name is always their own account name — not a
+  // separate form field — so there's nothing here for a client to spoof.
+  const contactName = user.name.trim().slice(0, MAX_CONTACT_NAME_LENGTH);
   const contactPhone =
     typeof body?.contactPhone === "string"
       ? body.contactPhone.trim().slice(0, MAX_CONTACT_PHONE_LENGTH)
@@ -92,7 +93,7 @@ export async function POST(request: Request) {
       ? lngRaw
       : undefined;
 
-  if (!kind || !title || !description || !category || !city || !contactName || !contactPhone) {
+  if (!kind || !title || !category || !city || !contactPhone) {
     return NextResponse.json(
       { error: "Iltimos, * bilan belgilangan barcha maydonlarni to'ldiring." },
       { status: 400 }

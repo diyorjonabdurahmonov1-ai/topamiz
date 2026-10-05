@@ -84,7 +84,7 @@ export default function ReelsFeed({
 
   if (listings.length === 0) {
     return (
-      <div className="flex h-[calc(100dvh-4rem)] flex-col items-center justify-center gap-3 bg-black px-6 text-center text-white">
+      <div className="flex h-dvh flex-col items-center justify-center gap-3 bg-black px-6 text-center text-white">
         <Clapperboard className="h-10 w-10 text-muted" />
         <p className="text-sm font-bold">{dict.social.reelsEmptyTitle}</p>
         <p className="max-w-xs text-sm text-muted">{dict.social.reelsEmptyBody}</p>
@@ -99,7 +99,7 @@ export default function ReelsFeed({
   return (
     <div
       ref={containerRef}
-      className="h-[calc(100dvh-4rem)] w-full snap-y snap-mandatory overflow-y-scroll bg-black"
+      className="h-dvh w-full snap-y snap-mandatory overflow-y-scroll bg-black"
     >
       {listings.map((listing) => (
         <div

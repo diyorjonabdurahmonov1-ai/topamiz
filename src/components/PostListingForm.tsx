@@ -11,14 +11,12 @@ import {
   MapPin,
   Phone,
   Sparkles,
-  Video,
 } from "lucide-react";
 import type { CategoryId, ListingKind } from "@/lib/types";
 import type { Dictionary, Locale } from "@/lib/i18n";
 import { formatPostSuccessBody } from "@/lib/i18n/format";
 import { categories, cities } from "@/lib/data";
-import ImageUploader from "./ImageUploader";
-import VideoUploader from "./VideoUploader";
+import MediaUploader from "./MediaUploader";
 
 const LocationPickerMap = dynamic(() => import("./LocationPickerMap"), {
   ssr: false,
@@ -39,7 +37,6 @@ export default function PostListingForm({ dict, locale }: { dict: Dictionary; lo
   const [city, setCity] = useState("");
   const [district, setDistrict] = useState("");
   const [reward, setReward] = useState("");
-  const [contactName, setContactName] = useState("");
   const [contactPhone, setContactPhone] = useState("");
   const [imageUrls, setImageUrls] = useState<string[]>([]);
   const [video, setVideo] = useState<{ videoUrl: string; thumbnailUrl: string } | null>(null);
@@ -97,7 +94,7 @@ export default function PostListingForm({ dict, locale }: { dict: Dictionary; lo
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
-    if (!title.trim() || !description.trim() || !contactName.trim() || !contactPhone.trim()) {
+    if (!title.trim() || !contactPhone.trim()) {
       setError(dict.postListing.requiredFieldsError);
       return;
     }
@@ -119,7 +116,6 @@ export default function PostListingForm({ dict, locale }: { dict: Dictionary; lo
           city,
           district: district.trim() || undefined,
           reward: reward ? Number(reward) : null,
-          contactName,
           contactPhone,
           photoUrls: imageUrls,
           videoUrl: video?.videoUrl,
@@ -144,7 +140,6 @@ export default function PostListingForm({ dict, locale }: { dict: Dictionary; lo
     setCity("");
     setDistrict("");
     setReward("");
-    setContactName("");
     setContactPhone("");
     setImageUrls([]);
     setVideo(null);
@@ -321,21 +316,16 @@ export default function PostListingForm({ dict, locale }: { dict: Dictionary; lo
       <div className="rounded-2xl border border-border bg-surface p-5 sm:p-6">
         <h2 className="flex items-center gap-2 text-sm font-bold">
           <ImagePlus className="h-4 w-4" />
-          {dict.postListing.photosHeading}
+          {dict.postListing.mediaHeading}
         </h2>
+        <p className="mt-1 text-xs text-muted">{dict.postListing.mediaHint}</p>
         <div className="mt-3">
-          <ImageUploader onChange={setImageUrls} dict={dict} allowRedaction={category === "hujjatlar"} />
-        </div>
-      </div>
-
-      <div className="rounded-2xl border border-border bg-surface p-5 sm:p-6">
-        <h2 className="flex items-center gap-2 text-sm font-bold">
-          <Video className="h-4 w-4" />
-          {dict.postListing.videoHeading}
-        </h2>
-        <p className="mt-1 text-xs text-muted">{dict.postListing.videoHint}</p>
-        <div className="mt-3">
-          <VideoUploader onChange={setVideo} dict={dict} />
+          <MediaUploader
+            onImagesChange={setImageUrls}
+            onVideoChange={setVideo}
+            dict={dict}
+            allowRedaction={category === "hujjatlar"}
+          />
         </div>
       </div>
 
@@ -359,31 +349,18 @@ export default function PostListingForm({ dict, locale }: { dict: Dictionary; lo
 
       <div className="rounded-2xl border border-border bg-surface p-5 sm:p-6">
         <h2 className="text-sm font-bold">{dict.postListing.contactHeading}</h2>
-        <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <div>
-            <label className="mb-1.5 block text-xs font-semibold text-muted">
-              {dict.postListing.nameLabel}
-            </label>
+        <div className="mt-4">
+          <label className="mb-1.5 block text-xs font-semibold text-muted">
+            {dict.postListing.phoneLabel}
+          </label>
+          <div className="relative">
+            <Phone className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
             <input
-              value={contactName}
-              onChange={(e) => setContactName(e.target.value)}
-              placeholder={dict.postListing.namePlaceholder}
-              className="w-full rounded-xl border border-border bg-bg-elevated px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-via/40"
+              value={contactPhone}
+              onChange={(e) => setContactPhone(e.target.value)}
+              placeholder={dict.postListing.phonePlaceholder}
+              className="w-full rounded-xl border border-border bg-bg-elevated px-9 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-via/40"
             />
-          </div>
-          <div>
-            <label className="mb-1.5 block text-xs font-semibold text-muted">
-              {dict.postListing.phoneLabel}
-            </label>
-            <div className="relative">
-              <Phone className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
-              <input
-                value={contactPhone}
-                onChange={(e) => setContactPhone(e.target.value)}
-                placeholder={dict.postListing.phonePlaceholder}
-                className="w-full rounded-xl border border-border bg-bg-elevated px-9 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-via/40"
-              />
-            </div>
           </div>
         </div>
       </div>
