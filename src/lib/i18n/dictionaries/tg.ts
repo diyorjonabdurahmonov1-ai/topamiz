@@ -116,7 +116,6 @@ const tg: Dictionary = {
     showOnMap: "Дар харита нишон додан",
     hideMap: "Пинҳон кардани харита",
     getDirections: "Гирифтани роҳ",
-    postedBy: "Муаллифи эълон",
     foundItButton: "Ман инро ёфтам!",
     foundItPlaceholder: "Дар куҷо ва чӣ тавр ёфтанатонро нависед...",
     foundItPhotosLabel: "Барои исбот акс илова кунед (ихтиёрӣ)",

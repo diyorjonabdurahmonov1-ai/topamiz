@@ -116,7 +116,6 @@ const en: Dictionary = {
     showOnMap: "Show on map",
     hideMap: "Hide map",
     getDirections: "Get directions",
-    postedBy: "Posted by",
     foundItButton: "I found this!",
     foundItPlaceholder: "Describe where and how you found it...",
     foundItPhotosLabel: "Add a photo as proof (optional)",
