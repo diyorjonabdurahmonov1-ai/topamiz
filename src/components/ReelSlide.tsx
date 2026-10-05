@@ -85,7 +85,7 @@ export default function ReelSlide({
   }
 
   return (
-    <div className="relative h-dvh w-full snap-start overflow-hidden bg-black">
+    <div className="relative h-dvh w-full snap-start overflow-hidden bg-black [scroll-snap-stop:always]">
       {isVideo ? (
         <video
           ref={videoRef}
