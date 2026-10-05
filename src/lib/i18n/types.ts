@@ -196,6 +196,16 @@ export interface Dictionary {
     redactUndo: string;
     redactSkip: string;
     redactDone: string;
+    videoHeading: string;
+    videoHint: string;
+    videoUploadPrompt: string;
+    videoUploadHint: string;
+    videoChecking: string;
+    videoCompressing: string;
+    videoRemove: string;
+    videoInvalidError: string;
+    videoTooLongError: string;
+    videoGenericError: string;
   };
 
   mysteryBoxForm: {

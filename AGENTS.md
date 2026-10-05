@@ -29,7 +29,9 @@ cold start or an ephemeral filesystem.
   `backend-caddy-1`, config at `/opt/prostaff/backend/Caddyfile`). The
   Topamiz block is appended at the end of that file:
   `findo.net.uz -> reverse_proxy 172.18.0.1:3000` with
-  `request_body max_size 20MB`.
+  `request_body max_size 20MB` — needs raising toward `300MB` for video
+  uploads (see the video upload note below), since Caddy rejects any
+  request body over this limit before it ever reaches the app.
 - `ufw`: port 3000 is only open to `172.18.0.0/16` (the Docker network) —
   it is not reachable from the public internet directly, only through Caddy.
 - Auth cookies are `secure: true` in production (see `src/lib/auth.ts`), so
@@ -51,6 +53,21 @@ cold start or an ephemeral filesystem.
   (a GA4 Measurement ID from analytics.google.com) and/or
   `NEXT_PUBLIC_YANDEX_METRIKA_ID` (a counter number from metrika.yandex.ru) to
   `.env.production.local` to turn either one on; both can run at once.
+- Listing videos (`/api/upload-video`, `src/lib/r2.ts`) are stored on
+  Cloudflare R2, not the VPS's own disk — R2 has zero egress fees, and the
+  120GB SSD this server ships with has no room for accumulating video.
+  Requires `ffmpeg` on the server (`apt install ffmpeg`; the route shells out
+  to both `ffmpeg` and `ffprobe` to validate, compress, and thumbnail each
+  upload before it ever reaches R2) and these five vars in
+  `.env.production.local`: `R2_ENDPOINT`, `R2_ACCESS_KEY_ID`,
+  `R2_SECRET_ACCESS_KEY`, `R2_BUCKET_NAME`, `R2_PUBLIC_URL` — all from the
+  R2 bucket's own dashboard (Cloudflare dashboard → R2 Object Storage →
+  the bucket → Settings, and Manage API Tokens). Without `ffmpeg` installed
+  or these vars set, video upload fails with a clear error but the rest of
+  the site is unaffected.
+  **Also requires raising the Caddy `request_body max_size` for the Topamiz
+  block past its current `20MB`** (see the Caddyfile note below) — otherwise
+  Caddy itself rejects any video upload over 20MB before it reaches the app.
 
 ### Another project shares this server — do not touch it
 

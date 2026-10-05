@@ -28,6 +28,8 @@ function makeListing(overrides: Partial<Listing>): Listing {
     colorTo: "#fff",
     views: 0,
     photoUrls: [],
+    videoUrl: null,
+    videoThumbnailUrl: null,
     country: "UZ",
     lat: 41.3,
     lng: 69.2,

@@ -37,6 +37,8 @@ export interface Listing {
   colorTo: string;
   views: number;
   photoUrls: string[];
+  videoUrl: string | null;
+  videoThumbnailUrl: string | null;
   country: string;
   lat: number;
   lng: number;

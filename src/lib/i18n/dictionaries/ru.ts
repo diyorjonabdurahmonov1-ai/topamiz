@@ -208,6 +208,16 @@ const ru: Dictionary = {
     redactUndo: "Отменить",
     redactSkip: "Загрузить как есть",
     redactDone: "Готово",
+    videoHeading: "Видео (необязательно)",
+    videoHint: "Добавьте короткое видео с предметом — до 2 минут.",
+    videoUploadPrompt: "Перетащите видео сюда или нажмите, чтобы выбрать",
+    videoUploadHint: "MP4, MOV или WEBM · до 2 минут",
+    videoChecking: "Проверка...",
+    videoCompressing: "Сжатие видео...",
+    videoRemove: "Удалить видео",
+    videoInvalidError: "Содержимое файла не соответствует настоящему видео",
+    videoTooLongError: "Видео не должно превышать 2 минуты",
+    videoGenericError: "Ошибка при загрузке видео",
   },
 
   mysteryBoxForm: {

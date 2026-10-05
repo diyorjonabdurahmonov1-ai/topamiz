@@ -36,6 +36,8 @@ interface RawListingRow {
   contact_phone: string;
   status: string;
   photo_urls: string;
+  video_url: string | null;
+  video_thumbnail_url: string | null;
   views: number;
   country: string;
   lat: number;
@@ -117,6 +119,8 @@ function toListing(row: RawListingRow): Listing {
     colorTo: colors.to,
     views: row.views,
     photoUrls: JSON.parse(row.photo_urls) as string[],
+    videoUrl: row.video_url,
+    videoThumbnailUrl: row.video_thumbnail_url,
     country: row.country,
     lat: row.lat,
     lng: row.lng,
@@ -257,6 +261,8 @@ export function createListing(params: {
   contactName: string;
   contactPhone: string;
   photoUrls: string[];
+  videoUrl?: string | null;
+  videoThumbnailUrl?: string | null;
   country: string;
   lat?: number;
   lng?: number;
@@ -266,8 +272,8 @@ export function createListing(params: {
   const info = db
     .prepare(
       `INSERT INTO listings
-        (owner_id, kind, title, description, category, city, district, reward, contact_name, contact_phone, photo_urls, country, lat, lng, is_mystery_box, expires_at)
-       VALUES (@ownerId, @kind, @title, @description, @category, @city, @district, @reward, @contactName, @contactPhone, @photoUrls, @country, @lat, @lng, @isMysteryBox, @expiresAt)`
+        (owner_id, kind, title, description, category, city, district, reward, contact_name, contact_phone, photo_urls, video_url, video_thumbnail_url, country, lat, lng, is_mystery_box, expires_at)
+       VALUES (@ownerId, @kind, @title, @description, @category, @city, @district, @reward, @contactName, @contactPhone, @photoUrls, @videoUrl, @videoThumbnailUrl, @country, @lat, @lng, @isMysteryBox, @expiresAt)`
     )
     .run({
       ownerId: params.ownerId,
@@ -281,6 +287,8 @@ export function createListing(params: {
       contactName: params.contactName,
       contactPhone: params.contactPhone,
       photoUrls: JSON.stringify(params.photoUrls),
+      videoUrl: params.videoUrl ?? null,
+      videoThumbnailUrl: params.videoThumbnailUrl ?? null,
       country: params.country,
       lat: params.lat ?? null,
       lng: params.lng ?? null,

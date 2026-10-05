@@ -208,6 +208,16 @@ const tg: Dictionary = {
     redactUndo: "Бекор кардан",
     redactSkip: "Бе тағйирот бор кардан",
     redactDone: "Тайёр",
+    videoHeading: "Видео (ихтиёрӣ)",
+    videoHint: "Видеои кутоҳи чизро илова кунед — то 2 дақиқа.",
+    videoUploadPrompt: "Видеоро ин ҷо гузоред ё барои интихоб клик кунед",
+    videoUploadHint: "MP4, MOV ё WEBM · то 2 дақиқа",
+    videoChecking: "Тафтиш шуда истодааст...",
+    videoCompressing: "Видео фишурда шуда истодааст...",
+    videoRemove: "Видеоро нест кардан",
+    videoInvalidError: "Мазмуни файл ба видеои воқеӣ мувофиқат намекунад",
+    videoTooLongError: "Видео набояд аз 2 дақиқа зиёд бошад",
+    videoGenericError: "Ҳангоми боргузории видео хато рух дод",
   },
 
   mysteryBoxForm: {

@@ -208,6 +208,16 @@ const en: Dictionary = {
     redactUndo: "Undo",
     redactSkip: "Upload as-is",
     redactDone: "Done",
+    videoHeading: "Video (optional)",
+    videoHint: "Add a short video of the item — up to 2 minutes.",
+    videoUploadPrompt: "Drop a video here or click to choose",
+    videoUploadHint: "MP4, MOV or WEBM · up to 2 minutes",
+    videoChecking: "Checking...",
+    videoCompressing: "Compressing video...",
+    videoRemove: "Remove video",
+    videoInvalidError: "The file's content doesn't match a real video",
+    videoTooLongError: "The video must not exceed 2 minutes",
+    videoGenericError: "Something went wrong uploading the video",
   },
 
   mysteryBoxForm: {

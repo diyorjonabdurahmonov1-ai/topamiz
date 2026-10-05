@@ -246,6 +246,13 @@ if (!listingColumns.some((c) => c.name === "expires_at")) {
 if (!listingColumns.some((c) => c.name === "resolved_by")) {
   db.exec("ALTER TABLE listings ADD COLUMN resolved_by INTEGER");
 }
+// A short (<=2 min) video clip, compressed and hosted on Cloudflare R2
+// instead of the VPS's own disk — see AGENTS.md for why. Both columns are
+// null for every listing until the uploader is used.
+if (!listingColumns.some((c) => c.name === "video_url")) {
+  db.exec("ALTER TABLE listings ADD COLUMN video_url TEXT");
+  db.exec("ALTER TABLE listings ADD COLUMN video_thumbnail_url TEXT");
+}
 // Created here rather than in the block above so it works whether `country`
 // came from a fresh install's CREATE TABLE or the ALTER TABLE just above.
 db.exec("CREATE INDEX IF NOT EXISTS idx_listings_status_country ON listings(status, country)");

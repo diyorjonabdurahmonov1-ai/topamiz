@@ -129,6 +129,18 @@ export default async function ListingDetailPage(props: PageProps<"/elonlar/[id]"
             />
           </div>
 
+          {listing.videoUrl && (
+            <div className="mt-6 overflow-hidden rounded-2xl border border-border bg-black">
+              <video
+                src={listing.videoUrl}
+                poster={listing.videoThumbnailUrl ?? undefined}
+                controls
+                playsInline
+                className="aspect-[9/16] w-full max-h-[70vh] bg-black object-contain sm:aspect-video sm:max-h-[480px]"
+              />
+            </div>
+          )}
+
           <ListingGallery
             photoUrls={listing.photoUrls}
             title={listing.title}
