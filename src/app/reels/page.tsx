@@ -8,7 +8,7 @@ import { getDictionary } from "@/lib/i18n";
 import ReelsFeed from "@/components/ReelsFeed";
 
 export const metadata: Metadata = {
-  title: "Video yozuvlar — Findo",
+  title: "Video — Findo",
 };
 
 export default async function ReelsPage() {
