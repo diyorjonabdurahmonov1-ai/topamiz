@@ -55,7 +55,7 @@ export default function LikeButton({
       <button
         type="button"
         onClick={handleClick}
-        className={`flex flex-col items-center gap-1 text-white ${className}`}
+        className={`flex flex-col items-center gap-1 text-white transition-transform active:scale-90 ${className}`}
       >
         <span
           className={`flex h-11 w-11 items-center justify-center rounded-full backdrop-blur-sm transition-colors ${
@@ -73,7 +73,7 @@ export default function LikeButton({
     <button
       type="button"
       onClick={handleClick}
-      className={`flex items-center gap-1.5 rounded-xl border px-3.5 py-2 text-sm font-semibold transition-colors ${
+      className={`flex items-center gap-1.5 rounded-xl border px-3.5 py-2 text-sm font-semibold transition-all active:scale-95 ${
         liked
           ? "border-danger/40 bg-danger/10 text-danger"
           : "border-border text-muted hover:text-foreground"

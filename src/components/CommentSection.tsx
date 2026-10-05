@@ -67,17 +67,21 @@ export default function CommentSection({
         {dict.social.commentsHeading} {comments.length > 0 && `(${comments.length})`}
       </h2>
 
-      <div className="mt-3 space-y-3">
+      {/* A fixed-height, independently scrolling list — once a listing has a
+          lot of comments this keeps the card (and, inside the Reels sheet,
+          the video behind it) from being pushed off-screen by an
+          ever-growing column of bubbles. */}
+      <div className="mt-3 max-h-72 space-y-3 overflow-y-auto pr-1">
         {comments.length === 0 ? (
           <p className="text-sm text-muted">{dict.social.commentsEmpty}</p>
         ) : (
           comments.map((c) => (
             <div key={c.id} className="flex items-start gap-2.5">
-              <Avatar name={c.userName} color={c.userAvatarColor} avatarUrl={c.userAvatarUrl} size={32} />
-              <div className="min-w-0 flex-1 rounded-2xl bg-surface-2 px-3.5 py-2">
-                <p className="text-xs font-semibold">{c.userName}</p>
-                <p className="mt-0.5 whitespace-pre-line text-sm text-foreground">{c.body}</p>
-              </div>
+              <Avatar name={c.userName} color={c.userAvatarColor} avatarUrl={c.userAvatarUrl} size={28} />
+              <p className="min-w-0 flex-1 whitespace-pre-line text-sm leading-snug">
+                <span className="font-semibold">{c.userName}</span>{" "}
+                <span className="text-foreground">{c.body}</span>
+              </p>
             </div>
           ))
         )}

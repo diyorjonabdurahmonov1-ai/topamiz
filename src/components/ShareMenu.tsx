@@ -119,7 +119,7 @@ export default function ShareMenu({
 
   const buttonClass =
     variant === "reel"
-      ? `flex flex-col items-center gap-1 text-white ${className}`
+      ? `flex flex-col items-center gap-1 text-white transition-transform active:scale-90 ${className}`
       : `flex items-center gap-1.5 rounded-xl border border-border px-3.5 py-2 text-sm font-semibold text-muted transition-colors hover:text-foreground ${className}`;
 
   return (
@@ -159,21 +159,25 @@ export default function ShareMenu({
             </div>
 
             {view === "menu" && (
-              <div className="space-y-2 p-4">
+              <div className="space-y-1 p-3">
                 <button
                   type="button"
                   onClick={() => setView("pick")}
-                  className="flex w-full items-center gap-3 rounded-xl border border-border px-4 py-3 text-left text-sm font-semibold hover:bg-surface-2"
+                  className="flex w-full items-center gap-3 rounded-xl px-2 py-2.5 text-left text-sm font-semibold hover:bg-surface-2"
                 >
-                  <Users className="h-4 w-4 text-brand-via" />
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-brand-via/10 text-brand-via">
+                    <Users className="h-4.5 w-4.5" />
+                  </span>
                   {dict.social.shareToFriend}
                 </button>
                 <button
                   type="button"
                   onClick={handleExternalShare}
-                  className="flex w-full items-center gap-3 rounded-xl border border-border px-4 py-3 text-left text-sm font-semibold hover:bg-surface-2"
+                  className="flex w-full items-center gap-3 rounded-xl px-2 py-2.5 text-left text-sm font-semibold hover:bg-surface-2"
                 >
-                  <Link2 className="h-4 w-4 text-brand-via" />
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-sky-500/10 text-sky-500">
+                    <Link2 className="h-4.5 w-4.5" />
+                  </span>
                   {dict.social.shareExternal}
                 </button>
               </div>
