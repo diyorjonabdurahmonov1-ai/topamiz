@@ -158,14 +158,20 @@ export default async function ListingDetailPage(props: PageProps<"/elonlar/[id]"
             </div>
           )}
 
-          <ListingGallery
-            photoUrls={listing.photoUrls}
-            title={listing.title}
-            colorFrom={listing.colorFrom}
-            colorTo={listing.colorTo}
-            icon={<Icon className="h-10 w-10" strokeWidth={2} />}
-            dict={dict}
-          />
+          {/* ListingGallery falls back to a generic category-icon placeholder
+              when there are no photos — only worth showing that placeholder
+              when there's no video either; a video-only listing already has
+              its own visual above and doesn't need an empty photo slot too. */}
+          {(listing.photoUrls.length > 0 || !listing.videoUrl) && (
+            <ListingGallery
+              photoUrls={listing.photoUrls}
+              title={listing.title}
+              colorFrom={listing.colorFrom}
+              colorTo={listing.colorTo}
+              icon={<Icon className="h-10 w-10" strokeWidth={2} />}
+              dict={dict}
+            />
+          )}
 
           <div className="mt-6 rounded-2xl border border-border bg-surface p-5">
             {!listing.isMysteryBox && (
