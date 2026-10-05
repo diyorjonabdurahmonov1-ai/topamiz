@@ -413,6 +413,28 @@ const ru: Dictionary = {
     markActive: "Возобновить",
   },
 
+  social: {
+    commentsHeading: "Комментарии",
+    commentsEmpty: "Пока нет комментариев. Будьте первым!",
+    commentPlaceholder: "Напишите комментарий...",
+    commentSend: "Отправить",
+    commentLoginPrompt: "Войдите, чтобы оставить комментарий",
+    commentGenericError: "Ошибка при отправке комментария",
+    shareButton: "Поделиться",
+    shareToFriend: "Отправить пользователю Findo",
+    shareExternal: "Поделиться в другом приложении",
+    shareLinkCopied: "Ссылка скопирована",
+    shareSearchPlaceholder: "Поиск по имени...",
+    shareSentTitle: "Отправлено",
+    shareSentBody: "Объявление успешно отправлено",
+    shareGenericError: "Ошибка при отправке",
+    reelsNavLabel: "Короткие видео",
+    reelsEmptyTitle: "Пока нет объявлений с видео",
+    reelsEmptyBody: "Станьте первым, кто добавит объявление с видео!",
+    reelsViewListing: "Открыть объявление",
+    reelsLoginPrompt: "Войдите, чтобы ставить лайки и комментировать",
+  },
+
   ads: {
     pageTitle: "Доска объявлений",
     pageSubtitle: "Покажите свой бизнес тысячам активных пользователей, ищущих потерянные вещи.",

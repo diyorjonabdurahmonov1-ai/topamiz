@@ -413,6 +413,28 @@ const tg: Dictionary = {
     markActive: "Аз нав фаъол кардан",
   },
 
+  social: {
+    commentsHeading: "Шарҳҳо",
+    commentsEmpty: "Ҳанӯз шарҳе нест. Аввалин шавед!",
+    commentPlaceholder: "Шарҳ нависед...",
+    commentSend: "Фиристодан",
+    commentLoginPrompt: "Барои гузоштани шарҳ ворид шавед",
+    commentGenericError: "Ҳангоми фиристодани шарҳ хато рух дод",
+    shareButton: "Мубодила",
+    shareToFriend: "Ба корбари Findo фиристодан",
+    shareExternal: "Ба барномаи дигар мубодила кардан",
+    shareLinkCopied: "Истинод нусхабардорӣ шуд",
+    shareSearchPlaceholder: "Бо ном ҷустуҷӯ кунед...",
+    shareSentTitle: "Фиристода шуд",
+    shareSentBody: "Эълон бомуваффақият фиристода шуд",
+    shareGenericError: "Ҳангоми фиристодан хато рух дод",
+    reelsNavLabel: "Видеоҳои кутоҳ",
+    reelsEmptyTitle: "Ҳанӯз эълони видеодор нест",
+    reelsEmptyBody: "Аввалин шахсе бошед, ки эълони видеодор мегузорад!",
+    reelsViewListing: "Эълонро кушодан",
+    reelsLoginPrompt: "Барои лайк ва шарҳ ворид шавед",
+  },
+
   ads: {
     pageTitle: "Тахтаи реклама",
     pageSubtitle: "Бизнеси худро ба ҳазорон корбари фаъол, ки чизи гумшударо меҷӯянд, нишон диҳед.",

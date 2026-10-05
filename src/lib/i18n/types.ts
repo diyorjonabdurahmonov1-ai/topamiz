@@ -394,6 +394,28 @@ export interface Dictionary {
     markActive: string;
   };
 
+  social: {
+    commentsHeading: string;
+    commentsEmpty: string;
+    commentPlaceholder: string;
+    commentSend: string;
+    commentLoginPrompt: string;
+    commentGenericError: string;
+    shareButton: string;
+    shareToFriend: string;
+    shareExternal: string;
+    shareLinkCopied: string;
+    shareSearchPlaceholder: string;
+    shareSentTitle: string;
+    shareSentBody: string;
+    shareGenericError: string;
+    reelsNavLabel: string;
+    reelsEmptyTitle: string;
+    reelsEmptyBody: string;
+    reelsViewListing: string;
+    reelsLoginPrompt: string;
+  };
+
   ads: {
     pageTitle: string;
     pageSubtitle: string;

@@ -417,6 +417,28 @@ const uz: Dictionary = {
     markActive: "Qayta faollashtirish",
   },
 
+  social: {
+    commentsHeading: "Izohlar",
+    commentsEmpty: "Hali izoh yo'q. Birinchi bo'lib yozing!",
+    commentPlaceholder: "Izoh yozing...",
+    commentSend: "Yuborish",
+    commentLoginPrompt: "Izoh qoldirish uchun tizimga kiring",
+    commentGenericError: "Izoh yuborishda xatolik yuz berdi",
+    shareButton: "Ulashish",
+    shareToFriend: "Findo foydalanuvchisiga yuborish",
+    shareExternal: "Boshqa ilovaga ulashish",
+    shareLinkCopied: "Havola nusxalandi",
+    shareSearchPlaceholder: "Ism bo'yicha qidiring...",
+    shareSentTitle: "Yuborildi",
+    shareSentBody: "Elon muvaffaqiyatli yuborildi",
+    shareGenericError: "Yuborishda xatolik yuz berdi",
+    reelsNavLabel: "Qisqa videolar",
+    reelsEmptyTitle: "Hozircha video elonlar yo'q",
+    reelsEmptyBody: "Video bilan birinchi elon qo'shgan siz bo'ling!",
+    reelsViewListing: "Elonni ko'rish",
+    reelsLoginPrompt: "Yoqtirish va izoh qoldirish uchun tizimga kiring",
+  },
+
   ads: {
     pageTitle: "Reklama taxtachasi",
     pageSubtitle: "Biznesingizni yo'qolgan buyum qidirayotgan minglab faol foydalanuvchiga ko'rsating.",

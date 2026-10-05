@@ -7,6 +7,8 @@ import { categoryIcons } from "@/lib/icons";
 import { getListingById, incrementListingViews } from "@/lib/listings";
 import { displayIdentity, getCurrentUser, getUserById } from "@/lib/auth";
 import { isFriend } from "@/lib/friends";
+import { isLikedByUser } from "@/lib/listing-likes";
+import { getComments } from "@/lib/listing-comments";
 import { getLocale } from "@/lib/i18n/server";
 import { getDictionary } from "@/lib/i18n";
 import { formatViewsCount } from "@/lib/i18n/format";
@@ -19,6 +21,9 @@ import FoundItForm from "@/components/FoundItForm";
 import ResolveToggleButton from "@/components/ResolveToggleButton";
 import ListingClaimants from "@/components/ListingClaimants";
 import CountdownTimer from "@/components/CountdownTimer";
+import LikeButton from "@/components/LikeButton";
+import ShareMenu from "@/components/ShareMenu";
+import CommentSection from "@/components/CommentSection";
 
 export async function generateMetadata(props: PageProps<"/elonlar/[id]">): Promise<Metadata> {
   const { id } = await props.params;
@@ -44,6 +49,8 @@ export default async function ListingDetailPage(props: PageProps<"/elonlar/[id]"
   const viewerIsFriend = user && owner ? isFriend(user.id, owner.id) : false;
   const isExpiredMysteryBox =
     listing.isMysteryBox && listing.expiresAt ? new Date(listing.expiresAt) < new Date() : false;
+  const likedByMe = user ? isLikedByUser(Number(listing.id), user.id) : false;
+  const comments = getComments(Number(listing.id));
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:px-8">
@@ -113,6 +120,16 @@ export default async function ListingDetailPage(props: PageProps<"/elonlar/[id]"
             </span>
           </div>
 
+          <div className="mt-3 flex items-center gap-2">
+            <LikeButton
+              listingId={listing.id}
+              initialLiked={likedByMe}
+              initialCount={listing.likeCount}
+              loggedIn={!!user}
+            />
+            <ShareMenu listingId={listing.id} title={listing.title} loggedIn={!!user} dict={dict} />
+          </div>
+
           {listing.isMysteryBox && listing.expiresAt && (
             <div className="mt-4">
               <CountdownTimer expiresAt={listing.expiresAt} dict={dict} size="large" />
@@ -160,6 +177,15 @@ export default async function ListingDetailPage(props: PageProps<"/elonlar/[id]"
             <p className="mt-1.5 whitespace-pre-line text-sm leading-relaxed text-muted">
               {listing.description}
             </p>
+          </div>
+
+          <div className="mt-6 rounded-2xl border border-border bg-surface p-5">
+            <CommentSection
+              listingId={listing.id}
+              initialComments={comments}
+              loggedIn={!!user}
+              dict={dict}
+            />
           </div>
         </div>
 
