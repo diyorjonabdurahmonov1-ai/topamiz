@@ -427,7 +427,7 @@ const tg: Dictionary = {
     shareSentTitle: "Фиристода шуд",
     shareSentBody: "Эълон бомуваффақият фиристода шуд",
     shareGenericError: "Ҳангоми фиристодан хато рух дод",
-    reelsNavLabel: "Видеоҳои кутоҳ",
+    reelsNavLabel: "Видеонавиштаҳо",
     reelsEmptyTitle: "Ҳанӯз эълони видеодор нест",
     reelsEmptyBody: "Аввалин шахсе бошед, ки эълони видеодор мегузорад!",
     reelsViewListing: "Эълонро кушодан",

@@ -31,7 +31,7 @@ export default function VideoUploader({
       };
       video.onerror = () => {
         URL.revokeObjectURL(video.src);
-        reject(new Error(dict.postListing.videoInvalidError));
+        reject(new Error("unreadable"));
       };
       video.src = URL.createObjectURL(file);
     });
@@ -50,6 +50,13 @@ export default function VideoUploader({
     setPreviewUrl(URL.createObjectURL(file));
     setStatus("checking");
     try {
+      // The browser can only report a duration for codecs it can itself
+      // decode — a phone's HEVC/H.265 clip, or an unusual AI-generated
+      // file, can fail this even though ffmpeg on the server (which
+      // understands far more formats) would handle it fine. So this check
+      // only ever blocks on a duration it actually managed to read; if the
+      // browser can't read it at all, skip straight to uploading and let
+      // the server's own ffprobe check be the real judge.
       const duration = await readDuration(file);
       if (duration > MAX_DURATION_SECONDS) {
         setStatus("error");
@@ -57,9 +64,7 @@ export default function VideoUploader({
         return;
       }
     } catch {
-      setStatus("error");
-      setError(`${dict.postListing.videoUploadFailedPrefix}: ${dict.postListing.videoInvalidError}`);
-      return;
+      // Fall through to uploading anyway — see comment above.
     }
 
     setStatus("uploading");
@@ -115,7 +120,7 @@ export default function VideoUploader({
   }
 
   return (
-    <div className="relative aspect-[9/16] max-w-[220px] overflow-hidden rounded-xl border border-border bg-bg-elevated">
+    <div className="relative aspect-[9/16] max-w-[150px] overflow-hidden rounded-xl border border-border bg-bg-elevated">
       <video src={previewUrl} className="h-full w-full object-cover" muted playsInline />
       {(status === "checking" || status === "uploading") && (
         <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-black/60 text-center text-xs font-medium text-white">

@@ -427,7 +427,7 @@ const kk: Dictionary = {
     shareSentTitle: "Жіберілді",
     shareSentBody: "Хабарландыру сәтті жіберілді",
     shareGenericError: "Жіберуде қате шықты",
-    reelsNavLabel: "Қысқа видеолар",
+    reelsNavLabel: "Бейнежазбалар",
     reelsEmptyTitle: "Әзірге видеолы хабарландырулар жоқ",
     reelsEmptyBody: "Видео қосқан алғашқы адам болыңыз!",
     reelsViewListing: "Хабарландыруни ашу",
