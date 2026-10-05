@@ -152,7 +152,11 @@ export default function ReelSlide({
             loggedIn={loggedIn}
             variant="reel"
           />
-          <button type="button" onClick={onOpenComments} className="flex flex-col items-center gap-1 text-white">
+          <button
+            type="button"
+            onClick={onOpenComments}
+            className="flex flex-col items-center gap-1 text-white transition-transform active:scale-90"
+          >
             <span className="flex h-11 w-11 items-center justify-center rounded-full bg-black/40 backdrop-blur-sm">
               <MessageCircle className="h-5 w-5" />
             </span>
