@@ -87,9 +87,9 @@ export async function POST(request: Request) {
       ? lngRaw
       : undefined;
 
-  if (!title || !promoCategory || !city || !contactPhone) {
+  if (!title || !promoCategory) {
     return NextResponse.json(
-      { error: "Iltimos, * bilan belgilangan barcha maydonlarni to'ldiring." },
+      { error: "Iltimos, * bilan belgilangan maydonlarni to'ldiring." },
       { status: 400 }
     );
   }
@@ -114,7 +114,7 @@ export async function POST(request: Request) {
     title,
     description: fullDescription,
     category: "boshqa",
-    city,
+    city: city ?? "",
     reward: null,
     contactName: user.name.trim().slice(0, 80),
     contactPhone,

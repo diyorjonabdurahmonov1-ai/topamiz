@@ -142,15 +142,17 @@ export default async function ListingDetailPage(props: PageProps<"/elonlar/[id]"
             </div>
           )}
 
-          <div className="mt-3">
-            <ListingLocationMap
-              lat={listing.lat}
-              lng={listing.lng}
-              city={listing.city}
-              district={listing.district}
-              dict={dict}
-            />
-          </div>
+          {listing.city && (
+            <div className="mt-3">
+              <ListingLocationMap
+                lat={listing.lat}
+                lng={listing.lng}
+                city={listing.city}
+                district={listing.district}
+                dict={dict}
+              />
+            </div>
+          )}
 
           {listing.videoUrl && (
             <div className="mt-6 overflow-hidden rounded-2xl border border-border bg-black">
@@ -251,9 +253,9 @@ export default async function ListingDetailPage(props: PageProps<"/elonlar/[id]"
                   : dict.listingDetail.mysteryBoxNotice}
               </p>
             </div>
-          ) : (
+          ) : listing.contactPhone ? (
             <ContactCard name={listing.contactName} phone={listing.contactPhone} dict={dict} />
-          )}
+          ) : null}
         </div>
       </div>
     </div>
