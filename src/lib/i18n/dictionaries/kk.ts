@@ -74,13 +74,10 @@ const kk: Dictionary = {
   tabs: {
     lost: "Жоғалған",
     found: "Табылған",
-    rewarded: "Сыйлықты",
-    mysteryBox: "Сырлы қорап",
     viewAll: "Барлығын көру",
     itemsSuffix: "заттар",
     emptyTitle: "Әзірге хабарландыру жоқ",
     emptyBody: "Бұл бөлімде әлі ешкім хабарландыру орналастырмаған.",
-    selectPrompt: "Хабарландыруларды көру үшін жоғарыдағы бөлімдердің бірін таңдаңыз",
   },
 
   homeQuickAccess: {
@@ -95,8 +92,6 @@ const kk: Dictionary = {
     nearbyTitle: "Жаныңызда",
     qrTitle: "QR-белгі",
     qrSubtitle: "Затыңызды қорғаңыз",
-    mysteryBoxEmptyTitle: "Сырлы қорап",
-    mysteryBoxEmptySubtitle: "Жаңа сыйлықтарды көріңіз",
   },
 
   listingsPage: {
@@ -285,6 +280,7 @@ const kk: Dictionary = {
     title: "Ұсыныстар",
     subtitle: "Дүкендер мен қызметтердің ең соңғы ұсыныстарын осы жерден қадағалаңыз.",
     postButton: "Ұсыныс орналастыру",
+    activeCount: "Белсенді ұсыныс",
     allCategories: "Барлығы",
     emptyTitle: "Әзірге ұсыныстар жоқ",
     emptyBody: "Жақында мұнда дүкендер мен қызметтердің ұсыныстары пайда болады.",

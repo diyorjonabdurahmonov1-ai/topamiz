@@ -74,13 +74,10 @@ const ru: Dictionary = {
   tabs: {
     lost: "Потеряно",
     found: "Найдено",
-    rewarded: "С наградой",
-    mysteryBox: "Тайная коробка",
     viewAll: "Смотреть все",
     itemsSuffix: "вещи",
     emptyTitle: "Пока нет объявлений",
     emptyBody: "В этом разделе ещё никто не разместил объявление.",
-    selectPrompt: "Выберите один из разделов выше, чтобы увидеть объявления",
   },
 
   homeQuickAccess: {
@@ -95,8 +92,6 @@ const ru: Dictionary = {
     nearbyTitle: "Рядом с вами",
     qrTitle: "QR-метка",
     qrSubtitle: "Защитите вашу вещь",
-    mysteryBoxEmptyTitle: "Загадочная коробка",
-    mysteryBoxEmptySubtitle: "Посмотрите новые призы",
   },
 
   listingsPage: {
@@ -285,6 +280,7 @@ const ru: Dictionary = {
     title: "Предложения",
     subtitle: "Следите за последними предложениями магазинов и услуг.",
     postButton: "Разместить предложение",
+    activeCount: "Активных предложений",
     allCategories: "Все",
     emptyTitle: "Пока нет предложений",
     emptyBody: "Скоро здесь появятся предложения магазинов и услуг.",

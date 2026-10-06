@@ -74,13 +74,10 @@ const tg: Dictionary = {
   tabs: {
     lost: "Гумшуда",
     found: "Ёфтшуда",
-    rewarded: "Бо мукофот",
-    mysteryBox: "Қуттии асроромез",
     viewAll: "Ҳамаро дидан",
     itemsSuffix: "чизҳо",
     emptyTitle: "Ҳанӯз эълон нест",
     emptyBody: "Дар ин бахш то ҳол ҳеҷ кас эълон нагузоштааст.",
-    selectPrompt: "Барои дидани эълонҳо яке аз бахшҳои болоро интихоб кунед",
   },
 
   homeQuickAccess: {
@@ -95,8 +92,6 @@ const tg: Dictionary = {
     nearbyTitle: "Дар наздикии шумо",
     qrTitle: "Тамғаи QR",
     qrSubtitle: "Чизи худро муҳофизат кунед",
-    mysteryBoxEmptyTitle: "Қуттии сирнок",
-    mysteryBoxEmptySubtitle: "Ҷоизаҳои навро бинед",
   },
 
   listingsPage: {
@@ -285,6 +280,7 @@ const tg: Dictionary = {
     title: "Пешниҳодҳо",
     subtitle: "Пешниҳодҳои охирини дӯконҳо ва хидматҳоро дар ин ҷо пайгирӣ кунед.",
     postButton: "Гузоштани пешниҳод",
+    activeCount: "Пешниҳоди фаъол",
     allCategories: "Ҳама",
     emptyTitle: "Ҳанӯз пешниҳод нест",
     emptyBody: "Ба зудӣ дар ин ҷо пешниҳодҳои дӯконҳо ва хидматҳо пайдо мешаванд.",

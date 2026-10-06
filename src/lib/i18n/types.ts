@@ -55,13 +55,10 @@ export interface Dictionary {
   tabs: {
     lost: string;
     found: string;
-    rewarded: string;
-    mysteryBox: string;
     viewAll: string;
     itemsSuffix: string;
     emptyTitle: string;
     emptyBody: string;
-    selectPrompt: string;
   };
 
   homeQuickAccess: {
@@ -76,8 +73,6 @@ export interface Dictionary {
     nearbyTitle: string;
     qrTitle: string;
     qrSubtitle: string;
-    mysteryBoxEmptyTitle: string;
-    mysteryBoxEmptySubtitle: string;
   };
 
   listingsPage: {
@@ -261,6 +256,7 @@ export interface Dictionary {
     title: string;
     subtitle: string;
     postButton: string;
+    activeCount: string;
     allCategories: string;
     emptyTitle: string;
     emptyBody: string;

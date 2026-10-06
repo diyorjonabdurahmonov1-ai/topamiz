@@ -1,8 +1,7 @@
 import AdShowcase from "@/components/AdShowcase";
 import HomeQuickAccess from "@/components/HomeQuickAccess";
 import { getActiveAds } from "@/lib/ads";
-import { getAllActiveListings, getMysteryBoxListings, getRewardedListings } from "@/lib/listings";
-import { getCurrentUser } from "@/lib/auth";
+import { getAllActiveListings, getPromoListings } from "@/lib/listings";
 import { getVisitorCountry } from "@/lib/geo";
 import { getLocale } from "@/lib/i18n/server";
 import { getDictionary } from "@/lib/i18n";
@@ -13,7 +12,6 @@ export default async function Home() {
   const country = await getVisitorCountry();
   const locale = await getLocale();
   const dict = getDictionary(locale);
-  const user = await getCurrentUser();
   const active = getAllActiveListings(country);
   const allLost = [...active]
     .filter((l) => l.kind === "lost")
@@ -21,10 +19,7 @@ export default async function Home() {
   const allFound = [...active]
     .filter((l) => l.kind === "found")
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-  const allRewarded = getRewardedListings(country);
-  // Sirli quti is login-gated — a guest never gets this data at all, not
-  // just a hidden UI element.
-  const allMysteryBox = user ? getMysteryBoxListings(country) : [];
+  const promoCount = getPromoListings(country).length;
   const ads = getActiveAds();
   const nearby = active.slice(0, 12);
 
@@ -53,8 +48,7 @@ export default async function Home() {
           nearby={nearby}
           lost={allLost.slice(0, TAB_PREVIEW_SIZE)}
           found={allFound.slice(0, TAB_PREVIEW_SIZE)}
-          rewarded={allRewarded}
-          mysteryBoxTeaser={allMysteryBox[0] ?? null}
+          promoCount={promoCount}
         />
       </div>
     </div>

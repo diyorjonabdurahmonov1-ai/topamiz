@@ -74,13 +74,10 @@ const en: Dictionary = {
   tabs: {
     lost: "Lost",
     found: "Found",
-    rewarded: "Rewarded",
-    mysteryBox: "Mystery box",
     viewAll: "View all",
     itemsSuffix: "items",
     emptyTitle: "No listings yet",
     emptyBody: "No one has posted a listing in this section yet.",
-    selectPrompt: "Choose one of the sections above to see listings",
   },
 
   homeQuickAccess: {
@@ -95,8 +92,6 @@ const en: Dictionary = {
     nearbyTitle: "Near you",
     qrTitle: "QR tag",
     qrSubtitle: "Protect your item",
-    mysteryBoxEmptyTitle: "Mystery box",
-    mysteryBoxEmptySubtitle: "See new prizes",
   },
 
   listingsPage: {
@@ -284,6 +279,7 @@ const en: Dictionary = {
     title: "Offers",
     subtitle: "Keep up with the latest offers from stores and services.",
     postButton: "Post an offer",
+    activeCount: "Active offers",
     allCategories: "All",
     emptyTitle: "No offers yet",
     emptyBody: "Offers from stores and services will appear here soon.",
