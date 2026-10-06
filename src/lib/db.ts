@@ -253,7 +253,7 @@ if (!listingColumns.some((c) => c.name === "video_url")) {
   db.exec("ALTER TABLE listings ADD COLUMN video_url TEXT");
   db.exec("ALTER TABLE listings ADD COLUMN video_thumbnail_url TEXT");
 }
-// "Aksiyalar" (business promos/deals) — its own listing flavor alongside
+// "Takliflar" (business promos/deals) — its own listing flavor alongside
 // lost/found and Sirli quti, with its own category set (promo_category),
 // kept out of the ordinary lost/found feed the same way Sirli quti is.
 if (!listingColumns.some((c) => c.name === "is_promo")) {

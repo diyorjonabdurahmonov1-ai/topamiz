@@ -22,11 +22,10 @@ const OWN_UPLOAD_PREFIX = "/api/uploads/";
 const PROMO_CATEGORY_IDS = new Set(promoCategories.map((c) => c.id));
 const MAX_TARIFFS_LENGTH = 500;
 
-// A public, non-admin creation path for "Aksiyalar" — any logged-in user can
-// post a business promo/deal, same openness as Sirli quti. Unlike an
+// A public, non-admin creation path for "Takliflar" — any logged-in user can
+// post a business offer/deal, same openness as Sirli quti. Unlike an
 // ordinary lost/found listing it never carries a reward and never resolves,
-// but it does keep a real contact phone (so customers can actually reach
-// the business) and its own category taxonomy.
+// but it does have its own category taxonomy.
 export async function POST(request: Request) {
   const user = await getCurrentUser();
   if (!user) return NextResponse.json({ error: "Kirish talab qilinadi" }, { status: 401 });
@@ -131,7 +130,7 @@ export async function POST(request: Request) {
   for (const friendId of getFollowerIds(user.id)) {
     void sendPushToUser(friendId, {
       title: posterIdentity.name,
-      body: `Yangi aksiya joyladi: ${listing.title}`,
+      body: `Yangi taklif joyladi: ${listing.title}`,
       url: `/elonlar/${listing.id}`,
     });
   }

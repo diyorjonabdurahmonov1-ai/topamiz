@@ -150,7 +150,7 @@ function toListing(row: RawListingRow): Listing {
 // `country` filters listings down to the visitor's own country (detected via
 // IP, see lib/geo.ts) so that as this site expands beyond Uzbekistan, users
 // in different countries never see each other's listings mixed together.
-// Excludes Sirli quti and Aksiyalar listings — both have their own
+// Excludes Sirli quti and Takliflar listings — both have their own
 // dedicated pages (getMysteryBoxListings, getPromoListings) and must never
 // surface in the general lost/found feed this powers (home page tabs, etc).
 export function getAllActiveListings(country: string): Listing[] {
@@ -168,7 +168,7 @@ export function getAllActiveListings(country: string): Listing[] {
 // only by the main browse/search page, so someone who finds a listing via
 // search still sees it (with the resolved overlay) instead of it silently
 // vanishing, which would look like it never existed. Also excludes Sirli
-// quti and Aksiyalar listings, same reason as getAllActiveListings above.
+// quti and Takliflar listings, same reason as getAllActiveListings above.
 export function getAllListings(country: string): Listing[] {
   const rows = db
     .prepare(
@@ -199,7 +199,7 @@ export function getRewardedListings(country: string): Listing[] {
   return rows.map(toListing);
 }
 
-// "Aksiyalar" — business promos/deals get their own dedicated page, same
+// "Takliflar" — business promos/deals get their own dedicated page, same
 // pattern as Sirli quti. No expiry concept here (unlike Sirli quti), so no
 // extra date filter beyond status/country.
 export function getPromoListings(country: string): Listing[] {
