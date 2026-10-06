@@ -2,12 +2,14 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, MessageCircle, Volume2, VolumeX } from "lucide-react";
+import { ArrowLeft, Lock, MessageCircle, Sparkles, Tag, Volume2, VolumeX } from "lucide-react";
 import type { Listing } from "@/lib/types";
 import type { Dictionary } from "@/lib/i18n";
+import { useStartsAtLock } from "@/lib/useStartsAtLock";
 import Avatar from "./Avatar";
 import LikeButton from "./LikeButton";
 import ShareMenu from "./ShareMenu";
+import CountdownTimer from "./CountdownTimer";
 
 function PhotoMedia({ photoUrls }: { photoUrls: string[] }) {
   const [index, setIndex] = useState(0);
@@ -69,9 +71,12 @@ export default function ReelSlide({
 }) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const isVideo = !!listing.videoUrl;
+  // Only a Sirli quti's video can ever be locked — its reveal time is the
+  // whole point of the game. Every other listing's video plays normally.
+  const locked = useStartsAtLock(listing.isMysteryBox ? listing.startsAt : null);
 
   useEffect(() => {
-    if (!isVideo) return;
+    if (!isVideo || locked) return;
     const video = videoRef.current;
     if (!video) return;
     if (active) {
@@ -80,7 +85,7 @@ export default function ReelSlide({
     } else {
       video.pause();
     }
-  }, [active, isVideo]);
+  }, [active, isVideo, locked]);
 
   function togglePlay() {
     const video = videoRef.current;
@@ -92,16 +97,41 @@ export default function ReelSlide({
   return (
     <div className="relative h-dvh w-full snap-start overflow-hidden bg-black [scroll-snap-stop:always]">
       {isVideo ? (
-        <video
-          ref={videoRef}
-          src={listing.videoUrl ?? undefined}
-          poster={listing.videoThumbnailUrl ?? undefined}
-          loop
-          muted={muted}
-          playsInline
-          onClick={togglePlay}
-          className="h-full w-full object-contain"
-        />
+        locked ? (
+          <div className="relative h-full w-full">
+            {listing.videoThumbnailUrl && (
+              // eslint-disable-next-line @next/next/no-img-element -- hosted on Cloudflare R2, not a build-time asset
+              <img
+                src={listing.videoThumbnailUrl}
+                alt=""
+                className="h-full w-full scale-110 object-cover opacity-50 blur-lg"
+              />
+            )}
+            <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-black/50 px-6 text-center">
+              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-accent-gold to-brand-via text-white">
+                <Lock className="h-6 w-6" />
+              </div>
+              <div>
+                <p className="text-sm font-bold text-white">{dict.listingDetail.videoLockedTitle}</p>
+                <p className="mt-1 text-xs text-white/70">{dict.listingDetail.videoLockedBody}</p>
+              </div>
+              {listing.startsAt && (
+                <CountdownTimer expiresAt={listing.startsAt} dict={dict} size="large" mode="starts" />
+              )}
+            </div>
+          </div>
+        ) : (
+          <video
+            ref={videoRef}
+            src={listing.videoUrl ?? undefined}
+            poster={listing.videoThumbnailUrl ?? undefined}
+            loop
+            muted={muted}
+            playsInline
+            onClick={togglePlay}
+            className="h-full w-full object-contain"
+          />
+        )
       ) : (
         <PhotoMedia photoUrls={listing.photoUrls} />
       )}
@@ -127,7 +157,24 @@ export default function ReelSlide({
         )}
       </div>
 
-      {isVideo && (
+      {(listing.isMysteryBox || listing.isPromo) && (
+        <span
+          className={`absolute left-4 top-[calc(4.25rem+env(safe-area-inset-top))] z-10 flex items-center gap-1 rounded-full px-2.5 py-1 text-[10px] font-bold text-white shadow ${
+            listing.isMysteryBox
+              ? "bg-gradient-to-r from-accent-gold to-brand-via"
+              : "bg-gradient-to-r from-sky-500 to-brand-via"
+          }`}
+        >
+          {listing.isMysteryBox ? (
+            <Sparkles className="h-3 w-3" />
+          ) : (
+            <Tag className="h-3 w-3" />
+          )}
+          {listing.isMysteryBox ? dict.listingCard.mysteryBox : dict.listingCard.promo}
+        </span>
+      )}
+
+      {isVideo && !locked && (
         <button
           type="button"
           onClick={onToggleMuted}

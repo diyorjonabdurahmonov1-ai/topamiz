@@ -17,7 +17,7 @@ export default async function ReelsPage() {
   const locale = await getLocale();
   const dict = getDictionary(locale);
 
-  const listings = getReelsListings(country);
+  const listings = getReelsListings(country, [], !!user);
   const likedIds = user ? getLikedListingIds(user.id, listings.map((l) => Number(l.id))) : new Set<number>();
   const initialListings = listings.map((l) => ({ ...l, likedByMe: likedIds.has(Number(l.id)) }));
 

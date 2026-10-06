@@ -13,6 +13,7 @@ function makeListing(overrides: Partial<Listing>): Listing {
     isPromo: false,
     promoCategory: null,
     expiresAt: null,
+    startsAt: null,
     resolvedById: null,
     resolvedByName: null,
     resolvedByAvatarColor: null,

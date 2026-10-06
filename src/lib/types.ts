@@ -64,6 +64,7 @@ export interface Listing {
   lng: number;
   isMysteryBox: boolean;
   expiresAt: string | null;
+  startsAt: string | null;
   isPromo: boolean;
   promoCategory: PromoCategoryId | null;
   resolvedById: number | null;

@@ -31,10 +31,17 @@ export default function CountdownTimer({
   expiresAt,
   dict,
   size = "large",
+  mode = "expires",
 }: {
   expiresAt: string;
   dict: Dictionary;
   size?: "compact" | "large";
+  // "starts" counts down to a reveal moment instead of a deadline — the
+  // caller stops rendering this component the instant that moment passes
+  // (swapping in the real, unlocked content), so the "expired" copy below
+  // is never actually meant for a "starts" countdown; it just returns
+  // null for that one tick where the two ticks haven't synced up yet.
+  mode?: "expires" | "starts";
 }) {
   const [remaining, setRemaining] = useState<Remaining | null>(null);
 
@@ -51,6 +58,7 @@ export default function CountdownTimer({
   if (!remaining) return null;
 
   if (remaining.total <= 0) {
+    if (mode === "starts") return null;
     return size === "compact" ? (
       <span className="absolute right-1.5 top-1.5 rounded-full bg-bg/80 px-2 py-0.5 text-[10px] font-semibold text-muted shadow">
         {dict.countdown.expired}
@@ -89,7 +97,7 @@ export default function CountdownTimer({
     <div className="rounded-2xl border border-accent-gold/30 bg-gradient-to-br from-accent-gold/10 via-brand-via/5 to-transparent p-4">
       <p className="flex items-center gap-1.5 text-xs font-semibold text-accent-gold">
         <Hourglass className="h-3.5 w-3.5" />
-        {dict.countdown.label}
+        {mode === "starts" ? dict.countdown.startsLabel : dict.countdown.label}
       </p>
       <div className="mt-2 flex gap-4">
         {units.map((unit) => (
