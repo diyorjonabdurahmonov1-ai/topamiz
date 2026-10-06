@@ -1,7 +1,8 @@
-import type { CategoryId } from "@/lib/types";
+import type { CategoryId, PromoCategoryId } from "@/lib/types";
 
 export interface Dictionary {
   categories: Record<CategoryId, string>;
+  promoCategories: Record<PromoCategoryId, string>;
 
   common: {
     lost: string;
@@ -18,6 +19,7 @@ export interface Dictionary {
     listings: string;
     rewarded: string;
     mysteryBox: string;
+    promo: string;
     ads: string;
     messages: string;
     login: string;
@@ -98,6 +100,7 @@ export interface Dictionary {
   listingCard: {
     resolved: string;
     mysteryBox: string;
+    promo: string;
   };
 
   listingDetail: {
@@ -193,6 +196,9 @@ export interface Dictionary {
     mysteryBoxCalloutTitle: string;
     mysteryBoxCalloutBody: string;
     mysteryBoxCalloutButton: string;
+    promoCalloutTitle: string;
+    promoCalloutBody: string;
+    promoCalloutButton: string;
     redactHeading: string;
     redactHint: string;
     redactUndo: string;
@@ -249,6 +255,40 @@ export interface Dictionary {
     safetyNote: string;
     emptyTitle: string;
     emptyBody: string;
+  };
+
+  promo: {
+    title: string;
+    subtitle: string;
+    postButton: string;
+    allCategories: string;
+    emptyTitle: string;
+    emptyBody: string;
+  };
+
+  promoForm: {
+    pageTitle: string;
+    pageSubtitle: string;
+    explainHeading: string;
+    explainBody: string;
+    titleLabel: string;
+    titlePlaceholder: string;
+    descriptionLabel: string;
+    descriptionPlaceholder: string;
+    categoryLabel: string;
+    tariffsLabel: string;
+    tariffsPlaceholder: string;
+    mapPickerHint: string;
+    contactHeading: string;
+    requiredFieldsError: string;
+    locationRequiredError: string;
+    genericError: string;
+    submitting: string;
+    submit: string;
+    successTitle: string;
+    successBody: string;
+    viewPromoLink: string;
+    backToNormalLink: string;
   };
 
   mysteryBox: {

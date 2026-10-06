@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ArrowRight, Sparkles } from "lucide-react";
+import { ArrowRight, Sparkles, Tag } from "lucide-react";
 import { getCurrentUser } from "@/lib/auth";
 import { getLocale } from "@/lib/i18n/server";
 import { getDictionary } from "@/lib/i18n";
@@ -42,6 +42,23 @@ export default async function PostListingPage() {
         </div>
         <span className="flex items-center gap-1 text-xs font-semibold text-accent-gold">
           {dict.postListing.mysteryBoxCalloutButton}
+          <ArrowRight className="h-3.5 w-3.5" />
+        </span>
+      </Link>
+
+      <Link
+        href="/elon-qoshish/aksiya"
+        className="card-hover mt-3 flex items-center gap-3 rounded-2xl border border-sky-500/30 bg-gradient-to-r from-sky-500/10 via-brand-via/5 to-transparent p-5"
+      >
+        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-sky-500 to-brand-via text-white">
+          <Tag className="h-5 w-5" />
+        </div>
+        <div className="flex-1">
+          <p className="text-sm font-bold">{dict.postListing.promoCalloutTitle}</p>
+          <p className="mt-0.5 text-xs text-muted">{dict.postListing.promoCalloutBody}</p>
+        </div>
+        <span className="flex items-center gap-1 text-xs font-semibold text-sky-500">
+          {dict.postListing.promoCalloutButton}
           <ArrowRight className="h-3.5 w-3.5" />
         </span>
       </Link>

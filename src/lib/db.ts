@@ -253,6 +253,13 @@ if (!listingColumns.some((c) => c.name === "video_url")) {
   db.exec("ALTER TABLE listings ADD COLUMN video_url TEXT");
   db.exec("ALTER TABLE listings ADD COLUMN video_thumbnail_url TEXT");
 }
+// "Aksiyalar" (business promos/deals) — its own listing flavor alongside
+// lost/found and Sirli quti, with its own category set (promo_category),
+// kept out of the ordinary lost/found feed the same way Sirli quti is.
+if (!listingColumns.some((c) => c.name === "is_promo")) {
+  db.exec("ALTER TABLE listings ADD COLUMN is_promo INTEGER NOT NULL DEFAULT 0");
+  db.exec("ALTER TABLE listings ADD COLUMN promo_category TEXT");
+}
 // Created here rather than in the block above so it works whether `country`
 // came from a fresh install's CREATE TABLE or the ALTER TABLE just above.
 db.exec("CREATE INDEX IF NOT EXISTS idx_listings_status_country ON listings(status, country)");

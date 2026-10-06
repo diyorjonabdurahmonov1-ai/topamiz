@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Gift, Play, Sparkles } from "lucide-react";
+import { Gift, Play, Sparkles, Tag } from "lucide-react";
 import type { Listing } from "@/lib/types";
 import type { Dictionary } from "@/lib/i18n";
 import { categoryIcons } from "@/lib/icons";
@@ -13,7 +13,11 @@ export default function ListingCard({ listing, dict }: { listing: Listing; dict:
   return (
     <div
       className={`card-hover group relative flex flex-col overflow-hidden rounded-xl border bg-surface ${
-        listing.isMysteryBox ? "border-accent-gold/60 ring-1 ring-accent-gold/40" : "border-border"
+        listing.isPromo
+          ? "border-sky-500/60 ring-1 ring-sky-500/40"
+          : listing.isMysteryBox
+            ? "border-accent-gold/60 ring-1 ring-accent-gold/40"
+            : "border-border"
       }`}
     >
       {/* Full-card "go to listing" link, laid under everything else — the
@@ -73,7 +77,12 @@ export default function ListingCard({ listing, dict }: { listing: Listing; dict:
           </div>
         )}
 
-        {listing.isMysteryBox ? (
+        {listing.isPromo ? (
+          <span className="absolute left-1.5 top-1.5 flex items-center gap-1 rounded-full bg-gradient-to-r from-sky-500 to-brand-via px-2 py-0.5 text-[10px] font-semibold text-white shadow">
+            <Tag className="h-3 w-3" />
+            {dict.listingCard.promo}
+          </span>
+        ) : listing.isMysteryBox ? (
           <span className="absolute left-1.5 top-1.5 flex items-center gap-1 rounded-full bg-gradient-to-r from-accent-gold to-brand-via px-2 py-0.5 text-[10px] font-semibold text-white shadow">
             <Sparkles className="h-3 w-3" />
             {dict.listingCard.mysteryBox}
