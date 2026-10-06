@@ -1,4 +1,4 @@
-import type { Category } from "./types";
+import type { Category, PromoCategory } from "./types";
 
 export const categories: Category[] = [
   { id: "hujjatlar", label: "Hujjatlar", icon: "IdCard" },
@@ -8,6 +8,16 @@ export const categories: Category[] = [
   { id: "kalitlar", label: "Kalitlar", icon: "KeyRound" },
   { id: "kiyim", label: "Kiyim-kechak", icon: "Shirt" },
   { id: "boshqa", label: "Boshqa", icon: "Sparkles" },
+];
+
+export const promoCategories: PromoCategory[] = [
+  { id: "oziq_ovqat", label: "Oziq-ovqat", icon: "ShoppingBasket" },
+  { id: "kafe_restoran", label: "Kafe va restoran", icon: "UtensilsCrossed" },
+  { id: "kiyim_poyabzal", label: "Kiyim-poyabzal", icon: "Shirt" },
+  { id: "gozallik", label: "Go'zallik va salon", icon: "Scissors" },
+  { id: "texnika_dokon", label: "Texnika do'konlari", icon: "Smartphone" },
+  { id: "xizmatlar", label: "Xizmatlar", icon: "Wrench" },
+  { id: "boshqa", label: "Boshqa", icon: "Tag" },
 ];
 
 export const cities: string[] = [

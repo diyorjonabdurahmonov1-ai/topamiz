@@ -1,4 +1,4 @@
-import type { CategoryId } from "@/lib/types";
+import type { CategoryId, PromoCategoryId } from "@/lib/types";
 import type { Dictionary } from "../types";
 
 const en: Dictionary = {
@@ -11,6 +11,16 @@ const en: Dictionary = {
     kiyim: "Clothing",
     boshqa: "Other",
   } satisfies Record<CategoryId, string>,
+
+  promoCategories: {
+    oziq_ovqat: "Groceries",
+    kafe_restoran: "Cafes & restaurants",
+    kiyim_poyabzal: "Clothing & footwear",
+    gozallik: "Beauty & salons",
+    texnika_dokon: "Electronics stores",
+    xizmatlar: "Services",
+    boshqa: "Other",
+  } satisfies Record<PromoCategoryId, string>,
 
   common: {
     lost: "Lost",
@@ -27,6 +37,7 @@ const en: Dictionary = {
     listings: "Listings",
     rewarded: "Rewarded",
     mysteryBox: "Mystery box",
+    promo: "Deals",
     ads: "Ads",
     messages: "Messages",
     login: "Log in",
@@ -108,6 +119,7 @@ const en: Dictionary = {
   listingCard: {
     resolved: "Resolved ✓",
     mysteryBox: "Mystery box",
+    promo: "Deal",
   },
 
   listingDetail: {
@@ -205,6 +217,9 @@ const en: Dictionary = {
     mysteryBoxCalloutTitle: "Want to create a mystery box?",
     mysteryBoxCalloutButton: "Create a mystery box",
     mysteryBoxCalloutBody: "Hide a prize, discount, or fun find — let people hunt it down!",
+    promoCalloutTitle: "Want to post a deal for your business?",
+    promoCalloutBody: "Post your store or service's discounts and deals with photos, video, and a location.",
+    promoCalloutButton: "Post a deal",
     redactHeading: "Hide sensitive information",
     redactHint: "Draw over the document number, series, or any other sensitive text to black it out.",
     redactUndo: "Undo",
@@ -263,6 +278,41 @@ const en: Dictionary = {
     safetyNote: "Only collect a reward by meeting the owner in person, in an open, safe place.",
     emptyTitle: "No rewarded listings yet",
     emptyBody: "If you offer a reward for a lost item, it will appear here.",
+  },
+
+  promo: {
+    title: "Deals",
+    subtitle: "Keep up with the latest deals and discounts from stores and services.",
+    postButton: "Post a deal",
+    allCategories: "All",
+    emptyTitle: "No deals yet",
+    emptyBody: "Deals from stores and services will appear here soon.",
+  },
+
+  promoForm: {
+    pageTitle: "Post a deal",
+    pageSubtitle: "Tell people about your store, cafe, or service's deal or discount.",
+    explainHeading: "What is this section for?",
+    explainBody:
+      "Deals is a dedicated section for your business: post discounts and deals for your store, cafe, salon, or other service with photos or video. The location and price list are optional. This is NOT for LOST or FOUND items — use the regular listing section for those.",
+    titleLabel: "Deal title *",
+    titlePlaceholder: "E.g.: 30% off all clothing",
+    descriptionLabel: "Description (optional)",
+    descriptionPlaceholder: "Deal terms, expiry, and other details...",
+    categoryLabel: "Category *",
+    tariffsLabel: "Prices / rates (optional)",
+    tariffsPlaceholder: "E.g.: Men's haircut — 40,000 UZS",
+    mapPickerHint: "Pick the point on the map where your store is located (optional).",
+    contactHeading: "Contact details",
+    requiredFieldsError: "Please fill in all fields marked with *.",
+    locationRequiredError: "Please pick a location on the map",
+    genericError: "Something went wrong",
+    submitting: "Posting...",
+    submit: "Post the deal",
+    successTitle: "Deal posted!",
+    successBody: "Your listing now appears in the Deals section.",
+    viewPromoLink: "View the Deals section",
+    backToNormalLink: "Back to posting a regular listing",
   },
 
   mysteryBox: {

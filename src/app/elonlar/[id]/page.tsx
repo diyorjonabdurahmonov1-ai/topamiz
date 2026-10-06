@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { ArrowLeft, Calendar1, Eye, Gift, Sparkles } from "lucide-react";
+import { ArrowLeft, Calendar1, Eye, Gift, Sparkles, Tag } from "lucide-react";
 import { formatDate, formatSom } from "@/lib/data";
 import { categoryIcons } from "@/lib/icons";
 import { getListingById, incrementListingViews } from "@/lib/listings";
@@ -79,7 +79,12 @@ export default async function ListingDetailPage(props: PageProps<"/elonlar/[id]"
           )}
 
           <div className="mt-4 flex items-center gap-2">
-            {listing.isMysteryBox ? (
+            {listing.isPromo ? (
+              <span className="flex items-center gap-1 rounded-full bg-gradient-to-r from-sky-500 to-brand-via px-3 py-1 text-xs font-semibold text-white">
+                <Tag className="h-3.5 w-3.5" />
+                {dict.listingCard.promo}
+              </span>
+            ) : listing.isMysteryBox ? (
               <span className="flex items-center gap-1 rounded-full bg-gradient-to-r from-accent-gold to-brand-via px-3 py-1 text-xs font-semibold text-white">
                 <Sparkles className="h-3.5 w-3.5" />
                 {dict.listingCard.mysteryBox}
@@ -95,12 +100,12 @@ export default async function ListingDetailPage(props: PageProps<"/elonlar/[id]"
                 {listing.kind === "lost" ? dict.common.lost : dict.common.found}
               </span>
             )}
-            {listing.status === "resolved" && (
+            {!listing.isPromo && listing.status === "resolved" && (
               <span className="rounded-full border border-border px-3 py-1 text-xs font-semibold text-muted">
                 {dict.common.resolved}
               </span>
             )}
-            {listing.status === "resolved" && listing.resolvedByName && (
+            {!listing.isPromo && listing.status === "resolved" && listing.resolvedByName && (
               <Link
                 href={`/profil/${listing.resolvedById}`}
                 className="flex items-center gap-1 rounded-full border border-success/40 bg-success/10 px-3 py-1 text-xs font-semibold text-success hover:bg-success/20"
@@ -108,7 +113,7 @@ export default async function ListingDetailPage(props: PageProps<"/elonlar/[id]"
                 {dict.listingDetail.resolvedByLabel}: {listing.resolvedByName}
               </Link>
             )}
-            {!listing.isMysteryBox && listing.reward ? (
+            {!listing.isMysteryBox && !listing.isPromo && listing.reward ? (
               <span className="flex items-center gap-1 rounded-full bg-accent-gold/15 px-3 py-1 text-xs font-semibold text-accent-gold">
                 <Gift className="h-3.5 w-3.5" />
                 {formatSom(listing.reward)} {dict.common.rewardSuffix}
@@ -191,10 +196,16 @@ export default async function ListingDetailPage(props: PageProps<"/elonlar/[id]"
           </div>
 
           <div className="mt-6 rounded-2xl border border-border bg-surface p-5">
-            {!listing.isMysteryBox && (
+            {listing.isPromo && listing.promoCategory ? (
               <p className="text-xs font-semibold uppercase tracking-wide text-muted">
-                {categoryLabel}
+                {dict.promoCategories[listing.promoCategory]}
               </p>
+            ) : (
+              !listing.isMysteryBox && (
+                <p className="text-xs font-semibold uppercase tracking-wide text-muted">
+                  {categoryLabel}
+                </p>
+              )
             )}
             <h2 className="mt-2 text-sm font-bold">{dict.listingDetail.descriptionLabel}</h2>
             <p className="mt-1.5 whitespace-pre-line text-sm leading-relaxed text-muted">
@@ -204,7 +215,7 @@ export default async function ListingDetailPage(props: PageProps<"/elonlar/[id]"
         </div>
 
         <div className="space-y-5">
-          {owner && user?.id === owner.id && (
+          {!listing.isPromo && owner && user?.id === owner.id && (
             <ResolveToggleButton
               listingId={listing.id}
               status={listing.status}
@@ -212,10 +223,11 @@ export default async function ListingDetailPage(props: PageProps<"/elonlar/[id]"
               className="w-full justify-center py-2.5"
             />
           )}
-          {owner && user?.id === owner.id && listing.status === "active" && (
+          {!listing.isPromo && owner && user?.id === owner.id && listing.status === "active" && (
             <ListingClaimants listingId={listing.id} dict={dict} />
           )}
-          {owner &&
+          {!listing.isPromo &&
+            owner &&
             user?.id !== owner.id &&
             listing.status === "active" &&
             !isExpiredMysteryBox &&

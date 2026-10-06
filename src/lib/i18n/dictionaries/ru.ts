@@ -1,4 +1,4 @@
-import type { CategoryId } from "@/lib/types";
+import type { CategoryId, PromoCategoryId } from "@/lib/types";
 import type { Dictionary } from "../types";
 
 const ru: Dictionary = {
@@ -11,6 +11,16 @@ const ru: Dictionary = {
     kiyim: "Одежда",
     boshqa: "Другое",
   } satisfies Record<CategoryId, string>,
+
+  promoCategories: {
+    oziq_ovqat: "Продукты",
+    kafe_restoran: "Кафе и рестораны",
+    kiyim_poyabzal: "Одежда и обувь",
+    gozallik: "Красота и салоны",
+    texnika_dokon: "Магазины техники",
+    xizmatlar: "Услуги",
+    boshqa: "Другое",
+  } satisfies Record<PromoCategoryId, string>,
 
   common: {
     lost: "Потеряно",
@@ -27,6 +37,7 @@ const ru: Dictionary = {
     listings: "Объявления",
     rewarded: "С наградой",
     mysteryBox: "Тайная коробка",
+    promo: "Акции",
     ads: "Реклама",
     messages: "Сообщения",
     login: "Войти",
@@ -108,6 +119,7 @@ const ru: Dictionary = {
   listingCard: {
     resolved: "Решено ✓",
     mysteryBox: "Тайная коробка",
+    promo: "Акция",
   },
 
   listingDetail: {
@@ -205,6 +217,9 @@ const ru: Dictionary = {
     mysteryBoxCalloutTitle: "Хотите создать тайную коробку?",
     mysteryBoxCalloutButton: "Создать тайную коробку",
     mysteryBoxCalloutBody: "Спрячьте приз, скидку или интересную находку — пусть люди её ищут!",
+    promoCalloutTitle: "Хотите разместить акцию для бизнеса?",
+    promoCalloutBody: "Разместите скидки и акции вашего магазина или услуги с фото, видео и адресом.",
+    promoCalloutButton: "Разместить акцию",
     redactHeading: "Скройте конфиденциальные данные",
     redactHint: "Закрасьте пальцем номер документа, серию или другой конфиденциальный текст чёрным.",
     redactUndo: "Отменить",
@@ -264,6 +279,41 @@ const ru: Dictionary = {
     safetyNote: "Получайте награду только при личной встрече с владельцем в открытом безопасном месте.",
     emptyTitle: "Пока нет объявлений с наградой",
     emptyBody: "Если вы предложите награду за потерянную вещь, она появится здесь.",
+  },
+
+  promo: {
+    title: "Акции",
+    subtitle: "Следите за последними акциями и скидками магазинов и услуг.",
+    postButton: "Разместить акцию",
+    allCategories: "Все",
+    emptyTitle: "Пока нет акций",
+    emptyBody: "Скоро здесь появятся акции магазинов и услуг.",
+  },
+
+  promoForm: {
+    pageTitle: "Разместить акцию",
+    pageSubtitle: "Расскажите людям об акции или скидке вашего магазина, кафе или услуги.",
+    explainHeading: "Для чего этот раздел?",
+    explainBody:
+      "Акции — специальный раздел для вашего бизнеса: разместите скидки и акции магазина, кафе, салона или другой услуги с фото или видео. Адрес и тарифы указывать необязательно. Это НЕ для ПОТЕРЯННЫХ или НАЙДЕННЫХ вещей — для них используйте обычный раздел объявлений.",
+    titleLabel: "Название акции *",
+    titlePlaceholder: "Например: скидка 30% на всю одежду",
+    descriptionLabel: "Описание (необязательно)",
+    descriptionPlaceholder: "Условия акции, срок действия и другие подробности...",
+    categoryLabel: "Категория *",
+    tariffsLabel: "Цены / тарифы (необязательно)",
+    tariffsPlaceholder: "Например: мужская стрижка — 40 000 сум",
+    mapPickerHint: "Отметьте на карте, где находится ваш магазин (необязательно).",
+    contactHeading: "Контактные данные",
+    requiredFieldsError: "Пожалуйста, заполните все поля, отмеченные *.",
+    locationRequiredError: "Пожалуйста, отметьте местоположение на карте",
+    genericError: "Произошла ошибка",
+    submitting: "Публикация...",
+    submit: "Опубликовать акцию",
+    successTitle: "Акция опубликована!",
+    successBody: "Ваше объявление появится в разделе «Акции».",
+    viewPromoLink: "Смотреть раздел «Акции»",
+    backToNormalLink: "Вернуться к обычному объявлению",
   },
 
   mysteryBox: {

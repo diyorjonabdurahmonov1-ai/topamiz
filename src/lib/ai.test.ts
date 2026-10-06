@@ -10,6 +10,8 @@ function makeListing(overrides: Partial<Listing>): Listing {
     ownerAvatarColor: null,
     ownerAvatarUrl: null,
     isMysteryBox: false,
+    isPromo: false,
+    promoCategory: null,
     expiresAt: null,
     resolvedById: null,
     resolvedByName: null,

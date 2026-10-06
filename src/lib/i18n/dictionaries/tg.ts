@@ -1,4 +1,4 @@
-import type { CategoryId } from "@/lib/types";
+import type { CategoryId, PromoCategoryId } from "@/lib/types";
 import type { Dictionary } from "../types";
 
 const tg: Dictionary = {
@@ -11,6 +11,16 @@ const tg: Dictionary = {
     kiyim: "Либос",
     boshqa: "Дигар",
   } satisfies Record<CategoryId, string>,
+
+  promoCategories: {
+    oziq_ovqat: "Маводи хӯрока",
+    kafe_restoran: "Кафе ва тарабхона",
+    kiyim_poyabzal: "Либос ва пойафзол",
+    gozallik: "Зебоӣ ва салон",
+    texnika_dokon: "Дӯкони техника",
+    xizmatlar: "Хидматҳо",
+    boshqa: "Дигар",
+  } satisfies Record<PromoCategoryId, string>,
 
   common: {
     lost: "Гумшуда",
@@ -27,6 +37,7 @@ const tg: Dictionary = {
     listings: "Эълонҳо",
     rewarded: "Бо мукофот",
     mysteryBox: "Қуттии асроромез",
+    promo: "Аксияҳо",
     ads: "Реклама",
     messages: "Паёмҳо",
     login: "Ворид шудан",
@@ -108,6 +119,7 @@ const tg: Dictionary = {
   listingCard: {
     resolved: "Ҳал шуд ✓",
     mysteryBox: "Қуттии асроромез",
+    promo: "Аксия",
   },
 
   listingDetail: {
@@ -205,6 +217,9 @@ const tg: Dictionary = {
     mysteryBoxCalloutTitle: "Мехоҳед қуттии асроромез созед?",
     mysteryBoxCalloutButton: "Сохтани қуттии асроромез",
     mysteryBoxCalloutBody: "Мукофот, тахфиф ё ёфтаи ҷолибро пинҳон кунед — бигзор мардум онро ҷустуҷӯ кунанд!",
+    promoCalloutTitle: "Мехоҳед барои бизнеси худ аксия гузоред?",
+    promoCalloutBody: "Тахфиф ва аксияҳои дӯкон ё хидмати худро бо расм, видео ва ҷойгиршавӣ эълон кунед.",
+    promoCalloutButton: "Гузоштани аксия",
     redactHeading: "Маълумоти ҳассосро пинҳон кунед",
     redactHint: "Рақами ҳуҷҷат, силсила ё дигар навиштаҳои ҳассосро бо ангушт кашида, бо ранги сиёҳ пӯшонед.",
     redactUndo: "Бекор кардан",
@@ -264,6 +279,41 @@ const tg: Dictionary = {
     safetyNote: "Мукофотро танҳо ҳангоми вохӯрии бевосита бо соҳиби чиз дар ҷои кушоду бехатар гиред.",
     emptyTitle: "Ҳанӯз эълони бо мукофот нест",
     emptyBody: "Агар барои чизи гумшудаатон мукофот пешниҳод кунед, он дар ин ҷо намоён мешавад.",
+  },
+
+  promo: {
+    title: "Аксияҳо",
+    subtitle: "Аксия ва тахфифҳои охирини дӯконҳо ва хидматҳоро дар ин ҷо пайгирӣ кунед.",
+    postButton: "Гузоштани аксия",
+    allCategories: "Ҳама",
+    emptyTitle: "Ҳанӯз аксия нест",
+    emptyBody: "Ба зудӣ дар ин ҷо аксияҳои дӯконҳо ва хидматҳо пайдо мешаванд.",
+  },
+
+  promoForm: {
+    pageTitle: "Гузоштани аксия",
+    pageSubtitle: "Дар бораи аксия ё тахфифи дӯкон, кафе ё хидмати худ ба мардум нақл кунед.",
+    explainHeading: "Ин бахш барои чист?",
+    explainBody:
+      "Аксияҳо — бахши махсус барои бизнеси шумо: тахфиф ва аксияҳои дӯкон, кафе, салон ё дигар хидмати худро бо расм ё видео эълон кунед. Нишон додани ҷойгиршавӣ ва нархнома ихтиёрӣ аст. Ин барои чизҳои ГУМШУДА ё ЁФТШУДА НЕСТ — барои онҳо бахши оддии эълонро истифода баред.",
+    titleLabel: "Номи аксия *",
+    titlePlaceholder: "Масалан: 30% тахфиф ба ҳамаи либосҳо",
+    descriptionLabel: "Тавсиф (ихтиёрӣ)",
+    descriptionPlaceholder: "Шартҳои аксия, мӯҳлат ва дигар тафсилотро нависед...",
+    categoryLabel: "Категория *",
+    tariffsLabel: "Нархҳо / тарифҳо (ихтиёрӣ)",
+    tariffsPlaceholder: "Масалан: Ороиши соч барои мардон — 40 000 сӯм",
+    mapPickerHint: "Нуқтаи ҳойгиршавии дӯкони худро дар харита нишон диҳед (ихтиёрӣ).",
+    contactHeading: "Маълумоти тамос",
+    requiredFieldsError: "Лутфан, ҳамаи майдонҳои бо * қайдшударо пур кунед.",
+    locationRequiredError: "Лутфан, ҷойгиршавиро дар харита нишон диҳед",
+    genericError: "Хатогӣ рӯй дод",
+    submitting: "Гузошта истодааст...",
+    submit: "Гузоштани аксия",
+    successTitle: "Аксия гузошта шуд!",
+    successBody: "Эълони шумо дар бахши «Аксияҳо» намоён мешавад.",
+    viewPromoLink: "Дидани бахши «Аксияҳо»",
+    backToNormalLink: "Бозгашт ба гузоштани эълони оддӣ",
   },
 
   mysteryBox: {

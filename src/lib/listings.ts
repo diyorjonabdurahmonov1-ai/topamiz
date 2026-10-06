@@ -1,5 +1,5 @@
 import { db } from "./db";
-import type { CategoryId, Listing, ListingKind } from "./types";
+import type { CategoryId, Listing, ListingKind, PromoCategoryId } from "./types";
 import { coordinatesForCity } from "./city-coordinates";
 import { displayIdentity } from "./auth";
 
@@ -44,6 +44,8 @@ interface RawListingRow {
   lng: number;
   is_mystery_box: number;
   expires_at: string | null;
+  is_promo: number;
+  promo_category: string | null;
   resolved_by: number | null;
   created_at: string;
   owner_name: string | null;
@@ -136,6 +138,8 @@ function toListing(row: RawListingRow): Listing {
     // parses that exact shape as local time, not UTC, in browsers. Appending
     // a 'Z' makes it an unambiguous ISO instant for every consumer.
     expiresAt: row.expires_at ? `${row.expires_at.replace(" ", "T")}Z` : null,
+    isPromo: !!row.is_promo,
+    promoCategory: (row.promo_category as PromoCategoryId | null) ?? null,
     resolvedById: row.resolved_by,
     resolvedByName: resolverIdentity?.name ?? null,
     resolvedByAvatarColor: resolverIdentity?.avatarColor ?? null,
@@ -146,13 +150,14 @@ function toListing(row: RawListingRow): Listing {
 // `country` filters listings down to the visitor's own country (detected via
 // IP, see lib/geo.ts) so that as this site expands beyond Uzbekistan, users
 // in different countries never see each other's listings mixed together.
-// Excludes Sirli quti listings — they have their own dedicated, login-gated
-// page (getMysteryBoxListings) and must never surface in the general
-// lost/found feed this powers (home page tabs, etc).
+// Excludes Sirli quti and Aksiyalar listings — both have their own
+// dedicated pages (getMysteryBoxListings, getPromoListings) and must never
+// surface in the general lost/found feed this powers (home page tabs, etc).
 export function getAllActiveListings(country: string): Listing[] {
   const rows = db
     .prepare(
-      `${LISTING_SELECT} WHERE listings.status = 'active' AND listings.country = ? AND listings.is_mystery_box = 0
+      `${LISTING_SELECT} WHERE listings.status = 'active' AND listings.country = ?
+       AND listings.is_mystery_box = 0 AND listings.is_promo = 0
        ORDER BY listings.created_at DESC, listings.id DESC`
     )
     .all(country) as RawListingRow[];
@@ -163,11 +168,11 @@ export function getAllActiveListings(country: string): Listing[] {
 // only by the main browse/search page, so someone who finds a listing via
 // search still sees it (with the resolved overlay) instead of it silently
 // vanishing, which would look like it never existed. Also excludes Sirli
-// quti listings, same reason as getAllActiveListings above.
+// quti and Aksiyalar listings, same reason as getAllActiveListings above.
 export function getAllListings(country: string): Listing[] {
   const rows = db
     .prepare(
-      `${LISTING_SELECT} WHERE listings.country = ? AND listings.is_mystery_box = 0
+      `${LISTING_SELECT} WHERE listings.country = ? AND listings.is_mystery_box = 0 AND listings.is_promo = 0
        ORDER BY listings.created_at DESC, listings.id DESC`
     )
     .all(country) as RawListingRow[];
@@ -187,7 +192,21 @@ export function getRewardedListings(country: string): Listing[] {
   const rows = db
     .prepare(
       `${LISTING_SELECT} WHERE listings.status = 'active' AND listings.country = ? AND listings.reward IS NOT NULL
+       AND listings.is_promo = 0
        ORDER BY listings.reward DESC, listings.id DESC`
+    )
+    .all(country) as RawListingRow[];
+  return rows.map(toListing);
+}
+
+// "Aksiyalar" — business promos/deals get their own dedicated page, same
+// pattern as Sirli quti. No expiry concept here (unlike Sirli quti), so no
+// extra date filter beyond status/country.
+export function getPromoListings(country: string): Listing[] {
+  const rows = db
+    .prepare(
+      `${LISTING_SELECT} WHERE listings.status = 'active' AND listings.country = ? AND listings.is_promo = 1
+       ORDER BY listings.created_at DESC, listings.id DESC`
     )
     .all(country) as RawListingRow[];
   return rows.map(toListing);
@@ -298,12 +317,14 @@ export function createListing(params: {
   lng?: number;
   isMysteryBox?: boolean;
   expiresAt?: string | null;
+  isPromo?: boolean;
+  promoCategory?: PromoCategoryId | null;
 }): Listing {
   const info = db
     .prepare(
       `INSERT INTO listings
-        (owner_id, kind, title, description, category, city, district, reward, contact_name, contact_phone, photo_urls, video_url, video_thumbnail_url, country, lat, lng, is_mystery_box, expires_at)
-       VALUES (@ownerId, @kind, @title, @description, @category, @city, @district, @reward, @contactName, @contactPhone, @photoUrls, @videoUrl, @videoThumbnailUrl, @country, @lat, @lng, @isMysteryBox, @expiresAt)`
+        (owner_id, kind, title, description, category, city, district, reward, contact_name, contact_phone, photo_urls, video_url, video_thumbnail_url, country, lat, lng, is_mystery_box, expires_at, is_promo, promo_category)
+       VALUES (@ownerId, @kind, @title, @description, @category, @city, @district, @reward, @contactName, @contactPhone, @photoUrls, @videoUrl, @videoThumbnailUrl, @country, @lat, @lng, @isMysteryBox, @expiresAt, @isPromo, @promoCategory)`
     )
     .run({
       ownerId: params.ownerId,
@@ -324,6 +345,8 @@ export function createListing(params: {
       lng: params.lng ?? null,
       isMysteryBox: params.isMysteryBox ? 1 : 0,
       expiresAt: params.expiresAt ?? null,
+      isPromo: params.isPromo ? 1 : 0,
+      promoCategory: params.promoCategory ?? null,
     });
   const newId = Number(info.lastInsertRowid);
   // No precise location supplied (poster skipped "use my location") — fall

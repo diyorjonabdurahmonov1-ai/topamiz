@@ -1,4 +1,4 @@
-import type { CategoryId } from "@/lib/types";
+import type { CategoryId, PromoCategoryId } from "@/lib/types";
 import type { Dictionary } from "../types";
 
 const ky: Dictionary = {
@@ -11,6 +11,16 @@ const ky: Dictionary = {
     kiyim: "Кийим-кече",
     boshqa: "Башка",
   } satisfies Record<CategoryId, string>,
+
+  promoCategories: {
+    oziq_ovqat: "Азык-түлүк",
+    kafe_restoran: "Кафе жана ресторан",
+    kiyim_poyabzal: "Кийим-бут кийим",
+    gozallik: "Сулуулук жана салон",
+    texnika_dokon: "Техника дүкөндөрү",
+    xizmatlar: "Кызматтар",
+    boshqa: "Башка",
+  } satisfies Record<PromoCategoryId, string>,
 
   common: {
     lost: "Жоголду",
@@ -27,6 +37,7 @@ const ky: Dictionary = {
     listings: "Жарыялар",
     rewarded: "Сыйлыктуу",
     mysteryBox: "Сырдуу кутуча",
+    promo: "Акциялар",
     ads: "Жарнама",
     messages: "Билдирүүлөр",
     login: "Кирүү",
@@ -108,6 +119,7 @@ const ky: Dictionary = {
   listingCard: {
     resolved: "Чечилди ✓",
     mysteryBox: "Сырдуу кутуча",
+    promo: "Акция",
   },
 
   listingDetail: {
@@ -205,6 +217,9 @@ const ky: Dictionary = {
     mysteryBoxCalloutTitle: "Сырдуу кутуча түзгүңүз келеби?",
     mysteryBoxCalloutButton: "Сырдуу кутуча түзүү",
     mysteryBoxCalloutBody: "Сыйлык, арзандатуу же кызыктуу олжону жашырыңыз — адамдар аны издеп табышсын!",
+    promoCalloutTitle: "Бизнесиңиз үчүн акция жайгаштыргыңыз келеби?",
+    promoCalloutBody: "Дүкөнүңүздөгү же кызматыңыздагы арзандатуу жана акцияларды сүрөт, видео жана дарек менен жарыялаңыз.",
+    promoCalloutButton: "Акция жайгаштыруу",
     redactHeading: "Нозик маалыматты жашырыңыз",
     redactHint: "Документ номери, сериясы же башка нозик жазууларды манжаңыз менен сызып, кара түс менен жабыңыз.",
     redactUndo: "Жокко чыгаруу",
@@ -264,6 +279,41 @@ const ky: Dictionary = {
     safetyNote: "Сыйлыкты зат ээси менен ачык жана коопсуз жерде жеке жолугушуп гана алыңыз.",
     emptyTitle: "Азырынча сыйлыктуу жарыя жок",
     emptyBody: "Жоголгон затыңызга сыйлык сунуштасаңыз, ал бул жерде көрүнөт.",
+  },
+
+  promo: {
+    title: "Акциялар",
+    subtitle: "Дүкөндөрдүн жана кызматтардын эң акыркы акциялары менен арзандатууларын бул жерден байкап туруңуз.",
+    postButton: "Акция жайгаштыруу",
+    allCategories: "Баары",
+    emptyTitle: "Азырынча акциялар жок",
+    emptyBody: "Жакында бул жерде дүкөндөрдүн жана кызматтардын акциялары пайда болот.",
+  },
+
+  promoForm: {
+    pageTitle: "Акция жайгаштыруу",
+    pageSubtitle: "Дүкөнүңүздүн, кафеңиздин же кызматыңыздын акциясы же арзандатуусу жөнүндө айтыңыз.",
+    explainHeading: "Бул бөлүм эмне үчүн?",
+    explainBody:
+      "Акциялар — бизнесиңиз үчүн атайын бөлүм: дүкөн, кафе, салон же башка кызматыңыздагы арзандатуу жана акцияларды сүрөт же видео менен жарыялаңыз. Дарек жана тарифтерди жазуу милдеттүү эмес. Бул ЖОГОЛГОН же ТАБЫЛГАН заттар үчүн ЭМЕС — алар үчүн кадимки жарыя бөлүмүн колдонуңуз.",
+    titleLabel: "Акциянын аталышы *",
+    titlePlaceholder: "Мисалы: Бардык кийимге 30% арзандатуу",
+    descriptionLabel: "Сүрөттөмө (милдеттүү эмес)",
+    descriptionPlaceholder: "Акциянын шарттарын, мөөнөтүн жана башка маалыматты жазыңыз...",
+    categoryLabel: "Категория *",
+    tariffsLabel: "Баалар / тарифтер (милдеттүү эмес)",
+    tariffsPlaceholder: "Мисалы: Эркектер чач алдыруу — 40 000 сом",
+    mapPickerHint: "Дүкөнүңүз жайгашкан чекитти картадан белгилеңиз (милдеттүү эмес).",
+    contactHeading: "Байланыш маалыматы",
+    requiredFieldsError: "Сураныч, * менен белгиленген бардык талааларды толтуруңуз.",
+    locationRequiredError: "Картадан жайгашкан жерди белгилеңиз",
+    genericError: "Ката кетти",
+    submitting: "Жайгаштырылууда...",
+    submit: "Акцияны жайгаштыруу",
+    successTitle: "Акция жайгаштырылды!",
+    successBody: "Жарыяңыз «Акциялар» бөлүмүндө көрүнөт.",
+    viewPromoLink: "«Акциялар» бөлүмүн көрүү",
+    backToNormalLink: "Кадимки жарыя жайгаштырууга кайтуу",
   },
 
   mysteryBox: {

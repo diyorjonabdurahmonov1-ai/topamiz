@@ -1,4 +1,4 @@
-import type { CategoryId } from "@/lib/types";
+import type { CategoryId, PromoCategoryId } from "@/lib/types";
 import type { Dictionary } from "../types";
 
 const uz: Dictionary = {
@@ -11,6 +11,16 @@ const uz: Dictionary = {
     kiyim: "Kiyim-kechak",
     boshqa: "Boshqa",
   } satisfies Record<CategoryId, string>,
+
+  promoCategories: {
+    oziq_ovqat: "Oziq-ovqat",
+    kafe_restoran: "Kafe va restoran",
+    kiyim_poyabzal: "Kiyim-poyabzal",
+    gozallik: "Go'zallik va salon",
+    texnika_dokon: "Texnika do'konlari",
+    xizmatlar: "Xizmatlar",
+    boshqa: "Boshqa",
+  } satisfies Record<PromoCategoryId, string>,
 
   common: {
     lost: "Yo'qoldi",
@@ -27,6 +37,7 @@ const uz: Dictionary = {
     listings: "E'lonlar",
     rewarded: "Mukofotli",
     mysteryBox: "Sirli quti",
+    promo: "Aksiyalar",
     ads: "Reklama",
     messages: "Xabarlar",
     login: "Kirish",
@@ -108,6 +119,7 @@ const uz: Dictionary = {
   listingCard: {
     resolved: "Hal qilindi ✓",
     mysteryBox: "Sirli quti",
+    promo: "Aksiya",
   },
 
   listingDetail: {
@@ -206,6 +218,9 @@ const uz: Dictionary = {
     mysteryBoxCalloutTitle: "Sirli quti yaratmoqchimisiz?",
     mysteryBoxCalloutBody: "Sovg'a, chegirma yoki qiziqarli topilma yashiring — odamlar uni qidirib topsin!",
     mysteryBoxCalloutButton: "Sirli quti yaratish",
+    promoCalloutTitle: "Biznesingiz uchun aksiya joylamoqchimisiz?",
+    promoCalloutBody: "Do'kon yoki xizmatingizdagi chegirma va aksiyalarni rasm, video va manzil bilan e'lon qiling.",
+    promoCalloutButton: "Aksiya joylash",
     redactHeading: "Nozik ma'lumotlarni yashiring",
     redactHint:
       "Hujjat raqami, seriya yoki boshqa nozik yozuvlar ustidan barmog'ingiz bilan chizib, qora rang bilan yoping.",
@@ -267,6 +282,41 @@ const uz: Dictionary = {
     safetyNote: "Mukofotni faqat buyum egasi bilan bevosita, ochiq va xavfsiz joyda uchrashib oling.",
     emptyTitle: "Hozircha mukofotli e'lon yo'q",
     emptyBody: "Yo'qolgan buyumingizga mukofot taklif qilsangiz, u shu yerda ko'rinadi.",
+  },
+
+  promo: {
+    title: "Aksiyalar",
+    subtitle: "Do'kon va xizmatlarning eng so'nggi aksiya va chegirmalarini shu yerda kuzatib boring.",
+    postButton: "Aksiya joylash",
+    allCategories: "Barchasi",
+    emptyTitle: "Hozircha aksiyalar yo'q",
+    emptyBody: "Tez orada bu yerda do'kon va xizmatlarning aksiyalari paydo bo'ladi.",
+  },
+
+  promoForm: {
+    pageTitle: "Aksiya joylash",
+    pageSubtitle: "Do'kon, kafe yoki xizmatingizdagi aksiya va chegirmani odamlarga yetkazing.",
+    explainHeading: "Bu bo'lim nima uchun?",
+    explainBody:
+      "Aksiyalar — biznesingiz uchun maxsus bo'lim: do'kon, kafe, salon yoki boshqa xizmatingizdagi chegirma va aksiyalarni rasm yoki video bilan e'lon qiling. Manzil va tariflarni yozish ixtiyoriy. Bu YO'QOLGAN yoki TOPILGAN buyumlar uchun emas — ular uchun oddiy e'lon bo'limidan foydalaning.",
+    titleLabel: "Aksiya nomi *",
+    titlePlaceholder: "Masalan: Barcha kiyimlarga 30% chegirma",
+    descriptionLabel: "Tavsif (ixtiyoriy)",
+    descriptionPlaceholder: "Aksiya shartlari, muddati va boshqa tafsilotlarni yozing...",
+    categoryLabel: "Turkum *",
+    tariffsLabel: "Narxlar / tariflar (ixtiyoriy)",
+    tariffsPlaceholder: "Masalan: Erkaklar soch oldirish — 40 000 so'm",
+    mapPickerHint: "Xaritadan do'koningiz joylashgan nuqtani belgilang (ixtiyoriy).",
+    contactHeading: "Aloqa ma'lumotlari",
+    requiredFieldsError: "Iltimos, * bilan belgilangan barcha maydonlarni to'ldiring.",
+    locationRequiredError: "Iltimos, xaritadan joylashuvni belgilang",
+    genericError: "Xatolik yuz berdi",
+    submitting: "Joylanmoqda...",
+    submit: "Aksiyani joylash",
+    successTitle: "Aksiya joylandi!",
+    successBody: "E'loningiz Aksiyalar bo'limida ko'rinadi.",
+    viewPromoLink: "Aksiyalar bo'limini ko'rish",
+    backToNormalLink: "Oddiy e'lon joylashga qaytish",
   },
 
   mysteryBox: {
