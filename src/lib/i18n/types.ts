@@ -280,8 +280,8 @@ export interface Dictionary {
     tariffsPlaceholder: string;
     mapPickerHint: string;
     contactHeading: string;
+    phoneLabel: string;
     requiredFieldsError: string;
-    locationRequiredError: string;
     genericError: string;
     submitting: string;
     submit: string;

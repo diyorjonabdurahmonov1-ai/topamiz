@@ -132,12 +132,8 @@ export default function PromoForm({ dict }: { dict: Dictionary }) {
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault();
-    if (!title.trim() || !contactPhone.trim()) {
+    if (!title.trim()) {
       setError(dict.promoForm.requiredFieldsError);
-      return;
-    }
-    if (!city || !coords) {
-      setError(dict.promoForm.locationRequiredError);
       return;
     }
     if (videoStatus === "error") {
@@ -294,7 +290,7 @@ export default function PromoForm({ dict }: { dict: Dictionary }) {
         <h2 className="text-sm font-bold">{dict.promoForm.contactHeading}</h2>
         <div className="mt-4">
           <label className="mb-1.5 block text-xs font-semibold text-muted">
-            {dict.postListing.phoneLabel}
+            {dict.promoForm.phoneLabel}
           </label>
           <div className="relative">
             <Phone className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
