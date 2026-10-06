@@ -23,6 +23,7 @@ import CountdownTimer from "@/components/CountdownTimer";
 import LikeButton from "@/components/LikeButton";
 import ShareMenu from "@/components/ShareMenu";
 import ListingCommentButton from "@/components/ListingCommentButton";
+import MysteryBoxVideo from "@/components/MysteryBoxVideo";
 
 export async function generateMetadata(props: PageProps<"/elonlar/[id]">): Promise<Metadata> {
   const { id } = await props.params;
@@ -156,13 +157,22 @@ export default async function ListingDetailPage(props: PageProps<"/elonlar/[id]"
 
           {listing.videoUrl && (
             <div className="mt-6 overflow-hidden rounded-2xl border border-border bg-black">
-              <video
-                src={listing.videoUrl}
-                poster={listing.videoThumbnailUrl ?? undefined}
-                controls
-                playsInline
-                className="aspect-[9/16] w-full max-h-[70vh] bg-black object-contain sm:aspect-video sm:max-h-[480px]"
-              />
+              {listing.isMysteryBox ? (
+                <MysteryBoxVideo
+                  videoUrl={listing.videoUrl}
+                  thumbnailUrl={listing.videoThumbnailUrl}
+                  startsAt={listing.startsAt}
+                  dict={dict}
+                />
+              ) : (
+                <video
+                  src={listing.videoUrl}
+                  poster={listing.videoThumbnailUrl ?? undefined}
+                  controls
+                  playsInline
+                  className="aspect-[9/16] w-full max-h-[70vh] bg-black object-contain sm:aspect-video sm:max-h-[480px]"
+                />
+              )}
             </div>
           )}
 

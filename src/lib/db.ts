@@ -260,6 +260,13 @@ if (!listingColumns.some((c) => c.name === "is_promo")) {
   db.exec("ALTER TABLE listings ADD COLUMN is_promo INTEGER NOT NULL DEFAULT 0");
   db.exec("ALTER TABLE listings ADD COLUMN promo_category TEXT");
 }
+// Optional "reveal time" for a Sirli quti's video — until this passes, the
+// video stays locked (blurred poster + countdown) while every other field
+// (description, photos, location) is visible right away. NULL means no
+// lock at all, so this never affects an ordinary listing's video.
+if (!listingColumns.some((c) => c.name === "starts_at")) {
+  db.exec("ALTER TABLE listings ADD COLUMN starts_at TEXT");
+}
 // Created here rather than in the block above so it works whether `country`
 // came from a fresh install's CREATE TABLE or the ALTER TABLE just above.
 db.exec("CREATE INDEX IF NOT EXISTS idx_listings_status_country ON listings(status, country)");

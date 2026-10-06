@@ -12,6 +12,7 @@ import { containsProhibitedContent, recordModerationViolation } from "@/lib/mode
 import { sendPushToUser } from "@/lib/push";
 import { getClientIp, rateLimit } from "@/lib/rate-limit";
 import { countryForIp } from "@/lib/geo";
+import { R2_PUBLIC_URL } from "@/lib/r2";
 
 // Uploaded photos only ever come back from POST /api/upload as this prefix —
 // anything else is a client claiming an arbitrary external URL is one of ours.
@@ -50,6 +51,16 @@ export async function POST(request: Request) {
         .filter((u: unknown): u is string => typeof u === "string" && u.startsWith(OWN_UPLOAD_PREFIX))
         .slice(0, MAX_LISTING_PHOTOS)
     : [];
+  const videoUrl =
+    typeof body?.videoUrl === "string" && R2_PUBLIC_URL && body.videoUrl.startsWith(R2_PUBLIC_URL)
+      ? body.videoUrl
+      : null;
+  const videoThumbnailUrl =
+    typeof body?.videoThumbnailUrl === "string" &&
+    R2_PUBLIC_URL &&
+    body.videoThumbnailUrl.startsWith(R2_PUBLIC_URL)
+      ? body.videoThumbnailUrl
+      : null;
   const latRaw = body?.lat;
   const lngRaw = body?.lng;
   const lat =
@@ -61,7 +72,14 @@ export async function POST(request: Request) {
       ? lngRaw
       : null;
 
-  if (!title || !description || !city || lat === null || lng === null || photoUrls.length === 0) {
+  if (
+    !title ||
+    !description ||
+    !city ||
+    lat === null ||
+    lng === null ||
+    (photoUrls.length === 0 && !videoUrl)
+  ) {
     return NextResponse.json(
       { error: "Iltimos, * bilan belgilangan barcha maydonlarni to'ldiring." },
       { status: 400 }
@@ -88,6 +106,30 @@ export async function POST(request: Request) {
   }
   const expiresAt = expiresAtRaw.toISOString().slice(0, 19).replace("T", " ");
 
+  // The video's reveal time — optional, and only meaningful when earlier
+  // than the listing's own expiry (a box that's already closed can't still
+  // have its video "about to open").
+  let startsAt: string | null = null;
+  if (typeof body?.startsAt === "string") {
+    const startsAtRaw = new Date(body.startsAt);
+    if (Number.isNaN(startsAtRaw.getTime())) {
+      return NextResponse.json({ error: "Boshlanish vaqti noto'g'ri." }, { status: 400 });
+    }
+    if (startsAtRaw.getTime() < minAllowed) {
+      return NextResponse.json(
+        { error: `Boshlanish vaqti hozirdan kamida ${MIN_MINUTES_AHEAD} daqiqa keyin bo'lishi kerak.` },
+        { status: 400 }
+      );
+    }
+    if (startsAtRaw.getTime() >= expiresAtRaw.getTime()) {
+      return NextResponse.json(
+        { error: "Boshlanish vaqti amal qilish muddatidan oldin bo'lishi kerak." },
+        { status: 400 }
+      );
+    }
+    startsAt = startsAtRaw.toISOString().slice(0, 19).replace("T", " ");
+  }
+
   if (containsProhibitedContent(`${title} ${fullDescription}`)) {
     const { blocked } = recordModerationViolation(user.id);
     return NextResponse.json(
@@ -113,11 +155,14 @@ export async function POST(request: Request) {
     contactName: posterIdentity.name,
     contactPhone: "",
     photoUrls,
+    videoUrl,
+    videoThumbnailUrl,
     country: countryForIp(ip),
     lat,
     lng,
     isMysteryBox: true,
     expiresAt,
+    startsAt,
   });
 
   for (const friendId of getFollowerIds(user.id)) {

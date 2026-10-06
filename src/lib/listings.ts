@@ -44,6 +44,7 @@ interface RawListingRow {
   lng: number;
   is_mystery_box: number;
   expires_at: string | null;
+  starts_at: string | null;
   is_promo: number;
   promo_category: string | null;
   resolved_by: number | null;
@@ -138,6 +139,7 @@ function toListing(row: RawListingRow): Listing {
     // parses that exact shape as local time, not UTC, in browsers. Appending
     // a 'Z' makes it an unambiguous ISO instant for every consumer.
     expiresAt: row.expires_at ? `${row.expires_at.replace(" ", "T")}Z` : null,
+    startsAt: row.starts_at ? `${row.starts_at.replace(" ", "T")}Z` : null,
     isPromo: !!row.is_promo,
     promoCategory: (row.promo_category as PromoCategoryId | null) ?? null,
     resolvedById: row.resolved_by,
@@ -227,22 +229,29 @@ export function getMysteryBoxListings(country: string): Listing[] {
   return rows.map(toListing);
 }
 
-// Reels-style feed: every active, non-mystery-box listing that has either a
-// video or at least one photo, shuffled at query time so the order is
-// different (and unpredictable) on each load — there's no "trending"
-// ranking here, just a random walk through whatever visual content exists.
-// Video and photo listings are deliberately mixed together rather than
-// shown in separate feeds, so a photo-only listing still gets the same
-// swipeable Reels exposure a video one gets. `excludeIds` keeps a client
-// that's already scrolled through a batch from being handed the same ones
-// again.
-export function getReelsListings(country: string, excludeIds: string[] = []): Listing[] {
+// Reels-style feed: every active listing that has either a video or at
+// least one photo, shuffled at query time so the order is different (and
+// unpredictable) on each load — there's no "trending" ranking here, just a
+// random walk through whatever visual content exists. Video and photo
+// listings — lost/found, Takliflar, and (for logged-in viewers) Sirli
+// quti — are deliberately mixed together rather than shown in separate
+// feeds. Sirli quti stays out of a guest's feed the same way it's gated
+// everywhere else on the site; its video itself may still be time-locked,
+// which the UI handles client-side via `startsAt`, not this query.
+// `excludeIds` keeps a client that's already scrolled through a batch from
+// being handed the same ones again.
+export function getReelsListings(
+  country: string,
+  excludeIds: string[] = [],
+  includeMysteryBox: boolean = false
+): Listing[] {
   const placeholders = excludeIds.map(() => "?").join(",");
   const excludeClause = excludeIds.length > 0 ? `AND listings.id NOT IN (${placeholders})` : "";
+  const mysteryBoxClause = includeMysteryBox ? "" : "AND listings.is_mystery_box = 0";
   const rows = db
     .prepare(
       `${LISTING_SELECT} WHERE listings.status = 'active' AND listings.country = ?
-       AND listings.is_mystery_box = 0
+       ${mysteryBoxClause}
        AND (listings.video_url IS NOT NULL OR listings.photo_urls != '[]')
        ${excludeClause}
        ORDER BY RANDOM() LIMIT 30`
@@ -317,14 +326,15 @@ export function createListing(params: {
   lng?: number;
   isMysteryBox?: boolean;
   expiresAt?: string | null;
+  startsAt?: string | null;
   isPromo?: boolean;
   promoCategory?: PromoCategoryId | null;
 }): Listing {
   const info = db
     .prepare(
       `INSERT INTO listings
-        (owner_id, kind, title, description, category, city, district, reward, contact_name, contact_phone, photo_urls, video_url, video_thumbnail_url, country, lat, lng, is_mystery_box, expires_at, is_promo, promo_category)
-       VALUES (@ownerId, @kind, @title, @description, @category, @city, @district, @reward, @contactName, @contactPhone, @photoUrls, @videoUrl, @videoThumbnailUrl, @country, @lat, @lng, @isMysteryBox, @expiresAt, @isPromo, @promoCategory)`
+        (owner_id, kind, title, description, category, city, district, reward, contact_name, contact_phone, photo_urls, video_url, video_thumbnail_url, country, lat, lng, is_mystery_box, expires_at, starts_at, is_promo, promo_category)
+       VALUES (@ownerId, @kind, @title, @description, @category, @city, @district, @reward, @contactName, @contactPhone, @photoUrls, @videoUrl, @videoThumbnailUrl, @country, @lat, @lng, @isMysteryBox, @expiresAt, @startsAt, @isPromo, @promoCategory)`
     )
     .run({
       ownerId: params.ownerId,
@@ -345,6 +355,7 @@ export function createListing(params: {
       lng: params.lng ?? null,
       isMysteryBox: params.isMysteryBox ? 1 : 0,
       expiresAt: params.expiresAt ?? null,
+      startsAt: params.startsAt ?? null,
       isPromo: params.isPromo ? 1 : 0,
       promoCategory: params.promoCategory ?? null,
     });

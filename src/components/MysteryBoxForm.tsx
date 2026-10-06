@@ -1,12 +1,13 @@
 "use client";
 
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import { Clock, ImagePlus, Info, Loader2, LocateFixed, MapPin, Sparkles } from "lucide-react";
+import { Clock, ImagePlus, Info, Loader2, LocateFixed, Lock, MapPin, Sparkles } from "lucide-react";
 import type { Dictionary } from "@/lib/i18n";
 import { cities } from "@/lib/data";
-import ImageUploader from "./ImageUploader";
+import MediaUploader from "./MediaUploader";
+import type { VideoUploadStatus } from "./VideoUploader";
 
 const LocationPickerMap = dynamic(() => import("./LocationPickerMap"), {
   ssr: false,
@@ -25,7 +26,7 @@ function toLocalInputValue(date: Date): string {
   return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
 }
 
-type Status = "idle" | "submitting" | "success";
+type Status = "idle" | "submitting" | "waiting-for-video" | "success";
 
 export default function MysteryBoxForm({ dict }: { dict: Dictionary }) {
   const [title, setTitle] = useState("");
@@ -33,7 +34,10 @@ export default function MysteryBoxForm({ dict }: { dict: Dictionary }) {
   const [extraInfo, setExtraInfo] = useState("");
   const [city, setCity] = useState("");
   const [imageUrls, setImageUrls] = useState<string[]>([]);
+  const [video, setVideo] = useState<{ videoUrl: string; thumbnailUrl: string } | null>(null);
+  const [videoStatus, setVideoStatus] = useState<VideoUploadStatus>("idle");
   const [expiresAt, setExpiresAt] = useState("");
+  const [startsAt, setStartsAt] = useState("");
   const [status, setStatus] = useState<Status>("idle");
   const [error, setError] = useState("");
   const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
@@ -41,6 +45,7 @@ export default function MysteryBoxForm({ dict }: { dict: Dictionary }) {
   const [locateError, setLocateError] = useState("");
   const [detecting, setDetecting] = useState(false);
   const [expiryBounds, setExpiryBounds] = useState<{ min: string; max: string } | null>(null);
+  const waitingForVideoRef = useRef(false);
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
@@ -93,25 +98,7 @@ export default function MysteryBoxForm({ dict }: { dict: Dictionary }) {
     );
   }
 
-  async function handleSubmit(e: FormEvent) {
-    e.preventDefault();
-    if (!title.trim() || !description.trim()) {
-      setError(dict.mysteryBoxForm.requiredFieldsError);
-      return;
-    }
-    if (imageUrls.length === 0) {
-      setError(dict.mysteryBoxForm.photosRequiredError);
-      return;
-    }
-    if (!city || !coords) {
-      setError(dict.mysteryBoxForm.locationRequiredError);
-      return;
-    }
-    if (!expiresAt) {
-      setError(dict.mysteryBoxForm.expiryRequiredError);
-      return;
-    }
-    setError("");
+  async function submitMysteryBox() {
     setStatus("submitting");
     try {
       const res = await fetch("/api/listings/mystery-box", {
@@ -123,9 +110,12 @@ export default function MysteryBoxForm({ dict }: { dict: Dictionary }) {
           extraInfo,
           city,
           photoUrls: imageUrls,
-          lat: coords.lat,
-          lng: coords.lng,
+          videoUrl: video?.videoUrl,
+          videoThumbnailUrl: video?.thumbnailUrl,
+          lat: coords?.lat,
+          lng: coords?.lng,
           expiresAt: new Date(expiresAt).toISOString(),
+          startsAt: startsAt ? new Date(startsAt).toISOString() : null,
         }),
       });
       const data = await res.json();
@@ -135,6 +125,54 @@ export default function MysteryBoxForm({ dict }: { dict: Dictionary }) {
       setError(err instanceof Error ? err.message : dict.mysteryBoxForm.genericError);
       setStatus("idle");
     }
+  }
+
+  function handleVideoStatusChange(next: VideoUploadStatus) {
+    setVideoStatus(next);
+    if (!waitingForVideoRef.current) return;
+    if (next === "done") {
+      waitingForVideoRef.current = false;
+      void submitMysteryBox();
+    } else if (next === "error") {
+      waitingForVideoRef.current = false;
+      setStatus("idle");
+      setError(dict.postListing.videoBlockingError);
+    }
+  }
+
+  function handleSubmit(e: FormEvent) {
+    e.preventDefault();
+    if (!title.trim() || !description.trim()) {
+      setError(dict.mysteryBoxForm.requiredFieldsError);
+      return;
+    }
+    if (imageUrls.length === 0 && !video) {
+      setError(dict.mysteryBoxForm.photosRequiredError);
+      return;
+    }
+    if (!city || !coords) {
+      setError(dict.mysteryBoxForm.locationRequiredError);
+      return;
+    }
+    if (!expiresAt) {
+      setError(dict.mysteryBoxForm.expiryRequiredError);
+      return;
+    }
+    if (startsAt && new Date(startsAt) >= new Date(expiresAt)) {
+      setError(dict.mysteryBoxForm.startAfterExpiryError);
+      return;
+    }
+    if (videoStatus === "error") {
+      setError(dict.postListing.videoBlockingError);
+      return;
+    }
+    setError("");
+    if (videoStatus === "checking" || videoStatus === "uploading") {
+      waitingForVideoRef.current = true;
+      setStatus("waiting-for-video");
+      return;
+    }
+    void submitMysteryBox();
   }
 
   if (status === "success") {
@@ -265,7 +303,12 @@ export default function MysteryBoxForm({ dict }: { dict: Dictionary }) {
           {dict.mysteryBoxForm.photosHeading}
         </h2>
         <div className="mt-3">
-          <ImageUploader onChange={setImageUrls} dict={dict} />
+          <MediaUploader
+            onImagesChange={setImageUrls}
+            onVideoChange={setVideo}
+            onVideoStatusChange={handleVideoStatusChange}
+            dict={dict}
+          />
         </div>
       </div>
 
@@ -283,6 +326,20 @@ export default function MysteryBoxForm({ dict }: { dict: Dictionary }) {
           onChange={(e) => setExpiresAt(e.target.value)}
           className="mt-3 w-full rounded-xl border border-border bg-bg-elevated px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent-gold/40"
         />
+
+        <h2 className="mt-5 flex items-center gap-2 text-sm font-bold">
+          <Lock className="h-4 w-4" />
+          {dict.mysteryBoxForm.startLabel}
+        </h2>
+        <p className="mt-1 text-xs text-muted">{dict.mysteryBoxForm.startHint}</p>
+        <input
+          type="datetime-local"
+          value={startsAt}
+          min={expiryBounds?.min}
+          max={expiryBounds?.max}
+          onChange={(e) => setStartsAt(e.target.value)}
+          className="mt-3 w-full rounded-xl border border-border bg-bg-elevated px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent-gold/40"
+        />
       </div>
 
       {error && (
@@ -291,13 +348,13 @@ export default function MysteryBoxForm({ dict }: { dict: Dictionary }) {
 
       <button
         type="submit"
-        disabled={status === "submitting"}
+        disabled={status === "submitting" || status === "waiting-for-video"}
         className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-accent-gold to-brand-via px-5 py-3.5 text-sm font-bold text-white disabled:opacity-70"
       >
-        {status === "submitting" ? (
+        {status === "submitting" || status === "waiting-for-video" ? (
           <>
             <Loader2 className="h-4 w-4 animate-spin" />
-            {dict.mysteryBoxForm.submitting}
+            {status === "waiting-for-video" ? dict.postListing.waitingForVideo : dict.mysteryBoxForm.submitting}
           </>
         ) : (
           <>

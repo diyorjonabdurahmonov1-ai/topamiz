@@ -118,10 +118,13 @@ export interface Dictionary {
     claimantConfirmButton: string;
     claimantConfirming: string;
     resolvedByLabel: string;
+    videoLockedTitle: string;
+    videoLockedBody: string;
   };
 
   countdown: {
     label: string;
+    startsLabel: string;
     days: string;
     hours: string;
     minutes: string;
@@ -232,6 +235,9 @@ export interface Dictionary {
     expiryRequiredError: string;
     expiryPastError: string;
     expiryTooFarError: string;
+    startLabel: string;
+    startHint: string;
+    startAfterExpiryError: string;
     requiredFieldsError: string;
     genericError: string;
     submitting: string;
