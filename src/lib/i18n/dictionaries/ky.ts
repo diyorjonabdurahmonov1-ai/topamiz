@@ -74,13 +74,10 @@ const ky: Dictionary = {
   tabs: {
     lost: "Жоголгон",
     found: "Табылган",
-    rewarded: "Сыйлыктуу",
-    mysteryBox: "Сырдуу кутуча",
     viewAll: "Баарын көрүү",
     itemsSuffix: "заттар",
     emptyTitle: "Азырынча жарыя жок",
     emptyBody: "Бул бөлүмдө азырынча эч ким жарыя жайгаштырган эмес.",
-    selectPrompt: "Жарыяларды көрүү үчүн жогорудагы бөлүмдөрдүн бирин тандаңыз",
   },
 
   homeQuickAccess: {
@@ -95,8 +92,6 @@ const ky: Dictionary = {
     nearbyTitle: "Жаныңызда",
     qrTitle: "QR-белги",
     qrSubtitle: "Буюмуңузду коргоңуз",
-    mysteryBoxEmptyTitle: "Сырдуу кутуча",
-    mysteryBoxEmptySubtitle: "Жаңы белектерди көрүңүз",
   },
 
   listingsPage: {
@@ -285,6 +280,7 @@ const ky: Dictionary = {
     title: "Сунуштар",
     subtitle: "Дүкөндөрдүн жана кызматтардын эң акыркы сунуштарын бул жерден байкап туруңуз.",
     postButton: "Сунуш жайгаштыруу",
+    activeCount: "Активдүү сунуш",
     allCategories: "Баары",
     emptyTitle: "Азырынча сунуштар жок",
     emptyBody: "Жакында бул жерде дүкөндөрдүн жана кызматтардын сунуштары пайда болот.",

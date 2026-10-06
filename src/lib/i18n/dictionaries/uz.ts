@@ -74,13 +74,10 @@ const uz: Dictionary = {
   tabs: {
     lost: "Yo'qolgan",
     found: "Topilgan",
-    rewarded: "Mukofotli",
-    mysteryBox: "Sirli quti",
     viewAll: "Barchasini ko'rish",
     itemsSuffix: "buyumlar",
     emptyTitle: "Hozircha e'lonlar yo'q",
     emptyBody: "Bu bo'limda hali hech kim e'lon joylashtirmagan.",
-    selectPrompt: "E'lonlarni ko'rish uchun yuqoridagi bo'limlardan birini tanlang",
   },
 
   homeQuickAccess: {
@@ -95,8 +92,6 @@ const uz: Dictionary = {
     nearbyTitle: "Yaqiningizda",
     qrTitle: "QR-belgi",
     qrSubtitle: "Buyumni himoyalang",
-    mysteryBoxEmptyTitle: "Sirli quti",
-    mysteryBoxEmptySubtitle: "Yangi sovg'alarni ko'ring",
   },
 
   listingsPage: {
@@ -288,6 +283,7 @@ const uz: Dictionary = {
     title: "Takliflar",
     subtitle: "Do'kon va xizmatlarning eng so'nggi takliflarini shu yerda kuzatib boring.",
     postButton: "Taklif joylash",
+    activeCount: "Faol taklif",
     allCategories: "Barchasi",
     emptyTitle: "Hozircha takliflar yo'q",
     emptyBody: "Tez orada bu yerda do'kon va xizmatlarning takliflari paydo bo'ladi.",

@@ -2,14 +2,15 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ArrowUpRight, Gift, Search, SearchX, Sparkles } from "lucide-react";
+import { ArrowUpRight, PackageSearch, Search, SearchX, Tag } from "lucide-react";
 import type { CategoryId, Listing } from "@/lib/types";
 import type { Dictionary } from "@/lib/i18n";
 import { categoryIcons } from "@/lib/icons";
-import { formatSom } from "@/lib/data";
 import NearbyMapCard from "@/components/NearbyMapCard";
-import LostFoundTabCard, { type HomeTabKey } from "@/components/LostFoundTabCard";
+import HomeTabCard from "@/components/HomeTabCard";
 import ListingsGrid from "@/components/ListingsGrid";
+
+type HomeTabKey = "lost" | "found";
 
 const QUICK_CATEGORIES: { id: CategoryId; color: string; label: (dict: Dictionary) => string }[] = [
   { id: "hujjatlar", color: "#2563eb", label: (dict) => dict.homeQuickAccess.categoryHujjatlar },
@@ -26,18 +27,15 @@ export default function HomeQuickAccess({
   nearby,
   lost,
   found,
-  rewarded,
-  mysteryBoxTeaser,
+  promoCount,
 }: {
   dict: Dictionary;
   nearby: Listing[];
   lost: Listing[];
   found: Listing[];
-  rewarded: Listing[];
-  mysteryBoxTeaser: Listing | null;
+  promoCount: number;
 }) {
   const [activeTab, setActiveTab] = useState<HomeTabKey>("lost");
-  const totalReward = rewarded.reduce((sum, l) => sum + (l.reward ?? 0), 0);
   const activeListings = activeTab === "lost" ? lost : found;
   const activeHref = activeTab === "lost" ? "/elonlar?kind=lost" : "/elonlar?kind=found";
   const activeLabel = activeTab === "lost" ? dict.tabs.lost : dict.tabs.found;
@@ -83,48 +81,34 @@ export default function HomeQuickAccess({
       </div>
 
       <div className="grid grid-cols-2 gap-3">
-        <LostFoundTabCard active={activeTab} onChange={setActiveTab} dict={dict} />
-
-        {mysteryBoxTeaser ? (
-          <Link
-            href="/sirli-quti"
-            className="card-hover flex flex-col gap-1 rounded-2xl p-4 text-black"
-            style={{ backgroundImage: "linear-gradient(135deg, var(--accent-gold), var(--accent-gold-2))" }}
-          >
-            <span className="flex items-center gap-1 text-[10px] font-extrabold uppercase tracking-wide">
-              <Sparkles className="h-3 w-3" />
-              {dict.mysteryBox.activeCount}
-            </span>
-            {typeof mysteryBoxTeaser.reward === "number" && (
-              <span className="text-lg font-extrabold">{formatSom(mysteryBoxTeaser.reward)}</span>
-            )}
-            <span className="text-xs font-semibold">{mysteryBoxTeaser.city}</span>
-          </Link>
-        ) : (
-          <Link
-            href="/sirli-quti"
-            className="card-hover flex flex-col justify-center gap-1 rounded-2xl border border-border bg-surface-2 p-4"
-          >
-            <Sparkles className="h-4 w-4 text-brand-via" />
-            <p className="text-sm font-bold">{dict.homeQuickAccess.mysteryBoxEmptyTitle}</p>
-            <p className="text-[11px] text-muted">{dict.homeQuickAccess.mysteryBoxEmptySubtitle}</p>
-          </Link>
-        )}
+        <HomeTabCard
+          active={activeTab === "lost"}
+          label={dict.tabs.lost}
+          icon={Search}
+          gradient="linear-gradient(135deg, var(--danger), var(--accent-gold-2))"
+          onClick={() => setActiveTab("lost")}
+        />
+        <HomeTabCard
+          active={activeTab === "found"}
+          label={dict.tabs.found}
+          icon={PackageSearch}
+          gradient="linear-gradient(135deg, var(--success), var(--brand-to))"
+          onClick={() => setActiveTab("found")}
+        />
 
         <NearbyMapCard listings={nearby} dict={dict} />
 
         <Link
-          href="/mukofotli"
-          className="card-hover flex flex-col gap-1 rounded-2xl border border-accent-gold/30 bg-accent-gold/5 p-4"
+          href="/takliflar"
+          className="card-hover flex flex-col justify-center gap-1 rounded-2xl p-4 text-white"
+          style={{ backgroundImage: "linear-gradient(135deg, #0ea5e9, var(--brand-via))" }}
         >
-          <span className="flex items-center gap-1 text-[10px] font-extrabold uppercase tracking-wide text-accent-gold">
-            <Gift className="h-3 w-3" />
-            {dict.tabs.rewarded}
+          <span className="flex items-center gap-1 text-[10px] font-extrabold uppercase tracking-wide">
+            <Tag className="h-3 w-3" />
+            {dict.promo.title}
           </span>
-          <span className="text-lg font-extrabold">{formatSom(totalReward)}</span>
-          <span className="text-xs font-semibold text-muted">
-            {rewarded.length} {dict.rewarded.activeCount}
-          </span>
+          <span className="text-lg font-extrabold">{promoCount}</span>
+          <span className="text-xs font-semibold">{dict.promo.activeCount}</span>
         </Link>
       </div>
 
