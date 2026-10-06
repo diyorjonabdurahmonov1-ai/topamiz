@@ -47,7 +47,7 @@ export default async function PostListingPage() {
       </Link>
 
       <Link
-        href="/elon-qoshish/aksiya"
+        href="/elon-qoshish/taklif"
         className="card-hover mt-3 flex items-center gap-3 rounded-2xl border border-sky-500/30 bg-gradient-to-r from-sky-500/10 via-brand-via/5 to-transparent p-5"
       >
         <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-sky-500 to-brand-via text-white">

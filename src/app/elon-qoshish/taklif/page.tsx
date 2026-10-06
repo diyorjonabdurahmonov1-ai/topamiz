@@ -7,7 +7,7 @@ import { getDictionary } from "@/lib/i18n";
 import PromoForm from "@/components/PromoForm";
 
 export const metadata: Metadata = {
-  title: "Aksiya joylash — Findo",
+  title: "Taklif joylash — Findo",
 };
 
 export default async function CreatePromoPage() {

@@ -8,7 +8,7 @@ import { getLocale } from "@/lib/i18n/server";
 import { getDictionary } from "@/lib/i18n";
 
 export const metadata: Metadata = {
-  title: "Aksiyalar — Findo",
+  title: "Takliflar — Findo",
 };
 
 export default async function PromoPage() {
@@ -24,7 +24,7 @@ export default async function PromoPage() {
         <h1 className="mt-5 text-3xl font-extrabold tracking-tight sm:text-4xl">{dict.promo.title}</h1>
         <p className="mx-auto mt-3 max-w-xl text-sm text-muted">{dict.promo.subtitle}</p>
         <Link
-          href="/elon-qoshish/aksiya"
+          href="/elon-qoshish/taklif"
           className="mt-6 inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-sky-500 to-brand-via px-5 py-2.5 text-sm font-bold text-white"
         >
           <Plus className="h-4 w-4" />

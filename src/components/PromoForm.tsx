@@ -158,7 +158,7 @@ export default function PromoForm({ dict }: { dict: Dictionary }) {
         <h2 className="mt-5 text-2xl font-extrabold">{dict.promoForm.successTitle}</h2>
         <p className="mt-2 max-w-md text-sm text-muted">{dict.promoForm.successBody}</p>
         <div className="mt-6 flex flex-wrap justify-center gap-3">
-          <Link href="/aksiyalar" className="btn-brand rounded-xl px-5 py-2.5 text-sm font-semibold text-white">
+          <Link href="/takliflar" className="btn-brand rounded-xl px-5 py-2.5 text-sm font-semibold text-white">
             {dict.promoForm.viewPromoLink}
           </Link>
         </div>

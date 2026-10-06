@@ -16,7 +16,7 @@ export interface Category {
   icon: string;
 }
 
-// A separate taxonomy for "Aksiyalar" (business promos/deals) — deliberately
+// A separate taxonomy for "Takliflar" (business promos/deals) — deliberately
 // not shared with CategoryId's lost/found categories, since a shop promo and
 // a lost wallet aren't the same kind of thing to browse or filter by.
 export type PromoCategoryId =
