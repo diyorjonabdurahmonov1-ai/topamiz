@@ -1,11 +1,18 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { AlertCircle, Loader2, Video, X } from "lucide-react";
+import { AlertCircle, Camera, FolderOpen, Loader2, Video, X } from "lucide-react";
 import type { Dictionary } from "@/lib/i18n";
 
 const MAX_DURATION_SECONDS = 120;
 const ACCEPTED_TYPES = "video/*";
+// Adding a non-media type makes Android open its document picker ("My
+// Files") instead of the photo picker. The photo picker can hand the
+// browser a converted copy of an HEVC video that the browser then refuses
+// to read (NotReadableError); the document picker hands over the original.
+const FILES_ACCEPTED_TYPES = "video/*,application/octet-stream";
+
+type VideoSource = "gallery" | "files" | "camera";
 const MAX_RAW_SIZE = 300 * 1024 * 1024;
 const POLL_INTERVAL_MS = 2000;
 const MAX_POLLS = (10 * 60 * 1000) / POLL_INTERVAL_MS;
@@ -99,7 +106,10 @@ export default function VideoUploader({
   const [errorCode, setErrorCode] = useState("");
   const [progress, setProgress] = useState(0);
   const [processing, setProcessing] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const [readFailed, setReadFailed] = useState(false);
+  const galleryRef = useRef<HTMLInputElement>(null);
+  const filesRef = useRef<HTMLInputElement>(null);
+  const cameraRef = useRef<HTMLInputElement>(null);
   // Bumped whenever a new file is picked or the video is removed, so a
   // still-running upload loop for the old file stops touching state.
   const attemptRef = useRef(0);
@@ -138,10 +148,11 @@ export default function VideoUploader({
   // Deliberately one status for the whole pipeline (duration check, ffmpeg
   // compression, R2 upload) — the poster doesn't need a play-by-play of what
   // the server is doing to their file, just whether it worked in the end.
-  async function handleFile(picked: File | undefined) {
+  async function handleFile(picked: File | undefined, source: VideoSource) {
     if (!picked) return;
     setError("");
     setErrorCode("");
+    setReadFailed(false);
     // An empty preview URL still opens the preview box, where the progress
     // and error states render, before the real preview is ready.
     setPreviewUrl("");
@@ -163,9 +174,11 @@ export default function VideoUploader({
     } catch (err) {
       const code = err instanceof UploadError ? err.code : "read";
       updateStatus("error");
+      setReadFailed(true);
+      setPreviewUrl(null);
       setError(`${dict.postListing.videoUploadFailedPrefix}: ${dict.postListing.videoReadError}`);
       setErrorCode(code);
-      reportFailure(picked, code);
+      reportFailure(picked, source, code);
       return;
     }
     setPreviewUrl(URL.createObjectURL(file));
@@ -215,7 +228,7 @@ export default function VideoUploader({
       const message = err instanceof UploadError && err.message ? err.message : dict.postListing.videoGenericError;
       setError(`${dict.postListing.videoUploadFailedPrefix}: ${message}`);
       setErrorCode(code);
-      reportFailure(picked, code);
+      reportFailure(picked, source, code);
     } finally {
       await wakeLock?.release().catch(() => {});
     }
@@ -320,13 +333,14 @@ export default function VideoUploader({
 
   // Sends what went wrong to the server log, so a failure on a real phone
   // can be diagnosed without needing the poster to describe it.
-  function reportFailure(picked: File, code: string) {
+  function reportFailure(picked: File, source: VideoSource, code: string) {
     const ext = picked.name.split(".").pop()?.toLowerCase() ?? "";
     fetch("/api/upload-video/report", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         code,
+        source,
         type: picked.type,
         ext,
         size: picked.size,
@@ -412,30 +426,95 @@ export default function VideoUploader({
     updateStatus("idle");
     setError("");
     setErrorCode("");
+    setReadFailed(false);
     onChange?.(null);
+  }
+
+  const inputs = (
+    <>
+      <input
+        ref={galleryRef}
+        type="file"
+        accept={ACCEPTED_TYPES}
+        hidden
+        onChange={(e) => {
+          handleFile(e.target.files?.[0], "gallery");
+          e.target.value = "";
+        }}
+      />
+      <input
+        ref={filesRef}
+        type="file"
+        accept={FILES_ACCEPTED_TYPES}
+        hidden
+        onChange={(e) => {
+          handleFile(e.target.files?.[0], "files");
+          e.target.value = "";
+        }}
+      />
+      <input
+        ref={cameraRef}
+        type="file"
+        accept={ACCEPTED_TYPES}
+        capture="environment"
+        hidden
+        onChange={(e) => {
+          handleFile(e.target.files?.[0], "camera");
+          e.target.value = "";
+        }}
+      />
+    </>
+  );
+
+  const recordButton = (
+    <button
+      type="button"
+      onClick={() => cameraRef.current?.click()}
+      className="flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-xs font-semibold text-foreground transition-colors hover:border-brand-via/40"
+    >
+      <Camera className="h-3.5 w-3.5" />
+      {dict.postListing.videoRecord}
+    </button>
+  );
+
+  if (readFailed) {
+    return (
+      <div className="flex flex-col items-center gap-2 rounded-xl border border-danger/40 bg-danger/5 p-4 text-center">
+        {inputs}
+        <AlertCircle className="h-5 w-5 text-danger" />
+        <p className="text-sm font-semibold text-foreground">{error}</p>
+        <p className="text-xs text-muted">{dict.postListing.videoReadHint}</p>
+        <div className="mt-1 flex flex-wrap justify-center gap-2">
+          <button
+            type="button"
+            onClick={() => filesRef.current?.click()}
+            className="flex items-center gap-1.5 rounded-full bg-gradient-to-r from-brand-from to-brand-via px-3 py-1.5 text-xs font-semibold text-white"
+          >
+            <FolderOpen className="h-3.5 w-3.5" />
+            {dict.postListing.videoPickFromFiles}
+          </button>
+          {recordButton}
+        </div>
+        {errorCode && <span className="text-[10px] text-muted">{errorCode}</span>}
+      </div>
+    );
   }
 
   if (previewUrl === null) {
     return (
-      <div
-        onClick={() => inputRef.current?.click()}
-        role="button"
-        tabIndex={0}
-        className="flex h-32 cursor-pointer flex-col items-center justify-center gap-1.5 rounded-xl border-2 border-dashed border-border text-center text-sm text-muted transition-colors hover:border-brand-via/40 hover:text-foreground"
-      >
-        <Video className="h-5 w-5" />
-        {dict.postListing.videoUploadPrompt}
-        <span className="text-xs text-muted">{dict.postListing.videoUploadHint}</span>
-        <input
-          ref={inputRef}
-          type="file"
-          accept={ACCEPTED_TYPES}
-          hidden
-          onChange={(e) => {
-            handleFile(e.target.files?.[0]);
-            e.target.value = "";
-          }}
-        />
+      <div className="space-y-2">
+        {inputs}
+        <div
+          onClick={() => galleryRef.current?.click()}
+          role="button"
+          tabIndex={0}
+          className="flex h-32 cursor-pointer flex-col items-center justify-center gap-1.5 rounded-xl border-2 border-dashed border-border text-center text-sm text-muted transition-colors hover:border-brand-via/40 hover:text-foreground"
+        >
+          <Video className="h-5 w-5" />
+          {dict.postListing.videoUploadPrompt}
+          <span className="text-xs text-muted">{dict.postListing.videoUploadHint}</span>
+        </div>
+        <div className="flex justify-center">{recordButton}</div>
       </div>
     );
   }
