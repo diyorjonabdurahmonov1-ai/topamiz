@@ -69,7 +69,9 @@ cold start or an ephemeral filesystem.
   file in 2MB pieces (three in parallel, each retried on failure) so no request comes near Caddy's 20MB body limit, then
   polls while the server compresses it in the background. Upload sessions
   live in memory in the single PM2 process, so a restart mid-upload just
-  makes the poster pick the video again.
+  makes the poster pick the video again. When an upload fails on a phone,
+  the browser reports the details (error code, file type/size, user agent)
+  to the server log: `pm2 logs topamiz --lines 200 --nostream | grep video-upload-failure`.
 
 ### Another project shares this server — do not touch it
 

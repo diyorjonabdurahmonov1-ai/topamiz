@@ -232,6 +232,7 @@ const kk: Dictionary = {
     videoUploadFailedPrefix: "Бейне жүктелмеді",
     videoInvalidError: "файл мазмұны нақты бейнеге сәйкес келмейді",
     videoTooLongError: "бейне 2 минуттан аспауы керек",
+    videoTooLargeError: "бейне 300 МБ-тан аспауы керек",
     videoGenericError: "қате шықты",
     videoProcessing: "Бейне өңделуде...",
     videoNetworkError: "байланыс үзілді, қайта көріңіз",

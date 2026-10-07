@@ -232,6 +232,7 @@ const ru: Dictionary = {
     videoUploadFailedPrefix: "Видео не загружено",
     videoInvalidError: "содержимое файла не соответствует настоящему видео",
     videoTooLongError: "видео не должно превышать 2 минуты",
+    videoTooLargeError: "видео должно быть меньше 300 МБ",
     videoGenericError: "произошла ошибка",
     videoProcessing: "Видео обрабатывается...",
     videoNetworkError: "соединение прервалось, попробуйте ещё раз",

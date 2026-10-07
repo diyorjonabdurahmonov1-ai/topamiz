@@ -5,7 +5,8 @@ import { AlertCircle, Loader2, Video, X } from "lucide-react";
 import type { Dictionary } from "@/lib/i18n";
 
 const MAX_DURATION_SECONDS = 120;
-const ACCEPTED_TYPES = "video/mp4,video/quicktime,video/webm,video/x-matroska";
+const ACCEPTED_TYPES = "video/*";
+const MAX_RAW_SIZE = 300 * 1024 * 1024;
 const POLL_INTERVAL_MS = 2000;
 const MAX_POLLS = (10 * 60 * 1000) / POLL_INTERVAL_MS;
 const RETRY_DELAYS_MS = [1000, 2000, 4000, 8000, 15000, 30000];
@@ -108,7 +109,7 @@ export default function VideoUploader({
     onStatusChange?.(next);
   }
 
-  function readDuration(file: File): Promise<number> {
+  function readDuration(file: Blob): Promise<number> {
     return new Promise((resolve, reject) => {
       const video = document.createElement("video");
       video.preload = "metadata";
@@ -137,16 +138,38 @@ export default function VideoUploader({
   // Deliberately one status for the whole pipeline (duration check, ffmpeg
   // compression, R2 upload) — the poster doesn't need a play-by-play of what
   // the server is doing to their file, just whether it worked in the end.
-  async function handleFile(file: File | undefined) {
-    if (!file) return;
+  async function handleFile(picked: File | undefined) {
+    if (!picked) return;
     setError("");
     setErrorCode("");
-    // Set the preview immediately — the duration check and the error/done
-    // states that follow all render inside that preview box, so it has to
-    // exist before any of them can show up (otherwise a rejected file never
-    // gets to tell the poster why).
-    setPreviewUrl(URL.createObjectURL(file));
+    // An empty preview URL still opens the preview box, where the progress
+    // and error states render, before the real preview is ready.
+    setPreviewUrl("");
     updateStatus("checking");
+
+    if (picked.size > MAX_RAW_SIZE) {
+      updateStatus("error");
+      setError(`${dict.postListing.videoUploadFailedPrefix}: ${dict.postListing.videoTooLargeError}`);
+      return;
+    }
+
+    // Copy the video into memory first, before anything else touches it:
+    // Android gallery apps often grant the browser only short-lived access
+    // to a picked file, and it can lapse before the upload gets to it
+    // (NotReadableError). An in-memory copy can't lose that access.
+    let file: Blob;
+    try {
+      file = await copyToMemory(picked);
+    } catch (err) {
+      const code = err instanceof UploadError ? err.code : "read";
+      updateStatus("error");
+      setError(`${dict.postListing.videoUploadFailedPrefix}: ${dict.postListing.videoReadError}`);
+      setErrorCode(code);
+      reportFailure(picked, code);
+      return;
+    }
+    setPreviewUrl(URL.createObjectURL(file));
+
     try {
       // The browser can only report a duration for codecs it can itself
       // decode — a phone's HEVC/H.265 clip, or an unusual AI-generated
@@ -175,7 +198,7 @@ export default function VideoUploader({
       // the poster pick the video again.
       for (let round = 0; ; round++) {
         try {
-          const result = await uploadOnce(file, stale);
+          const result = await uploadOnce(file, videoType(picked), stale);
           if (!result) return;
           updateStatus("done");
           onChange?.(result);
@@ -188,20 +211,19 @@ export default function VideoUploader({
     } catch (err) {
       if (stale()) return;
       updateStatus("error");
-      if (err instanceof UploadError) {
-        setError(`${dict.postListing.videoUploadFailedPrefix}: ${err.message || dict.postListing.videoGenericError}`);
-        setErrorCode(err.code);
-      } else {
-        setError(`${dict.postListing.videoUploadFailedPrefix}: ${dict.postListing.videoGenericError}`);
-        setErrorCode(err instanceof Error ? err.name : "");
-      }
+      const code = err instanceof UploadError ? err.code : err instanceof Error ? err.name : "";
+      const message = err instanceof UploadError && err.message ? err.message : dict.postListing.videoGenericError;
+      setError(`${dict.postListing.videoUploadFailedPrefix}: ${message}`);
+      setErrorCode(code);
+      reportFailure(picked, code);
     } finally {
       await wakeLock?.release().catch(() => {});
     }
   }
 
   async function uploadOnce(
-    file: File,
+    file: Blob,
+    type: string,
     stale: () => boolean
   ): Promise<{ videoUrl: string; thumbnailUrl: string } | null> {
     setProgress(0);
@@ -209,7 +231,7 @@ export default function VideoUploader({
     const start = await withRetry(() =>
       requestJson("POST", "/api/upload-video", {
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ type: videoType(file), size: file.size }),
+        body: JSON.stringify({ type, size: file.size }),
       })
     );
     const base = `/api/upload-video/${start.uploadId as string}`;
@@ -264,6 +286,56 @@ export default function VideoUploader({
     throw new UploadError("", "timeout");
   }
 
+  // Tries each way the browser offers to read a file, since a phone that
+  // refuses one sometimes allows another; the error names of every failed
+  // attempt end up in the code shown to the poster.
+  async function copyToMemory(picked: File): Promise<Blob> {
+    const failures: string[] = [];
+    const attempts: [string, () => Promise<ArrayBuffer | Blob>][] = [
+      ["buffer", () => picked.arrayBuffer()],
+      ["stream", () => new Response(picked.stream()).blob()],
+      [
+        "reader",
+        () =>
+          new Promise<ArrayBuffer>((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result as ArrayBuffer);
+            reader.onerror = () => reject(reader.error);
+            reader.readAsArrayBuffer(picked);
+          }),
+      ],
+    ];
+    for (const [name, read] of attempts) {
+      try {
+        const data = await read();
+        const blob = data instanceof Blob ? data : new Blob([data]);
+        if (blob.size > 0) return blob;
+        failures.push(`${name}:empty`);
+      } catch (err) {
+        failures.push(`${name}:${err instanceof Error ? err.name : "error"}`);
+      }
+    }
+    throw new UploadError(dict.postListing.videoReadError, `read ${failures.join(" ")}`);
+  }
+
+  // Sends what went wrong to the server log, so a failure on a real phone
+  // can be diagnosed without needing the poster to describe it.
+  function reportFailure(picked: File, code: string) {
+    const ext = picked.name.split(".").pop()?.toLowerCase() ?? "";
+    fetch("/api/upload-video/report", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        code,
+        type: picked.type,
+        ext,
+        size: picked.size,
+        modifiedAgoSeconds: Math.round((Date.now() - picked.lastModified) / 1000),
+        userAgent: navigator.userAgent,
+      }),
+    }).catch(() => {});
+  }
+
   // Android often hands the browser a gallery or Google Photos video as a
   // stream that can only be read front-to-back (a cloud copy, or one the
   // system converts on the fly) — reading a slice from the middle of it
@@ -272,7 +344,7 @@ export default function VideoUploader({
   // file-backed Blob, which Android Chrome also refuses to upload
   // (ERR_UPLOAD_FILE_CHANGED). If streaming isn't possible at all, reading
   // the whole file in one go is the last resort.
-  async function* readSequentially(file: File, chunkSize: number): AsyncGenerator<Uint8Array<ArrayBuffer>> {
+  async function* readSequentially(file: Blob, chunkSize: number): AsyncGenerator<Uint8Array<ArrayBuffer>> {
     let buffer: Uint8Array<ArrayBuffer> = new Uint8Array(chunkSize);
     let filled = 0;
     let produced = false;
@@ -343,7 +415,7 @@ export default function VideoUploader({
     onChange?.(null);
   }
 
-  if (!previewUrl) {
+  if (previewUrl === null) {
     return (
       <div
         onClick={() => inputRef.current?.click()}
@@ -370,7 +442,7 @@ export default function VideoUploader({
 
   return (
     <div className="relative aspect-[9/16] max-w-[150px] overflow-hidden rounded-xl border border-border bg-bg-elevated">
-      <video src={previewUrl} className="h-full w-full object-cover" muted playsInline />
+      {previewUrl && <video src={previewUrl} className="h-full w-full object-cover" muted playsInline />}
       {(status === "checking" || status === "uploading") && (
         <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-black/60 text-center text-xs font-medium text-white">
           <Loader2 className="h-6 w-6 animate-spin" />

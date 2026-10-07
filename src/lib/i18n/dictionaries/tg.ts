@@ -232,6 +232,7 @@ const tg: Dictionary = {
     videoUploadFailedPrefix: "Видео бор нашуд",
     videoInvalidError: "мазмуни файл ба видеои воқеӣ мувофиқат намекунад",
     videoTooLongError: "видео набояд аз 2 дақиқа зиёд бошад",
+    videoTooLargeError: "видео бояд аз 300 МБ зиёд набошад",
     videoGenericError: "хато рух дод",
     videoProcessing: "Видео коркард мешавад...",
     videoNetworkError: "пайваст канда шуд, бори дигар кӯшиш кунед",

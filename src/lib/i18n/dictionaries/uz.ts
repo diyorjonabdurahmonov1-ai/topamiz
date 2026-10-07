@@ -234,6 +234,7 @@ const uz: Dictionary = {
     videoUploadFailedPrefix: "Video yuklanmadi",
     videoInvalidError: "fayl mazmuni haqiqiy videoga mos kelmadi",
     videoTooLongError: "video 2 daqiqadan oshmasligi kerak",
+    videoTooLargeError: "video hajmi 300MB dan oshmasligi kerak",
     videoGenericError: "xatolik yuz berdi",
     videoProcessing: "Video qayta ishlanmoqda...",
     videoNetworkError: "internet aloqasi uzildi, qayta urinib ko'ring",

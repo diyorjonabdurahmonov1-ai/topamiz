@@ -232,6 +232,7 @@ const ky: Dictionary = {
     videoUploadFailedPrefix: "Видео жүктөлбөдү",
     videoInvalidError: "файлдын мазмуну чыныгы видеого дал келбейт",
     videoTooLongError: "видео 2 мүнөттөн ашпашы керек",
+    videoTooLargeError: "видео 300 МБдан ашпашы керек",
     videoGenericError: "ката кетти",
     videoProcessing: "Видео иштетилүүдө...",
     videoNetworkError: "байланыш үзүлдү, кайра аракет кылыңыз",
