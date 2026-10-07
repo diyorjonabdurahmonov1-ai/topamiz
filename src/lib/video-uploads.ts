@@ -89,15 +89,18 @@ export function getUploadSession(id: string, userId: number): UploadSession | nu
 // Each chunk is written at its own offset rather than appended, so chunks
 // can arrive in any order (the client sends a few in parallel) and one the
 // phone re-sends after a dropped connection just overwrites itself.
-// "incomplete" means the body arrived short — the client should resend it.
+// `length` is what the client meant to send; a body that arrives shorter is
+// "incomplete" and the client resends it.
 export async function writeChunk(
   session: UploadSession,
   offset: number,
+  length: number,
   data: Buffer
 ): Promise<"ok" | "invalid" | "incomplete"> {
   if (session.status !== "receiving") return "invalid";
-  if (offset % CHUNK_SIZE !== 0 || offset >= session.size) return "invalid";
-  if (data.length !== Math.min(CHUNK_SIZE, session.size - offset)) return "incomplete";
+  if (offset % CHUNK_SIZE !== 0 || length <= 0 || length > CHUNK_SIZE) return "invalid";
+  if (offset + length > MAX_RAW_SIZE) return "invalid";
+  if (data.length !== length) return "incomplete";
 
   const handle = await open(path.join(session.dir, "input"), "r+");
   try {
@@ -112,10 +115,16 @@ export async function writeChunk(
   return "ok";
 }
 
-export async function finishUpload(session: UploadSession): Promise<string | null> {
+// The final size comes from the client at the end rather than from the
+// start: Android can hand the browser a converted copy of a gallery video
+// whose real length differs from the size it first reported.
+export async function finishUpload(session: UploadSession, size: number): Promise<string | null> {
   if (session.status !== "receiving") return null;
-  const { size } = await stat(path.join(session.dir, "input"));
-  if (session.received !== session.size || size !== session.size) return "Fayl to'liq yuklanmadi";
+  const onDisk = (await stat(path.join(session.dir, "input"))).size;
+  const expectedChunks = Math.ceil(size / CHUNK_SIZE);
+  if (size <= 0 || session.received !== size || onDisk !== size || session.chunks.size !== expectedChunks) {
+    return "Fayl to'liq yuklanmadi";
+  }
 
   session.status = "processing";
   // Compression can take a minute or more for a long phone clip — far
