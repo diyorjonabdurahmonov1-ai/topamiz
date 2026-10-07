@@ -233,6 +233,8 @@ const tg: Dictionary = {
     videoInvalidError: "мазмуни файл ба видеои воқеӣ мувофиқат намекунад",
     videoTooLongError: "видео набояд аз 2 дақиқа зиёд бошад",
     videoGenericError: "хато рух дод",
+    videoProcessing: "Видео коркард мешавад...",
+    videoNetworkError: "пайваст канда шуд, бори дигар кӯшиш кунед",
   },
 
   mysteryBoxForm: {
@@ -261,7 +263,7 @@ const tg: Dictionary = {
     expiryPastError: "Мӯҳлати амал бояд дар оянда бошад",
     expiryTooFarError: "Мӯҳлати амал хеле дур интихоб шудааст",
     startLabel: "Вақти кушодашавӣ (ихтиёрӣ)",
-    startHint: "Агар таъин шавад, видео то ин вақт пинҳон мемонад — қисми боқимондаи эълон дарҳол намоён аст.",
+    startHint: "Агар таъин шавад, видео, суратҳо ва макон то ин вақт пинҳон мемонанд.",
     startAfterExpiryError: "Вақти кушодашавӣ бояд пеш аз мӯҳлати амал бошад",
     requiredFieldsError: "Лутфан, ҳамаи майдонҳои бо * қайдшударо пур кунед.",
     genericError: "Хатогӣ рӯй дод",

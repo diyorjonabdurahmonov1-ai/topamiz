@@ -235,6 +235,8 @@ const uz: Dictionary = {
     videoInvalidError: "fayl mazmuni haqiqiy videoga mos kelmadi",
     videoTooLongError: "video 2 daqiqadan oshmasligi kerak",
     videoGenericError: "xatolik yuz berdi",
+    videoProcessing: "Video qayta ishlanmoqda...",
+    videoNetworkError: "internet aloqasi uzildi, qayta urinib ko'ring",
   },
 
   mysteryBoxForm: {
@@ -264,7 +266,7 @@ const uz: Dictionary = {
     expiryPastError: "Amal qilish muddati kelajakda bo'lishi kerak",
     expiryTooFarError: "Amal qilish muddati juda uzoq tanlangan",
     startLabel: "Boshlanish vaqti (ixtiyoriy)",
-    startHint: "Belgilansa, video shu vaqtgacha berkitilgan turadi — e'lonning qolgan qismi darhol ko'rinadi.",
+    startHint: "Belgilansa, video, rasmlar va joylashuv shu vaqtgacha berkitilgan turadi.",
     startAfterExpiryError: "Boshlanish vaqti amal qilish muddatidan oldin bo'lishi kerak",
     requiredFieldsError: "Iltimos, * bilan belgilangan barcha maydonlarni to'ldiring.",
     genericError: "Xatolik yuz berdi",
