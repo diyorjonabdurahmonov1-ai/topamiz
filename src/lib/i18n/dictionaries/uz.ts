@@ -237,6 +237,8 @@ const uz: Dictionary = {
     videoGenericError: "xatolik yuz berdi",
     videoProcessing: "Video qayta ishlanmoqda...",
     videoNetworkError: "internet aloqasi uzildi, qayta urinib ko'ring",
+    videoReadError: "videoni telefondan o'qib bo'lmadi — uni galereyadan qaytadan tanlang",
+    videoServerError: "server javob bermadi, birozdan so'ng qayta urinib ko'ring",
   },
 
   mysteryBoxForm: {

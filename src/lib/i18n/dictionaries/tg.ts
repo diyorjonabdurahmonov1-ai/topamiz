@@ -235,6 +235,8 @@ const tg: Dictionary = {
     videoGenericError: "хато рух дод",
     videoProcessing: "Видео коркард мешавад...",
     videoNetworkError: "пайваст канда шуд, бори дигар кӯшиш кунед",
+    videoReadError: "видеоро аз телефон хондан нашуд — онро аз галерея бори дигар интихоб кунед",
+    videoServerError: "сервер ҷавоб надод, каме баъд бори дигар кӯшиш кунед",
   },
 
   mysteryBoxForm: {

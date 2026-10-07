@@ -235,6 +235,8 @@ const ru: Dictionary = {
     videoGenericError: "произошла ошибка",
     videoProcessing: "Видео обрабатывается...",
     videoNetworkError: "соединение прервалось, попробуйте ещё раз",
+    videoReadError: "не удалось прочитать видео с телефона — выберите его из галереи ещё раз",
+    videoServerError: "сервер не ответил, попробуйте чуть позже",
   },
 
   mysteryBoxForm: {

@@ -235,6 +235,8 @@ const ky: Dictionary = {
     videoGenericError: "ката кетти",
     videoProcessing: "Видео иштетилүүдө...",
     videoNetworkError: "байланыш үзүлдү, кайра аракет кылыңыз",
+    videoReadError: "видеону телефондон окуу мүмкүн болбоду — аны галереядан кайра тандаңыз",
+    videoServerError: "сервер жооп берген жок, бир аздан кийин кайра аракет кылыңыз",
   },
 
   mysteryBoxForm: {

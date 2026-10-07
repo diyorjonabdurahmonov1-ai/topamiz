@@ -25,9 +25,15 @@ export async function PUT(request: Request, ctx: RouteContext<"/api/upload-video
     return NextResponse.json({ error: "Bo'lak tartibi buzildi" }, { status: 400 });
   }
 
-  const data = Buffer.from(await request.arrayBuffer());
-  const problem = await writeChunk(session, offset, data);
-  if (problem) return NextResponse.json({ error: problem }, { status: 400 });
+  let data: Buffer;
+  try {
+    data = Buffer.from(await request.arrayBuffer());
+  } catch {
+    return NextResponse.json({ error: "Bo'lak to'liq yetib kelmadi" }, { status: 409 });
+  }
+  const result = await writeChunk(session, offset, data);
+  if (result === "invalid") return NextResponse.json({ error: "Bo'lak tartibi buzildi" }, { status: 400 });
+  if (result === "incomplete") return NextResponse.json({ error: "Bo'lak to'liq yetib kelmadi" }, { status: 409 });
   return NextResponse.json({ received: session.received });
 }
 

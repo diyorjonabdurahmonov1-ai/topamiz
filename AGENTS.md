@@ -66,7 +66,7 @@ cold start or an ephemeral filesystem.
   or these vars set, video upload fails with a clear error but the rest of
   the site is unaffected.
   Uploads are chunked (`src/lib/video-uploads.ts`): the browser sends the
-  file in 5MB pieces so no request comes near Caddy's 20MB body limit, then
+  file in 2MB pieces (three in parallel, each retried on failure) so no request comes near Caddy's 20MB body limit, then
   polls while the server compresses it in the background. Upload sessions
   live in memory in the single PM2 process, so a restart mid-upload just
   makes the poster pick the video again.

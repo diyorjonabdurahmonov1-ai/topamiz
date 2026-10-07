@@ -235,6 +235,8 @@ const en: Dictionary = {
     videoGenericError: "something went wrong",
     videoProcessing: "Processing video...",
     videoNetworkError: "connection lost, please try again",
+    videoReadError: "couldn't read the video from your phone — please pick it again from your gallery",
+    videoServerError: "the server didn't respond, please try again shortly",
   },
 
   mysteryBoxForm: {

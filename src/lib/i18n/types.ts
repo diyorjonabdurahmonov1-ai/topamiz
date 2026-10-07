@@ -214,6 +214,8 @@ export interface Dictionary {
     videoGenericError: string;
     videoProcessing: string;
     videoNetworkError: string;
+    videoReadError: string;
+    videoServerError: string;
   };
 
   mysteryBoxForm: {

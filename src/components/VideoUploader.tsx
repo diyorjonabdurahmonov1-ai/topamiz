@@ -8,7 +8,8 @@ const MAX_DURATION_SECONDS = 120;
 const ACCEPTED_TYPES = "video/mp4,video/quicktime,video/webm,video/x-matroska";
 const POLL_INTERVAL_MS = 2000;
 const MAX_POLLS = (10 * 60 * 1000) / POLL_INTERVAL_MS;
-const RETRY_DELAYS_MS = [1000, 2000, 4000, 8000];
+const RETRY_DELAYS_MS = [1000, 2000, 4000, 8000, 15000, 30000];
+const PARALLEL_CHUNKS = 3;
 const DURATION_CHECK_TIMEOUT_MS = 5000;
 const EXTENSION_TYPES: Record<string, string> = {
   mp4: "video/mp4",
@@ -20,10 +21,14 @@ const EXTENSION_TYPES: Record<string, string> = {
 
 export type VideoUploadStatus = "idle" | "checking" | "uploading" | "done" | "error";
 
+// `code` is shown under the message (e.g. "PUT 502", "PUT net", "read") so
+// a screenshot of a failure says exactly which step broke and how.
 class UploadError extends Error {
   constructor(
     message: string,
-    readonly retryable = false
+    readonly code: string,
+    readonly retryable = false,
+    readonly status = 0
   ) {
     super(message);
   }
@@ -33,9 +38,27 @@ function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-// Mobile connections drop for a second or two all the time; a single lost
-// chunk shouldn't sink a whole video, so transient failures get a few
-// spaced-out retries before giving up.
+// A phone that's offline, or has the browser in the background (screen
+// locked, switched apps), can't send anything — retrying then only burns
+// attempts, so wait for it to come back first.
+function waitUntilReachable(): Promise<void> {
+  return new Promise((resolve) => {
+    const check = () => {
+      if (navigator.onLine && document.visibilityState === "visible") {
+        window.removeEventListener("online", check);
+        document.removeEventListener("visibilitychange", check);
+        resolve();
+      }
+    };
+    window.addEventListener("online", check);
+    document.addEventListener("visibilitychange", check);
+    check();
+  });
+}
+
+// Mobile connections drop for a few seconds all the time; a lost chunk
+// shouldn't sink a whole video, so transient failures get spaced-out
+// retries (about a minute in total, not counting time spent offline).
 async function withRetry<T>(fn: () => Promise<T>): Promise<T> {
   for (let i = 0; ; i++) {
     try {
@@ -43,7 +66,16 @@ async function withRetry<T>(fn: () => Promise<T>): Promise<T> {
     } catch (err) {
       if (!(err instanceof UploadError) || !err.retryable || i >= RETRY_DELAYS_MS.length) throw err;
       await sleep(RETRY_DELAYS_MS[i]);
+      await waitUntilReachable();
     }
+  }
+}
+
+async function keepScreenAwake(): Promise<{ release: () => Promise<void> } | null> {
+  try {
+    return (await navigator.wakeLock?.request("screen")) ?? null;
+  } catch {
+    return null;
   }
 }
 
@@ -63,6 +95,7 @@ export default function VideoUploader({
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [status, setStatus] = useState<VideoUploadStatus>("idle");
   const [error, setError] = useState("");
+  const [errorCode, setErrorCode] = useState("");
   const [progress, setProgress] = useState(0);
   const [processing, setProcessing] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -107,6 +140,7 @@ export default function VideoUploader({
   async function handleFile(file: File | undefined) {
     if (!file) return;
     setError("");
+    setErrorCode("");
     // Set the preview immediately — the duration check and the error/done
     // states that follow all render inside that preview box, so it has to
     // exist before any of them can show up (otherwise a rejected file never
@@ -134,68 +168,128 @@ export default function VideoUploader({
     const attempt = ++attemptRef.current;
     const stale = () => attempt !== attemptRef.current;
     updateStatus("uploading");
-    setProgress(0);
-    setProcessing(false);
+    const wakeLock = await keepScreenAwake();
     try {
-      const start = await requestJson("/api/upload-video", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ type: videoType(file), size: file.size }),
-      });
-      const uploadId = start.uploadId as string;
-      const chunkSize = start.chunkSize as number;
-      const base = `/api/upload-video/${uploadId}`;
-
-      for (let offset = 0; offset < file.size; offset += chunkSize) {
-        if (stale()) return;
-        await withRetry(() =>
-          requestJson(`${base}?offset=${offset}`, {
-            method: "PUT",
-            headers: { "Content-Type": "application/octet-stream" },
-            body: file.slice(offset, offset + chunkSize),
-          })
-        );
-        setProgress(Math.min(100, Math.round(((offset + chunkSize) / file.size) * 100)));
-      }
-
-      if (stale()) return;
-      await withRetry(() => requestJson(base, { method: "POST" }));
-      setProcessing(true);
-
-      for (let poll = 0; poll < MAX_POLLS; poll++) {
-        await sleep(POLL_INTERVAL_MS);
-        if (stale()) return;
-        const result = await withRetry(() => requestJson(base));
-        if (result.status === "done") {
+      // A 404 mid-upload means the server restarted (e.g. a deploy) and
+      // forgot the session — start over once on its own rather than making
+      // the poster pick the video again.
+      for (let round = 0; ; round++) {
+        try {
+          const result = await uploadOnce(file, stale);
+          if (!result) return;
           updateStatus("done");
-          onChange?.({ videoUrl: result.videoUrl as string, thumbnailUrl: result.thumbnailUrl as string });
+          onChange?.(result);
           return;
+        } catch (err) {
+          if (round === 0 && err instanceof UploadError && err.status === 404) continue;
+          throw err;
         }
-        if (result.status === "error") throw new UploadError((result.error as string) ?? "");
       }
-      throw new UploadError("");
     } catch (err) {
       if (stale()) return;
       updateStatus("error");
-      const message = err instanceof UploadError && err.message ? err.message : dict.postListing.videoGenericError;
-      setError(`${dict.postListing.videoUploadFailedPrefix}: ${message}`);
+      if (err instanceof UploadError) {
+        setError(`${dict.postListing.videoUploadFailedPrefix}: ${err.message || dict.postListing.videoGenericError}`);
+        setErrorCode(err.code);
+      } else {
+        setError(`${dict.postListing.videoUploadFailedPrefix}: ${dict.postListing.videoGenericError}`);
+        setErrorCode(err instanceof Error ? err.name : "");
+      }
+    } finally {
+      await wakeLock?.release().catch(() => {});
+    }
+  }
+
+  async function uploadOnce(
+    file: File,
+    stale: () => boolean
+  ): Promise<{ videoUrl: string; thumbnailUrl: string } | null> {
+    setProgress(0);
+    setProcessing(false);
+    const start = await withRetry(() =>
+      requestJson("POST", "/api/upload-video", {
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ type: videoType(file), size: file.size }),
+      })
+    );
+    const base = `/api/upload-video/${start.uploadId as string}`;
+    const chunkSize = start.chunkSize as number;
+
+    const offsets: number[] = [];
+    for (let offset = 0; offset < file.size; offset += chunkSize) offsets.push(offset);
+    let sent = 0;
+    let next = 0;
+    let failed = false;
+    async function worker() {
+      try {
+        while (next < offsets.length && !failed) {
+          if (stale()) return;
+          const offset = offsets[next++];
+          const body = await readChunk(file, offset, chunkSize);
+          await withRetry(() =>
+            requestJson("PUT", `${base}?offset=${offset}`, {
+              headers: { "Content-Type": "application/octet-stream" },
+              body,
+            })
+          );
+          sent += body.byteLength;
+          setProgress(Math.min(100, Math.round((sent / file.size) * 100)));
+        }
+      } catch (err) {
+        failed = true;
+        throw err;
+      }
+    }
+    await Promise.all(Array.from({ length: PARALLEL_CHUNKS }, worker));
+
+    if (stale()) return null;
+    await withRetry(() => requestJson("POST", base));
+    setProcessing(true);
+
+    for (let poll = 0; poll < MAX_POLLS; poll++) {
+      await sleep(POLL_INTERVAL_MS);
+      if (stale()) return null;
+      const result = await withRetry(() => requestJson("GET", base));
+      if (result.status === "done") {
+        return { videoUrl: result.videoUrl as string, thumbnailUrl: result.thumbnailUrl as string };
+      }
+      if (result.status === "error") throw new UploadError((result.error as string) ?? "", "processing");
+    }
+    throw new UploadError("", "timeout");
+  }
+
+  // Reads each chunk into memory and sends the bytes, never the file-backed
+  // Blob itself: Android Chrome refuses to upload a slice of a gallery or
+  // Google Photos video directly (ERR_UPLOAD_FILE_CHANGED), failing every
+  // request instantly even on a perfect connection.
+  async function readChunk(file: File, offset: number, chunkSize: number): Promise<ArrayBuffer> {
+    try {
+      return await file.slice(offset, offset + chunkSize).arrayBuffer();
+    } catch {
+      throw new UploadError(dict.postListing.videoReadError, "read");
     }
   }
 
   // Reads a JSON reply without ever choking on an empty or non-JSON body
-  // (a proxy rejecting the request, a gateway timeout page) — those turn
-  // into a plain retryable error instead of "Unexpected end of JSON input".
-  async function requestJson(url: string, init?: RequestInit): Promise<Record<string, unknown>> {
+  // (a proxy rejecting the request, a gateway error page) — those become a
+  // retryable error carrying the HTTP status instead.
+  async function requestJson(
+    method: string,
+    url: string,
+    init?: RequestInit
+  ): Promise<Record<string, unknown>> {
     let res: Response;
     try {
-      res = await fetch(url, init);
+      res = await fetch(url, { ...init, method });
     } catch {
-      throw new UploadError(dict.postListing.videoNetworkError, true);
+      throw new UploadError(dict.postListing.videoNetworkError, `${method} net`, true);
     }
     const data = (await res.json().catch(() => null)) as Record<string, unknown> | null;
     if (res.ok && data) return data;
-    if (typeof data?.error === "string") throw new UploadError(data.error, res.status === 429);
-    throw new UploadError(dict.postListing.videoNetworkError, res.status >= 500 || res.status === 408);
+    const code = `${method} ${res.status}`;
+    const retryable = res.status >= 500 || res.status === 408 || res.status === 409 || res.status === 429;
+    if (typeof data?.error === "string") throw new UploadError(data.error, code, retryable, res.status);
+    throw new UploadError(dict.postListing.videoServerError, code, retryable, res.status);
   }
 
   function removeVideo() {
@@ -204,6 +298,7 @@ export default function VideoUploader({
     setPreviewUrl(null);
     updateStatus("idle");
     setError("");
+    setErrorCode("");
     onChange?.(null);
   }
 
@@ -253,6 +348,7 @@ export default function VideoUploader({
         <div className="absolute inset-0 flex flex-col items-center justify-center gap-1.5 bg-black/70 p-3 text-center">
           <AlertCircle className="h-5 w-5 text-danger" />
           <span className="text-xs text-white">{error}</span>
+          {errorCode && <span className="text-[10px] text-white/50">{errorCode}</span>}
         </div>
       )}
       <button
