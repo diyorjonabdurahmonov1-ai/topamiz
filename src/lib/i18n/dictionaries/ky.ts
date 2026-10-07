@@ -139,7 +139,9 @@ const ky: Dictionary = {
     claimantConfirming: "Ырасталууда...",
     resolvedByLabel: "Тапкан",
     videoLockedTitle: "Видео азырынча ачылган жок",
-    videoLockedBody: "Бул Сырдуу кутучанын видеосу белгиленген убакытта ачылат. Калган бардыгы азыртан көрүнөт.",
+    videoLockedBody: "Бул Сырдуу кутучанын видеосу белгиленген убакытта ачылат.",
+    contentLockedTitle: "Азырынча ачылган жок",
+    contentLockedBody: "Бул Сырдуу кутучанын чоо-жайы белгиленген убакытта ачылат.",
   },
 
   countdown: {

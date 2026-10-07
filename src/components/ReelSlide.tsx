@@ -94,44 +94,48 @@ export default function ReelSlide({
     else video.pause();
   }
 
+  const lockBackdropUrl = isVideo ? listing.videoThumbnailUrl : (listing.photoUrls[0] ?? null);
+
   return (
     <div className="relative h-dvh w-full snap-start overflow-hidden bg-black [scroll-snap-stop:always]">
-      {isVideo ? (
-        locked ? (
-          <div className="relative h-full w-full">
-            {listing.videoThumbnailUrl && (
-              // eslint-disable-next-line @next/next/no-img-element -- hosted on Cloudflare R2, not a build-time asset
-              <img
-                src={listing.videoThumbnailUrl}
-                alt=""
-                className="h-full w-full scale-110 object-cover opacity-50 blur-lg"
-              />
-            )}
-            <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-black/50 px-6 text-center">
-              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-accent-gold to-brand-via text-white">
-                <Lock className="h-6 w-6" />
-              </div>
-              <div>
-                <p className="text-sm font-bold text-white">{dict.listingDetail.videoLockedTitle}</p>
-                <p className="mt-1 text-xs text-white/70">{dict.listingDetail.videoLockedBody}</p>
-              </div>
-              {listing.startsAt && (
-                <CountdownTimer expiresAt={listing.startsAt} dict={dict} size="large" mode="starts" />
-              )}
+      {locked ? (
+        <div className="relative h-full w-full">
+          {lockBackdropUrl && (
+            // eslint-disable-next-line @next/next/no-img-element -- hosted on Cloudflare R2 or /api/uploads, not a build-time asset
+            <img
+              src={lockBackdropUrl}
+              alt=""
+              className="h-full w-full scale-110 object-cover opacity-50 blur-lg"
+            />
+          )}
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-black/50 px-6 text-center">
+            <div className="flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-accent-gold to-brand-via text-white">
+              <Lock className="h-6 w-6" />
             </div>
+            <div>
+              <p className="text-sm font-bold text-white">
+                {isVideo ? dict.listingDetail.videoLockedTitle : dict.listingDetail.contentLockedTitle}
+              </p>
+              <p className="mt-1 text-xs text-white/70">
+                {isVideo ? dict.listingDetail.videoLockedBody : dict.listingDetail.contentLockedBody}
+              </p>
+            </div>
+            {listing.startsAt && (
+              <CountdownTimer expiresAt={listing.startsAt} dict={dict} size="large" mode="starts" />
+            )}
           </div>
-        ) : (
-          <video
-            ref={videoRef}
-            src={listing.videoUrl ?? undefined}
-            poster={listing.videoThumbnailUrl ?? undefined}
-            loop
-            muted={muted}
-            playsInline
-            onClick={togglePlay}
-            className="h-full w-full object-contain"
-          />
-        )
+        </div>
+      ) : isVideo ? (
+        <video
+          ref={videoRef}
+          src={listing.videoUrl ?? undefined}
+          poster={listing.videoThumbnailUrl ?? undefined}
+          loop
+          muted={muted}
+          playsInline
+          onClick={togglePlay}
+          className="h-full w-full object-contain"
+        />
       ) : (
         <PhotoMedia photoUrls={listing.photoUrls} />
       )}

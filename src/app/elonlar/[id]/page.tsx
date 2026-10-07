@@ -24,6 +24,9 @@ import LikeButton from "@/components/LikeButton";
 import ShareMenu from "@/components/ShareMenu";
 import ListingCommentButton from "@/components/ListingCommentButton";
 import MysteryBoxVideo from "@/components/MysteryBoxVideo";
+import MysteryBoxGallery from "@/components/MysteryBoxGallery";
+import MysteryBoxLocationGate from "@/components/MysteryBoxLocationGate";
+import MysteryBoxStartNotice from "@/components/MysteryBoxStartNotice";
 
 export async function generateMetadata(props: PageProps<"/elonlar/[id]">): Promise<Metadata> {
   const { id } = await props.params;
@@ -143,15 +146,30 @@ export default async function ListingDetailPage(props: PageProps<"/elonlar/[id]"
             </div>
           )}
 
+          {listing.isMysteryBox && listing.startsAt && (
+            <MysteryBoxStartNotice startsAt={listing.startsAt} dict={dict} />
+          )}
+
           {listing.city && (
             <div className="mt-3">
-              <ListingLocationMap
-                lat={listing.lat}
-                lng={listing.lng}
-                city={listing.city}
-                district={listing.district}
-                dict={dict}
-              />
+              {listing.isMysteryBox && listing.startsAt ? (
+                <MysteryBoxLocationGate
+                  startsAt={listing.startsAt}
+                  lat={listing.lat}
+                  lng={listing.lng}
+                  city={listing.city}
+                  district={listing.district}
+                  dict={dict}
+                />
+              ) : (
+                <ListingLocationMap
+                  lat={listing.lat}
+                  lng={listing.lng}
+                  city={listing.city}
+                  district={listing.district}
+                  dict={dict}
+                />
+              )}
             </div>
           )}
 
@@ -180,16 +198,27 @@ export default async function ListingDetailPage(props: PageProps<"/elonlar/[id]"
               when there are no photos — only worth showing that placeholder
               when there's no video either; a video-only listing already has
               its own visual above and doesn't need an empty photo slot too. */}
-          {(listing.photoUrls.length > 0 || !listing.videoUrl) && (
-            <ListingGallery
-              photoUrls={listing.photoUrls}
-              title={listing.title}
-              colorFrom={listing.colorFrom}
-              colorTo={listing.colorTo}
-              icon={<Icon className="h-10 w-10" strokeWidth={2} />}
-              dict={dict}
-            />
-          )}
+          {(listing.photoUrls.length > 0 || !listing.videoUrl) &&
+            (listing.isMysteryBox && listing.startsAt ? (
+              <MysteryBoxGallery
+                startsAt={listing.startsAt}
+                photoUrls={listing.photoUrls}
+                title={listing.title}
+                colorFrom={listing.colorFrom}
+                colorTo={listing.colorTo}
+                icon={<Icon className="h-10 w-10" strokeWidth={2} />}
+                dict={dict}
+              />
+            ) : (
+              <ListingGallery
+                photoUrls={listing.photoUrls}
+                title={listing.title}
+                colorFrom={listing.colorFrom}
+                colorTo={listing.colorTo}
+                icon={<Icon className="h-10 w-10" strokeWidth={2} />}
+                dict={dict}
+              />
+            ))}
 
           <div className="mt-3 flex items-center gap-2">
             <LikeButton

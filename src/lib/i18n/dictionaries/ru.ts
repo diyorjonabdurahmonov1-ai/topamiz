@@ -139,7 +139,9 @@ const ru: Dictionary = {
     claimantConfirming: "Подтверждение...",
     resolvedByLabel: "Нашёл",
     videoLockedTitle: "Видео пока не открыто",
-    videoLockedBody: "Видео этой тайной коробки откроется в указанное время. Всё остальное уже видно.",
+    videoLockedBody: "Видео этой тайной коробки откроется в указанное время.",
+    contentLockedTitle: "Ещё не открыто",
+    contentLockedBody: "Подробности этой тайной коробки откроются в указанное время.",
   },
 
   countdown: {
