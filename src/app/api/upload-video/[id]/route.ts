@@ -20,8 +20,10 @@ export async function PUT(request: Request, ctx: RouteContext<"/api/upload-video
   const { session, error } = await sessionFor(ctx);
   if (error) return error;
 
-  const offset = Number(new URL(request.url).searchParams.get("offset"));
-  if (!Number.isInteger(offset) || offset < 0) {
+  const params = new URL(request.url).searchParams;
+  const offset = Number(params.get("offset"));
+  const length = Number(params.get("length"));
+  if (!Number.isInteger(offset) || offset < 0 || !Number.isInteger(length)) {
     return NextResponse.json({ error: "Bo'lak tartibi buzildi" }, { status: 400 });
   }
 
@@ -31,18 +33,20 @@ export async function PUT(request: Request, ctx: RouteContext<"/api/upload-video
   } catch {
     return NextResponse.json({ error: "Bo'lak to'liq yetib kelmadi" }, { status: 409 });
   }
-  const result = await writeChunk(session, offset, data);
+  const result = await writeChunk(session, offset, length, data);
   if (result === "invalid") return NextResponse.json({ error: "Bo'lak tartibi buzildi" }, { status: 400 });
   if (result === "incomplete") return NextResponse.json({ error: "Bo'lak to'liq yetib kelmadi" }, { status: 409 });
   return NextResponse.json({ received: session.received });
 }
 
 // All chunks are in — kick off compression in the background.
-export async function POST(_request: Request, ctx: RouteContext<"/api/upload-video/[id]">) {
+export async function POST(request: Request, ctx: RouteContext<"/api/upload-video/[id]">) {
   const { session, error } = await sessionFor(ctx);
   if (error) return error;
 
-  const problem = await finishUpload(session);
+  const body = await request.json().catch(() => null);
+  const size = typeof body?.size === "number" && Number.isInteger(body.size) ? body.size : 0;
+  const problem = await finishUpload(session, size);
   if (problem) return NextResponse.json({ error: problem }, { status: 400 });
   return NextResponse.json({ status: session.status }, { status: 202 });
 }

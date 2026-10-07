@@ -215,35 +215,41 @@ export default function VideoUploader({
     const base = `/api/upload-video/${start.uploadId as string}`;
     const chunkSize = start.chunkSize as number;
 
-    const offsets: number[] = [];
-    for (let offset = 0; offset < file.size; offset += chunkSize) offsets.push(offset);
+    // Read strictly front-to-back and keep a few chunks in flight at once.
+    let offset = 0;
     let sent = 0;
-    let next = 0;
-    let failed = false;
-    async function worker() {
-      try {
-        while (next < offsets.length && !failed) {
-          if (stale()) return;
-          const offset = offsets[next++];
-          const body = await readChunk(file, offset, chunkSize);
-          await withRetry(() =>
-            requestJson("PUT", `${base}?offset=${offset}`, {
-              headers: { "Content-Type": "application/octet-stream" },
-              body,
-            })
-          );
-          sent += body.byteLength;
-          setProgress(Math.min(100, Math.round((sent / file.size) * 100)));
-        }
-      } catch (err) {
-        failed = true;
-        throw err;
-      }
+    const inFlight = new Set<Promise<void>>();
+    for await (const piece of readSequentially(file, chunkSize)) {
+      if (stale()) return null;
+      const at = offset;
+      offset += piece.byteLength;
+      const upload = withRetry(() =>
+        requestJson("PUT", `${base}?offset=${at}&length=${piece.byteLength}`, {
+          headers: { "Content-Type": "application/octet-stream" },
+          body: piece,
+        })
+      ).then(() => {
+        sent += piece.byteLength;
+        setProgress(Math.min(99, Math.round((sent / Math.max(file.size, offset)) * 100)));
+      });
+      inFlight.add(upload);
+      upload.then(
+        () => inFlight.delete(upload),
+        () => inFlight.delete(upload)
+      );
+      if (inFlight.size >= PARALLEL_CHUNKS) await Promise.race(inFlight);
     }
-    await Promise.all(Array.from({ length: PARALLEL_CHUNKS }, worker));
+    await Promise.all(inFlight);
+    if (offset === 0) throw new UploadError(dict.postListing.videoReadError, "read empty");
 
     if (stale()) return null;
-    await withRetry(() => requestJson("POST", base));
+    await withRetry(() =>
+      requestJson("POST", base, {
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ size: offset }),
+      })
+    );
+    setProgress(100);
     setProcessing(true);
 
     for (let poll = 0; poll < MAX_POLLS; poll++) {
@@ -258,16 +264,51 @@ export default function VideoUploader({
     throw new UploadError("", "timeout");
   }
 
-  // Reads each chunk into memory and sends the bytes, never the file-backed
-  // Blob itself: Android Chrome refuses to upload a slice of a gallery or
-  // Google Photos video directly (ERR_UPLOAD_FILE_CHANGED), failing every
-  // request instantly even on a perfect connection.
-  async function readChunk(file: File, offset: number, chunkSize: number): Promise<ArrayBuffer> {
+  // Android often hands the browser a gallery or Google Photos video as a
+  // stream that can only be read front-to-back (a cloud copy, or one the
+  // system converts on the fly) — reading a slice from the middle of it
+  // fails outright. So the file is read once, in order, and cut into
+  // chunks as it goes; each chunk is then sent as plain bytes, never as a
+  // file-backed Blob, which Android Chrome also refuses to upload
+  // (ERR_UPLOAD_FILE_CHANGED). If streaming isn't possible at all, reading
+  // the whole file in one go is the last resort.
+  async function* readSequentially(file: File, chunkSize: number): AsyncGenerator<Uint8Array<ArrayBuffer>> {
+    let buffer: Uint8Array<ArrayBuffer> = new Uint8Array(chunkSize);
+    let filled = 0;
+    let produced = false;
     try {
-      return await file.slice(offset, offset + chunkSize).arrayBuffer();
+      const reader = file.stream().getReader();
+      for (;;) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        let pos = 0;
+        while (pos < value.length) {
+          const take = Math.min(chunkSize - filled, value.length - pos);
+          buffer.set(value.subarray(pos, pos + take), filled);
+          filled += take;
+          pos += take;
+          if (filled === chunkSize) {
+            produced = true;
+            yield buffer;
+            buffer = new Uint8Array(chunkSize);
+            filled = 0;
+          }
+        }
+      }
     } catch {
-      throw new UploadError(dict.postListing.videoReadError, "read");
+      if (produced) throw new UploadError(dict.postListing.videoReadError, "read stream");
+      let whole: ArrayBuffer;
+      try {
+        whole = await file.arrayBuffer();
+      } catch {
+        throw new UploadError(dict.postListing.videoReadError, "read full");
+      }
+      for (let at = 0; at < whole.byteLength; at += chunkSize) {
+        yield new Uint8Array(whole.slice(at, at + chunkSize));
+      }
+      return;
     }
+    if (filled > 0) yield buffer.slice(0, filled);
   }
 
   // Reads a JSON reply without ever choking on an empty or non-JSON body
