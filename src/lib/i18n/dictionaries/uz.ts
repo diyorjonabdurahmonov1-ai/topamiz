@@ -140,7 +140,9 @@ const uz: Dictionary = {
     claimantConfirming: "Tasdiqlanmoqda...",
     resolvedByLabel: "Topib bergan",
     videoLockedTitle: "Video hali ochilmagan",
-    videoLockedBody: "Bu Sirli qutining videosi belgilangan vaqtda ochiladi. Boshqa barcha ma'lumotlar allaqachon ko'rinadi.",
+    videoLockedBody: "Bu Sirli qutining videosi belgilangan vaqtda ochiladi.",
+    contentLockedTitle: "Hali ochilmagan",
+    contentLockedBody: "Bu Sirli qutining tafsilotlari belgilangan vaqtda ochiladi.",
   },
 
   countdown: {

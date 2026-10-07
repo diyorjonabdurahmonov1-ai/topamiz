@@ -120,6 +120,8 @@ export interface Dictionary {
     resolvedByLabel: string;
     videoLockedTitle: string;
     videoLockedBody: string;
+    contentLockedTitle: string;
+    contentLockedBody: string;
   };
 
   countdown: {

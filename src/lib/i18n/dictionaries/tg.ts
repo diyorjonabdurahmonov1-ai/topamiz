@@ -139,7 +139,9 @@ const tg: Dictionary = {
     claimantConfirming: "Тасдиқ карда истодааст...",
     resolvedByLabel: "Ёфтааст",
     videoLockedTitle: "Видео ҳанӯз кушода нашудааст",
-    videoLockedBody: "Видеои ин қуттии асроромез дар вақти таъиншуда кушода мешавад. Боқимонда ҳоло намоён аст.",
+    videoLockedBody: "Видеои ин қуттии асроромез дар вақти таъиншуда кушода мешавад.",
+    contentLockedTitle: "Ҳанӯз кушода нашудааст",
+    contentLockedBody: "Тафсилоти ин қуттии асроромез дар вақти таъиншуда кушода мешавад.",
   },
 
   countdown: {

@@ -139,7 +139,9 @@ const kk: Dictionary = {
     claimantConfirming: "Расталуда...",
     resolvedByLabel: "Тапқан",
     videoLockedTitle: "Бейне әлі ашылмаған",
-    videoLockedBody: "Бұл Сырлы қораптың бейнесі белгіленген уақытта ашылады. Қалғаны бәрі қазірдің өзінде көрінеді.",
+    videoLockedBody: "Бұл Сырлы қораптың бейнесі белгіленген уақытта ашылады.",
+    contentLockedTitle: "Әлі ашылмаған",
+    contentLockedBody: "Бұл Сырлы қораптың мәліметтері белгіленген уақытта ашылады.",
   },
 
   countdown: {

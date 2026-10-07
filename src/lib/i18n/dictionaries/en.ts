@@ -139,7 +139,9 @@ const en: Dictionary = {
     claimantConfirming: "Confirming...",
     resolvedByLabel: "Found by",
     videoLockedTitle: "Video not unlocked yet",
-    videoLockedBody: "This mystery box's video unlocks at the set time. Everything else is already visible.",
+    videoLockedBody: "This mystery box's video unlocks at the set time.",
+    contentLockedTitle: "Not unlocked yet",
+    contentLockedBody: "This mystery box's details unlock at the set time.",
   },
 
   countdown: {
