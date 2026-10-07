@@ -236,7 +236,10 @@ const en: Dictionary = {
     videoGenericError: "something went wrong",
     videoProcessing: "Processing video...",
     videoNetworkError: "connection lost, please try again",
-    videoReadError: "couldn't read the video from your phone — please pick it again from your gallery",
+    videoReadError: "your phone didn't let the browser read this video",
+    videoReadHint: "This usually happens with gallery videos recorded in HEVC (high efficiency) format. Pick the video through Files instead, or record it right here.",
+    videoPickFromFiles: "Pick from Files",
+    videoRecord: "Record video",
     videoServerError: "the server didn't respond, please try again shortly",
   },
 

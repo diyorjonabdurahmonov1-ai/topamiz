@@ -238,7 +238,10 @@ const uz: Dictionary = {
     videoGenericError: "xatolik yuz berdi",
     videoProcessing: "Video qayta ishlanmoqda...",
     videoNetworkError: "internet aloqasi uzildi, qayta urinib ko'ring",
-    videoReadError: "videoni telefondan o'qib bo'lmadi — uni galereyadan qaytadan tanlang",
+    videoReadError: "telefon bu videoni brauzerga bermadi",
+    videoReadHint: "Bu ko'pincha galereyadagi HEVC (yuqori samarali) formatda yozilgan videolarda bo'ladi. Videoni Fayllar orqali tanlang yoki shu yerning o'zida yozib oling.",
+    videoPickFromFiles: "Fayllar orqali tanlash",
+    videoRecord: "Kamerada yozish",
     videoServerError: "server javob bermadi, birozdan so'ng qayta urinib ko'ring",
   },
 

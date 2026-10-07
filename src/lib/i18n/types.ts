@@ -216,6 +216,9 @@ export interface Dictionary {
     videoProcessing: string;
     videoNetworkError: string;
     videoReadError: string;
+    videoReadHint: string;
+    videoPickFromFiles: string;
+    videoRecord: string;
     videoServerError: string;
   };
 

@@ -20,6 +20,7 @@ export async function POST(request: Request) {
     JSON.stringify({
       userId: user.id,
       code: field("code"),
+      source: field("source", 20),
       type: field("type", 100),
       ext: field("ext", 20),
       size: Number(body?.size) || 0,
