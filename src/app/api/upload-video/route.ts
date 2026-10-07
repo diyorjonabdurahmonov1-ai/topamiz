@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth";
 import { getClientIp, rateLimit } from "@/lib/rate-limit";
 import { isR2Configured } from "@/lib/r2";
-import { ALLOWED_TYPES, CHUNK_SIZE, MAX_RAW_SIZE, createUploadSession } from "@/lib/video-uploads";
+import { CHUNK_SIZE, MAX_RAW_SIZE, createUploadSession, isAcceptableVideoType } from "@/lib/video-uploads";
 
 // Starts a chunked upload. The file itself then arrives in CHUNK_SIZE pieces
 // via PUT /api/upload-video/[id], so no single request has to carry a whole
@@ -21,8 +21,8 @@ export async function POST(request: Request) {
   const body = await request.json().catch(() => null);
   const type = typeof body?.type === "string" ? body.type : "";
   const size = typeof body?.size === "number" ? body.size : 0;
-  if (!ALLOWED_TYPES.has(type)) {
-    return NextResponse.json({ error: "Faqat MP4, MOV yoki WEBM video qabul qilinadi" }, { status: 400 });
+  if (!isAcceptableVideoType(type)) {
+    return NextResponse.json({ error: "Faqat video fayl qabul qilinadi" }, { status: 400 });
   }
   if (!Number.isInteger(size) || size <= 0) {
     return NextResponse.json({ error: "Fayl topilmadi" }, { status: 400 });

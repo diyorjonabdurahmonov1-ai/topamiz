@@ -232,6 +232,7 @@ const en: Dictionary = {
     videoUploadFailedPrefix: "Video not uploaded",
     videoInvalidError: "the file's content doesn't match a real video",
     videoTooLongError: "the video must not exceed 2 minutes",
+    videoTooLargeError: "the video must be under 300MB",
     videoGenericError: "something went wrong",
     videoProcessing: "Processing video...",
     videoNetworkError: "connection lost, please try again",

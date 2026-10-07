@@ -211,6 +211,7 @@ export interface Dictionary {
     videoUploadFailedPrefix: string;
     videoInvalidError: string;
     videoTooLongError: string;
+    videoTooLargeError: string;
     videoGenericError: string;
     videoProcessing: string;
     videoNetworkError: string;

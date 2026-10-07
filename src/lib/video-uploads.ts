@@ -16,7 +16,12 @@ export const MAX_RAW_SIZE = 300 * 1024 * 1024;
 export const CHUNK_SIZE = 2 * 1024 * 1024;
 const MAX_DURATION_SECONDS = 125; // 120s limit + a few seconds of tolerance
 const SESSION_TTL_MS = 60 * 60 * 1000;
-export const ALLOWED_TYPES = new Set(["video/mp4", "video/quicktime", "video/webm", "video/x-matroska"]);
+// Phones label their recordings inconsistently (video/3gpp, an empty type
+// from some pickers, …), so the declared type is only a first filter —
+// ffprobe in processVideo is what actually decides it's a real video.
+export function isAcceptableVideoType(type: string): boolean {
+  return type === "" || type.startsWith("video/");
+}
 
 type UploadStatus = "receiving" | "processing" | "done" | "error";
 
