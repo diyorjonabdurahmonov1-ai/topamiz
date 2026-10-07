@@ -235,6 +235,8 @@ const kk: Dictionary = {
     videoGenericError: "қате шықты",
     videoProcessing: "Бейне өңделуде...",
     videoNetworkError: "байланыс үзілді, қайта көріңіз",
+    videoReadError: "бейнені телефоннан оқу мүмкін болмады — оны галереядан қайта таңдаңыз",
+    videoServerError: "сервер жауап бермеді, сәлден соң қайта көріңіз",
   },
 
   mysteryBoxForm: {

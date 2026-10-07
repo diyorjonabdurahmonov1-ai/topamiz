@@ -1,4 +1,4 @@
-import { mkdir, open, readFile, rm, stat } from "node:fs/promises";
+import { mkdir, open, readdir, readFile, rm, stat } from "node:fs/promises";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
 import os from "node:os";
@@ -12,7 +12,8 @@ export const MAX_RAW_SIZE = 300 * 1024 * 1024;
 // Each chunk has to fit under Caddy's request_body limit on the server (see
 // AGENTS.md) with plenty of room to spare, so one big phone video never has
 // to travel as a single oversized request.
-export const CHUNK_SIZE = 5 * 1024 * 1024;
+// Kept small so a chunk lost on a weak mobile connection is cheap to resend.
+export const CHUNK_SIZE = 2 * 1024 * 1024;
 const MAX_DURATION_SECONDS = 125; // 120s limit + a few seconds of tolerance
 const SESSION_TTL_MS = 60 * 60 * 1000;
 export const ALLOWED_TYPES = new Set(["video/mp4", "video/quicktime", "video/webm", "video/x-matroska"]);
@@ -24,6 +25,7 @@ interface UploadSession {
   userId: number;
   size: number;
   received: number;
+  chunks: Set<number>;
   status: UploadStatus;
   dir: string;
   createdAt: number;
@@ -43,18 +45,24 @@ interface FfprobeResult {
 const sessions = new Map<string, UploadSession>();
 const ROOT = path.join(os.tmpdir(), "findo-video-uploads");
 
-function sweepExpired() {
+// Also clears folders on disk with no session in memory — left behind by an
+// upload the poster abandoned before a server restart.
+async function sweepExpired() {
   const now = Date.now();
   for (const session of sessions.values()) {
-    if (now - session.createdAt > SESSION_TTL_MS) {
-      sessions.delete(session.id);
-      rm(session.dir, { recursive: true, force: true }).catch(() => {});
-    }
+    if (now - session.createdAt > SESSION_TTL_MS) sessions.delete(session.id);
+  }
+  const entries = await readdir(ROOT).catch(() => [] as string[]);
+  for (const name of entries) {
+    if (sessions.has(name)) continue;
+    const dir = path.join(ROOT, name);
+    const info = await stat(dir).catch(() => null);
+    if (info && now - info.mtimeMs > SESSION_TTL_MS) await rm(dir, { recursive: true, force: true });
   }
 }
 
 export async function createUploadSession(userId: number, size: number): Promise<UploadSession> {
-  sweepExpired();
+  await sweepExpired();
   const id = crypto.randomUUID();
   const dir = path.join(ROOT, id);
   await mkdir(dir, { recursive: true });
@@ -64,6 +72,7 @@ export async function createUploadSession(userId: number, size: number): Promise
     userId,
     size,
     received: 0,
+    chunks: new Set(),
     status: "receiving",
     dir,
     createdAt: Date.now(),
@@ -77,14 +86,18 @@ export function getUploadSession(id: string, userId: number): UploadSession | nu
   return session && session.userId === userId ? session : null;
 }
 
-// Writes a chunk at its own offset rather than appending, so a chunk the
-// phone re-sends after a dropped connection (the server got it, the reply
-// didn't make it back) just overwrites itself instead of corrupting the file.
-export async function writeChunk(session: UploadSession, offset: number, data: Buffer): Promise<string | null> {
-  if (session.status !== "receiving") return "Bu yuklash allaqachon yakunlangan";
-  if (offset > session.received) return "Bo'lak tartibi buzildi";
-  if (data.length === 0 || data.length > CHUNK_SIZE) return "Bo'lak hajmi noto'g'ri";
-  if (offset + data.length > session.size) return "Fayl hajmi kutilganidan katta";
+// Each chunk is written at its own offset rather than appended, so chunks
+// can arrive in any order (the client sends a few in parallel) and one the
+// phone re-sends after a dropped connection just overwrites itself.
+// "incomplete" means the body arrived short — the client should resend it.
+export async function writeChunk(
+  session: UploadSession,
+  offset: number,
+  data: Buffer
+): Promise<"ok" | "invalid" | "incomplete"> {
+  if (session.status !== "receiving") return "invalid";
+  if (offset % CHUNK_SIZE !== 0 || offset >= session.size) return "invalid";
+  if (data.length !== Math.min(CHUNK_SIZE, session.size - offset)) return "incomplete";
 
   const handle = await open(path.join(session.dir, "input"), "r+");
   try {
@@ -92,8 +105,11 @@ export async function writeChunk(session: UploadSession, offset: number, data: B
   } finally {
     await handle.close();
   }
-  session.received = Math.max(session.received, offset + data.length);
-  return null;
+  if (!session.chunks.has(offset)) {
+    session.chunks.add(offset);
+    session.received += data.length;
+  }
+  return "ok";
 }
 
 export async function finishUpload(session: UploadSession): Promise<string | null> {
