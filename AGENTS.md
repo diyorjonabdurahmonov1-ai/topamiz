@@ -29,9 +29,9 @@ cold start or an ephemeral filesystem.
   `backend-caddy-1`, config at `/opt/prostaff/backend/Caddyfile`). The
   Topamiz block is appended at the end of that file:
   `findo.net.uz -> reverse_proxy 172.18.0.1:3000` with
-  `request_body max_size 20MB` — needs raising toward `300MB` for video
-  uploads (see the video upload note below), since Caddy rejects any
-  request body over this limit before it ever reaches the app.
+  `request_body max_size 20MB`. Caddy rejects any request body over this
+  limit before it ever reaches the app, which is why video uploads are
+  chunked (see the video upload note below) — leave it as is.
 - `ufw`: port 3000 is only open to `172.18.0.0/16` (the Docker network) —
   it is not reachable from the public internet directly, only through Caddy.
 - Auth cookies are `secure: true` in production (see `src/lib/auth.ts`), so
@@ -65,9 +65,11 @@ cold start or an ephemeral filesystem.
   the bucket → Settings, and Manage API Tokens). Without `ffmpeg` installed
   or these vars set, video upload fails with a clear error but the rest of
   the site is unaffected.
-  **Also requires raising the Caddy `request_body max_size` for the Topamiz
-  block past its current `20MB`** (see the Caddyfile note below) — otherwise
-  Caddy itself rejects any video upload over 20MB before it reaches the app.
+  Uploads are chunked (`src/lib/video-uploads.ts`): the browser sends the
+  file in 5MB pieces so no request comes near Caddy's 20MB body limit, then
+  polls while the server compresses it in the background. Upload sessions
+  live in memory in the single PM2 process, so a restart mid-upload just
+  makes the poster pick the video again.
 
 ### Another project shares this server — do not touch it
 

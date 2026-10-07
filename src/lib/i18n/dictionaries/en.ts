@@ -233,6 +233,8 @@ const en: Dictionary = {
     videoInvalidError: "the file's content doesn't match a real video",
     videoTooLongError: "the video must not exceed 2 minutes",
     videoGenericError: "something went wrong",
+    videoProcessing: "Processing video...",
+    videoNetworkError: "connection lost, please try again",
   },
 
   mysteryBoxForm: {
@@ -260,7 +262,7 @@ const en: Dictionary = {
     expiryPastError: "The expiry date must be in the future",
     expiryTooFarError: "The expiry date is too far in the future",
     startLabel: "Unlock time (optional)",
-    startHint: "If set, the video stays locked until this time — the rest of the listing is visible right away.",
+    startHint: "If set, the video, photos and location stay hidden until this time.",
     startAfterExpiryError: "The unlock time must be before the expiry date",
     requiredFieldsError: "Please fill in all fields marked with *.",
     genericError: "Something went wrong",
