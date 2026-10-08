@@ -1,5 +1,5 @@
 import { db } from "./db";
-import { getUserById, type AuthUser } from "./auth";
+import { getPublicUserById, type PublicUser } from "./auth";
 
 export function isFriend(followerId: number, followedId: number): boolean {
   const row = db
@@ -32,11 +32,11 @@ export function getFriendCount(userId: number): number {
 
 // The people `userId` has added as friends — shown on their profile's
 // friends list.
-export function getFriends(userId: number): AuthUser[] {
+export function getFriends(userId: number): PublicUser[] {
   const rows = db
     .prepare("SELECT followed_id FROM friendships WHERE follower_id = ? ORDER BY created_at DESC")
     .all(userId) as { followed_id: number }[];
-  return rows.map((r) => getUserById(r.followed_id)).filter((u): u is AuthUser => !!u);
+  return rows.map((r) => getPublicUserById(r.followed_id)).filter((u): u is PublicUser => !!u);
 }
 
 // The people who have added `userId` as a friend — used to notify them

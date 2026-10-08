@@ -116,16 +116,25 @@ describe("guest (QR tag) messages", () => {
 });
 
 describe("searchUsers", () => {
-  it("finds a user by partial name or email, excluding the searcher", () => {
+  it("finds a user by partial name, excluding the searcher", () => {
     const a = makeUser("aziz@example.com", "Aziz Karimov");
     makeUser("malika@example.com", "Malika Yusupova");
 
-    const byName = searchUsers("Karimov", a.id);
-    expect(byName.map((u) => u.name)).toEqual([]); // Aziz excludes himself, no other Karimov
+    const self = searchUsers("Karimov", a.id);
+    expect(self.map((u) => u.name)).toEqual([]); // Aziz excludes himself, no other Karimov
 
-    const byEmail = searchUsers("malika@", a.id);
-    expect(byEmail).toHaveLength(1);
-    expect(byEmail[0].name).toBe("Malika Yusupova");
+    const byName = searchUsers("Yusup", a.id);
+    expect(byName).toHaveLength(1);
+    expect(byName[0].name).toBe("Malika Yusupova");
+  });
+
+  it("never matches on or returns anyone's email", () => {
+    const a = makeUser("aziz@example.com", "Aziz");
+    makeUser("malika@example.com", "Malika");
+
+    expect(searchUsers("malika@", a.id)).toEqual([]);
+    const [found] = searchUsers("Malika", a.id);
+    expect(found).not.toHaveProperty("email");
   });
 
   it("returns nothing for a blank query", () => {

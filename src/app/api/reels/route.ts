@@ -5,12 +5,17 @@ import { getLikedListingIds } from "@/lib/listing-likes";
 import { countryForIp } from "@/lib/geo";
 import { getClientIp } from "@/lib/rate-limit";
 
+// Each id becomes one SQL parameter; past a few hundred, repeats in the
+// feed are fine, and an unbounded list could hit SQLite's parameter limit.
+const MAX_EXCLUDE = 500;
+
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const excludeIds = (searchParams.get("exclude") ?? "")
     .split(",")
     .map((s) => s.trim())
-    .filter((s) => /^\d+$/.test(s));
+    .filter((s) => /^\d+$/.test(s))
+    .slice(-MAX_EXCLUDE);
 
   const user = await getCurrentUser();
   const ip = getClientIp(request);

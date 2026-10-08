@@ -2,12 +2,14 @@ import type { Metadata } from "next";
 import { getAllConversationsForAdmin } from "@/lib/messages";
 import { formatDate } from "@/lib/data";
 import Avatar from "@/components/Avatar";
+import { requireAdmin } from "@/lib/auth";
 
 export const metadata: Metadata = {
   title: "Xabarlar — Findo",
 };
 
-export default function AdminMessagesPage() {
+export default async function AdminMessagesPage() {
+  await requireAdmin();
   const conversations = getAllConversationsForAdmin();
 
   return (

@@ -1,5 +1,5 @@
 import { db } from "./db";
-import { getUserById, type AuthUser } from "./auth";
+import { getPublicUserById, getUserById, type AuthUser, type PublicUser } from "./auth";
 
 export const MAX_MESSAGE_LENGTH = 2000;
 export const MAX_MESSAGE_PHOTOS = 3;
@@ -52,18 +52,20 @@ function toMessage(row: RawMessageRow): MessageRow {
   };
 }
 
-export function searchUsers(query: string, excludeUserId: number, limit = 10): AuthUser[] {
+// Matches on name only — searching by email would let anyone discover who
+// is registered with a given address.
+export function searchUsers(query: string, excludeUserId: number, limit = 10): PublicUser[] {
   const trimmed = query.trim();
   if (!trimmed) return [];
   const like = `%${trimmed}%`;
   const rows = db
-    .prepare(`SELECT id FROM users WHERE id != ? AND (name LIKE ? OR email LIKE ?) LIMIT ?`)
-    .all(excludeUserId, like, like, limit) as { id: number }[];
-  return rows.map((r) => getUserById(r.id)).filter((u): u is AuthUser => !!u);
+    .prepare(`SELECT id FROM users WHERE id != ? AND name LIKE ? LIMIT ?`)
+    .all(excludeUserId, like, limit) as { id: number }[];
+  return rows.map((r) => getPublicUserById(r.id)).filter((u): u is PublicUser => !!u);
 }
 
 export interface ConversationSummary {
-  otherUser: AuthUser;
+  otherUser: PublicUser;
   lastMessage: MessageRow;
   unreadCount: number;
 }
@@ -88,7 +90,7 @@ export function getConversations(userId: number): ConversationSummary[] {
 
   const result: ConversationSummary[] = [];
   for (const [otherId, msgs] of byOther.entries()) {
-    const otherUser = getUserById(otherId);
+    const otherUser = getPublicUserById(otherId);
     if (!otherUser) continue;
     const lastMessage = msgs[msgs.length - 1];
     const unreadCount = msgs.filter((m) => m.recipientId === userId && !m.readAt).length;
@@ -144,7 +146,7 @@ export function sendMessage(params: {
 }
 
 export interface ListingClaimant {
-  sender: AuthUser;
+  sender: PublicUser;
   body: string;
   photoUrls: string[];
   createdAt: string;
@@ -172,7 +174,7 @@ export function getListingClaimants(listingId: number, ownerId: number): Listing
 
   return rows
     .map((row) => {
-      const sender = row.sender_id ? getUserById(row.sender_id) : null;
+      const sender = row.sender_id ? getPublicUserById(row.sender_id) : null;
       if (!sender) return null;
       const message = toMessage(row);
       return { sender, body: message.body, photoUrls: message.photoUrls, createdAt: message.createdAt };

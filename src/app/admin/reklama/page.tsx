@@ -2,12 +2,14 @@ import type { Metadata } from "next";
 import { getAllAds } from "@/lib/ads";
 import AdminAdForm from "@/components/AdminAdForm";
 import AdminAdRow from "@/components/AdminAdRow";
+import { requireAdmin } from "@/lib/auth";
 
 export const metadata: Metadata = {
   title: "Reklama boshqaruvi — Findo",
 };
 
 export default async function AdminAdsPage() {
+  await requireAdmin();
   const ads = getAllAds();
 
   return (
