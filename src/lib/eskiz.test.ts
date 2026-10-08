@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { loginCodeMessage, resetEskizTokenForTests, sendSms } from "./eskiz";
+import { codeMessage, resetEskizTokenForTests, sendSms } from "./eskiz";
 
 function json(status: number, body: unknown) {
   return new Response(JSON.stringify(body), { status, headers: { "Content-Type": "application/json" } });
@@ -24,8 +24,8 @@ describe("sendSms", () => {
       .mockResolvedValue(json(200, { status: "waiting" }));
     vi.stubGlobal("fetch", fetchMock);
 
-    await sendSms("998901234567", loginCodeMessage("1234"));
-    await sendSms("998901234567", loginCodeMessage("4321"));
+    await sendSms("998901234567", codeMessage("register", "1234"));
+    await sendSms("998901234567", codeMessage("reset", "4321"));
 
     const urls = fetchMock.mock.calls.map((c) => String(c[0]));
     expect(urls.filter((u) => u.endsWith("/auth/login"))).toHaveLength(1);
@@ -35,6 +35,10 @@ describe("sendSms", () => {
     expect(form.get("mobile_phone")).toBe("998901234567");
     expect(form.get("from")).toBe("4546");
     expect(form.get("message")).toBe("Findo: tasdiqlash kodingiz 1234. Kodni hech kimga bermang.");
+    const resetForm = fetchMock.mock.calls[2][1].body as FormData;
+    expect(resetForm.get("message")).toBe(
+      "Findo: parolni tiklash kodingiz 4321. Agar buni siz so'ramagan bo'lsangiz, xabarga e'tibor bermang."
+    );
   });
 
   it("logs in again when the token has expired", async () => {

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getPhoneAccount } from "@/lib/auth";
 import { getClientIp, rateLimit } from "@/lib/rate-limit";
-import { isEskizConfigured, loginCodeMessage, sendSms } from "@/lib/eskiz";
+import { codeMessage, isEskizConfigured, sendSms } from "@/lib/eskiz";
 import { RESEND_COOLDOWN_SECONDS, discardCode, issueCode, normalizeUzPhone } from "@/lib/phone-login";
 import { authError } from "@/lib/phone-auth-responses";
 
@@ -37,7 +37,7 @@ export async function POST(request: Request) {
     console.info(`[phone-login] ${purpose} code for ${phone}: ${issued.code}`);
   } else {
     try {
-      await sendSms(phone.slice(1), loginCodeMessage(issued.code));
+      await sendSms(phone.slice(1), codeMessage(purpose, issued.code));
     } catch (err) {
       console.error("[phone-login] SMS send failed:", err);
       discardCode(purpose, phone);
