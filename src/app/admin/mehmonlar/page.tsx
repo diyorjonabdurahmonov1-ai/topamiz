@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
 import { getAllGuestVisits } from "@/lib/guest-visits";
 import AdminGuestsTable from "@/components/AdminGuestsTable";
+import { requireAdmin } from "@/lib/auth";
 
 export const metadata: Metadata = {
   title: "Mehmonlar — Findo",
 };
 
-export default function AdminGuestsPage() {
+export default async function AdminGuestsPage() {
+  await requireAdmin();
   const guests = getAllGuestVisits();
 
   return (

@@ -11,12 +11,14 @@ import { getListingCountsByCountry, getListingStats } from "@/lib/listings";
 import { getReportedListings } from "@/lib/listing-reports";
 import { countryName } from "@/lib/country-names";
 import StatCard from "@/components/StatCard";
+import { requireAdmin } from "@/lib/auth";
 
 export const metadata: Metadata = {
   title: "Statistika — Findo",
 };
 
-export default function AdminDashboardPage() {
+export default async function AdminDashboardPage() {
+  await requireAdmin();
   const totalUsers = countUsers();
   const onlineUsers = countOnlineUsers();
   const blockedUsers = countBlockedUsers();

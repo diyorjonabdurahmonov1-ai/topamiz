@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { CheckCircle2, Link2, Loader2, Search, Share2, Users, X } from "lucide-react";
-import type { AuthUser } from "@/lib/auth";
+import type { PublicUser } from "@/lib/auth";
 import type { Dictionary } from "@/lib/i18n";
 import { SITE_URL } from "@/lib/site";
 import Avatar from "./Avatar";
@@ -29,7 +29,7 @@ export default function ShareMenu({
   const [open, setOpen] = useState(false);
   const [view, setView] = useState<View>("menu");
   const [query, setQuery] = useState("");
-  const [results, setResults] = useState<AuthUser[]>([]);
+  const [results, setResults] = useState<PublicUser[]>([]);
   const [sendingTo, setSendingTo] = useState<number | null>(null);
   const [sentVia, setSentVia] = useState<"forward" | "clipboard" | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);

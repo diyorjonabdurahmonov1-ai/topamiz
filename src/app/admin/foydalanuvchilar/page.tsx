@@ -3,12 +3,14 @@ import Link from "next/link";
 import { Search, X } from "lucide-react";
 import { listUsers } from "@/lib/admin-users";
 import AdminUserRow from "@/components/AdminUserRow";
+import { requireAdmin } from "@/lib/auth";
 
 export const metadata: Metadata = {
   title: "Foydalanuvchilar — Findo",
 };
 
 export default async function AdminUsersPage(props: PageProps<"/admin/foydalanuvchilar">) {
+  await requireAdmin();
   const searchParams = await props.searchParams;
   const q = typeof searchParams.q === "string" ? searchParams.q : "";
   const filter = typeof searchParams.filter === "string" ? searchParams.filter : "";

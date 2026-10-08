@@ -1,4 +1,5 @@
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 import crypto from "node:crypto";
 import { db } from "./db";
 
@@ -15,6 +16,20 @@ export interface AuthUser {
   avatarColor: string;
   avatarUrl: string | null;
   createdAt: string;
+}
+
+// What other people may see of a user — never their email or phone number.
+export type PublicUser = Omit<AuthUser, "email">;
+
+// Already carries the admin's brand identity, so public views don't need
+// the email to work it out.
+export function toPublicUser(user: AuthUser): PublicUser {
+  return { id: user.id, bio: user.bio, createdAt: user.createdAt, ...displayIdentity(user) };
+}
+
+export function getPublicUserById(id: number): PublicUser | null {
+  const user = getUserById(id);
+  return user ? toPublicUser(user) : null;
 }
 
 interface UserRow {
@@ -204,6 +219,17 @@ export function isAdmin(user: Pick<AuthUser, "email"> | null): boolean {
   return admins.includes(user.email.toLowerCase());
 }
 
+// Every admin page calls this itself, first thing. The check in
+// app/admin/layout.tsx isn't enough on its own: Next.js renders a page in
+// parallel with its layout, so a page relying only on the layout's
+// redirect still streams its data (the user list, messages…) to whoever
+// requested it — the redirect only happens afterwards in the browser.
+export async function requireAdmin(): Promise<AuthUser> {
+  const user = await getCurrentUser();
+  if (!user || !isAdmin(user)) redirect("/");
+  return user;
+}
+
 // The admin's messages should read as coming from the platform itself, not
 // their personal Google account — reserved so no regular user can impersonate it.
 export const BRAND_NAME = "Findo";
@@ -213,10 +239,12 @@ export function isReservedName(name: string): boolean {
   return name.trim().toLowerCase().replace(/\s+/g, "") === BRAND_NAME.toLowerCase();
 }
 
+// A PublicUser (no email) already has the brand identity applied by
+// toPublicUser, so only a full user needs the admin check here.
 export function displayIdentity(
-  user: Pick<AuthUser, "email" | "name" | "avatarColor" | "avatarUrl">
+  user: Pick<AuthUser, "name" | "avatarColor" | "avatarUrl"> & { email?: string }
 ): { name: string; avatarColor: string; avatarUrl: string | null } {
-  if (isAdmin(user)) {
+  if (user.email && isAdmin({ email: user.email })) {
     return { name: BRAND_NAME, avatarColor: BRAND_AVATAR_COLOR, avatarUrl: null };
   }
   return { name: user.name, avatarColor: user.avatarColor, avatarUrl: user.avatarUrl };

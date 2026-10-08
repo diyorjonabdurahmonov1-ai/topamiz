@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Search, X } from "lucide-react";
-import type { AuthUser } from "@/lib/auth";
+import type { PublicUser } from "@/lib/auth";
 import type { Dictionary } from "@/lib/i18n";
 import Avatar from "./Avatar";
 
@@ -17,7 +17,7 @@ export default function UserSearch({
   mode?: "message" | "profile";
 }) {
   const [query, setQuery] = useState("");
-  const [results, setResults] = useState<AuthUser[]>([]);
+  const [results, setResults] = useState<PublicUser[]>([]);
   const [open, setOpen] = useState(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -74,7 +74,6 @@ export default function UserSearch({
                 <Avatar name={u.name} color={u.avatarColor} avatarUrl={u.avatarUrl} size={32} />
                 <div className="min-w-0">
                   <p className="truncate text-sm font-semibold">{u.name}</p>
-                  {mode !== "profile" && <p className="truncate text-xs text-muted">{u.email}</p>}
                 </div>
               </Link>
             ))

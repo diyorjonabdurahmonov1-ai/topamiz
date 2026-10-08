@@ -4,12 +4,14 @@ import { X } from "lucide-react";
 import { getAllListingsForAdmin } from "@/lib/listings";
 import { countryName } from "@/lib/country-names";
 import AdminListingRow from "@/components/AdminListingRow";
+import { requireAdmin } from "@/lib/auth";
 
 export const metadata: Metadata = {
   title: "Barcha e'lonlar — Findo",
 };
 
 export default async function AdminListingsPage(props: PageProps<"/admin/elonlar">) {
+  await requireAdmin();
   const searchParams = await props.searchParams;
   const countryFilter = typeof searchParams.country === "string" ? searchParams.country : "";
   const all = getAllListingsForAdmin();

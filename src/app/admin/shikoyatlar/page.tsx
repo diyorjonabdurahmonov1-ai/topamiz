@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
 import { getReportedListings } from "@/lib/listing-reports";
 import AdminReportedListingRow from "@/components/AdminReportedListingRow";
+import { requireAdmin } from "@/lib/auth";
 
 export const metadata: Metadata = {
   title: "Shikoyatlar — Findo",
 };
 
-export default function AdminReportsPage() {
+export default async function AdminReportsPage() {
+  await requireAdmin();
   const reported = getReportedListings();
 
   return (

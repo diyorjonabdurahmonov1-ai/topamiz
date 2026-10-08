@@ -3,12 +3,14 @@ import Link from "next/link";
 import { ExternalLink } from "lucide-react";
 import { getAllTagsForAdmin } from "@/lib/tags";
 import { formatDate } from "@/lib/data";
+import { requireAdmin } from "@/lib/auth";
 
 export const metadata: Metadata = {
   title: "QR-belgilar — Findo",
 };
 
-export default function AdminTagsPage() {
+export default async function AdminTagsPage() {
+  await requireAdmin();
   const tags = getAllTagsForAdmin();
 
   return (

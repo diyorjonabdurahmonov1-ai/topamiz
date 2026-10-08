@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
 import { BarChart3, ExternalLink } from "lucide-react";
+import { requireAdmin } from "@/lib/auth";
 
 export const metadata: Metadata = {
   title: "Tahlil — Findo",
 };
 
-export default function AdminAnalyticsPage() {
+export default async function AdminAnalyticsPage() {
+  await requireAdmin();
   const gaId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
   const yandexId = process.env.NEXT_PUBLIC_YANDEX_METRIKA_ID;
 

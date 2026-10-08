@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
 import { getAdInquiries } from "@/lib/ad-inquiries";
 import AdminAdInquiryRow from "@/components/AdminAdInquiryRow";
+import { requireAdmin } from "@/lib/auth";
 
 export const metadata: Metadata = {
   title: "Reklama arizalari — Findo",
 };
 
-export default function AdminAdInquiriesPage() {
+export default async function AdminAdInquiriesPage() {
+  await requireAdmin();
   const inquiries = getAdInquiries();
 
   return (
