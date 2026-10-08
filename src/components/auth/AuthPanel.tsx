@@ -7,6 +7,7 @@ import {
   Check,
   Eye,
   EyeOff,
+  Globe,
   KeyRound,
   Loader2,
   Lock,
@@ -20,6 +21,7 @@ import {
 import type { Dictionary } from "@/lib/i18n";
 import { CODE_LENGTH } from "@/lib/verification-code";
 import GoogleLoginButton from "../GoogleLoginButton";
+import type { LegalContent } from "@/lib/legal";
 import LegalSheet, { type LegalDoc } from "./LegalSheet";
 
 type Tab = "login" | "register";
@@ -35,9 +37,12 @@ type View =
 
 const MIN_PASSWORD = 8;
 
+// Extra digits are kept (and make the number invalid) rather than cut off:
+// silently trimming a foreign 10-digit number to 9 would turn it into some
+// stranger's Uzbek number.
 function formatLocal(digits: string): string {
-  const d = digits.slice(0, 9);
-  return [d.slice(0, 2), d.slice(2, 5), d.slice(5, 7), d.slice(7, 9)].filter(Boolean).join(" ");
+  const groups = [digits.slice(0, 2), digits.slice(2, 5), digits.slice(5, 7), digits.slice(7, 9), digits.slice(9)];
+  return groups.filter(Boolean).join(" ");
 }
 
 function passwordScore(password: string): 0 | 1 | 2 | 3 {
@@ -58,7 +63,18 @@ function fill(template: string, parts: Record<string, ReactNode>): ReactNode[] {
   });
 }
 
-export default function AuthPanel({ dict, initialTab }: { dict: Dictionary; initialTab: Tab }) {
+export default function AuthPanel({
+  dict,
+  initialTab,
+  legal,
+  abroad,
+}: {
+  dict: Dictionary;
+  initialTab: Tab;
+  legal: LegalContent;
+  // Visiting from outside Uzbekistan: phone sign-up only takes +998 numbers.
+  abroad: boolean;
+}) {
   const t = dict.login;
   const router = useRouter();
   const [tab, setTab] = useState<Tab>(initialTab);
@@ -113,6 +129,13 @@ export default function AuthPanel({ dict, initialTab }: { dict: Dictionary; init
     return { ok: res.ok, data: data ?? {} };
   }
 
+  // Server errors come with a code; show its text in the visitor's language.
+  function errorText(data: Record<string, unknown>): string {
+    const code = typeof data.code === "string" ? data.code : "";
+    const translated = (t.errors as Record<string, string>)[code];
+    return translated ?? (typeof data.error === "string" ? data.error : t.genericError);
+  }
+
   async function run(task: () => Promise<void>) {
     setBusy(true);
     setError("");
@@ -137,8 +160,8 @@ export default function AuthPanel({ dict, initialTab }: { dict: Dictionary; init
       const { ok, data } = await post("/api/auth/phone/send", { phone, purpose });
       if (typeof data.resendIn === "number") setResendIn(data.resendIn);
       if (data.code === "exists") return go({ name: "exists" });
-      if (data.code === "not-found") return go({ name: "not-found" });
-      if (!ok) return fail(String(data.error ?? t.genericError));
+      if (data.code === "notFound") return go({ name: "not-found" });
+      if (!ok) return fail(errorText(data));
       setCode("");
       onSent();
     });
@@ -148,9 +171,9 @@ export default function AuthPanel({ dict, initialTab }: { dict: Dictionary; init
     e.preventDefault();
     void run(async () => {
       const { ok, data } = await post("/api/auth/phone/login", { phone, password });
-      if (data.code === "not-found") return go({ name: "not-found" });
-      if (data.code === "no-password") return go({ name: "no-password" });
-      if (!ok) return fail(String(data.error ?? t.genericError));
+      if (data.code === "notFound") return go({ name: "not-found" });
+      if (data.code === "noPassword") return go({ name: "no-password" });
+      if (!ok) return fail(errorText(data));
       signedIn();
     });
   }
@@ -172,7 +195,7 @@ export default function AuthPanel({ dict, initialTab }: { dict: Dictionary; init
         acceptTerms: consent,
       });
       if (data.code === "exists") return go({ name: "exists" });
-      if (!ok) return fail(String(data.error ?? t.genericError));
+      if (!ok) return fail(errorText(data));
       signedIn();
     });
   }
@@ -186,7 +209,7 @@ export default function AuthPanel({ dict, initialTab }: { dict: Dictionary; init
     e.preventDefault();
     void run(async () => {
       const { ok, data } = await post("/api/auth/phone/reset", { phone, code, password });
-      if (!ok) return fail(String(data.error ?? t.genericError));
+      if (!ok) return fail(errorText(data));
       signedIn();
     });
   }
@@ -213,11 +236,12 @@ export default function AuthPanel({ dict, initialTab }: { dict: Dictionary; init
   );
 
   const phoneField = (
+    <div>
     <Field icon={<Phone className="h-4 w-4" />} label={t.phoneLabel}>
       <span className="pointer-events-none select-none text-sm font-semibold">+998</span>
       <input
         value={formatLocal(phoneDigits)}
-        onChange={(e) => setPhoneDigits(e.target.value.replace(/\D/g, "").replace(/^998(?=\d{9})/, "").slice(0, 9))}
+        onChange={(e) => setPhoneDigits(e.target.value.replace(/\D/g, "").replace(/^998(?=\d{9}$)/, "").slice(0, 12))}
         type="tel"
         inputMode="tel"
         autoComplete="tel-national"
@@ -226,6 +250,8 @@ export default function AuthPanel({ dict, initialTab }: { dict: Dictionary; init
         className="min-w-0 flex-1 bg-transparent text-sm tracking-wide outline-none placeholder:text-muted/60"
       />
     </Field>
+      {phoneDigits.length > 9 && <p className="mt-1.5 text-[11px] font-medium text-danger">{t.errors.invalidPhone}</p>}
+    </div>
   );
 
   const resendRow = (purpose: "register" | "reset", back: View) => (
@@ -413,6 +439,15 @@ export default function AuthPanel({ dict, initialTab }: { dict: Dictionary; init
   return (
     <div className="relative">
       <div className="relative overflow-hidden rounded-3xl border border-border bg-surface/80 p-5 shadow-2xl shadow-brand-via/5 backdrop-blur-xl sm:p-6">
+        {abroad && showTabs && (
+          <div className="mb-4 flex gap-3 rounded-2xl border border-sky-500/30 bg-sky-500/10 p-3.5">
+            <Globe className="mt-0.5 h-5 w-5 shrink-0 text-sky-500" />
+            <div className="text-xs leading-relaxed">
+              <p className="font-bold text-foreground">{t.abroadTitle}</p>
+              <p className="mt-0.5 text-muted">{t.abroadBody}</p>
+            </div>
+          </div>
+        )}
         {showTabs && (
           <div className="relative mb-5 grid grid-cols-2 rounded-2xl bg-bg-elevated p-1">
             <span
@@ -477,6 +512,7 @@ export default function AuthPanel({ dict, initialTab }: { dict: Dictionary; init
             setLegalDoc(null);
             setError("");
           }}
+          content={legal}
           dict={dict}
         />
       )}

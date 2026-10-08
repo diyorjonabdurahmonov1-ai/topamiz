@@ -363,6 +363,26 @@ export interface Dictionary {
     setPassword: string;
     googleNeedsConsent: string;
     loginFinePrint: string;
+    abroadTitle: string;
+    abroadBody: string;
+    errors: {
+      invalidPhone: string;
+      tooMany: string;
+      smsNotConfigured: string;
+      recentlySent: string;
+      smsFailed: string;
+      codeWrong: string;
+      codeExpired: string;
+      codeTooMany: string;
+      consentRequired: string;
+      nameRequired: string;
+      nameReserved: string;
+      passwordShort: string;
+      passwordLong: string;
+      passwordWeak: string;
+      loginWrong: string;
+      blocked: string;
+    };
     orDivider: string;
     phoneLabel: string;
     sendCode: string;

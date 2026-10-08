@@ -9,14 +9,10 @@ const MAX_ATTEMPTS = 5;
 export const MIN_PASSWORD_LENGTH = 8;
 const MAX_PASSWORD_LENGTH = 100;
 
-export function passwordProblem(password: unknown): string | null {
-  if (typeof password !== "string" || password.length < MIN_PASSWORD_LENGTH) {
-    return `Parol kamida ${MIN_PASSWORD_LENGTH} belgidan iborat bo'lishi kerak.`;
-  }
-  if (password.length > MAX_PASSWORD_LENGTH) return "Parol juda uzun.";
-  if (!/[A-Za-z\u0400-\u04FF]/.test(password) || !/\d/.test(password)) {
-    return "Parolda kamida bitta harf va bitta raqam bo'lishi kerak.";
-  }
+export function passwordProblem(password: unknown): "passwordShort" | "passwordLong" | "passwordWeak" | null {
+  if (typeof password !== "string" || password.length < MIN_PASSWORD_LENGTH) return "passwordShort";
+  if (password.length > MAX_PASSWORD_LENGTH) return "passwordLong";
+  if (!/[A-Za-z\u0400-\u04FF]/.test(password) || !/\d/.test(password)) return "passwordWeak";
   return null;
 }
 
