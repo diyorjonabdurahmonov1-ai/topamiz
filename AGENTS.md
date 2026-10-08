@@ -67,7 +67,13 @@ cold start or an ephemeral filesystem.
   the site is unaffected.
   Uploads are chunked (`src/lib/video-uploads.ts`): the browser sends the
   file in 2MB pieces (three in parallel, each retried on failure) so no request comes near Caddy's 20MB body limit, then
-  polls while the server compresses it in the background. Upload sessions
+  polls while the server compresses it in the background. Before uploading,
+  the phone itself usually compresses the video (`src/lib/video-compress.ts`,
+  WebCodecs via `mediabunny`), and the server then only remuxes it with
+  `ffmpeg -c copy`; anything else is re-encoded as before. Uploads run in a
+  site-wide store (`src/lib/video-upload-store.ts`), so a listing can be
+  published while its video is still uploading — the server attaches the
+  video to the listing when it's ready. Upload sessions
   live in memory in the single PM2 process, so a restart mid-upload just
   makes the poster pick the video again. When an upload fails on a phone,
   the browser reports the details (error code, file type/size, user agent)

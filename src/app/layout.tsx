@@ -4,6 +4,7 @@ import Script from "next/script";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import BottomNav from "@/components/BottomNav";
+import VideoUploadIndicator from "@/components/VideoUploadIndicator";
 import AppChrome from "@/components/AppChrome";
 import Analytics from "@/components/Analytics";
 import { getCurrentUser } from "@/lib/auth";
@@ -96,6 +97,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
         >
           {children}
         </AppChrome>
+        <VideoUploadIndicator dict={dict} />
       </body>
     </html>
   );

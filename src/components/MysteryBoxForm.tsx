@@ -7,7 +7,12 @@ import { Clock, ImagePlus, Info, Loader2, LocateFixed, Lock, MapPin, Sparkles } 
 import type { Dictionary } from "@/lib/i18n";
 import { cities } from "@/lib/data";
 import MediaUploader from "./MediaUploader";
-import type { VideoUploadStatus } from "./VideoUploader";
+import {
+  cancelVideoUpload,
+  getVideoUpload,
+  markVideoSubmitted,
+  videoFieldsForListing,
+} from "@/lib/video-upload-store";
 
 const LocationPickerMap = dynamic(() => import("./LocationPickerMap"), {
   ssr: false,
@@ -26,7 +31,7 @@ function toLocalInputValue(date: Date): string {
   return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
 }
 
-type Status = "idle" | "submitting" | "waiting-for-video" | "success";
+type Status = "idle" | "submitting" | "success";
 
 export default function MysteryBoxForm({ dict }: { dict: Dictionary }) {
   const [title, setTitle] = useState("");
@@ -34,8 +39,15 @@ export default function MysteryBoxForm({ dict }: { dict: Dictionary }) {
   const [extraInfo, setExtraInfo] = useState("");
   const [city, setCity] = useState("");
   const [imageUrls, setImageUrls] = useState<string[]>([]);
-  const [video, setVideo] = useState<{ videoUrl: string; thumbnailUrl: string } | null>(null);
-  const [videoStatus, setVideoStatus] = useState<VideoUploadStatus>("idle");
+  const [videoHandle, setVideoHandle] = useState<string | null>(null);
+  const [videoPending, setVideoPending] = useState(false);
+  // Leaving the form without publishing drops its upload; a published
+  // listing's upload is never dropped (cancelVideoUpload checks that).
+  const videoHandleRef = useRef<string | null>(null);
+  useEffect(() => {
+    videoHandleRef.current = videoHandle;
+  }, [videoHandle]);
+  useEffect(() => () => cancelVideoUpload(videoHandleRef.current), []);
   const [expiresAt, setExpiresAt] = useState("");
   const [startsAt, setStartsAt] = useState("");
   const [status, setStatus] = useState<Status>("idle");
@@ -45,7 +57,6 @@ export default function MysteryBoxForm({ dict }: { dict: Dictionary }) {
   const [locateError, setLocateError] = useState("");
   const [detecting, setDetecting] = useState(false);
   const [expiryBounds, setExpiryBounds] = useState<{ min: string; max: string } | null>(null);
-  const waitingForVideoRef = useRef(false);
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
@@ -101,6 +112,14 @@ export default function MysteryBoxForm({ dict }: { dict: Dictionary }) {
   async function submitMysteryBox() {
     setStatus("submitting");
     try {
+      // A video still uploading doesn't hold the post up: the listing is
+      // published now and the video is attached as soon as it's ready.
+      let videoFields;
+      try {
+        videoFields = await videoFieldsForListing(videoHandle);
+      } catch {
+        throw new Error(dict.postListing.videoBlockingError);
+      }
       const res = await fetch("/api/listings/mystery-box", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -110,8 +129,7 @@ export default function MysteryBoxForm({ dict }: { dict: Dictionary }) {
           extraInfo,
           city,
           photoUrls: imageUrls,
-          videoUrl: video?.videoUrl,
-          videoThumbnailUrl: video?.thumbnailUrl,
+          ...videoFields,
           lat: coords?.lat,
           lng: coords?.lng,
           expiresAt: new Date(expiresAt).toISOString(),
@@ -120,23 +138,14 @@ export default function MysteryBoxForm({ dict }: { dict: Dictionary }) {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? dict.mysteryBoxForm.genericError);
+      if (videoHandle && videoFields.videoUploadId) {
+        void markVideoSubmitted(videoHandle, String(data.listing.id));
+        setVideoPending(true);
+      }
       setStatus("success");
     } catch (err) {
       setError(err instanceof Error ? err.message : dict.mysteryBoxForm.genericError);
       setStatus("idle");
-    }
-  }
-
-  function handleVideoStatusChange(next: VideoUploadStatus) {
-    setVideoStatus(next);
-    if (!waitingForVideoRef.current) return;
-    if (next === "done") {
-      waitingForVideoRef.current = false;
-      void submitMysteryBox();
-    } else if (next === "error") {
-      waitingForVideoRef.current = false;
-      setStatus("idle");
-      setError(dict.postListing.videoBlockingError);
     }
   }
 
@@ -146,7 +155,7 @@ export default function MysteryBoxForm({ dict }: { dict: Dictionary }) {
       setError(dict.mysteryBoxForm.requiredFieldsError);
       return;
     }
-    if (imageUrls.length === 0 && !video) {
+    if (imageUrls.length === 0 && !videoHandle) {
       setError(dict.mysteryBoxForm.photosRequiredError);
       return;
     }
@@ -162,16 +171,11 @@ export default function MysteryBoxForm({ dict }: { dict: Dictionary }) {
       setError(dict.mysteryBoxForm.startAfterExpiryError);
       return;
     }
-    if (videoStatus === "error") {
+    if (getVideoUpload(videoHandle)?.stage === "error") {
       setError(dict.postListing.videoBlockingError);
       return;
     }
     setError("");
-    if (videoStatus === "checking" || videoStatus === "uploading") {
-      waitingForVideoRef.current = true;
-      setStatus("waiting-for-video");
-      return;
-    }
     void submitMysteryBox();
   }
 
@@ -183,6 +187,7 @@ export default function MysteryBoxForm({ dict }: { dict: Dictionary }) {
         </div>
         <h2 className="mt-5 text-2xl font-extrabold">{dict.mysteryBoxForm.successTitle}</h2>
         <p className="mt-2 max-w-md text-sm text-muted">{dict.mysteryBoxForm.successBody}</p>
+        {videoPending && <p className="mt-2 max-w-md text-xs text-muted">{dict.postListing.videoPostedPending}</p>}
         <div className="mt-6 flex flex-wrap justify-center gap-3">
           <Link
             href="/sirli-quti"
@@ -305,8 +310,8 @@ export default function MysteryBoxForm({ dict }: { dict: Dictionary }) {
         <div className="mt-3">
           <MediaUploader
             onImagesChange={setImageUrls}
-            onVideoChange={setVideo}
-            onVideoStatusChange={handleVideoStatusChange}
+            videoHandle={videoHandle}
+            onVideoHandleChange={setVideoHandle}
             dict={dict}
           />
         </div>
@@ -348,13 +353,13 @@ export default function MysteryBoxForm({ dict }: { dict: Dictionary }) {
 
       <button
         type="submit"
-        disabled={status === "submitting" || status === "waiting-for-video"}
+        disabled={status === "submitting"}
         className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-accent-gold to-brand-via px-5 py-3.5 text-sm font-bold text-white disabled:opacity-70"
       >
-        {status === "submitting" || status === "waiting-for-video" ? (
+        {status === "submitting" ? (
           <>
             <Loader2 className="h-4 w-4 animate-spin" />
-            {status === "waiting-for-video" ? dict.postListing.waitingForVideo : dict.mysteryBoxForm.submitting}
+            {dict.mysteryBoxForm.submitting}
           </>
         ) : (
           <>

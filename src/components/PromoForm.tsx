@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import {
@@ -16,7 +16,12 @@ import type { Dictionary } from "@/lib/i18n";
 import type { PromoCategoryId } from "@/lib/types";
 import { cities, promoCategories } from "@/lib/data";
 import MediaUploader from "./MediaUploader";
-import type { VideoUploadStatus } from "./VideoUploader";
+import {
+  cancelVideoUpload,
+  getVideoUpload,
+  markVideoSubmitted,
+  videoFieldsForListing,
+} from "@/lib/video-upload-store";
 
 const LocationPickerMap = dynamic(() => import("./LocationPickerMap"), {
   ssr: false,
@@ -27,7 +32,7 @@ const LocationPickerMap = dynamic(() => import("./LocationPickerMap"), {
   ),
 });
 
-type Status = "idle" | "submitting" | "waiting-for-video" | "success";
+type Status = "idle" | "submitting" | "success";
 
 export default function PromoForm({ dict }: { dict: Dictionary }) {
   const [title, setTitle] = useState("");
@@ -37,15 +42,21 @@ export default function PromoForm({ dict }: { dict: Dictionary }) {
   const [city, setCity] = useState("");
   const [contactPhone, setContactPhone] = useState("");
   const [imageUrls, setImageUrls] = useState<string[]>([]);
-  const [video, setVideo] = useState<{ videoUrl: string; thumbnailUrl: string } | null>(null);
-  const [videoStatus, setVideoStatus] = useState<VideoUploadStatus>("idle");
+  const [videoHandle, setVideoHandle] = useState<string | null>(null);
+  const [videoPending, setVideoPending] = useState(false);
+  // Leaving the form without publishing drops its upload; a published
+  // listing's upload is never dropped (cancelVideoUpload checks that).
+  const videoHandleRef = useRef<string | null>(null);
+  useEffect(() => {
+    videoHandleRef.current = videoHandle;
+  }, [videoHandle]);
+  useEffect(() => () => cancelVideoUpload(videoHandleRef.current), []);
   const [status, setStatus] = useState<Status>("idle");
   const [error, setError] = useState("");
   const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
   const [locating, setLocating] = useState(false);
   const [locateError, setLocateError] = useState("");
   const [detecting, setDetecting] = useState(false);
-  const waitingForVideoRef = useRef(false);
 
   async function handleCoordsChange(next: { lat: number; lng: number }) {
     setCoords(next);
@@ -91,6 +102,14 @@ export default function PromoForm({ dict }: { dict: Dictionary }) {
   async function submitPromo() {
     setStatus("submitting");
     try {
+      // A video still uploading doesn't hold the post up: the listing is
+      // published now and the video is attached as soon as it's ready.
+      let videoFields;
+      try {
+        videoFields = await videoFieldsForListing(videoHandle);
+      } catch {
+        throw new Error(dict.postListing.videoBlockingError);
+      }
       const res = await fetch("/api/listings/promo", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -102,31 +121,21 @@ export default function PromoForm({ dict }: { dict: Dictionary }) {
           city,
           contactPhone,
           photoUrls: imageUrls,
-          videoUrl: video?.videoUrl,
-          videoThumbnailUrl: video?.thumbnailUrl,
+          ...videoFields,
           lat: coords?.lat,
           lng: coords?.lng,
         }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? dict.promoForm.genericError);
+      if (videoHandle && videoFields.videoUploadId) {
+        void markVideoSubmitted(videoHandle, String(data.listing.id));
+        setVideoPending(true);
+      }
       setStatus("success");
     } catch (err) {
       setError(err instanceof Error ? err.message : dict.promoForm.genericError);
       setStatus("idle");
-    }
-  }
-
-  function handleVideoStatusChange(next: VideoUploadStatus) {
-    setVideoStatus(next);
-    if (!waitingForVideoRef.current) return;
-    if (next === "done") {
-      waitingForVideoRef.current = false;
-      void submitPromo();
-    } else if (next === "error") {
-      waitingForVideoRef.current = false;
-      setStatus("idle");
-      setError(dict.postListing.videoBlockingError);
     }
   }
 
@@ -136,16 +145,11 @@ export default function PromoForm({ dict }: { dict: Dictionary }) {
       setError(dict.promoForm.requiredFieldsError);
       return;
     }
-    if (videoStatus === "error") {
+    if (getVideoUpload(videoHandle)?.stage === "error") {
       setError(dict.postListing.videoBlockingError);
       return;
     }
     setError("");
-    if (videoStatus === "checking" || videoStatus === "uploading") {
-      waitingForVideoRef.current = true;
-      setStatus("waiting-for-video");
-      return;
-    }
     void submitPromo();
   }
 
@@ -157,6 +161,7 @@ export default function PromoForm({ dict }: { dict: Dictionary }) {
         </div>
         <h2 className="mt-5 text-2xl font-extrabold">{dict.promoForm.successTitle}</h2>
         <p className="mt-2 max-w-md text-sm text-muted">{dict.promoForm.successBody}</p>
+        {videoPending && <p className="mt-2 max-w-md text-xs text-muted">{dict.postListing.videoPostedPending}</p>}
         <div className="mt-6 flex flex-wrap justify-center gap-3">
           <Link href="/takliflar" className="btn-brand rounded-xl px-5 py-2.5 text-sm font-semibold text-white">
             {dict.promoForm.viewPromoLink}
@@ -279,8 +284,8 @@ export default function PromoForm({ dict }: { dict: Dictionary }) {
         <div className="mt-3">
           <MediaUploader
             onImagesChange={setImageUrls}
-            onVideoChange={setVideo}
-            onVideoStatusChange={handleVideoStatusChange}
+            videoHandle={videoHandle}
+            onVideoHandleChange={setVideoHandle}
             dict={dict}
           />
         </div>
@@ -310,13 +315,13 @@ export default function PromoForm({ dict }: { dict: Dictionary }) {
 
       <button
         type="submit"
-        disabled={status === "submitting" || status === "waiting-for-video"}
+        disabled={status === "submitting"}
         className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-sky-500 to-brand-via px-5 py-3.5 text-sm font-bold text-white disabled:opacity-70"
       >
-        {status === "submitting" || status === "waiting-for-video" ? (
+        {status === "submitting" ? (
           <>
             <Loader2 className="h-4 w-4 animate-spin" />
-            {status === "waiting-for-video" ? dict.postListing.waitingForVideo : dict.promoForm.submitting}
+            {dict.promoForm.submitting}
           </>
         ) : (
           <>

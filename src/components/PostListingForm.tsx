@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import {
@@ -17,7 +17,12 @@ import type { Dictionary, Locale } from "@/lib/i18n";
 import { formatPostSuccessBody } from "@/lib/i18n/format";
 import { categories, cities } from "@/lib/data";
 import MediaUploader from "./MediaUploader";
-import type { VideoUploadStatus } from "./VideoUploader";
+import {
+  cancelVideoUpload,
+  getVideoUpload,
+  markVideoSubmitted,
+  videoFieldsForListing,
+} from "@/lib/video-upload-store";
 
 const LocationPickerMap = dynamic(() => import("./LocationPickerMap"), {
   ssr: false,
@@ -28,7 +33,7 @@ const LocationPickerMap = dynamic(() => import("./LocationPickerMap"), {
   ),
 });
 
-type Status = "idle" | "submitting" | "waiting-for-video" | "success";
+type Status = "idle" | "submitting" | "success";
 
 export default function PostListingForm({ dict, locale }: { dict: Dictionary; locale: Locale }) {
   const [kind, setKind] = useState<ListingKind>("lost");
@@ -40,17 +45,17 @@ export default function PostListingForm({ dict, locale }: { dict: Dictionary; lo
   const [reward, setReward] = useState("");
   const [contactPhone, setContactPhone] = useState("");
   const [imageUrls, setImageUrls] = useState<string[]>([]);
-  const [video, setVideo] = useState<{ videoUrl: string; thumbnailUrl: string } | null>(null);
-  const [videoStatus, setVideoStatus] = useState<VideoUploadStatus>("idle");
+  const [videoHandle, setVideoHandle] = useState<string | null>(null);
+  const [videoPending, setVideoPending] = useState(false);
   const [status, setStatus] = useState<Status>("idle");
   const [error, setError] = useState("");
-  // handleVideoStatusChange is called from a callback VideoUploader captured
-  // back when the file was first selected, well before "waiting-for-video"
-  // existed — that closure's own `status` read would be permanently stale
-  // (always "idle"), so whether we're currently holding the post for the
-  // video lives in a ref instead, which every closure reads the current
-  // value of regardless of when it was created.
-  const waitingForVideoRef = useRef(false);
+  // Leaving the form without publishing drops its upload; a published
+  // listing's upload is never dropped (cancelVideoUpload checks that).
+  const videoHandleRef = useRef<string | null>(null);
+  useEffect(() => {
+    videoHandleRef.current = videoHandle;
+  }, [videoHandle]);
+  useEffect(() => () => cancelVideoUpload(videoHandleRef.current), []);
   const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
   const [locating, setLocating] = useState(false);
   const [locateError, setLocateError] = useState("");
@@ -101,9 +106,31 @@ export default function PostListingForm({ dict, locale }: { dict: Dictionary; lo
     );
   }
 
-  async function submitListing() {
+  async function handleSubmit(e: FormEvent) {
+    e.preventDefault();
+    if (!title.trim() || !contactPhone.trim()) {
+      setError(dict.postListing.requiredFieldsError);
+      return;
+    }
+    if (!city) {
+      setError(dict.postListing.locationRequiredError);
+      return;
+    }
+    if (getVideoUpload(videoHandle)?.stage === "error") {
+      setError(dict.postListing.videoBlockingError);
+      return;
+    }
+    setError("");
     setStatus("submitting");
     try {
+      // A video still uploading doesn't hold the post up: the listing is
+      // published now and the video is attached as soon as it's ready.
+      let videoFields;
+      try {
+        videoFields = await videoFieldsForListing(videoHandle);
+      } catch {
+        throw new Error(dict.postListing.videoBlockingError);
+      }
       const res = await fetch("/api/listings", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -117,62 +144,21 @@ export default function PostListingForm({ dict, locale }: { dict: Dictionary; lo
           reward: reward ? Number(reward) : null,
           contactPhone,
           photoUrls: imageUrls,
-          videoUrl: video?.videoUrl,
-          videoThumbnailUrl: video?.thumbnailUrl,
+          ...videoFields,
           lat: coords?.lat,
           lng: coords?.lng,
         }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? dict.postListing.genericError);
+      if (videoHandle && videoFields.videoUploadId) {
+        void markVideoSubmitted(videoHandle, String(data.listing.id));
+        setVideoPending(true);
+      }
       setStatus("success");
     } catch (err) {
       setError(err instanceof Error ? err.message : dict.postListing.genericError);
       setStatus("idle");
-    }
-  }
-
-  function handleSubmit(e: FormEvent) {
-    e.preventDefault();
-    if (!title.trim() || !contactPhone.trim()) {
-      setError(dict.postListing.requiredFieldsError);
-      return;
-    }
-    if (!city) {
-      setError(dict.postListing.locationRequiredError);
-      return;
-    }
-    if (videoStatus === "error") {
-      setError(dict.postListing.videoBlockingError);
-      return;
-    }
-    setError("");
-    if (videoStatus === "checking" || videoStatus === "uploading") {
-      // The video hasn't finished uploading yet — hold the post until it
-      // does (or fails), Instagram-style, instead of shipping a listing
-      // with no video because the poster tapped "post" a beat too early.
-      waitingForVideoRef.current = true;
-      setStatus("waiting-for-video");
-      return;
-    }
-    void submitListing();
-  }
-
-  // Finishes a post that was held for an in-flight video upload, the
-  // moment that upload resolves either way. This runs from VideoUploader's
-  // own status callback rather than an effect watching state, so there's no
-  // cascading-render concern — it's a direct response to the upload actually
-  // finishing, not a render-time side effect.
-  function handleVideoStatusChange(next: VideoUploadStatus) {
-    setVideoStatus(next);
-    if (!waitingForVideoRef.current) return;
-    if (next === "done") {
-      waitingForVideoRef.current = false;
-      void submitListing();
-    } else if (next === "error") {
-      waitingForVideoRef.current = false;
-      setStatus("idle");
-      setError(dict.postListing.videoBlockingError);
     }
   }
 
@@ -185,9 +171,8 @@ export default function PostListingForm({ dict, locale }: { dict: Dictionary; lo
     setReward("");
     setContactPhone("");
     setImageUrls([]);
-    setVideo(null);
-    setVideoStatus("idle");
-    waitingForVideoRef.current = false;
+    setVideoHandle(null);
+    setVideoPending(false);
     setStatus("idle");
     setCoords(null);
     setLocateError("");
@@ -204,6 +189,7 @@ export default function PostListingForm({ dict, locale }: { dict: Dictionary; lo
         <p className="mt-2 max-w-md text-sm text-muted">
           {formatPostSuccessBody(locale, kindLabel, title)}
         </p>
+        {videoPending && <p className="mt-2 max-w-md text-xs text-muted">{dict.postListing.videoPostedPending}</p>}
         {imageUrls.length > 0 && (
           <div className="mt-5 flex flex-wrap justify-center gap-3">
             {imageUrls.map((url) => (
@@ -367,8 +353,8 @@ export default function PostListingForm({ dict, locale }: { dict: Dictionary; lo
         <div className="mt-3">
           <MediaUploader
             onImagesChange={setImageUrls}
-            onVideoChange={setVideo}
-            onVideoStatusChange={handleVideoStatusChange}
+            videoHandle={videoHandle}
+            onVideoHandleChange={setVideoHandle}
             dict={dict}
             allowRedaction={category === "hujjatlar"}
           />
@@ -419,13 +405,13 @@ export default function PostListingForm({ dict, locale }: { dict: Dictionary; lo
 
       <button
         type="submit"
-        disabled={status === "submitting" || status === "waiting-for-video"}
+        disabled={status === "submitting"}
         className="btn-brand flex w-full items-center justify-center gap-2 rounded-xl px-5 py-3.5 text-sm font-bold text-white disabled:opacity-70"
       >
-        {status === "submitting" || status === "waiting-for-video" ? (
+        {status === "submitting" ? (
           <>
             <Loader2 className="h-4 w-4 animate-spin" />
-            {status === "waiting-for-video" ? dict.postListing.waitingForVideo : dict.postListing.submitting}
+            {dict.postListing.submitting}
           </>
         ) : (
           dict.postListing.submit
