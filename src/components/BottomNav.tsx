@@ -16,7 +16,9 @@ export default function BottomNav({
   dict: Dictionary;
 }) {
   const pathname = usePathname();
-  const onPostPage = pathname === "/elon-qoshish";
+  // No "post a listing" button where it can't be used yet (signing in) or
+  // you're already doing it.
+  const hideFab = pathname === "/elon-qoshish" || pathname === "/kirish";
 
   const items = [
     { href: "/", icon: Home, label: dict.bottomNav.home },
@@ -42,7 +44,7 @@ export default function BottomNav({
           hamburger menu on mobile — buried a tap deeper than everything
           else. Float it as its own button above the bar instead, where
           it's immediately visible and reachable with a thumb. */}
-      {!onPostPage && (
+      {!hideFab && (
         <Link
           href="/elon-qoshish"
           aria-label={dict.nav.postListing}

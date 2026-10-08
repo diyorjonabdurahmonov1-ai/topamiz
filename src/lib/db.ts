@@ -214,6 +214,9 @@ if (!userColumns2.some((c) => c.name === "blocked_at")) {
 if (!userColumns2.some((c) => c.name === "moderation_strikes")) {
   db.exec("ALTER TABLE users ADD COLUMN moderation_strikes INTEGER NOT NULL DEFAULT 0");
 }
+if (!userColumns2.some((c) => c.name === "terms_accepted_at")) {
+  db.exec("ALTER TABLE users ADD COLUMN terms_accepted_at TEXT");
+}
 
 // Lets a message carry proof photos — used by the "I found this" flow on a
 // lost listing, so a finder can attach a picture instead of just text.

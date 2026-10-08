@@ -103,18 +103,45 @@ export function findOrCreateGoogleUser(params: {
   return user;
 }
 
-// `phone` is +998XXXXXXXXX. New phone accounts get a placeholder name the
-// poster can change on their profile.
-export function findOrCreatePhoneUser(phone: string): AuthUser {
-  const row = db.prepare("SELECT * FROM users WHERE phone = ?").get(phone) as UserRow | undefined;
-  if (row) return rowToUser(row);
+const SCRYPT_KEYLEN = 64;
 
+// Stored as "scrypt$<salt>$<hash>" — never the password itself.
+export function hashPassword(password: string): string {
+  const salt = crypto.randomBytes(16);
+  const hash = crypto.scryptSync(password, salt, SCRYPT_KEYLEN);
+  return `scrypt$${salt.toString("hex")}$${hash.toString("hex")}`;
+}
+
+export function verifyPassword(password: string, stored: string | null): boolean {
+  const [scheme, saltHex, hashHex] = (stored ?? "").split("$");
+  if (scheme !== "scrypt" || !saltHex || !hashHex) return false;
+  const expected = Buffer.from(hashHex, "hex");
+  const actual = crypto.scryptSync(password, Buffer.from(saltHex, "hex"), expected.length);
+  return crypto.timingSafeEqual(actual, expected);
+}
+
+// `phone` is always +998XXXXXXXXX.
+export function getPhoneAccount(phone: string): { user: AuthUser; passwordHash: string | null } | null {
+  const row = db.prepare("SELECT * FROM users WHERE phone = ?").get(phone) as
+    | (UserRow & { password_hash: string | null })
+    | undefined;
+  return row ? { user: rowToUser(row), passwordHash: row.password_hash } : null;
+}
+
+export function createPhoneUser(params: { phone: string; name: string; password: string }): AuthUser {
   const info = db
-    .prepare("INSERT INTO users (phone, name, avatar_color) VALUES (?, ?, ?)")
-    .run(phone, `Foydalanuvchi ${phone.slice(-4)}`, pickAvatarColor(phone));
+    .prepare(
+      `INSERT INTO users (phone, password_hash, name, avatar_color, terms_accepted_at)
+       VALUES (?, ?, ?, ?, datetime('now'))`
+    )
+    .run(params.phone, hashPassword(params.password), params.name, pickAvatarColor(params.phone));
   const user = getUserById(Number(info.lastInsertRowid));
   if (!user) throw new Error("Foydalanuvchi yaratilmadi");
   return user;
+}
+
+export function setUserPassword(userId: number, password: string): void {
+  db.prepare("UPDATE users SET password_hash = ? WHERE id = ?").run(hashPassword(password), userId);
 }
 
 export function createSession(userId: number): { token: string; expiresAt: Date } {
