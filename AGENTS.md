@@ -44,6 +44,17 @@ cold start or an ephemeral filesystem.
   redirect URI must be exactly `https://findo.net.uz/api/auth/google/callback`.
   Without these two vars set, `/kirish` renders fine but clicking through
   fails.
+- Phone-number sign-in (`/kirish`, `src/lib/eskiz.ts`, `/api/auth/phone/*`)
+  sends a 6-digit SMS code through Eskiz (my.eskiz.uz — the same account the
+  owner uses for another app). Needs `ESKIZ_EMAIL` and `ESKIZ_PASSWORD` (the
+  Eskiz cabinet login) and optionally `ESKIZ_FROM` (sender nickname,
+  defaults to Eskiz's `4546`; set to e.g. `FINDO` once that nickname is
+  approved under "Nik uchun ariza") in `.env.production.local`. Eskiz only
+  delivers texts matching an approved template ("Mening matnlarim"), so the
+  text in `loginCodeMessage()` must stay word-for-word identical to the one
+  approved there: `Findo: tasdiqlash kodingiz 123456. Kodni hech kimga bermang.`
+  Without the two vars, the phone form shows "SMS xizmati hozircha
+  sozlanmagan" and Google sign-in keeps working.
 - The home-page ad banner (`/admin/reklama`, `src/lib/ads.ts`) is managed by
   whoever's Google account email is listed in `ADMIN_EMAILS` (comma-separated
   if more than one), also in `.env.production.local`. Anyone else hitting

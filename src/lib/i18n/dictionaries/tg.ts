@@ -347,10 +347,19 @@ const tg: Dictionary = {
   login: {
     title: "Хуш",
     titleHighlight: "омадед",
-    subtitle: "Барои идома додан бо ҳисоби Google-и худ ворид шавед.",
+    subtitle: "Бо рақами телефон ё ҳисоби Google-и худ ворид шавед.",
     blockedError: "Ҳисоби шумо блок шудааст. Агар савол бошад, бо дастгирӣ тамос гиред.",
     genericError: "Ҳангоми вуруд бо Google хатогӣ рӯй дод. Бори дигар кӯшиш кунед.",
     googleButton: "Бо Google ворид шудан",
+    orDivider: "ё",
+    phoneLabel: "Рақами телефон",
+    sendCode: "Гирифтани код",
+    phoneHint: "Ба рақаматон тавассути SMS коди 6-рақама мефиристем. Агар аккаунт надошта бошед, худкор кушода мешавад.",
+    codeSentTo: "Код фиристода шуд:",
+    codeLabel: "Коди SMS",
+    verify: "Ворид шудан",
+    resend: "Аз нав фиристодани код",
+    changeNumber: "Иваз кардани рақам",
   },
 
   languageSwitcher: {

@@ -326,6 +326,15 @@ export interface Dictionary {
     blockedError: string;
     genericError: string;
     googleButton: string;
+    orDivider: string;
+    phoneLabel: string;
+    sendCode: string;
+    phoneHint: string;
+    codeSentTo: string;
+    codeLabel: string;
+    verify: string;
+    resend: string;
+    changeNumber: string;
   };
 
   languageSwitcher: {

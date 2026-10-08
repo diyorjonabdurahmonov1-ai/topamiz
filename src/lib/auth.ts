@@ -103,6 +103,20 @@ export function findOrCreateGoogleUser(params: {
   return user;
 }
 
+// `phone` is +998XXXXXXXXX. New phone accounts get a placeholder name the
+// poster can change on their profile.
+export function findOrCreatePhoneUser(phone: string): AuthUser {
+  const row = db.prepare("SELECT * FROM users WHERE phone = ?").get(phone) as UserRow | undefined;
+  if (row) return rowToUser(row);
+
+  const info = db
+    .prepare("INSERT INTO users (phone, name, avatar_color) VALUES (?, ?, ?)")
+    .run(phone, `Foydalanuvchi ${phone.slice(-4)}`, pickAvatarColor(phone));
+  const user = getUserById(Number(info.lastInsertRowid));
+  if (!user) throw new Error("Foydalanuvchi yaratilmadi");
+  return user;
+}
+
 export function createSession(userId: number): { token: string; expiresAt: Date } {
   const token = crypto.randomBytes(32).toString("hex");
   const expiresAt = new Date(Date.now() + SESSION_DAYS * 24 * 60 * 60 * 1000);

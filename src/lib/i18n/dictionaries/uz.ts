@@ -350,10 +350,19 @@ const uz: Dictionary = {
   login: {
     title: "Xush",
     titleHighlight: "kelibsiz",
-    subtitle: "Davom etish uchun Google hisobingiz bilan kiring.",
+    subtitle: "Telefon raqamingiz yoki Google hisobingiz bilan kiring.",
     blockedError: "Hisobingiz bloklangan. Savollar bo'lsa, qo'llab-quvvatlash bilan bog'laning.",
     genericError: "Google bilan kirishda xatolik yuz berdi. Qayta urinib ko'ring.",
     googleButton: "Google orqali kirish",
+    orDivider: "yoki",
+    phoneLabel: "Telefon raqam",
+    sendCode: "Kod olish",
+    phoneHint: "Raqamingizga SMS orqali 6 xonali kod yuboramiz. Akkauntingiz bo'lmasa, avtomatik ochiladi.",
+    codeSentTo: "Kod yuborildi:",
+    codeLabel: "SMS kod",
+    verify: "Kirish",
+    resend: "Kodni qayta yuborish",
+    changeNumber: "Raqamni o'zgartirish",
   },
 
   languageSwitcher: {

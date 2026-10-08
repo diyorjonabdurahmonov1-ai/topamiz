@@ -347,10 +347,19 @@ const ru: Dictionary = {
   login: {
     title: "Добро",
     titleHighlight: "пожаловать",
-    subtitle: "Войдите через аккаунт Google, чтобы продолжить.",
+    subtitle: "Войдите по номеру телефона или через аккаунт Google.",
     blockedError: "Ваш аккаунт заблокирован. По вопросам обращайтесь в поддержку.",
     genericError: "Ошибка при входе через Google. Попробуйте снова.",
     googleButton: "Войти через Google",
+    orDivider: "или",
+    phoneLabel: "Номер телефона",
+    sendCode: "Получить код",
+    phoneHint: "Мы отправим 6-значный код по SMS. Если аккаунта ещё нет, он создастся автоматически.",
+    codeSentTo: "Код отправлен на:",
+    codeLabel: "Код из SMS",
+    verify: "Войти",
+    resend: "Отправить код ещё раз",
+    changeNumber: "Изменить номер",
   },
 
   languageSwitcher: {

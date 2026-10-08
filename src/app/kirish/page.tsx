@@ -4,6 +4,7 @@ import { getCurrentUser } from "@/lib/auth";
 import { getLocale } from "@/lib/i18n/server";
 import { getDictionary } from "@/lib/i18n";
 import GoogleLoginButton from "@/components/GoogleLoginButton";
+import PhoneLoginForm from "@/components/PhoneLoginForm";
 
 export const metadata: Metadata = {
   title: "Kirish — Findo",
@@ -37,6 +38,14 @@ export default async function LoginPage(props: PageProps<"/kirish">) {
           </p>
         )
       )}
+
+      <PhoneLoginForm dict={dict} />
+
+      <div className="my-6 flex items-center gap-3 text-xs text-muted">
+        <span className="h-px flex-1 bg-border" />
+        {dict.login.orDivider}
+        <span className="h-px flex-1 bg-border" />
+      </div>
 
       <GoogleLoginButton label={dict.login.googleButton} />
     </div>
