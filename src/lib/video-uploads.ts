@@ -5,6 +5,7 @@ import os from "node:os";
 import path from "node:path";
 import crypto from "node:crypto";
 import { uploadToR2 } from "./r2";
+import { setListingVideo } from "./listings";
 
 const execFileAsync = promisify(execFile);
 
@@ -37,11 +38,23 @@ interface UploadSession {
   videoUrl?: string;
   thumbnailUrl?: string;
   error?: string;
+  // Set when the poster published the listing before the video finished:
+  // the video is filled into that listing as soon as it's ready.
+  listingId?: string;
+}
+
+interface FfprobeStream {
+  codec_type?: string;
+  codec_name?: string;
+  width?: number;
+  height?: number;
+  pix_fmt?: string;
+  bit_rate?: string;
 }
 
 interface FfprobeResult {
-  format?: { duration?: string };
-  streams?: { codec_type?: string }[];
+  format?: { duration?: string; bit_rate?: string };
+  streams?: FfprobeStream[];
 }
 
 // In-memory is enough: the app runs as a single PM2 process, and an upload
@@ -89,6 +102,18 @@ export async function createUploadSession(userId: number, size: number): Promise
 export function getUploadSession(id: string, userId: number): UploadSession | null {
   const session = sessions.get(id);
   return session && session.userId === userId ? session : null;
+}
+
+// Links an upload to the listing it belongs to. If the video is already
+// processed it's written to the listing right away; otherwise processVideo
+// writes it when it finishes.
+export function attachToListing(session: UploadSession, listingId: string): "attached" | "failed" {
+  if (session.status === "error") return "failed";
+  session.listingId = listingId;
+  if (session.status === "done" && session.videoUrl && session.thumbnailUrl) {
+    setListingVideo(listingId, session.videoUrl, session.thumbnailUrl);
+  }
+  return "attached";
 }
 
 // Each chunk is written at its own offset rather than appended, so chunks
@@ -158,9 +183,9 @@ async function processVideo(session: UploadSession) {
         "-v",
         "error",
         "-show_entries",
-        "format=duration",
+        "format=duration,bit_rate",
         "-show_entries",
-        "stream=codec_type",
+        "stream=codec_type,codec_name,width,height,pix_fmt,bit_rate",
         "-of",
         "json",
         inputPath,
@@ -185,31 +210,47 @@ async function processVideo(session: UploadSession) {
       return;
     }
 
-    // Re-encode to a bounded resolution/bitrate so every uploaded clip costs
-    // roughly the same, modest amount of R2 storage regardless of how the
-    // phone camera originally recorded it.
+    // Most uploads arrive already compressed on the phone (H.264 + AAC at a
+    // modest size) — those only need repackaging for fast streaming, which
+    // takes a second instead of a full re-encode. Anything else is
+    // re-encoded to a bounded resolution/bitrate so every clip costs
+    // roughly the same, modest amount of R2 storage.
+    const video = probe.streams?.find((s) => s.codec_type === "video");
+    const audio = probe.streams?.find((s) => s.codec_type === "audio");
+    const bitrate = Number(video?.bit_rate ?? probe.format?.bit_rate ?? 0);
+    const copyVideo =
+      video?.codec_name === "h264" &&
+      video.pix_fmt === "yuv420p" &&
+      Math.max(video.width ?? 0, video.height ?? 0) <= 1280 &&
+      bitrate > 0 &&
+      bitrate <= 3_500_000;
+    const copyAudio = !audio || audio.codec_name === "aac";
+
+    const videoArgs = copyVideo
+      ? ["-c:v", "copy"]
+      : [
+          "-vf",
+          "scale='min(1280,iw)':'min(1280,ih)':force_original_aspect_ratio=decrease",
+          "-c:v",
+          "libx264",
+          "-preset",
+          "veryfast",
+          "-crf",
+          "28",
+          "-maxrate",
+          "2M",
+          "-bufsize",
+          "4M",
+        ];
+    const audioArgs = copyAudio ? ["-c:a", "copy"] : ["-c:a", "aac", "-b:a", "128k"];
     await execFileAsync("ffmpeg", [
       "-y",
       "-i",
       inputPath,
-      "-vf",
-      "scale='min(1280,iw)':'min(1280,ih)':force_original_aspect_ratio=decrease",
-      "-c:v",
-      "libx264",
-      "-preset",
-      "veryfast",
-      "-crf",
-      "28",
-      "-maxrate",
-      "2M",
-      "-bufsize",
-      "4M",
+      ...videoArgs,
+      ...audioArgs,
       "-movflags",
       "+faststart",
-      "-c:a",
-      "aac",
-      "-b:a",
-      "128k",
       outputPath,
     ]);
 
@@ -234,6 +275,7 @@ async function processVideo(session: UploadSession) {
     session.videoUrl = videoUrl;
     session.thumbnailUrl = thumbnailUrl;
     session.status = "done";
+    if (session.listingId) setListingVideo(session.listingId, videoUrl, thumbnailUrl);
   } finally {
     await rm(session.dir, { recursive: true, force: true });
   }

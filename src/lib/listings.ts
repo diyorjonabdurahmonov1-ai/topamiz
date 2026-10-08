@@ -379,6 +379,18 @@ export function deleteListing(id: string): boolean {
   return info.changes > 0;
 }
 
+// A video uploaded in the background lands after its listing already
+// exists — the upload pipeline fills it in once the file is ready.
+export function setListingVideo(id: string, videoUrl: string, videoThumbnailUrl: string): void {
+  const numId = Number(id);
+  if (!Number.isInteger(numId)) return;
+  db.prepare("UPDATE listings SET video_url = ?, video_thumbnail_url = ? WHERE id = ?").run(
+    videoUrl,
+    videoThumbnailUrl,
+    numId
+  );
+}
+
 export function getListingOwnerId(id: string): number | null {
   const numId = Number(id);
   if (!Number.isInteger(numId)) return null;

@@ -13,6 +13,7 @@ import { sendPushToUser } from "@/lib/push";
 import { getClientIp, rateLimit } from "@/lib/rate-limit";
 import { countryForIp } from "@/lib/geo";
 import { R2_PUBLIC_URL } from "@/lib/r2";
+import { getUploadSession } from "@/lib/video-uploads";
 
 // Uploaded photos only ever come back from POST /api/upload as this prefix —
 // anything else is a client claiming an arbitrary external URL is one of ours.
@@ -61,6 +62,11 @@ export async function POST(request: Request) {
     body.videoThumbnailUrl.startsWith(R2_PUBLIC_URL)
       ? body.videoThumbnailUrl
       : null;
+  // A video still uploading in the background counts toward "a photo or a
+  // video" — it's attached to the listing as soon as it's ready.
+  const pendingVideo =
+    typeof body?.videoUploadId === "string" ? getUploadSession(body.videoUploadId, user.id) : null;
+  const hasPendingVideo = !!pendingVideo && pendingVideo.status !== "error";
   const latRaw = body?.lat;
   const lngRaw = body?.lng;
   const lat =
@@ -78,7 +84,7 @@ export async function POST(request: Request) {
     !city ||
     lat === null ||
     lng === null ||
-    (photoUrls.length === 0 && !videoUrl)
+    (photoUrls.length === 0 && !videoUrl && !hasPendingVideo)
   ) {
     return NextResponse.json(
       { error: "Iltimos, * bilan belgilangan barcha maydonlarni to'ldiring." },

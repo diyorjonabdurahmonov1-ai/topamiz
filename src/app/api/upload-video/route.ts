@@ -2,7 +2,14 @@ import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth";
 import { getClientIp, rateLimit } from "@/lib/rate-limit";
 import { isR2Configured } from "@/lib/r2";
-import { CHUNK_SIZE, MAX_RAW_SIZE, createUploadSession, isAcceptableVideoType } from "@/lib/video-uploads";
+import { getListingOwnerId } from "@/lib/listings";
+import {
+  CHUNK_SIZE,
+  MAX_RAW_SIZE,
+  attachToListing,
+  createUploadSession,
+  isAcceptableVideoType,
+} from "@/lib/video-uploads";
 
 // Starts a chunked upload. The file itself then arrives in CHUNK_SIZE pieces
 // via PUT /api/upload-video/[id], so no single request has to carry a whole
@@ -40,6 +47,14 @@ export async function POST(request: Request) {
     );
   }
 
+  // A retry for a listing that's already published passes its id, so the
+  // video still lands on that listing once this new upload finishes.
+  const listingId = typeof body?.listingId === "string" ? body.listingId : null;
+  if (listingId && getListingOwnerId(listingId) !== user.id) {
+    return NextResponse.json({ error: "Ruxsat yo'q" }, { status: 403 });
+  }
+
   const session = await createUploadSession(user.id, size);
+  if (listingId) attachToListing(session, listingId);
   return NextResponse.json({ uploadId: session.id, chunkSize: CHUNK_SIZE });
 }

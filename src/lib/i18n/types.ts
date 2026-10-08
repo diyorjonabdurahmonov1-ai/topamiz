@@ -185,7 +185,6 @@ export interface Dictionary {
     requiredFieldsError: string;
     genericError: string;
     submitting: string;
-    waitingForVideo: string;
     videoBlockingError: string;
     submit: string;
     successTitle: string;
@@ -214,6 +213,13 @@ export interface Dictionary {
     videoTooLargeError: string;
     videoGenericError: string;
     videoProcessing: string;
+    videoCompressing: string;
+    videoRetry: string;
+    videoBackgroundHint: string;
+    videoPostedPending: string;
+    videoBgDone: string;
+    videoBgFailed: string;
+    videoBgView: string;
     videoNetworkError: string;
     videoReadError: string;
     videoReadHint: string;
