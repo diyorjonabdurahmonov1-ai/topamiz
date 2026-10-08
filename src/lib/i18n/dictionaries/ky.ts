@@ -347,10 +347,19 @@ const ky: Dictionary = {
   login: {
     title: "Кош",
     titleHighlight: "келдиңиз",
-    subtitle: "Улантуу үчүн Google аккаунтуңуз менен кириңиз.",
+    subtitle: "Телефон номериңиз же Google аккаунтуңуз менен кириңиз.",
     blockedError: "Аккаунтуңуз бөгөттөлгөн. Суроолор болсо, колдоо кызматына кайрылыңыз.",
     genericError: "Google аркылуу кирүүдө ката кетти. Кайра аракет кылыңыз.",
     googleButton: "Google аркылуу кирүү",
+    orDivider: "же",
+    phoneLabel: "Телефон номери",
+    sendCode: "Код алуу",
+    phoneHint: "Номериңизге SMS аркылуу 6 сандуу код жөнөтөбүз. Аккаунтуңуз жок болсо, автоматтык түрдө ачылат.",
+    codeSentTo: "Код жөнөтүлдү:",
+    codeLabel: "SMS код",
+    verify: "Кирүү",
+    resend: "Кодду кайра жөнөтүү",
+    changeNumber: "Номерди өзгөртүү",
   },
 
   languageSwitcher: {

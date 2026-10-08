@@ -346,10 +346,19 @@ const en: Dictionary = {
   login: {
     title: "Welcome",
     titleHighlight: "back",
-    subtitle: "Sign in with your Google account to continue.",
+    subtitle: "Sign in with your phone number or Google account.",
     blockedError: "Your account has been blocked. Contact support if you have questions.",
     genericError: "Something went wrong signing in with Google. Please try again.",
     googleButton: "Continue with Google",
+    orDivider: "or",
+    phoneLabel: "Phone number",
+    sendCode: "Get code",
+    phoneHint: "We'll text a 6-digit code to your number. If you don't have an account yet, one is created automatically.",
+    codeSentTo: "Code sent to:",
+    codeLabel: "SMS code",
+    verify: "Sign in",
+    resend: "Resend code",
+    changeNumber: "Change number",
   },
 
   languageSwitcher: {
