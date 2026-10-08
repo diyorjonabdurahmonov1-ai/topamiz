@@ -18,6 +18,7 @@ import {
   UserX,
 } from "lucide-react";
 import type { Dictionary } from "@/lib/i18n";
+import { CODE_LENGTH } from "@/lib/verification-code";
 import GoogleLoginButton from "../GoogleLoginButton";
 import LegalSheet, { type LegalDoc } from "./LegalSheet";
 
@@ -303,7 +304,7 @@ export default function AuthPanel({ dict, initialTab }: { dict: Dictionary; init
           </p>
           <OtpInput value={code} onChange={setCode} label={t.codeLabel} />
           {errorLine}
-          <SubmitButton busy={busy} disabled={code.length !== 6}>
+          <SubmitButton busy={busy} disabled={code.length !== CODE_LENGTH}>
             {t.registerSubmit}
           </SubmitButton>
           {resendRow("register", { name: "register-details" })}
@@ -398,7 +399,7 @@ export default function AuthPanel({ dict, initialTab }: { dict: Dictionary; init
           <OtpInput value={code} onChange={setCode} label={t.codeLabel} />
           <PasswordField value={password} onChange={setPassword} label={t.newPasswordLabel} dict={dict} autoComplete="new-password" showStrength />
           {errorLine}
-          <SubmitButton busy={busy} disabled={code.length !== 6 || !passwordValid}>
+          <SubmitButton busy={busy} disabled={code.length !== CODE_LENGTH || !passwordValid}>
             {t.resetSubmit}
           </SubmitButton>
           {resendRow("reset", { name: "forgot-phone" })}
@@ -562,19 +563,20 @@ function PasswordField({
   );
 }
 
-// Six visual boxes over one real input — keeps paste and the phone's SMS
+// One visual box per digit over one real input — keeps paste and the phone's SMS
 // code autofill (autocomplete="one-time-code") working.
 function OtpInput({ value, onChange, label }: { value: string; onChange: (v: string) => void; label: string }) {
   const [focused, setFocused] = useState(false);
   return (
-    <div className="relative mx-auto w-full max-w-xs">
-      <div className="grid grid-cols-6 gap-2" aria-hidden>
-        {Array.from({ length: 6 }, (_, i) => {
-          const active = focused && (i === value.length || (i === 5 && value.length === 6));
+    <div className="relative mx-auto w-full max-w-[17rem]">
+      <div className="grid grid-cols-4 gap-3" aria-hidden>
+        {Array.from({ length: CODE_LENGTH }, (_, i) => {
+          const active =
+            focused && (i === value.length || (i === CODE_LENGTH - 1 && value.length === CODE_LENGTH));
           return (
             <span
               key={i}
-              className={`flex aspect-[4/5] items-center justify-center rounded-xl border text-xl font-extrabold transition-all ${
+              className={`flex aspect-square items-center justify-center rounded-2xl border text-2xl font-extrabold transition-all ${
                 value[i]
                   ? "border-brand-via/50 bg-brand-via/10 text-foreground"
                   : active
@@ -589,13 +591,13 @@ function OtpInput({ value, onChange, label }: { value: string; onChange: (v: str
       </div>
       <input
         value={value}
-        onChange={(e) => onChange(e.target.value.replace(/\D/g, "").slice(0, 6))}
+        onChange={(e) => onChange(e.target.value.replace(/\D/g, "").slice(0, CODE_LENGTH))}
         onFocus={() => setFocused(true)}
         onBlur={() => setFocused(false)}
         inputMode="numeric"
         autoComplete="one-time-code"
         autoFocus
-        maxLength={6}
+        maxLength={CODE_LENGTH}
         aria-label={label}
         className="absolute inset-0 h-full w-full cursor-text opacity-0"
       />

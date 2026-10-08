@@ -1,5 +1,6 @@
 import crypto from "node:crypto";
 import { db } from "./db";
+import { CODE_LENGTH } from "./verification-code";
 
 const CODE_TTL_MS = 5 * 60 * 1000;
 export const RESEND_COOLDOWN_SECONDS = 60;
@@ -52,7 +53,7 @@ export function issueCode(purpose: CodePurpose, phone: string): { code: string }
     const wait = Math.ceil((existing.sent_at + RESEND_COOLDOWN_SECONDS * 1000 - now) / 1000);
     if (wait > 0) return { retryAfterSeconds: wait };
   }
-  const code = String(crypto.randomInt(0, 1_000_000)).padStart(6, "0");
+  const code = String(crypto.randomInt(0, 10 ** CODE_LENGTH)).padStart(CODE_LENGTH, "0");
   db.prepare(
     `INSERT INTO phone_codes (phone, code_hash, expires_at, sent_at, attempts) VALUES (?, ?, ?, ?, 0)
      ON CONFLICT(phone) DO UPDATE SET code_hash = excluded.code_hash, expires_at = excluded.expires_at,

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { MAX_NAME_LENGTH, createPhoneUser, getPhoneAccount, isReservedName } from "@/lib/auth";
 import { getClientIp, rateLimit } from "@/lib/rate-limit";
 import { checkCode, normalizeUzPhone, passwordProblem } from "@/lib/phone-login";
+import { isCodeShaped } from "@/lib/verification-code";
 import { CODE_ERRORS, signIn, tooManyAttempts } from "@/lib/phone-auth-responses";
 
 export async function POST(request: Request) {
@@ -13,7 +14,7 @@ export async function POST(request: Request) {
   const phone = normalizeUzPhone(typeof body?.phone === "string" ? body.phone : "");
   const code = typeof body?.code === "string" ? body.code.trim() : "";
   const name = typeof body?.name === "string" ? body.name.trim().slice(0, MAX_NAME_LENGTH) : "";
-  if (!phone || !/^\d{6}$/.test(code)) {
+  if (!phone || !isCodeShaped(code)) {
     return NextResponse.json({ error: CODE_ERRORS.wrong }, { status: 400 });
   }
   if (body?.acceptTerms !== true) {

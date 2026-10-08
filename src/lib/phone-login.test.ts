@@ -34,7 +34,7 @@ describe("verification codes", () => {
 
   it("accepts the right code once, then it's used up", () => {
     const code = issue();
-    expect(code).toMatch(/^\d{6}$/);
+    expect(code).toMatch(/^\d{4}$/);
     expect(checkCode("register", phone, code)).toBe("ok");
     expect(checkCode("register", phone, code)).toBe("expired");
   });
@@ -53,7 +53,7 @@ describe("verification codes", () => {
 
   it("locks the code after too many wrong guesses", () => {
     const code = issue();
-    const wrong = code === "000000" ? "111111" : "000000";
+    const wrong = code === "0000" ? "1111" : "0000";
     for (let i = 0; i < 4; i++) expect(checkCode("register", phone, wrong)).toBe("wrong");
     expect(checkCode("register", phone, wrong)).toBe("too-many");
     expect(checkCode("register", phone, code)).toBe("too-many");

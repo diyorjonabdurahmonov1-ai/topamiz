@@ -24,8 +24,8 @@ describe("sendSms", () => {
       .mockResolvedValue(json(200, { status: "waiting" }));
     vi.stubGlobal("fetch", fetchMock);
 
-    await sendSms("998901234567", loginCodeMessage("123456"));
-    await sendSms("998901234567", loginCodeMessage("654321"));
+    await sendSms("998901234567", loginCodeMessage("1234"));
+    await sendSms("998901234567", loginCodeMessage("4321"));
 
     const urls = fetchMock.mock.calls.map((c) => String(c[0]));
     expect(urls.filter((u) => u.endsWith("/auth/login"))).toHaveLength(1);
@@ -34,7 +34,7 @@ describe("sendSms", () => {
     const form = init.body as FormData;
     expect(form.get("mobile_phone")).toBe("998901234567");
     expect(form.get("from")).toBe("4546");
-    expect(form.get("message")).toBe("Findo: tasdiqlash kodingiz 123456. Kodni hech kimga bermang.");
+    expect(form.get("message")).toBe("Findo: tasdiqlash kodingiz 1234. Kodni hech kimga bermang.");
   });
 
   it("logs in again when the token has expired", async () => {

@@ -55,7 +55,8 @@ cold start or an ephemeral filesystem.
   approved under "Nik uchun ariza") in `.env.production.local`. Eskiz only
   delivers texts matching an approved template ("Mening matnlarim"), so the
   text in `loginCodeMessage()` must stay word-for-word identical to the one
-  approved there: `Findo: tasdiqlash kodingiz 123456. Kodni hech kimga bermang.`
+  approved there: `Findo: tasdiqlash kodingiz 1234. Kodni hech kimga bermang.`
+  (4-digit code — `src/lib/verification-code.ts`).
   Without the two vars, the phone form shows "SMS xizmati hozircha
   sozlanmagan" and Google sign-in keeps working.
 - The home-page ad banner (`/admin/reklama`, `src/lib/ads.ts`) is managed by
