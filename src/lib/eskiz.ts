@@ -4,8 +4,8 @@
 // default short number until a custom name like "FINDO" is approved.
 //
 // Eskiz only delivers message texts that match a template approved in its
-// cabinet, so loginCodeMessage() below must stay word-for-word identical to
-// the template registered there (see AGENTS.md).
+// cabinet, so each text in codeMessage() below must stay word-for-word
+// identical to its template registered there (see AGENTS.md).
 
 const API_URL = "https://notify.eskiz.uz/api";
 
@@ -15,8 +15,10 @@ export function isEskizConfigured(): boolean {
   return !!(process.env.ESKIZ_EMAIL && process.env.ESKIZ_PASSWORD);
 }
 
-export function loginCodeMessage(code: string): string {
-  return `Findo: tasdiqlash kodingiz ${code}. Kodni hech kimga bermang.`;
+export function codeMessage(purpose: "register" | "reset", code: string): string {
+  return purpose === "reset"
+    ? `Findo: parolni tiklash kodingiz ${code}. Agar buni siz so'ramagan bo'lsangiz, xabarga e'tibor bermang.`
+    : `Findo: tasdiqlash kodingiz ${code}. Kodni hech kimga bermang.`;
 }
 
 async function login(): Promise<string> {
