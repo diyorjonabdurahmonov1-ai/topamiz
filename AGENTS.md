@@ -37,15 +37,18 @@ cold start or an ephemeral filesystem.
 - Auth cookies are `secure: true` in production (see `src/lib/auth.ts`), so
   the site only works over HTTPS. Don't test login against the server over
   plain `http://`.
-- Sign-in is Google-only (`src/lib/google-auth.ts`, `/api/auth/google*`) —
+- Google sign-in (`src/lib/google-auth.ts`, `/api/auth/google*`) —
   requires `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` in a gitignored
   `.env.production.local` at `/var/www/topamiz/`. Get these from a Google
   Cloud Console OAuth client (Web application type); its one authorized
   redirect URI must be exactly `https://findo.net.uz/api/auth/google/callback`.
   Without these two vars set, `/kirish` renders fine but clicking through
   fails.
-- Phone-number sign-in (`/kirish`, `src/lib/eskiz.ts`, `/api/auth/phone/*`)
-  sends a 6-digit SMS code through Eskiz (my.eskiz.uz — the same account the
+- Phone-number accounts (`/kirish`, `src/components/auth/`, `/api/auth/phone/*`):
+  sign up with name + phone + password (scrypt-hashed) + an SMS code and an
+  explicit consent tick (recorded in `users.terms_accepted_at`); sign in with
+  phone + password; "forgot password" resets it with an SMS code. Codes go
+  out through Eskiz (`src/lib/eskiz.ts`) (my.eskiz.uz — the same account the
   owner uses for another app). Needs `ESKIZ_EMAIL` and `ESKIZ_PASSWORD` (the
   Eskiz cabinet login) and optionally `ESKIZ_FROM` (sender nickname,
   defaults to Eskiz's `4546`; set to e.g. `FINDO` once that nickname is

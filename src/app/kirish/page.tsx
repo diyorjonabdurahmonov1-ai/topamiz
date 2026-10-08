@@ -3,8 +3,7 @@ import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth";
 import { getLocale } from "@/lib/i18n/server";
 import { getDictionary } from "@/lib/i18n";
-import GoogleLoginButton from "@/components/GoogleLoginButton";
-import PhoneLoginForm from "@/components/PhoneLoginForm";
+import AuthPanel from "@/components/auth/AuthPanel";
 
 export const metadata: Metadata = {
   title: "Kirish — Findo",
@@ -16,38 +15,35 @@ export default async function LoginPage(props: PageProps<"/kirish">) {
 
   const searchParams = await props.searchParams;
   const error = typeof searchParams.error === "string" ? searchParams.error : null;
+  const initialTab = searchParams.tab === "register" ? "register" : "login";
   const dict = getDictionary(await getLocale());
 
   return (
-    <div className="mx-auto max-w-sm px-4 py-14 sm:px-6">
-      <div className="mb-6 text-center">
-        <h1 className="text-2xl font-extrabold tracking-tight">
-          {dict.login.title} <span className="gradient-text">{dict.login.titleHighlight}</span>
-        </h1>
-        <p className="mt-1.5 text-sm text-muted">{dict.login.subtitle}</p>
+    <div className="relative isolate overflow-hidden">
+      <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
+        <div className="animate-float absolute -left-24 top-10 h-72 w-72 rounded-full bg-brand-from/20 blur-3xl" />
+        <div className="animate-float-slow absolute -right-24 top-64 h-80 w-80 rounded-full bg-brand-via/20 blur-3xl" />
+        <div className="absolute inset-x-0 top-0 h-64 bg-gradient-to-b from-brand-via/10 to-transparent" />
       </div>
 
-      {error === "blocked" ? (
-        <p className="mb-4 rounded-xl bg-danger/10 px-4 py-3 text-center text-sm font-medium text-danger">
-          {dict.login.blockedError}
-        </p>
-      ) : (
-        error && (
+      <div className="mx-auto max-w-md px-4 pb-16 pt-10 sm:pt-14">
+        <div className="animate-fade-up mb-6 text-center">
+          {/* eslint-disable-next-line @next/next/no-img-element -- the site's own static icon */}
+          <img src="/icon-192.png" alt="" className="mx-auto mb-4 h-16 w-16 rounded-2xl shadow-xl shadow-brand-via/30" />
+          <h1 className="text-2xl font-extrabold tracking-tight">
+            {dict.login.title} <span className="gradient-text">{dict.login.titleHighlight}</span>
+          </h1>
+          <p className="mt-1.5 text-sm text-muted">{dict.login.subtitle}</p>
+        </div>
+
+        {error && (
           <p className="mb-4 rounded-xl bg-danger/10 px-4 py-3 text-center text-sm font-medium text-danger">
-            {dict.login.genericError}
+            {error === "blocked" ? dict.login.blockedError : dict.login.genericError}
           </p>
-        )
-      )}
+        )}
 
-      <PhoneLoginForm dict={dict} />
-
-      <div className="my-6 flex items-center gap-3 text-xs text-muted">
-        <span className="h-px flex-1 bg-border" />
-        {dict.login.orDivider}
-        <span className="h-px flex-1 bg-border" />
+        <AuthPanel dict={dict} initialTab={initialTab} />
       </div>
-
-      <GoogleLoginButton label={dict.login.googleButton} />
     </div>
   );
 }

@@ -1,42 +1,11 @@
 import type { Metadata } from "next";
-import { AlertTriangle, Eye, Lock, MapPin, ShieldCheck, Wallet } from "lucide-react";
+import { ShieldCheck } from "lucide-react";
+import { SAFETY_RULES } from "@/lib/legal";
 
 export const metadata: Metadata = {
   title: "Xavfsizlik qoidalari — Findo",
 };
 
-const RULES = [
-  {
-    icon: MapPin,
-    title: "Faqat ochiq va odam ko'p joyda uchrashing",
-    body: "Buyumni topshirish yoki qabul qilish uchun uchrashuvni doim ochiq, yorug' va odamlar ko'p bo'lgan joyda (savdo markazi, metro bekati, politsiya bo'limi oldi) belgilang. Notanish odamni uyingizga yoki boshqa yopiq joyga taklif qilmang.",
-  },
-  {
-    icon: Eye,
-    title: "Iloji bo'lsa, yolg'iz bormang",
-    body: "Uchrashuvga oila a'zosi yoki do'stingiz bilan boring, yoki hech bo'lmasa qayerga va kim bilan borayotganingizni yaqiningizga xabar qilib qo'ying.",
-  },
-  {
-    icon: Wallet,
-    title: "Mukofotni faqat buyumni ko'rgach bering",
-    body: "Mukofot va'da qilingan bo'lsa, uni faqat buyum haqiqatan ham sizniki ekanini tasdiqlagandan so'ng, yuzma-yuz uchrashuvda bering. Oldindan bank kartasi orqali pul o'tkazishni so'rasa, bu firibgarlik belgisi bo'lishi mumkin.",
-  },
-  {
-    icon: Lock,
-    title: "Shaxsiy ma'lumotni ehtiyot bo'lib bering",
-    body: "E'lon yoki xabarlashish orqali faqat uchrashuv uchun zarur bo'lgan ma'lumotni (ism, telefon raqami) bering. Pasport seriyasi, bank karta raqami, parollarni hech qachon begona odamga yubormang.",
-  },
-  {
-    icon: AlertTriangle,
-    title: "Shubhali xatti-harakatni bildiring",
-    body: "Agar suhbatdoshingiz g'alati talab qo'ysa (oldindan to'lov, boshqa saytga o'tish va h.k.) yoki e'lon soxta bo'lib tuyulsa, e'lon sahifasidagi \"Shikoyat qilish\" tugmasidan foydalaning — bizning jamoamiz ko'rib chiqadi.",
-  },
-  {
-    icon: ShieldCheck,
-    title: "Findo vositachi emas",
-    body: "Findo — foydalanuvchilarni bir-biri bilan bog'laydigan platforma, biz e'lonlar mazmuni yoki uchrashuvlar natijasi uchun javobgar emasmiz. Barcha kelishuvlar va uchrashuvlar foydalanuvchilarning o'z mas'uliyatida amalga oshiriladi.",
-  },
-];
 
 export default function SafetyRulesPage() {
   return (
@@ -51,7 +20,7 @@ export default function SafetyRulesPage() {
       </p>
 
       <div className="mt-8 space-y-4">
-        {RULES.map((rule) => (
+        {SAFETY_RULES.map((rule) => (
           <div key={rule.title} className="flex gap-4 rounded-2xl border border-border bg-surface p-5">
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-via/10 text-brand-via">
               <rule.icon className="h-5 w-5" />
