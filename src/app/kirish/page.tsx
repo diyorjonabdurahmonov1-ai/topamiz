@@ -3,6 +3,8 @@ import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth";
 import { getLocale } from "@/lib/i18n/server";
 import { getDictionary } from "@/lib/i18n";
+import { getVisitorCountry } from "@/lib/geo";
+import { getLegal } from "@/lib/legal";
 import AuthPanel from "@/components/auth/AuthPanel";
 
 export const metadata: Metadata = {
@@ -16,7 +18,9 @@ export default async function LoginPage(props: PageProps<"/kirish">) {
   const searchParams = await props.searchParams;
   const error = typeof searchParams.error === "string" ? searchParams.error : null;
   const initialTab = searchParams.tab === "register" ? "register" : "login";
-  const dict = getDictionary(await getLocale());
+  const locale = await getLocale();
+  const dict = getDictionary(locale);
+  const abroad = (await getVisitorCountry()) !== "UZ";
 
   return (
     <div className="relative isolate overflow-hidden">
@@ -42,7 +46,7 @@ export default async function LoginPage(props: PageProps<"/kirish">) {
           </p>
         )}
 
-        <AuthPanel dict={dict} initialTab={initialTab} />
+        <AuthPanel dict={dict} initialTab={initialTab} legal={getLegal(locale)} abroad={abroad} />
       </div>
     </div>
   );

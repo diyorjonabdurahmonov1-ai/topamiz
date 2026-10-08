@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { FileText, ShieldCheck, ShieldAlert, X } from "lucide-react";
 import type { Dictionary } from "@/lib/i18n";
-import { PRIVACY_SECTIONS, SAFETY_RULES, TERMS_SECTIONS } from "@/lib/legal";
+import { SAFETY_ICONS, type LegalContent } from "@/lib/legal";
 
 export type LegalDoc = "terms" | "privacy" | "safety";
 
@@ -15,12 +15,14 @@ export default function LegalSheet({
   onDocChange,
   onClose,
   onAgree,
+  content,
   dict,
 }: {
   doc: LegalDoc;
   onDocChange: (doc: LegalDoc) => void;
   onClose: () => void;
   onAgree: () => void;
+  content: LegalContent;
   dict: Dictionary;
 }) {
   const t = dict.login;
@@ -84,18 +86,21 @@ export default function LegalSheet({
 
         <div ref={bodyRef} className="flex-1 space-y-3 overflow-y-auto overscroll-contain px-4 pb-4">
           {doc === "safety"
-            ? SAFETY_RULES.map((rule) => (
+            ? content.safety.rules.map((rule, i) => {
+                const Icon = SAFETY_ICONS[i];
+                return (
                 <div key={rule.title} className="flex gap-3 rounded-2xl border border-border bg-surface p-4">
                   <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-brand-via/10 text-brand-via">
-                    <rule.icon className="h-4 w-4" />
+                    <Icon className="h-4 w-4" />
                   </div>
                   <div>
                     <h3 className="text-sm font-bold">{rule.title}</h3>
                     <p className="mt-1 text-[13px] leading-relaxed text-muted">{rule.body}</p>
                   </div>
                 </div>
-              ))
-            : (doc === "terms" ? TERMS_SECTIONS : PRIVACY_SECTIONS).map((section) => (
+                );
+              })
+            : (doc === "terms" ? content.terms : content.privacy).sections.map((section) => (
                 <div key={section.title} className="rounded-2xl border border-border bg-surface p-4">
                   <h3 className="text-sm font-bold">{section.title}</h3>
                   <p className="mt-1 text-[13px] leading-relaxed text-muted">{section.body}</p>
