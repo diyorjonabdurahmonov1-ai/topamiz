@@ -552,6 +552,9 @@ export interface Dictionary {
   };
 
   social: {
+    reelTapForSound: string;
+    reelSoundOn: string;
+    reelSoundOff: string;
     commentsHeading: string;
     commentsEmpty: string;
     commentPlaceholder: string;

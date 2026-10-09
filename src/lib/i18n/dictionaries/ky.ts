@@ -581,6 +581,9 @@ const ky: Dictionary = {
   },
 
   social: {
+    reelTapForSound: "Үн үчүн басыңыз",
+    reelSoundOn: "Үндү күйгүзүү",
+    reelSoundOff: "Үндү өчүрүү",
     commentsHeading: "Комментарийлер",
     commentsEmpty: "Азырынча комментарий жок. Биринчи болуңуз!",
     commentPlaceholder: "Комментарий жазыңыз...",

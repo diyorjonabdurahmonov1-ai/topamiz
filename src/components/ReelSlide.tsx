@@ -98,9 +98,18 @@ export default function ReelSlide({
   // eslint-disable-next-line react-hooks/exhaustive-deps -- only (re)start on these changes
   }, [active, isVideo, locked]);
 
-  function togglePlay() {
+  // Phones never hand the volume buttons to a web page, so the quickest way
+  // to sound is one tap: while muted, a tap on the video turns sound on
+  // (Instagram-style) instead of pausing it. Once sound is on, a tap pauses.
+  function handleVideoTap() {
     const video = videoRef.current;
     if (!video) return;
+    if (muted) {
+      onToggleMuted();
+      video.muted = false;
+      if (video.paused) video.play().catch(() => {});
+      return;
+    }
     if (video.paused) video.play().catch(() => {});
     else video.pause();
   }
@@ -144,7 +153,7 @@ export default function ReelSlide({
           loop
           muted={muted}
           playsInline
-          onClick={togglePlay}
+          onClick={handleVideoTap}
           className="h-full w-full object-contain"
         />
       ) : (
@@ -193,25 +202,38 @@ export default function ReelSlide({
         <button
           type="button"
           onClick={onToggleMuted}
-          aria-label={muted ? "Ovozni yoqish" : "Ovozni o'chirish"}
+          aria-label={muted ? dict.social.reelSoundOn : dict.social.reelSoundOff}
           className="absolute right-4 top-[calc(1rem+env(safe-area-inset-top))] z-10 flex h-9 w-9 items-center justify-center rounded-full bg-black/40 text-white backdrop-blur-sm"
         >
           {muted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
         </button>
       )}
 
-      <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-3 bg-gradient-to-t from-black/80 via-black/20 to-transparent p-4 pb-8">
+      {isVideo && !locked && active && muted && (
+        <button
+          type="button"
+          onClick={handleVideoTap}
+          className="animate-fade-in absolute left-1/2 top-1/2 z-10 flex -translate-x-1/2 -translate-y-1/2 items-center gap-2 rounded-full bg-black/55 px-4 py-2.5 text-sm font-bold text-white shadow-lg backdrop-blur-md"
+        >
+          <VolumeX className="h-4 w-4" />
+          {dict.social.reelTapForSound}
+        </button>
+      )}
+
+      {/* The caption gradient covers the lower part of the video — let taps
+          through it to the video, except on the actual buttons. */}
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 flex items-end justify-between gap-3 bg-gradient-to-t from-black/80 via-black/20 to-transparent p-4 pb-8">
         <div className="min-w-0 flex-1 text-white">
           <p className="line-clamp-2 text-sm">{listing.title}</p>
           <Link
             href={`/elonlar/${listing.id}`}
-            className="mt-2 inline-block rounded-full bg-white/15 px-3 py-1.5 text-xs font-semibold backdrop-blur-sm"
+            className="pointer-events-auto mt-2 inline-block rounded-full bg-white/15 px-3 py-1.5 text-xs font-semibold backdrop-blur-sm"
           >
             {dict.social.reelsViewListing}
           </Link>
         </div>
 
-        <div className="flex shrink-0 flex-col items-center gap-4">
+        <div className="pointer-events-auto flex shrink-0 flex-col items-center gap-4">
           <LikeButton
             listingId={listing.id}
             initialLiked={likedByMe}

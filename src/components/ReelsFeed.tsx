@@ -170,8 +170,10 @@ function soundWanted(): boolean {
 
 // Instagram-style sound: reels start muted (browsers block sound before the
 // visitor has touched the page), and then
-// - pressing a volume button turns sound on, where the browser passes those
-//   keys to the page;
+// - one tap on a muted video turns sound on (see ReelSlide);
+// - a volume key turns it on too, but only where the browser passes those
+//   keys to the page (desktop keyboards) — Chrome on Android and Safari on
+//   iOS keep the phone's hardware buttons to themselves;
 // - once sound has been turned on it stays on — for the next reels and the
 //   next visit — starting right away when the browser allows it (arriving
 //   from a tap elsewhere on the site) or at the first tap otherwise.
