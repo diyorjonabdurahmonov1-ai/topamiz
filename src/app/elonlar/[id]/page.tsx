@@ -159,6 +159,9 @@ export default async function ListingDetailPage(props: PageProps<"/elonlar/[id]"
                   lng={listing.lng}
                   city={listing.city}
                   district={listing.district}
+                  category={listing.category}
+                  colorFrom={listing.colorFrom}
+                  colorTo={listing.colorTo}
                   dict={dict}
                 />
               ) : (
@@ -167,6 +170,9 @@ export default async function ListingDetailPage(props: PageProps<"/elonlar/[id]"
                   lng={listing.lng}
                   city={listing.city}
                   district={listing.district}
+                  category={listing.category}
+                  colorFrom={listing.colorFrom}
+                  colorTo={listing.colorTo}
                   dict={dict}
                 />
               )}

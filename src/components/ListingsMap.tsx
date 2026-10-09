@@ -10,6 +10,7 @@ import type { Listing } from "@/lib/types";
 import type { Dictionary } from "@/lib/i18n";
 import { categoryIcons } from "@/lib/icons";
 import { formatSom } from "@/lib/data";
+import { categoryPinIcon } from "@/lib/map-pins";
 
 // CARTO's free basemaps (previously used here) started requiring a signed-up
 // API key in Aug 2026 and watermark every tile "API KEY REQUIRED" without
@@ -17,22 +18,6 @@ import { formatSom } from "@/lib/data";
 // with a CSS filter (see .map-dark in globals.css) since OSM only has one style.
 const TILES = "https://tile.openstreetmap.org/{z}/{x}/{y}.png";
 const ATTRIBUTION = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
-
-function pinIcon(colorFrom: string, colorTo: string) {
-  return divIcon({
-    className: "",
-    html: `<div style="
-      width: 28px; height: 28px; border-radius: 50% 50% 50% 0;
-      background: linear-gradient(135deg, ${colorFrom}, ${colorTo});
-      transform: rotate(-45deg);
-      border: 2px solid white;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.4);
-    "></div>`,
-    iconSize: [28, 28],
-    iconAnchor: [14, 28],
-    popupAnchor: [0, -28],
-  });
-}
 
 const YOU_ICON = divIcon({
   className: "",
@@ -192,7 +177,7 @@ export default function ListingsMap({
             <Marker
               key={listing.id}
               position={[listing.lat, listing.lng]}
-              icon={pinIcon(listing.colorFrom, listing.colorTo)}
+              icon={categoryPinIcon(listing.category, listing.colorFrom, listing.colorTo)}
             >
               <Popup>
                 <div className="w-52">

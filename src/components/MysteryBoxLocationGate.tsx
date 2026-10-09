@@ -2,6 +2,7 @@
 
 import { useStartsAtLock } from "@/lib/useStartsAtLock";
 import type { Dictionary } from "@/lib/i18n";
+import type { CategoryId } from "@/lib/types";
 import ListingLocationMap from "./ListingLocationMap";
 
 // The location is part of the mystery too — a Sirli quti with a reveal
@@ -13,6 +14,9 @@ export default function MysteryBoxLocationGate({
   lng,
   city,
   district,
+  category,
+  colorFrom,
+  colorTo,
   dict,
 }: {
   startsAt: string;
@@ -20,9 +24,23 @@ export default function MysteryBoxLocationGate({
   lng: number;
   city: string;
   district?: string;
+  category: CategoryId;
+  colorFrom: string;
+  colorTo: string;
   dict: Dictionary;
 }) {
   const locked = useStartsAtLock(startsAt);
   if (locked) return null;
-  return <ListingLocationMap lat={lat} lng={lng} city={city} district={district} dict={dict} />;
+  return (
+    <ListingLocationMap
+      lat={lat}
+      lng={lng}
+      city={city}
+      district={district}
+      category={category}
+      colorFrom={colorFrom}
+      colorTo={colorTo}
+      dict={dict}
+    />
+  );
 }
