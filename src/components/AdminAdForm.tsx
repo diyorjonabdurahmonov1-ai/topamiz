@@ -19,10 +19,6 @@ export default function AdminAdForm() {
       setError("Rasm, video yoki GIF tanlang");
       return;
     }
-    if (!linkUrl.trim()) {
-      setError("Havola kiriting");
-      return;
-    }
     setError("");
     setSubmitting(true);
     try {
@@ -63,13 +59,17 @@ export default function AdminAdForm() {
         </p>
       </div>
       <div>
-        <label className="mb-1.5 block text-xs font-semibold text-muted">Havola (link) *</label>
+        <label className="mb-1.5 block text-xs font-semibold text-muted">Havola (ixtiyoriy)</label>
         <input
           value={linkUrl}
           onChange={(e) => setLinkUrl(e.target.value)}
           placeholder="https://..."
+          inputMode="url"
           className="w-full rounded-xl border border-border bg-bg-elevated px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-via/40"
         />
+        <p className="mt-1 text-xs text-muted">
+          Bo&apos;sh qoldirsangiz, reklama shunchaki ko&apos;rinib turadi — ustiga bosilganda hech narsa bo&apos;lmaydi.
+        </p>
       </div>
       <div>
         <label className="mb-1.5 block text-xs font-semibold text-muted">Nom (ixtiyoriy)</label>
