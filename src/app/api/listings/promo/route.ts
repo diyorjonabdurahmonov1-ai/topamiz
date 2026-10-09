@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { displayIdentity, getCurrentUser } from "@/lib/auth";
+import { getCurrentUser } from "@/lib/auth";
 import { cities, promoCategories } from "@/lib/data";
 import { getFollowerIds } from "@/lib/friends";
 import {
@@ -10,7 +10,7 @@ import {
   MAX_LISTING_TITLE_LENGTH,
 } from "@/lib/listings";
 import { containsProhibitedContent, recordModerationViolation } from "@/lib/moderation";
-import { sendPushToUser } from "@/lib/push";
+import { notify } from "@/lib/notifications";
 import { getClientIp, rateLimit } from "@/lib/rate-limit";
 import { countryForIp } from "@/lib/geo";
 import { R2_PUBLIC_URL } from "@/lib/r2";
@@ -106,7 +106,6 @@ export async function POST(request: Request) {
     );
   }
 
-  const posterIdentity = displayIdentity(user);
   const listing = createListing({
     ownerId: user.id,
     kind: "found",
@@ -128,11 +127,7 @@ export async function POST(request: Request) {
   });
 
   for (const friendId of getFollowerIds(user.id)) {
-    void sendPushToUser(friendId, {
-      title: posterIdentity.name,
-      body: `Yangi taklif joyladi: ${listing.title}`,
-      url: `/elonlar/${listing.id}`,
-    });
+    notify({ userId: friendId, type: "friend_listing", actorId: user.id, listingId: Number(listing.id) });
   }
 
   return NextResponse.json({ listing });

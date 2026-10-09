@@ -459,7 +459,7 @@ const en: Dictionary = {
 
   messages: {
     title: "Messages",
-    searchPlaceholder: "Search by name or email...",
+    searchPlaceholder: "Search by name...",
     noUsersFound: "No one found",
     qrNotificationsHeading: "Messages via QR tag",
     itemFallback: "Item",
@@ -586,6 +586,23 @@ const en: Dictionary = {
     submit: "Send inquiry",
     successTitle: "Your inquiry has been received!",
     successBody: "Our team will contact you soon.",
+  },
+
+  notifications: {
+    title: "Notifications",
+    navLabel: "Notifications",
+    empty: "No notifications yet. When someone adds you as a friend, comments on or likes your listing, you'll see it here.",
+    friendAdded: "{name} added you as a friend",
+    friendListing: "{name} posted a new listing: “{title}”",
+    listingComment: "{name} commented on your listing: “{title}”",
+    listingLike: "{name} liked your listing: “{title}”",
+    someone: "Someone",
+    promptTitle: "Turn on notifications",
+    promptBody: "Get an alert with sound on your phone for new messages, comments and friends — even when the site is closed.",
+    promptEnable: "Turn on",
+    promptLater: "Later",
+    toastNew: "New notification",
+    toastOpen: "Open",
   },
 };
 

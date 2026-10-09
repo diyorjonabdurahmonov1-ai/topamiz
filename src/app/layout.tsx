@@ -9,6 +9,8 @@ import AppChrome from "@/components/AppChrome";
 import Analytics from "@/components/Analytics";
 import { getCurrentUser } from "@/lib/auth";
 import { unreadTotal } from "@/lib/messages";
+import { unreadNotificationCount } from "@/lib/notifications";
+import NotificationCenter from "@/components/NotificationCenter";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
 import { getLocale } from "@/lib/i18n/server";
 import { getDictionary } from "@/lib/i18n";
@@ -74,6 +76,7 @@ export const viewport: Viewport = {
 export default async function RootLayout({ children }: LayoutProps<"/">) {
   const user = await getCurrentUser();
   const unreadCount = user ? unreadTotal(user.id) : 0;
+  const notificationCount = user ? unreadNotificationCount(user.id) : 0;
   const locale = await getLocale();
   const dict = getDictionary(locale);
 
@@ -91,13 +94,16 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
       </head>
       <body className="min-h-full flex flex-col bg-bg text-foreground antialiased selection:bg-brand-via/30">
         <AppChrome
-          navbar={<Navbar user={user} unreadCount={unreadCount} locale={locale} dict={dict} />}
+          navbar={<Navbar user={user} unreadCount={unreadCount} notificationCount={notificationCount} locale={locale} dict={dict} />}
           footer={<Footer dict={dict} locale={locale} />}
           bottomNav={<BottomNav user={user} unreadCount={unreadCount} dict={dict} />}
         >
           {children}
         </AppChrome>
         <VideoUploadIndicator dict={dict} />
+        {user && (
+          <NotificationCenter dict={dict} initialCounts={{ messages: unreadCount, notifications: notificationCount }} />
+        )}
       </body>
     </html>
   );

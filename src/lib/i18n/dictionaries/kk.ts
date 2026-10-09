@@ -460,7 +460,7 @@ const kk: Dictionary = {
 
   messages: {
     title: "Хабарлар",
-    searchPlaceholder: "Аты немесе email бойынша іздеу...",
+    searchPlaceholder: "Аты бойынша іздеу...",
     noUsersFound: "Ешкім табылмады",
     qrNotificationsHeading: "QR-белгі арқылы хабарлар",
     itemFallback: "Зат",
@@ -587,6 +587,23 @@ const kk: Dictionary = {
     submit: "Өтінім жіберу",
     successTitle: "Өтініміз қабылданды!",
     successBody: "Командамыз жақында сізбен байланысады.",
+  },
+
+  notifications: {
+    title: "Хабарландырулар",
+    navLabel: "Хабарландырулар",
+    empty: "Әзірге хабарландыру жоқ. Біреу сізді досқа қосса, хабарландыруыңызға пікір жазса немесе ұнатса — осында көресіз.",
+    friendAdded: "{name} сізді достарына қосты",
+    friendListing: "{name} жаңа хабарландыру орналастырды: «{title}»",
+    listingComment: "{name} хабарландыруыңызға пікір қалдырды: «{title}»",
+    listingLike: "{name} хабарландыруыңызды ұнатты: «{title}»",
+    someone: "Біреу",
+    promptTitle: "Хабарландыруларды қосыңыз",
+    promptBody: "Жаңа хабар, пікір немесе жаңа дос — сайт жабық болса да, телефоныңызға дыбыспен хабар келеді.",
+    promptEnable: "Қосу",
+    promptLater: "Кейінірек",
+    toastNew: "Жаңа хабарландыру",
+    toastOpen: "Ашу",
   },
 };
 

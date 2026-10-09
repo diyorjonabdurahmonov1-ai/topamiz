@@ -3,6 +3,7 @@ import { getCurrentUser } from "@/lib/auth";
 import { getListingById } from "@/lib/listings";
 import { toggleLike } from "@/lib/listing-likes";
 import { getClientIp, rateLimit } from "@/lib/rate-limit";
+import { notify, removeNotification } from "@/lib/notifications";
 
 export async function POST(request: Request, ctx: RouteContext<"/api/listings/[id]/like">) {
   const user = await getCurrentUser();
@@ -22,5 +23,10 @@ export async function POST(request: Request, ctx: RouteContext<"/api/listings/[i
   if (!listing) return NextResponse.json({ error: "Topilmadi" }, { status: 404 });
 
   const result = toggleLike(Number(id), user.id);
+  if (listing.ownerId) {
+    const params = { userId: listing.ownerId, type: "listing_like" as const, actorId: user.id, listingId: Number(id) };
+    if (result.liked) notify(params);
+    else removeNotification(params);
+  }
   return NextResponse.json(result);
 }

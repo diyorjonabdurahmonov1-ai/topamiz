@@ -22,6 +22,20 @@ if (process.env.NODE_ENV !== "production") {
 
 db.pragma("journal_mode = WAL");
 db.pragma("foreign_keys = ON");
+// `next build` opens this database from several worker processes at once;
+// wait for a lock instead of failing with "database is locked".
+db.pragma("busy_timeout = 5000");
+
+// The migrations below check PRAGMA table_info before adding a column, but
+// two processes starting together (build workers) can both see it missing —
+// the loser of that race gets "duplicate column name", which is harmless.
+function addColumn(sql: string): void {
+  try {
+    db.exec(sql);
+  } catch (err) {
+    if (!/duplicate column name/i.test((err as Error).message)) throw err;
+  }
+}
 
 db.exec(`
   CREATE TABLE IF NOT EXISTS users (
@@ -206,30 +220,30 @@ if (!userColumns.some((c) => c.name === "google_id")) {
 // plain ADD COLUMN (no rebuild) is enough.
 const userColumns2 = db.prepare("PRAGMA table_info(users)").all() as { name: string }[];
 if (!userColumns2.some((c) => c.name === "last_seen_at")) {
-  db.exec("ALTER TABLE users ADD COLUMN last_seen_at TEXT");
+  addColumn("ALTER TABLE users ADD COLUMN last_seen_at TEXT");
 }
 if (!userColumns2.some((c) => c.name === "blocked_at")) {
-  db.exec("ALTER TABLE users ADD COLUMN blocked_at TEXT");
+  addColumn("ALTER TABLE users ADD COLUMN blocked_at TEXT");
 }
 if (!userColumns2.some((c) => c.name === "moderation_strikes")) {
-  db.exec("ALTER TABLE users ADD COLUMN moderation_strikes INTEGER NOT NULL DEFAULT 0");
+  addColumn("ALTER TABLE users ADD COLUMN moderation_strikes INTEGER NOT NULL DEFAULT 0");
 }
 if (!userColumns2.some((c) => c.name === "terms_accepted_at")) {
-  db.exec("ALTER TABLE users ADD COLUMN terms_accepted_at TEXT");
+  addColumn("ALTER TABLE users ADD COLUMN terms_accepted_at TEXT");
 }
 
 // Lets a message carry proof photos — used by the "I found this" flow on a
 // lost listing, so a finder can attach a picture instead of just text.
 const messageColumns = db.prepare("PRAGMA table_info(messages)").all() as { name: string }[];
 if (!messageColumns.some((c) => c.name === "photo_urls")) {
-  db.exec("ALTER TABLE messages ADD COLUMN photo_urls TEXT NOT NULL DEFAULT '[]'");
+  addColumn("ALTER TABLE messages ADD COLUMN photo_urls TEXT NOT NULL DEFAULT '[]'");
 }
 // Ties a "I found this" message to the specific listing it's a claim on —
 // added via ALTER rather than the CREATE TABLE above since `listings` (the
 // table it conceptually references) isn't defined until further down this
 // same file on a fresh install.
 if (!messageColumns.some((c) => c.name === "listing_id")) {
-  db.exec("ALTER TABLE messages ADD COLUMN listing_id INTEGER");
+  addColumn("ALTER TABLE messages ADD COLUMN listing_id INTEGER");
   db.exec("CREATE INDEX IF NOT EXISTS idx_messages_listing ON messages(listing_id)");
 }
 
@@ -237,46 +251,46 @@ if (!messageColumns.some((c) => c.name === "listing_id")) {
 // so default them to 'UZ' — this app has only ever served Uzbekistan.
 const listingColumns = db.prepare("PRAGMA table_info(listings)").all() as { name: string }[];
 if (!listingColumns.some((c) => c.name === "country")) {
-  db.exec("ALTER TABLE listings ADD COLUMN country TEXT NOT NULL DEFAULT 'UZ'");
+  addColumn("ALTER TABLE listings ADD COLUMN country TEXT NOT NULL DEFAULT 'UZ'");
 }
 
 // "Sirli quti" (mystery box) — admin-flagged promotional listings (a hidden
 // cash prize, a partner cafe's discount code, etc.) that get their own
 // section instead of blending into ordinary lost/found listings.
 if (!listingColumns.some((c) => c.name === "is_mystery_box")) {
-  db.exec("ALTER TABLE listings ADD COLUMN is_mystery_box INTEGER NOT NULL DEFAULT 0");
+  addColumn("ALTER TABLE listings ADD COLUMN is_mystery_box INTEGER NOT NULL DEFAULT 0");
 }
 // Lets a Sirli quti listing auto-expire (query-time filtered — this app has
 // no background jobs) once its creator-chosen deadline passes.
 if (!listingColumns.some((c) => c.name === "expires_at")) {
-  db.exec("ALTER TABLE listings ADD COLUMN expires_at TEXT");
+  addColumn("ALTER TABLE listings ADD COLUMN expires_at TEXT");
 }
 // Records which claimed finder the owner confirmed when resolving a
 // listing — cleared back to NULL on reactivation, since a stale credit
 // would otherwise linger on a listing that's active again.
 if (!listingColumns.some((c) => c.name === "resolved_by")) {
-  db.exec("ALTER TABLE listings ADD COLUMN resolved_by INTEGER");
+  addColumn("ALTER TABLE listings ADD COLUMN resolved_by INTEGER");
 }
 // A short (<=2 min) video clip, compressed and hosted on Cloudflare R2
 // instead of the VPS's own disk — see AGENTS.md for why. Both columns are
 // null for every listing until the uploader is used.
 if (!listingColumns.some((c) => c.name === "video_url")) {
-  db.exec("ALTER TABLE listings ADD COLUMN video_url TEXT");
-  db.exec("ALTER TABLE listings ADD COLUMN video_thumbnail_url TEXT");
+  addColumn("ALTER TABLE listings ADD COLUMN video_url TEXT");
+  addColumn("ALTER TABLE listings ADD COLUMN video_thumbnail_url TEXT");
 }
 // "Takliflar" (business promos/deals) — its own listing flavor alongside
 // lost/found and Sirli quti, with its own category set (promo_category),
 // kept out of the ordinary lost/found feed the same way Sirli quti is.
 if (!listingColumns.some((c) => c.name === "is_promo")) {
-  db.exec("ALTER TABLE listings ADD COLUMN is_promo INTEGER NOT NULL DEFAULT 0");
-  db.exec("ALTER TABLE listings ADD COLUMN promo_category TEXT");
+  addColumn("ALTER TABLE listings ADD COLUMN is_promo INTEGER NOT NULL DEFAULT 0");
+  addColumn("ALTER TABLE listings ADD COLUMN promo_category TEXT");
 }
 // Optional "reveal time" for a Sirli quti's video — until this passes, the
 // video stays locked (blurred poster + countdown) while every other field
 // (description, photos, location) is visible right away. NULL means no
 // lock at all, so this never affects an ordinary listing's video.
 if (!listingColumns.some((c) => c.name === "starts_at")) {
-  db.exec("ALTER TABLE listings ADD COLUMN starts_at TEXT");
+  addColumn("ALTER TABLE listings ADD COLUMN starts_at TEXT");
 }
 // Created here rather than in the block above so it works whether `country`
 // came from a fresh install's CREATE TABLE or the ALTER TABLE just above.
@@ -288,8 +302,8 @@ db.exec("CREATE INDEX IF NOT EXISTS idx_listings_status_country ON listings(stat
 // map. Backfilling here (rather than only on insert) also covers the
 // pre-seeded demo listings.
 if (!listingColumns.some((c) => c.name === "lat")) {
-  db.exec("ALTER TABLE listings ADD COLUMN lat REAL");
-  db.exec("ALTER TABLE listings ADD COLUMN lng REAL");
+  addColumn("ALTER TABLE listings ADD COLUMN lat REAL");
+  addColumn("ALTER TABLE listings ADD COLUMN lng REAL");
 }
 const listingsMissingCoords = db
   .prepare("SELECT id, city FROM listings WHERE lat IS NULL OR lng IS NULL")
@@ -354,3 +368,27 @@ db.exec(`
   );
   CREATE INDEX IF NOT EXISTS idx_listing_comments_listing ON listing_comments(listing_id);
 `);
+
+// The in-site notification feed (/bildirishnomalar): someone added you as a
+// friend, a friend posted a listing, someone commented on or liked your
+// listing. Direct messages keep their own unread state in `messages` and
+// don't land here.
+db.exec(`
+  CREATE TABLE IF NOT EXISTS notifications (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    type TEXT NOT NULL,
+    actor_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+    listing_id INTEGER REFERENCES listings(id) ON DELETE CASCADE,
+    created_at TEXT NOT NULL DEFAULT (datetime('now')),
+    read_at TEXT
+  );
+  CREATE INDEX IF NOT EXISTS idx_notifications_user ON notifications(user_id, created_at);
+`);
+
+// Which language a push subscription's notifications are written in — the
+// locale the subscriber was browsing in when they turned notifications on.
+const pushColumns = db.prepare("PRAGMA table_info(push_subscriptions)").all() as { name: string }[];
+if (!pushColumns.some((c) => c.name === "locale")) {
+  addColumn("ALTER TABLE push_subscriptions ADD COLUMN locale TEXT");
+}

@@ -463,7 +463,7 @@ const uz: Dictionary = {
 
   messages: {
     title: "Xabarlar",
-    searchPlaceholder: "Ism yoki email bo'yicha izlang...",
+    searchPlaceholder: "Ism bo'yicha izlang...",
     noUsersFound: "Hech kim topilmadi",
     qrNotificationsHeading: "QR-belgi orqali xabarlar",
     itemFallback: "Buyum",
@@ -592,6 +592,23 @@ const uz: Dictionary = {
     submit: "Murojaat yuborish",
     successTitle: "So'rovingiz qabul qilindi!",
     successBody: "Bizning jamoamiz tez orada siz bilan bog'lanadi.",
+  },
+
+  notifications: {
+    title: "Bildirishnomalar",
+    navLabel: "Bildirishnomalar",
+    empty: "Hozircha bildirishnoma yo'q. Kimdir sizni do'st qilib qo'shsa, e'loningizga izoh yozsa yoki uni yoqtirsa — shu yerda ko'rasiz.",
+    friendAdded: "{name} sizni do'stlar qatoriga qo'shdi",
+    friendListing: "{name} yangi e'lon joyladi: «{title}»",
+    listingComment: "{name} e'loningizga izoh qoldirdi: «{title}»",
+    listingLike: "{name} e'loningizni yoqtirdi: «{title}»",
+    someone: "Kimdir",
+    promptTitle: "Bildirishnomalarni yoqing",
+    promptBody: "Yangi xabar, izoh yoki kimdir sizni do'st qilib qo'shsa — sayt yopiq bo'lsa ham telefoningizga ovozli xabar keladi.",
+    promptEnable: "Yoqish",
+    promptLater: "Keyinroq",
+    toastNew: "Yangi bildirishnoma",
+    toastOpen: "Ochish",
   },
 };
 

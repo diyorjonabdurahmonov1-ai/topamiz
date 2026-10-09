@@ -258,6 +258,20 @@ export function getAllConversationsForAdmin(): AdminConversationSummary[] {
   return result;
 }
 
+// The newest message `userId` hasn't read yet — what the in-page "new
+// message" toast shows.
+export function getLatestUnreadMessage(
+  userId: number
+): { senderId: number | null; guestName: string | null; body: string } | null {
+  const row = db
+    .prepare(
+      `SELECT sender_id, guest_name, body FROM messages
+       WHERE recipient_id = ? AND read_at IS NULL ORDER BY id DESC LIMIT 1`
+    )
+    .get(userId) as { sender_id: number | null; guest_name: string | null; body: string } | undefined;
+  return row ? { senderId: row.sender_id, guestName: row.guest_name, body: row.body } : null;
+}
+
 export function unreadTotal(userId: number): number {
   const row = db
     .prepare(`SELECT COUNT(*) as c FROM messages WHERE recipient_id = ? AND read_at IS NULL`)

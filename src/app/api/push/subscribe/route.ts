@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth";
 import { saveSubscription } from "@/lib/push";
+import { getLocale } from "@/lib/i18n/server";
 
 export async function POST(request: Request) {
   const user = await getCurrentUser();
@@ -14,6 +15,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Noto'g'ri obuna ma'lumoti" }, { status: 400 });
   }
 
-  saveSubscription(user.id, { endpoint, keys: { p256dh, auth } });
+  saveSubscription(user.id, { endpoint, keys: { p256dh, auth } }, await getLocale());
   return NextResponse.json({ ok: true });
 }

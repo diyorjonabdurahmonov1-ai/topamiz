@@ -460,7 +460,7 @@ const ru: Dictionary = {
 
   messages: {
     title: "Сообщения",
-    searchPlaceholder: "Поиск по имени или email...",
+    searchPlaceholder: "Поиск по имени...",
     noUsersFound: "Никого не найдено",
     qrNotificationsHeading: "Сообщения через QR-метку",
     itemFallback: "Вещь",
@@ -587,6 +587,23 @@ const ru: Dictionary = {
     submit: "Отправить заявку",
     successTitle: "Ваша заявка принята!",
     successBody: "Наша команда скоро свяжется с вами.",
+  },
+
+  notifications: {
+    title: "Уведомления",
+    navLabel: "Уведомления",
+    empty: "Пока уведомлений нет. Когда кто-то добавит вас в друзья, прокомментирует или лайкнет ваше объявление — это появится здесь.",
+    friendAdded: "{name} добавил(а) вас в друзья",
+    friendListing: "{name} разместил(а) новое объявление: «{title}»",
+    listingComment: "{name} прокомментировал(а) ваше объявление: «{title}»",
+    listingLike: "{name} оценил(а) ваше объявление: «{title}»",
+    someone: "Кто-то",
+    promptTitle: "Включите уведомления",
+    promptBody: "Новое сообщение, комментарий или новый друг — оповещение со звуком придёт на телефон, даже когда сайт закрыт.",
+    promptEnable: "Включить",
+    promptLater: "Позже",
+    toastNew: "Новое уведомление",
+    toastOpen: "Открыть",
   },
 };
 

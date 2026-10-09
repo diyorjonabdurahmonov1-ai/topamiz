@@ -460,7 +460,7 @@ const tg: Dictionary = {
 
   messages: {
     title: "Паёмҳо",
-    searchPlaceholder: "Бо ном ё email ҷустуҷӯ кунед...",
+    searchPlaceholder: "Бо ном ҷустуҷӯ кунед...",
     noUsersFound: "Ҳеҷ кас ёфт нашуд",
     qrNotificationsHeading: "Паёмҳо тавассути нишонаи QR",
     itemFallback: "Чиз",
@@ -587,6 +587,23 @@ const tg: Dictionary = {
     submit: "Фиристодани дархост",
     successTitle: "Дархости шумо қабул шуд!",
     successBody: "Гурӯҳи мо ба зудӣ бо шумо тамос мегирад.",
+  },
+
+  notifications: {
+    title: "Огоҳиномаҳо",
+    navLabel: "Огоҳиномаҳо",
+    empty: "Ҳоло огоҳинома нест. Вақте касе шуморо ба дӯстон илова кунад, ба эълонатон шарҳ нависад ё онро писандад — инҷо мебинед.",
+    friendAdded: "{name} шуморо ба дӯстон илова кард",
+    friendListing: "{name} эълони нав гузошт: «{title}»",
+    listingComment: "{name} ба эълони шумо шарҳ гузошт: «{title}»",
+    listingLike: "{name} эълони шуморо писандид: «{title}»",
+    someone: "Касе",
+    promptTitle: "Огоҳиномаҳоро фаъол кунед",
+    promptBody: "Паёми нав, шарҳ ё дӯсти нав — ҳатто вақте сайт пӯшида аст, ба телефонатон огоҳиномаи садодор меояд.",
+    promptEnable: "Фаъол кардан",
+    promptLater: "Баъдтар",
+    toastNew: "Огоҳиномаи нав",
+    toastOpen: "Кушодан",
   },
 };
 
