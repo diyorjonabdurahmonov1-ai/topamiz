@@ -3,15 +3,7 @@
 import { useEffect, useState } from "react";
 import { Bell, BellOff, Loader2 } from "lucide-react";
 import type { Dictionary } from "@/lib/i18n";
-
-const VAPID_PUBLIC_KEY = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
-
-function urlBase64ToUint8Array(base64String: string): Uint8Array {
-  const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
-  const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
-  const rawData = atob(base64);
-  return Uint8Array.from([...rawData].map((c) => c.charCodeAt(0)));
-}
+import { disablePush, ensureSubscribed, isSubscribed, pushSupported } from "@/lib/push-client";
 
 type Status = "checking" | "unsupported" | "off" | "on" | "denied" | "busy" | "error";
 
@@ -22,7 +14,7 @@ export default function PushNotificationToggle({ dict }: { dict: Dictionary }) {
     let cancelled = false;
 
     (async () => {
-      if (!VAPID_PUBLIC_KEY || !("serviceWorker" in navigator) || !("PushManager" in window)) {
+      if (!pushSupported()) {
         if (!cancelled) setStatus("unsupported");
         return;
       }
@@ -31,9 +23,8 @@ export default function PushNotificationToggle({ dict }: { dict: Dictionary }) {
         return;
       }
       try {
-        const reg = await navigator.serviceWorker.register("/sw.js");
-        const sub = await reg.pushManager.getSubscription();
-        if (!cancelled) setStatus(sub ? "on" : "off");
+        const on = Notification.permission === "granted" && (await isSubscribed());
+        if (!cancelled) setStatus(on ? "on" : "off");
       } catch {
         if (!cancelled) setStatus("unsupported");
       }
@@ -45,7 +36,6 @@ export default function PushNotificationToggle({ dict }: { dict: Dictionary }) {
   }, []);
 
   async function handleEnable() {
-    if (!VAPID_PUBLIC_KEY) return;
     setStatus("busy");
     try {
       const permission = await Notification.requestPermission();
@@ -53,17 +43,7 @@ export default function PushNotificationToggle({ dict }: { dict: Dictionary }) {
         setStatus("denied");
         return;
       }
-      const reg = await navigator.serviceWorker.register("/sw.js");
-      const sub = await reg.pushManager.subscribe({
-        userVisibleOnly: true,
-        applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY) as BufferSource,
-      });
-      const res = await fetch("/api/push/subscribe", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(sub.toJSON()),
-      });
-      if (!res.ok) throw new Error("subscribe failed");
+      await ensureSubscribed();
       setStatus("on");
     } catch {
       setStatus("error");
@@ -73,16 +53,7 @@ export default function PushNotificationToggle({ dict }: { dict: Dictionary }) {
   async function handleDisable() {
     setStatus("busy");
     try {
-      const reg = await navigator.serviceWorker.register("/sw.js");
-      const sub = await reg.pushManager.getSubscription();
-      if (sub) {
-        await fetch("/api/push/unsubscribe", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ endpoint: sub.endpoint }),
-        });
-        await sub.unsubscribe();
-      }
+      await disablePush();
       setStatus("off");
     } catch {
       setStatus("error");

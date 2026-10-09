@@ -4,6 +4,7 @@ import { getListingById } from "@/lib/listings";
 import { addComment, getComments, MAX_COMMENT_LENGTH } from "@/lib/listing-comments";
 import { containsProhibitedContent, recordModerationViolation } from "@/lib/moderation";
 import { getClientIp, rateLimit } from "@/lib/rate-limit";
+import { notify } from "@/lib/notifications";
 
 export async function GET(_request: Request, ctx: RouteContext<"/api/listings/[id]/comments">) {
   const { id } = await ctx.params;
@@ -48,5 +49,8 @@ export async function POST(request: Request, ctx: RouteContext<"/api/listings/[i
   }
 
   const comment = addComment({ listingId: Number(id), userId: user.id, body: text });
+  if (listing.ownerId) {
+    notify({ userId: listing.ownerId, type: "listing_comment", actorId: user.id, listingId: Number(id) });
+  }
   return NextResponse.json({ comment });
 }

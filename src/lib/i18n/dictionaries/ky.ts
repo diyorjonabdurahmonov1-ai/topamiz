@@ -460,7 +460,7 @@ const ky: Dictionary = {
 
   messages: {
     title: "Билдирүүлөр",
-    searchPlaceholder: "Аты же email боюнча издөө...",
+    searchPlaceholder: "Аты боюнча издөө...",
     noUsersFound: "Эч ким табылган жок",
     qrNotificationsHeading: "QR-белги аркылуу билдирүүлөр",
     itemFallback: "Зат",
@@ -587,6 +587,23 @@ const ky: Dictionary = {
     submit: "Өтүнмө жөнөтүү",
     successTitle: "Өтүнмөңүз кабыл алынды!",
     successBody: "Командабыз жакында сиз менен байланышат.",
+  },
+
+  notifications: {
+    title: "Билдирмелер",
+    navLabel: "Билдирмелер",
+    empty: "Азырынча билдирме жок. Кимдир сизди досторго кошсо, жарнамаңызга комментарий жазса же жактырса — ушул жерден көрөсүз.",
+    friendAdded: "{name} сизди досторуна кошту",
+    friendListing: "{name} жаңы жарнама жайгаштырды: «{title}»",
+    listingComment: "{name} жарнамаңызга комментарий калтырды: «{title}»",
+    listingLike: "{name} жарнамаңызды жактырды: «{title}»",
+    someone: "Кимдир",
+    promptTitle: "Билдирмелерди күйгүзүңүз",
+    promptBody: "Жаңы кат, комментарий же жаңы дос — сайт жабык болсо да, телефонуңузга үн менен билдирме келет.",
+    promptEnable: "Күйгүзүү",
+    promptLater: "Кийинчерээк",
+    toastNew: "Жаңы билдирме",
+    toastOpen: "Ачуу",
   },
 };
 

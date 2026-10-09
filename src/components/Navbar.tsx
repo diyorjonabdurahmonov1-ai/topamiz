@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, X, Plus, MessageCircle, QrCode } from "lucide-react";
+import { Menu, X, Plus, MessageCircle, QrCode, Bell } from "lucide-react";
 import type { AuthUser } from "@/lib/auth";
 import type { Dictionary, Locale } from "@/lib/i18n";
 import Logo from "./Logo";
@@ -14,16 +14,33 @@ import LanguageSwitcher from "./LanguageSwitcher";
 export default function Navbar({
   user,
   unreadCount = 0,
+  notificationCount = 0,
   locale,
   dict,
 }: {
   user: AuthUser | null;
   unreadCount?: number;
+  notificationCount?: number;
   locale: Locale;
   dict: Dictionary;
 }) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
+
+  const bell = user && (
+    <Link
+      href="/bildirishnomalar"
+      aria-label={dict.notifications.navLabel}
+      className="relative flex h-9 w-9 items-center justify-center rounded-xl border border-border bg-surface text-muted hover:text-foreground"
+    >
+      <Bell className="h-4 w-4" />
+      {notificationCount > 0 && (
+        <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-danger px-1 text-[10px] font-bold text-white">
+          {notificationCount > 99 ? "99+" : notificationCount}
+        </span>
+      )}
+    </Link>
+  );
 
   const links = [
     { href: "/elonlar", label: dict.nav.listings },
@@ -61,6 +78,7 @@ export default function Navbar({
         <div className="hidden items-center gap-3 md:flex">
           <LanguageSwitcher locale={locale} label={dict.languageSwitcher.label} />
           <ThemeToggle />
+          {bell}
           {user && (
             <Link
               href="/xabarlar"
@@ -100,6 +118,7 @@ export default function Navbar({
         <div className="flex items-center gap-2 md:hidden">
           <LanguageSwitcher locale={locale} label={dict.languageSwitcher.label} />
           <ThemeToggle />
+          {bell}
           <button
             type="button"
             onClick={() => setOpen((v) => !v)}

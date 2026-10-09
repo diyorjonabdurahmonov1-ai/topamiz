@@ -559,4 +559,22 @@ export interface Dictionary {
     successTitle: string;
     successBody: string;
   };
+
+  notifications: {
+    title: string;
+    navLabel: string;
+    empty: string;
+    // {name} is who did it, {title} the listing's title.
+    friendAdded: string;
+    friendListing: string;
+    listingComment: string;
+    listingLike: string;
+    someone: string;
+    promptTitle: string;
+    promptBody: string;
+    promptEnable: string;
+    promptLater: string;
+    toastNew: string;
+    toastOpen: string;
+  };
 }

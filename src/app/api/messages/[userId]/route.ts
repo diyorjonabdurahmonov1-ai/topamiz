@@ -73,6 +73,7 @@ export async function POST(request: Request, ctx: RouteContext<"/api/messages/[u
     title: senderIdentity.name,
     body: text,
     url: `/xabarlar/${user.id}`,
+    tag: `chat-${user.id}`,
   });
 
   return NextResponse.json({ message });

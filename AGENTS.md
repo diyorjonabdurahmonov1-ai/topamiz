@@ -71,6 +71,17 @@ cold start or an ephemeral filesystem.
   (a GA4 Measurement ID from analytics.google.com) and/or
   `NEXT_PUBLIC_YANDEX_METRIKA_ID` (a counter number from metrika.yandex.ru) to
   `.env.production.local` to turn either one on; both can run at once.
+- Notifications: an in-site feed at `/bildirishnomalar` (`src/lib/notifications.ts`
+  — friend added, a friend's new listing, comments and likes on your
+  listings) plus web push for those and for messages (`src/lib/push.ts`,
+  `public/sw.js`). Push needs no configuration: unless
+  `NEXT_PUBLIC_VAPID_PUBLIC_KEY`/`VAPID_PRIVATE_KEY` are set, the server
+  generates a VAPID key pair on first use and keeps it in `.data/vapid.json`
+  (server state, covered by `backup.sh` — deleting it silently orphans every
+  existing subscription until each browser re-subscribes on its next visit).
+  `src/components/NotificationCenter.tsx` asks signed-in users to turn push
+  on, and while the site is open chimes and shows a toast for anything new
+  (via the service worker, or by polling `/api/notifications/count`).
 - Listing videos (`/api/upload-video`, `src/lib/r2.ts`) are stored on
   Cloudflare R2, not the VPS's own disk — R2 has zero egress fees, and the
   120GB SSD this server ships with has no room for accumulating video.
