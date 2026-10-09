@@ -31,7 +31,7 @@ export default function VideoUploadIndicator({ dict }: { dict: Dictionary }) {
   if (uploads.length === 0) return null;
 
   return (
-    <div className="pointer-events-none fixed inset-x-4 bottom-[calc(4.75rem+env(safe-area-inset-bottom))] right-20 z-50 flex flex-col gap-2 sm:bottom-4 sm:right-auto sm:w-80">
+    <div className="pointer-events-none fixed inset-x-4 bottom-[calc(4.75rem+env(safe-area-inset-bottom))] z-50 flex flex-col gap-2 sm:bottom-4 sm:right-auto sm:w-80">
       {uploads.map((entry) => (
         <Pill key={entry.id} entry={entry} dict={dict} />
       ))}

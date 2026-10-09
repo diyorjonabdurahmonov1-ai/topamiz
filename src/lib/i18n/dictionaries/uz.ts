@@ -609,6 +609,11 @@ const uz: Dictionary = {
     promptLater: "Keyinroq",
     toastNew: "Yangi bildirishnoma",
     toastOpen: "Ochish",
+    iosInstallTitle: "iPhone'da bildirishnomalar",
+    iosInstallBody: "iPhone'da bildirishnoma olish uchun Findo'ni bosh ekranga qo'shing: Safari'da «Ulashish» tugmasini bosing → «Bosh ekranga qo'shish». Keyin Findo'ni bosh ekrandan ochib, bildirishnomalarni yoqing (iOS 16.4 yoki yangisi kerak).",
+    unsupportedBody: "Bu brauzer bildirishnomalarni qo'llab-quvvatlamaydi. Saytni Chrome yoki Safari'da oching — Telegram yoki Instagram ichidagi brauzerda ishlamaydi.",
+    deniedBody: "Bildirishnomalar brauzerda bloklangan. Yoqish uchun manzil satridagi qulf belgisini bosing → «Ruxsatlar» / «Sayt sozlamalari» → «Bildirishnomalar» → «Ruxsat berish», so'ng sahifani yangilang.",
+    gotIt: "Tushunarli",
   },
 };
 

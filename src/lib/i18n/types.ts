@@ -576,5 +576,10 @@ export interface Dictionary {
     promptLater: string;
     toastNew: string;
     toastOpen: string;
+    iosInstallTitle: string;
+    iosInstallBody: string;
+    unsupportedBody: string;
+    deniedBody: string;
+    gotIt: string;
   };
 }

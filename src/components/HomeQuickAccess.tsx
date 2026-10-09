@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ArrowUpRight, PackageSearch, Search, SearchX, Tag } from "lucide-react";
+import { ArrowUpRight, ChevronRight, PackageSearch, QrCode, Search, SearchX, Tag } from "lucide-react";
 import type { CategoryId, Listing } from "@/lib/types";
 import type { Dictionary } from "@/lib/i18n";
 import { categoryIcons } from "@/lib/icons";
@@ -109,6 +109,20 @@ export default function HomeQuickAccess({
           </span>
           <span className="text-lg font-extrabold">{promoCount}</span>
           <span className="text-xs font-semibold">{dict.promo.activeCount}</span>
+        </Link>
+
+        <Link
+          href="/belgilash"
+          className="card-hover col-span-2 flex items-center gap-3 rounded-2xl border border-border bg-surface p-4"
+        >
+          <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-brand-from to-brand-via text-white shadow-lg">
+            <QrCode className="h-6 w-6" />
+          </span>
+          <span className="min-w-0 flex-1">
+            <span className="block text-sm font-extrabold">{dict.homeQuickAccess.qrTitle}</span>
+            <span className="block text-xs text-muted">{dict.homeQuickAccess.qrSubtitle}</span>
+          </span>
+          <ChevronRight className="h-5 w-5 shrink-0 text-muted" />
         </Link>
       </div>
 

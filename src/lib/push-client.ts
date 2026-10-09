@@ -10,6 +10,22 @@ export function pushSupported(): boolean {
   );
 }
 
+// Why push may be missing: iPhones only support it for a site added to the
+// Home Screen (iOS 16.4+), and in-app browsers (Telegram, Instagram…) and
+// some others don't support it at all.
+export type PushAvailability = "supported" | "ios-install" | "unsupported";
+
+export function pushAvailability(): PushAvailability {
+  if (pushSupported()) return "supported";
+  const ios =
+    /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+    (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  const standalone =
+    window.matchMedia("(display-mode: standalone)").matches ||
+    (navigator as Navigator & { standalone?: boolean }).standalone === true;
+  return ios && !standalone ? "ios-install" : "unsupported";
+}
+
 function urlBase64ToUint8Array(base64String: string): Uint8Array {
   const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
   const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
