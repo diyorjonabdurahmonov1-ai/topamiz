@@ -1,10 +1,13 @@
 [
   {
-    "relation": ["delegate_permission/common.handle_all_urls"],
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
     "target": {
       "namespace": "android_app",
       "package_name": "uz.net.findo.app",
       "sha256_cert_fingerprints": [
+        "5C:25:DA:C4:6C:0E:61:3C:1C:DF:6C:33:62:93:6D:79:FA:39:D4:7F:0E:9D:B1:0D:8F:71:25:B5:2B:8E:26:81",
         "87:E9:FC:9A:39:62:16:0F:75:88:8B:8F:B2:7C:96:56:71:6D:92:B6:B3:64:C5:29:82:63:DA:57:36:1D:7F:78"
       ]
     }
