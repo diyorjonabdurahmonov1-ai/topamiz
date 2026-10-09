@@ -1,11 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Bell, BellOff, Loader2 } from "lucide-react";
+import { Bell, BellOff, Info, Loader2 } from "lucide-react";
 import type { Dictionary } from "@/lib/i18n";
-import { disablePush, ensureSubscribed, isSubscribed, pushSupported } from "@/lib/push-client";
+import { disablePush, ensureSubscribed, isSubscribed, pushAvailability } from "@/lib/push-client";
 
-type Status = "checking" | "unsupported" | "off" | "on" | "denied" | "busy" | "error";
+type Status = "checking" | "ios-install" | "unsupported" | "off" | "on" | "denied" | "busy" | "error";
 
 export default function PushNotificationToggle({ dict }: { dict: Dictionary }) {
   const [status, setStatus] = useState<Status>("checking");
@@ -14,8 +14,9 @@ export default function PushNotificationToggle({ dict }: { dict: Dictionary }) {
     let cancelled = false;
 
     (async () => {
-      if (!pushSupported()) {
-        if (!cancelled) setStatus("unsupported");
+      const availability = pushAvailability();
+      if (availability !== "supported") {
+        if (!cancelled) setStatus(availability);
         return;
       }
       if (Notification.permission === "denied") {
@@ -60,10 +61,23 @@ export default function PushNotificationToggle({ dict }: { dict: Dictionary }) {
     }
   }
 
-  if (status === "unsupported" || status === "checking") return null;
+  if (status === "checking") return null;
 
-  if (status === "denied") {
-    return <p className="text-center text-xs text-muted">{dict.profile.pushDenied}</p>;
+  // Never just disappear: say why notifications aren't available here and
+  // what would make them work.
+  if (status === "ios-install" || status === "unsupported" || status === "denied") {
+    const t = dict.notifications;
+    return (
+      <div className="flex max-w-sm gap-2.5 rounded-xl border border-border bg-surface p-3 text-left">
+        <Info className="mt-0.5 h-4 w-4 shrink-0 text-brand-via" />
+        <div>
+          <p className="text-xs font-bold">{status === "ios-install" ? t.iosInstallTitle : status === "denied" ? dict.profile.pushDenied : t.title}</p>
+          <p className="mt-1 text-xs leading-relaxed text-muted">
+            {status === "ios-install" ? t.iosInstallBody : status === "denied" ? t.deniedBody : t.unsupportedBody}
+          </p>
+        </div>
+      </div>
+    );
   }
 
   return (

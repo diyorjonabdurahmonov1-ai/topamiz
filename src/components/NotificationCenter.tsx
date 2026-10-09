@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { Bell, X } from "lucide-react";
 import type { Dictionary } from "@/lib/i18n";
-import { ensureSubscribed, getRegistration, pushSupported } from "@/lib/push-client";
+import { ensureSubscribed, getRegistration, pushAvailability } from "@/lib/push-client";
 
 const DISMISS_KEY = "findo-push-prompt-dismissed";
 const DISMISS_MS = 7 * 24 * 60 * 60 * 1000;
@@ -87,7 +87,9 @@ export default function NotificationCenter({
 }) {
   const router = useRouter();
   const pathname = usePathname();
-  const [showPrompt, setShowPrompt] = useState(false);
+  // "ios-install": an iPhone in Safari, where push only works once Findo is
+  // added to the Home Screen — show how instead of an enable button.
+  const [prompt, setPrompt] = useState<"enable" | "ios-install" | null>(null);
   const [toast, setToast] = useState<Toast | null>(null);
   const counts = useRef<Counts>(initialCounts);
   const pathRef = useRef(pathname);
@@ -128,8 +130,18 @@ export default function NotificationCenter({
   }, []);
 
   useEffect(() => {
-    if (!pushSupported()) return;
+    const availability = pushAvailability();
     let cancelled = false;
+    if (availability === "ios-install") {
+      void Promise.resolve().then(() => {
+        if (!cancelled && !recentlyDismissed()) setPrompt("ios-install");
+      });
+    }
+    if (availability !== "supported") {
+      return () => {
+        cancelled = true;
+      };
+    }
 
     (async () => {
       if (Notification.permission === "granted") {
@@ -138,7 +150,7 @@ export default function NotificationCenter({
       }
       if (Notification.permission === "default" && !recentlyDismissed()) {
         await getRegistration().catch(() => {});
-        if (!cancelled) setShowPrompt(true);
+        if (!cancelled) setPrompt("enable");
       }
     })();
 
@@ -185,7 +197,7 @@ export default function NotificationCenter({
 
   async function enable() {
     unlockAudio();
-    setShowPrompt(false);
+    setPrompt(null);
     try {
       if ((await Notification.requestPermission()) === "granted") await ensureSubscribed();
     } catch {
@@ -194,7 +206,7 @@ export default function NotificationCenter({
   }
 
   function later() {
-    setShowPrompt(false);
+    setPrompt(null);
     try {
       localStorage.setItem(DISMISS_KEY, String(Date.now()));
     } catch {
@@ -223,7 +235,7 @@ export default function NotificationCenter({
         </div>
       )}
 
-      {showPrompt && (
+      {prompt && (
         <div className="animate-sheet-up fixed inset-x-4 bottom-[calc(5.25rem+env(safe-area-inset-bottom))] z-[55] mx-auto max-w-sm rounded-2xl border border-border bg-bg-elevated p-4 shadow-2xl sm:bottom-6 sm:left-auto sm:right-6 sm:mx-0">
           <button
             type="button"
@@ -238,25 +250,39 @@ export default function NotificationCenter({
               <Bell className="h-5 w-5" />
             </span>
             <div>
-              <p className="text-sm font-bold">{t.promptTitle}</p>
-              <p className="mt-1 text-[13px] leading-relaxed text-muted">{t.promptBody}</p>
+              <p className="text-sm font-bold">{prompt === "ios-install" ? t.iosInstallTitle : t.promptTitle}</p>
+              <p className="mt-1 text-[13px] leading-relaxed text-muted">
+                {prompt === "ios-install" ? t.iosInstallBody : t.promptBody}
+              </p>
             </div>
           </div>
           <div className="mt-3 flex gap-2">
-            <button
-              type="button"
-              onClick={enable}
-              className="btn-brand flex-1 rounded-xl px-4 py-2.5 text-sm font-bold text-white"
-            >
-              {t.promptEnable}
-            </button>
-            <button
-              type="button"
-              onClick={later}
-              className="rounded-xl border border-border px-4 py-2.5 text-sm font-semibold text-muted hover:text-foreground"
-            >
-              {t.promptLater}
-            </button>
+            {prompt === "ios-install" ? (
+              <button
+                type="button"
+                onClick={later}
+                className="btn-brand flex-1 rounded-xl px-4 py-2.5 text-sm font-bold text-white"
+              >
+                {t.gotIt}
+              </button>
+            ) : (
+              <>
+                <button
+                  type="button"
+                  onClick={enable}
+                  className="btn-brand flex-1 rounded-xl px-4 py-2.5 text-sm font-bold text-white"
+                >
+                  {t.promptEnable}
+                </button>
+                <button
+                  type="button"
+                  onClick={later}
+                  className="rounded-xl border border-border px-4 py-2.5 text-sm font-semibold text-muted hover:text-foreground"
+                >
+                  {t.promptLater}
+                </button>
+              </>
+            )}
           </div>
         </div>
       )}

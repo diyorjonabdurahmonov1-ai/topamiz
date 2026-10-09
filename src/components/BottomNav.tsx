@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Clapperboard, Home, MessageCircle, Plus, QrCode, Search, User } from "lucide-react";
+import { Clapperboard, Home, MessageCircle, Plus, Search, User } from "lucide-react";
 import type { AuthUser } from "@/lib/auth";
 import type { Dictionary } from "@/lib/i18n";
 
@@ -16,15 +16,14 @@ export default function BottomNav({
   dict: Dictionary;
 }) {
   const pathname = usePathname();
-  // No "post a listing" button where it can't be used yet (signing in) or
-  // you're already doing it.
-  const hideFab = pathname === "/elon-qoshish" || pathname === "/kirish";
 
   const items = [
     { href: "/", icon: Home, label: dict.bottomNav.home },
     { href: "/elonlar", icon: Search, label: dict.bottomNav.listings },
     { href: "/reels", icon: Clapperboard, label: dict.social.reelsNavLabel },
-    { href: "/belgilash", icon: QrCode, label: dict.bottomNav.mark, primary: true },
+    // "Post a listing" sits in the bar itself rather than floating over the
+    // page, where it used to cover chat and comment inputs.
+    { href: "/elon-qoshish", icon: Plus, label: dict.nav.postListing, primary: true },
     {
       href: user ? "/xabarlar" : "/kirish",
       icon: MessageCircle,
@@ -40,20 +39,6 @@ export default function BottomNav({
 
   return (
     <>
-      {/* The "post a listing" action used to be reachable only via the
-          hamburger menu on mobile — buried a tap deeper than everything
-          else. Float it as its own button above the bar instead, where
-          it's immediately visible and reachable with a thumb. */}
-      {!hideFab && (
-        <Link
-          href="/elon-qoshish"
-          aria-label={dict.nav.postListing}
-          className="btn-brand fixed bottom-[calc(4.75rem+env(safe-area-inset-bottom))] right-4 z-50 flex h-14 w-14 items-center justify-center rounded-2xl text-white shadow-xl sm:hidden"
-        >
-          <Plus className="h-6 w-6" strokeWidth={2.5} />
-        </Link>
-      )}
-
       <nav className="fixed inset-x-0 bottom-0 z-50 border-t border-border bg-bg-elevated/95 backdrop-blur-lg sm:hidden">
         <div className="flex items-stretch justify-around pb-[env(safe-area-inset-bottom)]">
           {items.map((item) => {
@@ -63,10 +48,11 @@ export default function BottomNav({
                 <Link
                   key={item.label}
                   href={item.href}
+                  aria-label={item.label}
                   className="flex flex-1 flex-col items-center justify-center py-2"
                 >
                   <span className="btn-brand flex h-11 w-11 items-center justify-center rounded-2xl text-white shadow-lg">
-                    <item.icon className="h-5 w-5" />
+                    <item.icon className="h-6 w-6" strokeWidth={2.5} />
                   </span>
                 </Link>
               );

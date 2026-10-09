@@ -603,6 +603,11 @@ const en: Dictionary = {
     promptLater: "Later",
     toastNew: "New notification",
     toastOpen: "Open",
+    iosInstallTitle: "Notifications on iPhone",
+    iosInstallBody: "To get notifications on iPhone, add Findo to your Home Screen: in Safari tap Share → “Add to Home Screen”. Then open Findo from the Home Screen and turn notifications on (iOS 16.4 or later).",
+    unsupportedBody: "This browser doesn't support notifications. Open the site in Chrome or Safari — they don't work in Telegram's or Instagram's built-in browser.",
+    deniedBody: "Notifications are blocked in your browser. To allow them, tap the lock icon in the address bar → Permissions / Site settings → Notifications → Allow, then reload the page.",
+    gotIt: "Got it",
   },
 };
 
