@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Clapperboard, Home, MessageCircle, Plus, Search, User } from "lucide-react";
@@ -16,6 +17,7 @@ export default function BottomNav({
   dict: Dictionary;
 }) {
   const pathname = usePathname();
+  const typing = useTyping();
 
   const items = [
     { href: "/", icon: Home, label: dict.bottomNav.home },
@@ -39,7 +41,11 @@ export default function BottomNav({
 
   return (
     <>
-      <nav className="fixed inset-x-0 bottom-0 z-50 border-t border-border bg-bg-elevated/95 backdrop-blur-lg sm:hidden">
+      <nav
+        className={`fixed inset-x-0 bottom-0 z-50 border-t border-border bg-bg-elevated/95 backdrop-blur-lg sm:hidden ${
+          typing ? "hidden" : ""
+        }`}
+      >
         <div className="flex items-stretch justify-around pb-[env(safe-area-inset-bottom)]">
           {items.map((item) => {
             const active = item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
@@ -79,4 +85,33 @@ export default function BottomNav({
       </nav>
     </>
   );
+}
+
+const NON_TEXT_INPUTS = new Set(["checkbox", "radio", "button", "submit", "reset", "range", "file", "color", "image"]);
+
+function isTextEntry(el: Element | null): boolean {
+  if (!(el instanceof HTMLElement)) return false;
+  if (el.isContentEditable || el.tagName === "TEXTAREA" || el.tagName === "SELECT") return true;
+  return el instanceof HTMLInputElement && !NON_TEXT_INPUTS.has(el.type);
+}
+
+// True while a text field has focus — i.e. while the phone keyboard is up.
+// The bar then steps aside: pinned to the bottom of the shrunken screen, it
+// would otherwise sit right on top of the field being typed into.
+function useTyping(): boolean {
+  const [typing, setTyping] = useState(false);
+  useEffect(() => {
+    const onFocusIn = (e: FocusEvent) => {
+      if (isTextEntry(e.target as Element)) setTyping(true);
+    };
+    // Focus may be moving straight to another field; check where it landed.
+    const onFocusOut = () => setTimeout(() => setTyping(isTextEntry(document.activeElement)), 0);
+    document.addEventListener("focusin", onFocusIn);
+    document.addEventListener("focusout", onFocusOut);
+    return () => {
+      document.removeEventListener("focusin", onFocusIn);
+      document.removeEventListener("focusout", onFocusOut);
+    };
+  }, []);
+  return typing;
 }
