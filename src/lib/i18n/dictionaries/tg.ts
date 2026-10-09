@@ -456,6 +456,8 @@ const tg: Dictionary = {
     friendAdded: "Дӯсти шумо",
     friendsHeading: "Дӯстон",
     noFriends: "То ҳол дӯст нест.",
+    followersHeading: "Обуначиён",
+    noFollowers: "Ҳоло ҳеҷ кас ба дӯстон илова накардааст.",
   },
 
   messages: {

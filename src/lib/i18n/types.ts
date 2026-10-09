@@ -430,6 +430,8 @@ export interface Dictionary {
     friendAdded: string;
     friendsHeading: string;
     noFriends: string;
+    followersHeading: string;
+    noFollowers: string;
   };
 
   messages: {

@@ -4,13 +4,13 @@ import { notFound, redirect } from "next/navigation";
 import { MessageCircle } from "lucide-react";
 import { getCurrentUser, getUserById } from "@/lib/auth";
 import { getListingsByOwner } from "@/lib/listings";
-import { getFriendCount, isFriend } from "@/lib/friends";
+import { getFollowerCount, getFriendCount, isFriend } from "@/lib/friends";
 import { getLocale } from "@/lib/i18n/server";
 import { getDictionary } from "@/lib/i18n";
-import { formatFriendsCount } from "@/lib/i18n/format";
 import Avatar from "@/components/Avatar";
 import ListingsGrid from "@/components/ListingsGrid";
 import FriendButton from "@/components/FriendButton";
+import FriendCounts from "@/components/FriendCounts";
 
 export async function generateMetadata(props: PageProps<"/profil/[id]">): Promise<Metadata> {
   const { id } = await props.params;
@@ -34,6 +34,7 @@ export default async function PublicProfilePage(props: PageProps<"/profil/[id]">
     .filter((l) => l.status === "active")
     .filter((l) => currentUser || !l.isMysteryBox);
   const friendCount = getFriendCount(user.id);
+  const followerCount = getFollowerCount(user.id);
   const viewerIsFriend = currentUser ? isFriend(currentUser.id, user.id) : false;
 
   return (
@@ -43,12 +44,13 @@ export default async function PublicProfilePage(props: PageProps<"/profil/[id]">
         <h1 className="mt-4 text-xl font-extrabold">{user.name}</h1>
         <p className="mt-3 max-w-sm text-sm text-muted">{user.bio || dict.publicProfile.noBio}</p>
 
-        <Link
-          href={`/profil/${user.id}/dostlar`}
-          className="mt-4 flex items-center gap-1.5 rounded-full border border-border bg-bg-elevated px-4 py-1.5 text-sm font-semibold hover:bg-surface-2"
-        >
-          {formatFriendsCount(locale, friendCount)}
-        </Link>
+        <FriendCounts
+          userId={user.id}
+          friendCount={friendCount}
+          followerCount={followerCount}
+          locale={locale}
+          className="mt-4"
+        />
 
         <div className="mt-6 flex w-full gap-2">
           <Link

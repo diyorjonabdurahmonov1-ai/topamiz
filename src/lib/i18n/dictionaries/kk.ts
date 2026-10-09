@@ -456,6 +456,8 @@ const kk: Dictionary = {
     friendAdded: "Досыңыз",
     friendsHeading: "Достар",
     noFriends: "Әзірге достар жоқ.",
+    followersHeading: "Жазылушылар",
+    noFollowers: "Әзірге ешкім досқа қоспаған.",
   },
 
   messages: {
