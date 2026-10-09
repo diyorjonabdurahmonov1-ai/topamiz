@@ -1,6 +1,7 @@
 import { db } from "./db";
 import type { CategoryId, Listing, ListingKind, PromoCategoryId } from "./types";
 import { coordinatesForCity } from "./city-coordinates";
+import { CATEGORY_COLORS } from "./category-colors";
 import { displayIdentity } from "./auth";
 
 export const MAX_LISTING_TITLE_LENGTH = 120;
@@ -9,18 +10,6 @@ export const MAX_LISTING_PHOTOS = 6;
 export const MAX_CONTACT_NAME_LENGTH = 80;
 export const MAX_CONTACT_PHONE_LENGTH = 30;
 export const MAX_DISTRICT_LENGTH = 80;
-
-// Listings no longer store a color pair — it's derived from category so
-// creating one doesn't need a color picker, and it stays consistent site-wide.
-const CATEGORY_COLORS: Record<CategoryId, { from: string; to: string }> = {
-  hujjatlar: { from: "#6366f1", to: "#22d3ee" },
-  texnika: { from: "#0ea5e9", to: "#22d3ee" },
-  sumka: { from: "#a855f7", to: "#6366f1" },
-  hayvonlar: { from: "#f59e0b", to: "#f97316" },
-  kalitlar: { from: "#22c55e", to: "#16a34a" },
-  kiyim: { from: "#0ea5e9", to: "#6366f1" },
-  boshqa: { from: "#eab308", to: "#f59e0b" },
-};
 
 interface RawListingRow {
   id: number;
