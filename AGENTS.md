@@ -97,6 +97,18 @@ cold start or an ephemeral filesystem.
   the browser reports the details (error code, file type/size, user agent)
   to the server log: `pm2 logs topamiz --lines 200 --nostream | grep video-upload-failure`.
 
+### Android app
+
+`android/` is a Trusted Web Activity (package `uz.net.findo.app`) — the
+Play Store app is this website opened full-screen in the phone's Chrome, so
+it shares the server, database, accounts and sessions with the site, and
+site deploys reach it with no app update. CI (`.github/workflows/android.yml`)
+builds an unsigned bundle to the `android-build` branch; the owner signs it
+offline with the upload keystore, which is never committed (the repo is
+public). `public/.well-known/assetlinks.json` must list both the upload key's
+and Google Play's app-signing key's SHA-256, or the app shows a browser
+address bar. Details in `android/README.md`.
+
 ### Another project shares this server — do not touch it
 
 `prostaff` (containers `backend-api-1`, `backend-db-1`, `backend-caddy-1`)
