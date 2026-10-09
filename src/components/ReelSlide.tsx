@@ -56,6 +56,7 @@ export default function ReelSlide({
   onOpenComments,
   muted,
   onToggleMuted,
+  onSoundBlocked,
 }: {
   listing: Listing;
   likedByMe: boolean;
@@ -68,6 +69,9 @@ export default function ReelSlide({
   // Instagram/TikTok-style shared mute state, not a per-slide setting.
   muted: boolean;
   onToggleMuted: () => void;
+  // The browser refused to start this video with sound (no tap on the page
+  // yet) — the feed goes back to muted until the next tap.
+  onSoundBlocked: () => void;
 }) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const isVideo = !!listing.videoUrl;
@@ -81,10 +85,17 @@ export default function ReelSlide({
     if (!video) return;
     if (active) {
       video.currentTime = 0;
-      video.play().catch(() => {});
+      video.play().catch((err: unknown) => {
+        if ((err as Error)?.name !== "NotAllowedError" || video.muted) return;
+        // Playing silently beats not playing at all.
+        video.muted = true;
+        onSoundBlocked();
+        video.play().catch(() => {});
+      });
     } else {
       video.pause();
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- only (re)start on these changes
   }, [active, isVideo, locked]);
 
   function togglePlay() {

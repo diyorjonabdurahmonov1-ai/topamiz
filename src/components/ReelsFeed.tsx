@@ -25,6 +25,7 @@ export default function ReelsFeed({
   // should unmute the whole feed, and vice versa, matching how a single tap
   // on Instagram/TikTok's mute button affects every reel from then on.
   const [muted, setMuted] = useState(true);
+  useReelSound(setMuted);
   const [commentCounts, setCommentCounts] = useState<Record<string, number>>(() =>
     Object.fromEntries(initialListings.map((l) => [l.id, l.commentCount]))
   );
@@ -123,7 +124,11 @@ export default function ReelsFeed({
             commentCount={commentCounts[listing.id] ?? listing.commentCount}
             onOpenComments={() => setOpenCommentsFor(listing.id)}
             muted={muted}
-            onToggleMuted={() => setMuted((m) => !m)}
+            onToggleMuted={() => {
+              setMuted(!muted);
+              rememberSound(muted);
+            }}
+            onSoundBlocked={() => setMuted(true)}
           />
         </div>
       ))}
@@ -142,4 +147,66 @@ export default function ReelsFeed({
       )}
     </div>
   );
+}
+
+const SOUND_KEY = "findo-reels-sound";
+const VOLUME_KEYS = new Set(["AudioVolumeUp", "AudioVolumeDown", "VolumeUp", "VolumeDown"]);
+
+function rememberSound(on: boolean) {
+  try {
+    localStorage.setItem(SOUND_KEY, on ? "on" : "off");
+  } catch {
+    // Private mode — the choice just isn't remembered.
+  }
+}
+
+function soundWanted(): boolean {
+  try {
+    return localStorage.getItem(SOUND_KEY) === "on";
+  } catch {
+    return false;
+  }
+}
+
+// Instagram-style sound: reels start muted (browsers block sound before the
+// visitor has touched the page), and then
+// - pressing a volume button turns sound on, where the browser passes those
+//   keys to the page;
+// - once sound has been turned on it stays on — for the next reels and the
+//   next visit — starting right away when the browser allows it (arriving
+//   from a tap elsewhere on the site) or at the first tap otherwise.
+function useReelSound(setMuted: (muted: boolean) => void) {
+  useEffect(() => {
+    const unmute = () => {
+      setMuted(false);
+      rememberSound(true);
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (VOLUME_KEYS.has(e.key)) unmute();
+    };
+    window.addEventListener("keydown", onKey);
+
+    let onFirstTap: ((e: MouseEvent) => void) | null = null;
+    if (soundWanted()) {
+      const activated = (navigator as Navigator & { userActivation?: { hasBeenActive: boolean } }).userActivation
+        ?.hasBeenActive;
+      if (activated) {
+        void Promise.resolve().then(() => setMuted(false));
+      } else {
+        // A tap (not a swipe — the browser only treats a tap as the go-ahead
+        // for sound) brings the sound back. Caught before it reaches the
+        // video, so that tap doesn't also pause it.
+        onFirstTap = (e: MouseEvent) => {
+          setMuted(false);
+          if ((e.target as Element | null)?.closest("video")) e.stopPropagation();
+        };
+        window.addEventListener("click", onFirstTap, { capture: true, once: true });
+      }
+    }
+
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      if (onFirstTap) window.removeEventListener("click", onFirstTap, { capture: true });
+    };
+  }, [setMuted]);
 }
