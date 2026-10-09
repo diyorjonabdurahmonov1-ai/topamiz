@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getCurrentUser, isAdmin } from "@/lib/auth";
-import { createAd, MAX_AD_LINK_LENGTH, MAX_AD_TITLE_LENGTH } from "@/lib/ads";
+import { createAd, MAX_AD_TITLE_LENGTH, normalizeAdLink } from "@/lib/ads";
 import { matchesMediaSignature, mediaKindFor } from "@/lib/media-signature";
 import { getClientIp, rateLimit } from "@/lib/rate-limit";
 import { encodeUpload, saveUpload, UnreadableImageError } from "@/lib/images";
@@ -50,11 +50,11 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Fayl hajmi 15MB dan oshmasligi kerak" }, { status: 400 });
   }
 
-  const linkUrl =
-    typeof linkUrlRaw === "string" ? linkUrlRaw.trim().slice(0, MAX_AD_LINK_LENGTH) : "";
-  if (!/^https?:\/\//i.test(linkUrl)) {
+  // Optional: an ad without a link just shows, tapping it does nothing.
+  const linkUrl = normalizeAdLink(linkUrlRaw);
+  if (linkUrl === null) {
     return NextResponse.json(
-      { error: "To'g'ri havola kiriting (http:// yoki https:// bilan)" },
+      { error: "Havola http:// yoki https:// bilan boshlanishi kerak (yoki bo'sh qoldiring)" },
       { status: 400 }
     );
   }

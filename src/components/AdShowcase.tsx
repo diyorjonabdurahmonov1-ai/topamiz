@@ -4,10 +4,12 @@ import { useRef, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import type { AdBanner } from "@/lib/ads";
 import type { Dictionary } from "@/lib/i18n";
+import AdTarget, { useAdView } from "./AdTarget";
 
 export default function AdShowcase({ ads, dict }: { ads: AdBanner[]; dict: Dictionary }) {
   const scrollerRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
+  useAdView(ads[activeIndex]?.id);
 
   if (ads.length === 0) return null;
 
@@ -47,11 +49,9 @@ export default function AdShowcase({ ads, dict }: { ads: AdBanner[]; dict: Dicti
         className="scrollbar-thin -mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-smooth px-4 pb-2 sm:-mx-6 sm:px-6 lg:mx-0 lg:px-0"
       >
         {ads.map((ad) => (
-          <a
+          <AdTarget
             key={ad.id}
-            href={ad.linkUrl}
-            target="_blank"
-            rel="noopener noreferrer nofollow sponsored"
+            ad={ad}
             className="card-hover w-[62%] shrink-0 snap-start overflow-hidden rounded-2xl border border-border bg-surface sm:w-64 lg:w-72"
           >
             <div className="relative aspect-[16/9] w-full overflow-hidden bg-surface-2">
@@ -81,7 +81,7 @@ export default function AdShowcase({ ads, dict }: { ads: AdBanner[]; dict: Dicti
                 {ad.title}
               </p>
             )}
-          </a>
+          </AdTarget>
         ))}
       </div>
 

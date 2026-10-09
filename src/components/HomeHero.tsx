@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Plus } from "lucide-react";
 import type { AdBanner } from "@/lib/ads";
 import type { Dictionary } from "@/lib/i18n";
+import AdTarget, { useAdView } from "./AdTarget";
 
 const ROTATE_MS = 5000;
 // After someone swipes or taps the banner, leave it where they put it for a while.
@@ -22,6 +23,7 @@ function AdCarousel({ ads, dict }: { ads: AdBanner[]; dict: Dictionary }) {
   const scrollerRef = useRef<HTMLDivElement>(null);
   const [index, setIndex] = useState(0);
   const pausedUntil = useRef(0);
+  useAdView(ads[index]?.id);
 
   const goTo = useCallback((i: number) => {
     const el = scrollerRef.current;
@@ -56,11 +58,9 @@ function AdCarousel({ ads, dict }: { ads: AdBanner[]; dict: Dictionary }) {
         className="flex snap-x snap-mandatory overflow-x-auto rounded-3xl shadow-xl shadow-brand-via/10 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
         {ads.map((ad) => (
-          <a
+          <AdTarget
             key={ad.id}
-            href={ad.linkUrl}
-            target="_blank"
-            rel="noopener noreferrer nofollow sponsored"
+            ad={ad}
             className="relative block aspect-[12/5] w-full shrink-0 snap-center overflow-hidden bg-surface-2 lg:aspect-[16/5]"
           >
             {ad.mediaType === "video" ? (
@@ -77,7 +77,7 @@ function AdCarousel({ ads, dict }: { ads: AdBanner[]; dict: Dictionary }) {
                 <span className="line-clamp-1">{ad.title}</span>
               </span>
             )}
-          </a>
+          </AdTarget>
         ))}
       </div>
 

@@ -16,8 +16,9 @@ export default async function AdminAdsPage() {
     <div className="mx-auto max-w-2xl">
       <h1 className="text-2xl font-extrabold tracking-tight">Reklama banneri</h1>
       <p className="mt-1.5 text-sm text-muted">
-        Rasm, video yoki GIF yuklang, havola qo&apos;shing — bosh sahifadagi
-        bannerda ketma-ket aylanadi.
+        Rasm, video yoki GIF yuklang — bosh sahifadagi bannerda ketma-ket
+        aylanadi. Havola ixtiyoriy. Har bir reklama necha marta ko&apos;rilgani va
+        bosilgani pastda ko&apos;rinadi.
       </p>
 
       <div className="mt-6 rounded-2xl border border-border bg-surface p-5 sm:p-6">
@@ -30,7 +31,7 @@ export default async function AdminAdsPage() {
             Hali reklama qo&apos;shilmagan.
           </p>
         ) : (
-          ads.map((ad) => <AdminAdRow key={ad.id} ad={ad} />)
+          ads.map((ad, i) => <AdminAdRow key={ad.id} ad={ad} first={i === 0} last={i === ads.length - 1} />)
         )}
       </div>
     </div>

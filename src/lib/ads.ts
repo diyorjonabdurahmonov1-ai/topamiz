@@ -9,9 +9,13 @@ export interface AdBanner {
   id: number;
   mediaUrl: string;
   mediaType: AdMediaType;
+  // Empty when the ad has no link — the banner just shows, tapping it does
+  // nothing.
   linkUrl: string;
   title: string;
   active: boolean;
+  views: number;
+  clicks: number;
   createdAt: string;
 }
 
@@ -23,6 +27,8 @@ interface RawAdRow {
   title: string;
   active: number;
   sort_order: number;
+  views: number;
+  clicks: number;
   created_at: string;
 }
 
@@ -34,6 +40,8 @@ function toAd(row: RawAdRow): AdBanner {
     linkUrl: row.link_url,
     title: row.title,
     active: !!row.active,
+    views: row.views ?? 0,
+    clicks: row.clicks ?? 0,
     createdAt: row.created_at,
   };
 }
@@ -85,4 +93,48 @@ export function setAdActive(id: number, active: boolean): boolean {
 export function deleteAd(id: number): boolean {
   const info = db.prepare("DELETE FROM ads WHERE id = ?").run(id);
   return info.changes > 0;
+}
+
+// An empty link is allowed (the banner then isn't clickable); anything else
+// must be a plain http(s) URL. Returns null for a link that isn't acceptable.
+export function normalizeAdLink(raw: unknown): string | null {
+  const link = typeof raw === "string" ? raw.trim().slice(0, MAX_AD_LINK_LENGTH) : "";
+  if (!link) return "";
+  return /^https?:\/\/[^\s]+$/i.test(link) ? link : null;
+}
+
+export function updateAd(id: number, fields: { linkUrl?: string; title?: string }): boolean {
+  const ad = getAdById(id);
+  if (!ad) return false;
+  db.prepare("UPDATE ads SET link_url = ?, title = ? WHERE id = ?").run(
+    fields.linkUrl ?? ad.linkUrl,
+    fields.title ?? ad.title,
+    id
+  );
+  return true;
+}
+
+// Swaps an ad with its neighbour in the rotation order.
+export function moveAd(id: number, direction: "up" | "down"): boolean {
+  const ads = getAllAds();
+  const index = ads.findIndex((a) => a.id === id);
+  const other = ads[direction === "up" ? index - 1 : index + 1];
+  if (index === -1 || !other) return false;
+  const renumber = db.prepare("UPDATE ads SET sort_order = ? WHERE id = ?");
+  db.transaction(() => {
+    // Renumber everything first: older rows can share a sort_order, which
+    // would make a plain swap a no-op.
+    ads.forEach((a, i) => renumber.run(i, a.id));
+    renumber.run(index, other.id);
+    renumber.run(ads.indexOf(other), id);
+  })();
+  return true;
+}
+
+export function recordAdView(id: number) {
+  db.prepare("UPDATE ads SET views = views + 1 WHERE id = ? AND active = 1").run(id);
+}
+
+export function recordAdClick(id: number) {
+  db.prepare("UPDATE ads SET clicks = clicks + 1 WHERE id = ?").run(id);
 }

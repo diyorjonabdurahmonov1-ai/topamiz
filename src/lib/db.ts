@@ -392,3 +392,11 @@ const pushColumns = db.prepare("PRAGMA table_info(push_subscriptions)").all() as
 if (!pushColumns.some((c) => c.name === "locale")) {
   addColumn("ALTER TABLE push_subscriptions ADD COLUMN locale TEXT");
 }
+
+// How often each home-page ad was seen and clicked — what an advertiser
+// asks for before paying for another week.
+const adColumns = db.prepare("PRAGMA table_info(ads)").all() as { name: string }[];
+if (!adColumns.some((c) => c.name === "views")) {
+  addColumn("ALTER TABLE ads ADD COLUMN views INTEGER NOT NULL DEFAULT 0");
+  addColumn("ALTER TABLE ads ADD COLUMN clicks INTEGER NOT NULL DEFAULT 0");
+}
