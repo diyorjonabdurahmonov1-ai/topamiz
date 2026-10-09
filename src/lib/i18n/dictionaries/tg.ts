@@ -581,6 +581,9 @@ const tg: Dictionary = {
   },
 
   social: {
+    reelTapForSound: "Барои садо пахш кунед",
+    reelSoundOn: "Садоро фаъол кардан",
+    reelSoundOff: "Садоро хомӯш кардан",
     commentsHeading: "Шарҳҳо",
     commentsEmpty: "Ҳанӯз шарҳе нест. Аввалин шавед!",
     commentPlaceholder: "Шарҳ нависед...",

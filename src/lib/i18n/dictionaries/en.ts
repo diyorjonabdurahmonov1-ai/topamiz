@@ -580,6 +580,9 @@ const en: Dictionary = {
   },
 
   social: {
+    reelTapForSound: "Tap for sound",
+    reelSoundOn: "Turn sound on",
+    reelSoundOff: "Turn sound off",
     commentsHeading: "Comments",
     commentsEmpty: "No comments yet. Be the first!",
     commentPlaceholder: "Write a comment...",

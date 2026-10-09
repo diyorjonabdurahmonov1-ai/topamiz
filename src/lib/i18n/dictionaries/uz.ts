@@ -585,6 +585,9 @@ const uz: Dictionary = {
   },
 
   social: {
+    reelTapForSound: "Ovoz uchun bosing",
+    reelSoundOn: "Ovozni yoqish",
+    reelSoundOff: "Ovozni o'chirish",
     commentsHeading: "Izohlar",
     commentsEmpty: "Hali izoh yo'q. Birinchi bo'lib yozing!",
     commentPlaceholder: "Izoh yozing...",
