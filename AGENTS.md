@@ -89,6 +89,12 @@ cold start or an ephemeral filesystem.
   cards (`?w=240|480|960`) are made on demand into `.cache/uploads/`:
   regenerable, gitignored, not in backups. Photos uploaded before this were
   stripped once at server start (marker `.uploads/.metadata-stripped-v1`).
+- Errors: crashes in visitors' browsers (`src/components/ErrorReporter.tsx`,
+  the error boundaries), server errors (`onRequestError` in
+  `src/instrumentation.ts`) and failed video uploads all land in the
+  `app_errors` table (`src/lib/error-log.ts`), grouped by fingerprint and
+  shown on `/admin/xatolar`; kept 30 days. A page left open across a deploy
+  that fails to load the old build's chunks reloads itself once.
 - Listing videos (`/api/upload-video`, `src/lib/r2.ts`) are stored on
   Cloudflare R2, not the VPS's own disk — R2 has zero egress fees, and the
   120GB SSD this server ships with has no room for accumulating video.

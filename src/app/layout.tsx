@@ -7,6 +7,7 @@ import BottomNav from "@/components/BottomNav";
 import VideoUploadIndicator from "@/components/VideoUploadIndicator";
 import AppChrome from "@/components/AppChrome";
 import Analytics from "@/components/Analytics";
+import ErrorReporter from "@/components/ErrorReporter";
 import { getCurrentUser } from "@/lib/auth";
 import { unreadTotal } from "@/lib/messages";
 import { unreadNotificationCount } from "@/lib/notifications";
@@ -95,6 +96,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
           } catch (e) {}`}
         </Script>
         <Analytics />
+        <ErrorReporter />
       </head>
       <body className="min-h-full flex flex-col bg-bg text-foreground antialiased selection:bg-brand-via/30">
         <AppChrome

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth";
 import { getClientIp, rateLimit } from "@/lib/rate-limit";
+import { recordError } from "@/lib/error-log";
 
 // Client-side upload failures (a phone refusing to read the picked file, a
 // network path that never succeeds) never reach the server on their own —
@@ -15,18 +16,26 @@ export async function POST(request: Request) {
 
   const body = await request.json().catch(() => null);
   const field = (key: string, max = 300) => String(body?.[key] ?? "").slice(0, max);
-  console.warn(
-    "[video-upload-failure]",
-    JSON.stringify({
-      userId: user.id,
-      code: field("code"),
-      source: field("source", 20),
-      type: field("type", 100),
-      ext: field("ext", 20),
-      size: Number(body?.size) || 0,
-      modifiedAgoSeconds: Number(body?.modifiedAgoSeconds) || 0,
-      userAgent: field("userAgent"),
-    })
-  );
+  const details = {
+    userId: user.id,
+    code: field("code"),
+    source: field("source", 20),
+    type: field("type", 100),
+    ext: field("ext", 20),
+    size: Number(body?.size) || 0,
+    modifiedAgoSeconds: Number(body?.modifiedAgoSeconds) || 0,
+    userAgent: field("userAgent"),
+  };
+  console.warn("[video-upload-failure]", JSON.stringify(details));
+  // Also on /admin/xatolar, grouped by failure code.
+  recordError({
+    kind: "video-upload",
+    message: `Video yuklanmadi: ${details.code || "noma'lum"}`,
+    source: details.source,
+    detail: JSON.stringify(details, null, 2),
+    path: "/elon-qoshish",
+    userAgent: details.userAgent,
+    userId: user.id,
+  });
   return NextResponse.json({ ok: true });
 }

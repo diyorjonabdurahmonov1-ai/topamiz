@@ -3,6 +3,7 @@ import { getCurrentUser, isAdmin } from "@/lib/auth";
 import AdminNav from "@/components/AdminNav";
 import { getReportedListings } from "@/lib/listing-reports";
 import { countUnhandledAdInquiries } from "@/lib/ad-inquiries";
+import { countRecentErrorGroups } from "@/lib/error-log";
 
 export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
   const user = await getCurrentUser();
@@ -14,6 +15,7 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
         badges={{
           "/admin/shikoyatlar": getReportedListings().length,
           "/admin/reklama-arizalari": countUnhandledAdInquiries(),
+          "/admin/xatolar": countRecentErrorGroups(),
         }}
       />
       {children}

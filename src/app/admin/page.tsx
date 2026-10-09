@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import {
   AlertTriangle,
+  Bug,
   CheckCircle2,
   Flag,
   Gift,
@@ -28,6 +29,7 @@ import { countryName } from "@/lib/country-names";
 import StatCard from "@/components/StatCard";
 import { requireAdmin } from "@/lib/auth";
 import { getActivity, getDailyActivity, type DailyPoint } from "@/lib/admin-stats";
+import { countRecentErrorGroups } from "@/lib/error-log";
 
 export const metadata: Metadata = {
   title: "Statistika — Findo",
@@ -49,6 +51,7 @@ export default async function AdminDashboardPage() {
   const listingsByCountry = getListingCountsByCountry();
   const activity = getActivity();
   const daily = getDailyActivity();
+  const recentErrors = countRecentErrorGroups();
 
   return (
     <div>
@@ -68,10 +71,15 @@ export default async function AdminDashboardPage() {
             {unhandledInquiries} ta yangi reklama arizasi javob kutmoqda
           </AttentionLink>
         )}
-        {reportedCount === 0 && unhandledInquiries === 0 && (
+        {recentErrors > 0 && (
+          <AttentionLink href="/admin/xatolar" tone="gold" icon={Bug}>
+            So&apos;nggi 24 soatda {recentErrors} xil xato chiqdi — ko&apos;rib chiqing
+          </AttentionLink>
+        )}
+        {reportedCount === 0 && unhandledInquiries === 0 && recentErrors === 0 && (
           <p className="flex items-center gap-2 rounded-xl border border-success/30 bg-success/10 px-4 py-3 text-sm font-semibold text-success">
             <CheckCircle2 className="h-4 w-4" />
-            Hammasi joyida — ko&apos;rib chiqilmagan shikoyat yoki ariza yo&apos;q.
+            Hammasi joyida — ko&apos;rib chiqilmagan shikoyat, ariza yoki yangi xato yo&apos;q.
           </p>
         )}
       </div>
