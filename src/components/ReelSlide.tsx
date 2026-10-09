@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, Lock, MessageCircle, Sparkles, Tag, Volume2, VolumeX } from "lucide-react";
+import { ArrowLeft, Loader2, Lock, MessageCircle, RotateCw, Sparkles, Tag, Volume2, VolumeX } from "lucide-react";
 import type { Listing } from "@/lib/types";
 import type { Dictionary } from "@/lib/i18n";
 import { useStartsAtLock } from "@/lib/useStartsAtLock";
@@ -18,7 +18,7 @@ function PhotoMedia({ photoUrls }: { photoUrls: string[] }) {
   return (
     <div className="relative h-full w-full">
       {/* eslint-disable-next-line @next/next/no-img-element -- fills the slide like the <video> it stands in for, not a layout-optimizable asset */}
-      <img src={sizedImage(photoUrls[index], 960)} alt="" className="h-full w-full object-contain" />
+      <img src={sizedImage(photoUrls[index], 960)} alt="" loading="lazy" className="h-full w-full object-contain" />
       {photoUrls.length > 1 && (
         <>
           <button
@@ -51,6 +51,7 @@ export default function ReelSlide({
   listing,
   likedByMe,
   active,
+  distance,
   loggedIn,
   dict,
   commentCount,
@@ -62,6 +63,9 @@ export default function ReelSlide({
   listing: Listing;
   likedByMe: boolean;
   active: boolean;
+  // Position relative to the reel on screen: 0 is the one being watched,
+  // 1 the next, -1 the previous.
+  distance: number;
   loggedIn: boolean;
   dict: Dictionary;
   commentCount: number;
@@ -76,6 +80,20 @@ export default function ReelSlide({
 }) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const isVideo = !!listing.videoUrl;
+  // Only the reel being watched and its two neighbours get a real <video>:
+  // the next one is already buffering when the swipe lands on it, and the
+  // rest of the feed costs nothing but a poster — no data and, on low-end
+  // phones, no memory held by a dozen decoders.
+  const videoMounted = Math.abs(distance) <= 1;
+  const [buffering, setBuffering] = useState(false);
+  const [failed, setFailed] = useState(false);
+  // A video that failed before the page hydrated fired its error event with
+  // no React listener attached yet — catch that case once it's mounted.
+  useEffect(() => {
+    if (!videoMounted || !videoRef.current?.error) return;
+    const timer = setTimeout(() => setFailed(true));
+    return () => clearTimeout(timer);
+  }, [videoMounted]);
   // Only a Sirli quti's video can ever be locked — its reveal time is the
   // whole point of the game. Every other listing's video plays normally.
   const locked = useStartsAtLock(listing.isMysteryBox ? listing.startsAt : null);
@@ -146,17 +164,61 @@ export default function ReelSlide({
             )}
           </div>
         </div>
+      ) : isVideo && videoMounted ? (
+        <>
+          <video
+            ref={videoRef}
+            src={listing.videoUrl ?? undefined}
+            poster={listing.videoThumbnailUrl ?? undefined}
+            preload={distance === -1 ? "metadata" : "auto"}
+            loop
+            muted={muted}
+            playsInline
+            onClick={handleVideoTap}
+            onWaiting={() => setBuffering(true)}
+            onPlaying={() => {
+              setBuffering(false);
+              setFailed(false);
+            }}
+            onError={() => {
+              setBuffering(false);
+              setFailed(true);
+            }}
+            className="h-full w-full object-contain"
+          />
+          {active && buffering && !failed && (
+            <span className="pointer-events-none absolute inset-0 flex items-center justify-center">
+              <Loader2 className="h-9 w-9 animate-spin text-white/80 drop-shadow" />
+            </span>
+          )}
+          {active && failed && (
+            <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-black/60 px-6 text-center">
+              <p className="text-sm font-bold text-white">{dict.postListing.videoBgFailed}</p>
+              <button
+                type="button"
+                onClick={() => {
+                  const video = videoRef.current;
+                  if (!video) return;
+                  setFailed(false);
+                  setBuffering(true);
+                  video.load();
+                  video.play().catch(() => {});
+                }}
+                className="flex items-center gap-1.5 rounded-full bg-white px-4 py-2 text-sm font-bold text-gray-900"
+              >
+                <RotateCw className="h-4 w-4" />
+                {dict.postListing.videoRetry}
+              </button>
+            </div>
+          )}
+        </>
       ) : isVideo ? (
-        <video
-          ref={videoRef}
-          src={listing.videoUrl ?? undefined}
-          poster={listing.videoThumbnailUrl ?? undefined}
-          loop
-          muted={muted}
-          playsInline
-          onClick={handleVideoTap}
-          className="h-full w-full object-contain"
-        />
+        listing.videoThumbnailUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element -- R2-hosted poster standing in for a video that isn't loaded yet
+          <img src={listing.videoThumbnailUrl} alt="" loading="lazy" className="h-full w-full object-contain" />
+        ) : (
+          <div className="h-full w-full" />
+        )
       ) : (
         <PhotoMedia photoUrls={listing.photoUrls} />
       )}
@@ -210,7 +272,7 @@ export default function ReelSlide({
         </button>
       )}
 
-      {isVideo && !locked && active && muted && (
+      {isVideo && videoMounted && !locked && active && muted && !buffering && !failed && (
         <button
           type="button"
           onClick={handleVideoTap}

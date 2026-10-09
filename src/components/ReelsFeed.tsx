@@ -21,6 +21,7 @@ export default function ReelsFeed({
 }) {
   const [listings, setListings] = useState(initialListings);
   const [activeId, setActiveId] = useState(initialListings[0]?.id ?? null);
+  const activeIndex = Math.max(0, listings.findIndex((l) => l.id === activeId));
   // Shared across every slide rather than per-video — unmuting one video
   // should unmute the whole feed, and vice versa, matching how a single tap
   // on Instagram/TikTok's mute button affects every reel from then on.
@@ -106,7 +107,7 @@ export default function ReelsFeed({
       ref={containerRef}
       className="h-dvh w-full snap-y snap-mandatory overflow-y-scroll bg-black"
     >
-      {listings.map((listing) => (
+      {listings.map((listing, i) => (
         <div
           key={listing.id}
           data-listing-id={listing.id}
@@ -119,6 +120,7 @@ export default function ReelsFeed({
             listing={listing}
             likedByMe={listing.likedByMe}
             active={activeId === listing.id}
+            distance={i - activeIndex}
             loggedIn={loggedIn}
             dict={dict}
             commentCount={commentCounts[listing.id] ?? listing.commentCount}
