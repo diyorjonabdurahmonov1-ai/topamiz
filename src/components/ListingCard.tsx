@@ -6,6 +6,7 @@ import { categoryIcons } from "@/lib/icons";
 import { formatSom } from "@/lib/data";
 import Avatar from "./Avatar";
 import CountdownTimer from "./CountdownTimer";
+import { sizedImage } from "@/lib/image-url";
 
 export default function ListingCard({ listing, dict }: { listing: Listing; dict: Dictionary }) {
   const Icon = categoryIcons[listing.category];
@@ -55,7 +56,7 @@ export default function ListingCard({ listing, dict }: { listing: Listing; dict:
         ) : listing.photoUrls.length > 0 ? (
           // eslint-disable-next-line @next/next/no-img-element -- runtime-uploaded file served from /api/uploads, not a build-time asset
           <img
-            src={listing.photoUrls[0]}
+            src={sizedImage(listing.photoUrls[0], 480)}
             alt={listing.title}
             className="h-28 w-full object-cover"
           />

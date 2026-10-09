@@ -10,6 +10,7 @@ import Avatar from "./Avatar";
 import LikeButton from "./LikeButton";
 import ShareMenu from "./ShareMenu";
 import CountdownTimer from "./CountdownTimer";
+import { sizedImage } from "@/lib/image-url";
 
 function PhotoMedia({ photoUrls }: { photoUrls: string[] }) {
   const [index, setIndex] = useState(0);
@@ -17,7 +18,7 @@ function PhotoMedia({ photoUrls }: { photoUrls: string[] }) {
   return (
     <div className="relative h-full w-full">
       {/* eslint-disable-next-line @next/next/no-img-element -- fills the slide like the <video> it stands in for, not a layout-optimizable asset */}
-      <img src={photoUrls[index]} alt="" className="h-full w-full object-contain" />
+      <img src={sizedImage(photoUrls[index], 960)} alt="" className="h-full w-full object-contain" />
       {photoUrls.length > 1 && (
         <>
           <button

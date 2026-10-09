@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState, type ReactNode } from "react";
 import { ChevronLeft, ChevronRight, Expand, X } from "lucide-react";
 import type { Dictionary } from "@/lib/i18n";
+import { sizedImage } from "@/lib/image-url";
 
 export default function ListingGallery({
   photoUrls,
@@ -76,7 +77,7 @@ export default function ListingGallery({
         >
           {/* eslint-disable-next-line @next/next/no-img-element -- runtime-uploaded file served from /api/uploads, not a build-time asset */}
           <img
-            src={photoUrls[index]}
+            src={sizedImage(photoUrls[index], 960)}
             alt={`${title} — ${index + 1}/${count}`}
             className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
           />
@@ -128,7 +129,7 @@ export default function ListingGallery({
               }`}
             >
               {/* eslint-disable-next-line @next/next/no-img-element -- runtime-uploaded file served from /api/uploads, not a build-time asset */}
-              <img src={url} alt="" className="h-full w-full object-cover" />
+              <img src={sizedImage(url, 240)} alt="" className="h-full w-full object-cover" />
             </button>
           ))}
         </div>

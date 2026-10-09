@@ -19,6 +19,8 @@
 
 # user-uploaded content (saved to disk by the /api/upload route)
 /.uploads/
+# resized copies of uploads, regenerated on demand (see src/lib/images.ts)
+/.cache/
 
 # local SQLite database
 /.data/

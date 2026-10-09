@@ -5,6 +5,7 @@ import type { Dictionary, Locale } from "@/lib/i18n";
 import { categoryIcons } from "@/lib/icons";
 import { formatSom } from "@/lib/data";
 import { formatTimeAgo } from "@/lib/i18n/format";
+import { sizedImage } from "@/lib/image-url";
 
 // The home page's "latest listings" card: a bigger photo than the grid card,
 // plus where and how long ago — enough to tell at a glance whether it's
@@ -30,7 +31,7 @@ export default function HomeListingCard({
       <div className="relative h-32 w-full overflow-hidden bg-surface-2">
         {image ? (
           // eslint-disable-next-line @next/next/no-img-element -- runtime-uploaded file (R2 or /api/uploads), not a build-time asset
-          <img src={image} alt={listing.title} className="h-full w-full object-cover" />
+          <img src={sizedImage(image, 480)} alt={listing.title} className="h-full w-full object-cover" />
         ) : (
           <div
             className="flex h-full w-full items-center justify-center"

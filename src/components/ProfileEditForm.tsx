@@ -6,6 +6,7 @@ import { Camera, Loader2, Pencil, X } from "lucide-react";
 import type { AuthUser } from "@/lib/auth";
 import type { Dictionary } from "@/lib/i18n";
 import Avatar from "./Avatar";
+import { prepareImageForUpload } from "@/lib/image-prepare";
 
 export default function ProfileEditForm({ user, dict }: { user: AuthUser; dict: Dictionary }) {
   const router = useRouter();
@@ -30,7 +31,7 @@ export default function ProfileEditForm({ user, dict }: { user: AuthUser; dict: 
     setAvatarError("");
     try {
       const body = new FormData();
-      body.append("file", file);
+      body.append("file", await prepareImageForUpload(file));
       const uploadRes = await fetch("/api/upload", { method: "POST", body });
       const uploadData = await uploadRes.json();
       if (!uploadRes.ok) throw new Error(uploadData.error ?? dict.profile.genericError);
@@ -71,7 +72,7 @@ export default function ProfileEditForm({ user, dict }: { user: AuthUser; dict: 
       <input
         ref={avatarInputRef}
         type="file"
-        accept="image/jpeg,image/png,image/webp,image/gif"
+        accept="image/*,.heic,.heif"
         hidden
         onChange={handleAvatarChange}
       />

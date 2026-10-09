@@ -6,6 +6,7 @@ import type { MessageRow } from "@/lib/messages";
 import type { Dictionary } from "@/lib/i18n";
 import PhotoLightbox from "./PhotoLightbox";
 import SharedListingCard from "./SharedListingCard";
+import { sizedImage } from "@/lib/image-url";
 
 // A forwarded listing's message body is always "<title>\n<url ending in
 // /elonlar/<id>>" (see ShareMenu) — pull the id back out so the link can
@@ -85,7 +86,7 @@ export default function ChatThread({
                         <button key={url} type="button" onClick={() => setLightboxUrl(url)}>
                           {/* eslint-disable-next-line @next/next/no-img-element -- runtime-uploaded file served from /api/uploads, not a build-time asset */}
                           <img
-                            src={url}
+                            src={sizedImage(url, 240)}
                             alt=""
                             className="h-20 w-20 rounded-lg border border-white/20 object-cover"
                           />
