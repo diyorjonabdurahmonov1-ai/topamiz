@@ -52,7 +52,8 @@ cold start or an ephemeral filesystem.
   owner uses for another app). Needs `ESKIZ_EMAIL` and `ESKIZ_PASSWORD` (the
   Eskiz cabinet login) and optionally `ESKIZ_FROM` (sender nickname,
   defaults to Eskiz's `4546`; set to e.g. `FINDO` once that nickname is
-  approved under "Nik uchun ariza") in `.env.production.local`. Eskiz only
+  approved under "Nik uchun ariza") in `.env.production.local` — `bash setup-eskiz.sh` on the server asks for
+  them, checks them against Eskiz, writes them there and restarts PM2. Eskiz only
   delivers texts matching an approved template ("Mening matnlarim"), so the
   texts in `codeMessage()` must stay word-for-word identical to the two
   templates approved there — Eskiz's "Punkt 2" rejects any code text that
