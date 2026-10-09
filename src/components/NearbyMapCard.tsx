@@ -19,7 +19,18 @@ const ListingsMap = dynamic(() => import("./ListingsMap"), {
 // A compact, non-interactive teaser for the home page's quick-access grid —
 // same real tiles/pins as /elonlar's map view, just wrapped in one link so a
 // finger dragging it scrolls the page instead of panning the map.
-export default function NearbyMapCard({ listings, dict }: { listings: Listing[]; dict: Dictionary }) {
+export default function NearbyMapCard({
+  listings,
+  dict,
+  labelled = true,
+  className = "min-h-[120px]",
+}: {
+  listings: Listing[];
+  dict: Dictionary;
+  // Off when the section around it already carries the title.
+  labelled?: boolean;
+  className?: string;
+}) {
   const [me, setMe] = useState<[number, number] | null>(null);
 
   useEffect(() => {
@@ -36,17 +47,25 @@ export default function NearbyMapCard({ listings, dict }: { listings: Listing[];
   return (
     <Link
       href={href}
-      className="card-hover group relative block min-h-[120px] overflow-hidden rounded-2xl border border-border"
+      className={`card-hover group relative block overflow-hidden rounded-2xl border border-border ${className}`}
     >
       <div className="pointer-events-none absolute inset-0">
         <ListingsMap listings={listings} dict={dict} interactive={false} bare initialMe={me} />
       </div>
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-bg/90" />
-      <Navigation className="pointer-events-none absolute right-4 top-4 h-5 w-5 text-brand-via" />
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 p-4">
-        <p className="text-sm font-bold">{dict.homeQuickAccess.nearbyTitle}</p>
-        <p className="text-xs text-muted">{dict.listingDetail.showOnMap}</p>
-      </div>
+      {labelled ? (
+        <>
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-bg/90" />
+          <Navigation className="pointer-events-none absolute right-4 top-4 h-5 w-5 text-brand-via" />
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 p-4">
+            <p className="text-sm font-bold">{dict.homeQuickAccess.nearbyTitle}</p>
+            <p className="text-xs text-muted">{dict.listingDetail.showOnMap}</p>
+          </div>
+        </>
+      ) : (
+        <span className="pointer-events-none absolute bottom-3 right-3 flex h-10 w-10 items-center justify-center rounded-full bg-bg-elevated text-brand-via shadow-lg">
+          <Navigation className="h-4 w-4" />
+        </span>
+      )}
     </Link>
   );
 }

@@ -138,6 +138,11 @@ body {
   filter: blur(60px);
   opacity: 0.55;
 }
+/* On the light theme the same glow reads as a wash of colour behind
+   everything; keep it a hint. */
+:root:not(.dark) .blob {
+  opacity: 0.2;
+}
 
 @media (prefers-reduced-motion: no-preference) {
   .animate-float {

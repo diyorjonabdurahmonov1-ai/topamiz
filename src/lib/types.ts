@@ -47,6 +47,8 @@ export interface Listing {
   city: string;
   district?: string;
   date: string;
+  // When it was posted (UTC, "YYYY-MM-DD HH:MM:SS") — for "2 soat oldin".
+  createdAt: string;
   reward?: number;
   contactName: string;
   contactPhone: string;

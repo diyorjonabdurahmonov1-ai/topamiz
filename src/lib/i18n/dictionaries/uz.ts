@@ -92,6 +92,16 @@ const uz: Dictionary = {
     nearbyTitle: "Yaqiningizda",
     qrTitle: "QR-belgi",
     qrSubtitle: "Buyumni himoyalang",
+    heroTitle: "Yo'qotgan narsangizni tez va oson toping!",
+    heroSubtitle: "E'lon qoldiring yoki topilgan buyum haqida xabar bering.",
+    heroCta: "E'lon berish",
+    lostCardTitle: "Yo'qolgan buyum",
+    lostCardSubtitle: "Qidirish va e'lon berish",
+    foundCardTitle: "Topilgan buyum",
+    foundCardSubtitle: "Egasini topishga yordam bering",
+    recentTitle: "So'nggi e'lonlar",
+    mysteryBoxSubtitle: "Sovg'ali sirli qutilar",
+    promoSubtitle: "Chegirma va aksiyalar",
   },
 
   listingsPage: {

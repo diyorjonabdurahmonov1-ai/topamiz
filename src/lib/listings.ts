@@ -118,6 +118,7 @@ function toListing(row: RawListingRow): Listing {
     city: row.city,
     district: row.district ?? undefined,
     date: row.created_at.slice(0, 10),
+    createdAt: row.created_at,
     reward: row.reward ?? undefined,
     contactName: row.contact_name,
     contactPhone: row.contact_phone,

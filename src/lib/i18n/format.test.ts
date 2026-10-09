@@ -4,6 +4,7 @@ import {
   formatItemsCount,
   formatPostSuccessBody,
   formatResultsCount,
+  formatTimeAgo,
   formatViewsCount,
 } from "./format";
 
@@ -40,5 +41,14 @@ describe("formatCopyright / formatPostSuccessBody", () => {
     expect(formatPostSuccessBody("uz", "yo'qolgan", "Qora hamyon")).toBe(
       "\"Qora hamyon\" e'loni yo'qolgan buyumlar ro'yxatiga qo'shildi."
     );
+  });
+});
+
+describe("formatTimeAgo", () => {
+  const now = Date.parse("2026-10-09T12:00:00Z");
+  it("reads SQLite's UTC timestamps and words them per locale", () => {
+    expect(formatTimeAgo("uz", "2026-10-09 10:00:00", now)).toBe("2 soat oldin");
+    expect(formatTimeAgo("ru", "2026-10-09 11:55:00", now)).toBe("5 минут назад");
+    expect(formatTimeAgo("en", "2026-10-08 12:00:00", now)).toBe("yesterday");
   });
 });

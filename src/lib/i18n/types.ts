@@ -73,6 +73,16 @@ export interface Dictionary {
     nearbyTitle: string;
     qrTitle: string;
     qrSubtitle: string;
+    heroTitle: string;
+    heroSubtitle: string;
+    heroCta: string;
+    lostCardTitle: string;
+    lostCardSubtitle: string;
+    foundCardTitle: string;
+    foundCardSubtitle: string;
+    recentTitle: string;
+    mysteryBoxSubtitle: string;
+    promoSubtitle: string;
   };
 
   listingsPage: {
