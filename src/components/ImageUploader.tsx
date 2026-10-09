@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import { AlertCircle, ImagePlus, Loader2, X } from "lucide-react";
 import type { Dictionary } from "@/lib/i18n";
 import PhotoRedactModal from "./PhotoRedactModal";
+import { prepareImageForUpload } from "@/lib/image-prepare";
 
 interface UploadImage {
   id: string;
@@ -70,18 +71,23 @@ export default function ImageUploader({
     const room = MAX_IMAGES - images.length;
     const files = Array.from(fileList).slice(0, room);
 
-    const added: UploadImage[] = files.map((file) => ({
+    const added: UploadImage[] = files.map(() => ({
       id: crypto.randomUUID(),
-      previewUrl: URL.createObjectURL(file),
+      previewUrl: "",
       status: "uploading",
     }));
     setImages((prev) => [...prev, ...added]);
 
-    if (allowRedaction) {
-      setPendingQueue((prev) => [...prev, ...added.map((img, i) => ({ id: img.id, file: files[i] }))]);
-    } else {
-      added.forEach((img, i) => uploadFile(img.id, files[i]));
-    }
+    // Shrunk (and HEIC-converted) on the phone first, so the preview, the
+    // redaction editor and the upload all work from the same small JPEG.
+    added.forEach(async (img, i) => {
+      const file = await prepareImageForUpload(files[i]);
+      setImages((prev) =>
+        prev.map((entry) => (entry.id === img.id ? { ...entry, previewUrl: URL.createObjectURL(file) } : entry))
+      );
+      if (allowRedaction) setPendingQueue((prev) => [...prev, { id: img.id, file }]);
+      else uploadFile(img.id, file);
+    });
   }
 
   function removeImage(id: string) {
@@ -136,11 +142,11 @@ export default function ImageUploader({
         >
           <ImagePlus className="h-5 w-5" />
           Rasmni shu yerga tashlang yoki bosib tanlang
-          <span className="text-xs text-muted">JPG, PNG, WEBP · 5MB gacha · {MAX_IMAGES} tagacha</span>
+          <span className="text-xs text-muted">JPG, PNG, HEIC, WEBP · {MAX_IMAGES} tagacha</span>
           <input
             ref={inputRef}
             type="file"
-            accept="image/jpeg,image/png,image/webp,image/gif"
+            accept="image/*,.heic,.heif"
             multiple
             hidden
             onChange={(e) => {
@@ -158,8 +164,10 @@ export default function ImageUploader({
               key={img.id}
               className="group relative aspect-square overflow-hidden rounded-xl border border-border bg-bg-elevated"
             >
-              {/* eslint-disable-next-line @next/next/no-img-element -- local blob preview, not an optimizable remote asset */}
-              <img src={img.previewUrl} alt="" className="h-full w-full object-cover" />
+              {img.previewUrl && (
+                // eslint-disable-next-line @next/next/no-img-element -- local blob preview, not an optimizable remote asset
+                <img src={img.previewUrl} alt="" className="h-full w-full object-cover" />
+              )}
               {img.status === "uploading" && (
                 <div className="absolute inset-0 flex items-center justify-center bg-black/50">
                   <Loader2 className="h-5 w-5 animate-spin text-white" />

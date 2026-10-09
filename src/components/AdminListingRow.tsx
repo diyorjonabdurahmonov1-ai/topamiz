@@ -7,6 +7,7 @@ import { ExternalLink, Gift, Loader2, Sparkles, Trash2 } from "lucide-react";
 import type { Listing } from "@/lib/types";
 import { formatDate, formatSom } from "@/lib/data";
 import { countryName } from "@/lib/country-names";
+import { sizedImage } from "@/lib/image-url";
 
 export default function AdminListingRow({ listing }: { listing: Listing }) {
   const router = useRouter();
@@ -38,7 +39,7 @@ export default function AdminListingRow({ listing }: { listing: Listing }) {
         <div className="h-12 w-12 shrink-0 overflow-hidden rounded-lg bg-surface-2">
           {listing.photoUrls[0] && (
             // eslint-disable-next-line @next/next/no-img-element -- runtime-uploaded file served from /api/uploads, not a build-time asset
-            <img src={listing.photoUrls[0]} alt="" className="h-full w-full object-cover" />
+            <img src={sizedImage(listing.photoUrls[0], 240)} alt="" className="h-full w-full object-cover" />
           )}
         </div>
         <div className="min-w-0 flex-1">

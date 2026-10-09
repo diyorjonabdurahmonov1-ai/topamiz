@@ -1,11 +1,9 @@
 import { NextResponse } from "next/server";
-import { mkdir, writeFile } from "node:fs/promises";
-import path from "node:path";
-import crypto from "node:crypto";
 import { getCurrentUser, isAdmin } from "@/lib/auth";
 import { createAd, MAX_AD_LINK_LENGTH, MAX_AD_TITLE_LENGTH } from "@/lib/ads";
 import { matchesMediaSignature, mediaKindFor } from "@/lib/media-signature";
 import { getClientIp, rateLimit } from "@/lib/rate-limit";
+import { encodeUpload, saveUpload, UnreadableImageError } from "@/lib/images";
 
 const MAX_FILE_SIZE = 15 * 1024 * 1024; // stays under Caddy's 20MB request_body cap
 const ALLOWED_TYPES: Record<string, string> = {
@@ -16,7 +14,6 @@ const ALLOWED_TYPES: Record<string, string> = {
   "video/mp4": "mp4",
   "video/webm": "webm",
 };
-const UPLOAD_DIR = path.join(process.cwd(), ".uploads");
 
 export async function POST(request: Request) {
   const user = await getCurrentUser();
@@ -73,9 +70,19 @@ export async function POST(request: Request) {
     );
   }
 
-  await mkdir(UPLOAD_DIR, { recursive: true });
-  const filename = `${crypto.randomUUID()}.${ext}`;
-  await writeFile(path.join(UPLOAD_DIR, filename), buffer);
+  // Images get the same re-encode as every other upload (metadata dropped,
+  // size capped); videos are stored as sent.
+  let filename: string;
+  if (mediaType === "image") {
+    try {
+      filename = await saveUpload(await encodeUpload(buffer, ext === "gif"), "webp");
+    } catch (err) {
+      if (!(err instanceof UnreadableImageError)) throw err;
+      return NextResponse.json({ error: "Rasmni o'qib bo'lmadi" }, { status: 400 });
+    }
+  } else {
+    filename = await saveUpload(buffer, ext);
+  }
 
   const ad = createAd({
     mediaUrl: `/api/uploads/${filename}`,

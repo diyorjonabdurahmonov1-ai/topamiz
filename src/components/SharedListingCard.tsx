@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Gift } from "lucide-react";
 import { formatSom } from "@/lib/data";
 import type { Dictionary } from "@/lib/i18n";
+import { sizedImage } from "@/lib/image-url";
 
 interface PreviewListing {
   id: string;
@@ -47,7 +48,7 @@ export default function SharedListingCard({
       <div className="h-12 w-12 shrink-0 overflow-hidden rounded-lg bg-surface-2">
         {listing?.thumbnailUrl && (
           // eslint-disable-next-line @next/next/no-img-element -- uploaded content served from /api/uploads or Cloudflare R2, not a build-time asset
-          <img src={listing.thumbnailUrl} alt="" className="h-full w-full object-cover" />
+          <img src={sizedImage(listing.thumbnailUrl, 240)} alt="" className="h-full w-full object-cover" />
         )}
       </div>
       <div className="min-w-0">

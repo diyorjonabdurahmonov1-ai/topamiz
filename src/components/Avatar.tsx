@@ -1,3 +1,5 @@
+import { sizedImage } from "@/lib/image-url";
+
 export default function Avatar({
   name,
   color,
@@ -15,7 +17,7 @@ export default function Avatar({
     return (
       // eslint-disable-next-line @next/next/no-img-element -- external Google profile photo, not an optimizable local asset
       <img
-        src={avatarUrl}
+        src={sizedImage(avatarUrl, 240)}
         alt={name}
         referrerPolicy="no-referrer"
         className={`shrink-0 rounded-full object-cover ${className}`}

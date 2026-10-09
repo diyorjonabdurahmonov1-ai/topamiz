@@ -6,6 +6,7 @@ import { CheckCircle2, Loader2, Users } from "lucide-react";
 import type { Dictionary } from "@/lib/i18n";
 import Avatar from "./Avatar";
 import PhotoLightbox from "./PhotoLightbox";
+import { sizedImage } from "@/lib/image-url";
 
 interface Claimant {
   id: number;
@@ -86,7 +87,7 @@ export default function ListingClaimants({ listingId, dict }: { listingId: strin
                   <button key={url} type="button" onClick={() => setLightboxUrl(url)}>
                     {/* eslint-disable-next-line @next/next/no-img-element -- uploaded to /api/uploads at runtime, not a build-time asset */}
                     <img
-                      src={url}
+                      src={sizedImage(url, 240)}
                       alt=""
                       className="h-16 w-16 rounded-lg border border-border object-cover"
                     />

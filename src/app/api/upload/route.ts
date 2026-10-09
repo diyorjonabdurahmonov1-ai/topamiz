@@ -1,21 +1,17 @@
 import { NextResponse } from "next/server";
-import { mkdir, writeFile } from "node:fs/promises";
-import path from "node:path";
-import crypto from "node:crypto";
 import { matchesImageSignature } from "@/lib/image-signature";
+import { encodeUpload, saveUpload, UnreadableImageError } from "@/lib/images";
 import { getClientIp, rateLimit } from "@/lib/rate-limit";
 
-const MAX_FILE_SIZE = 5 * 1024 * 1024;
+// Phones shrink photos before sending them (lib/image-prepare.ts), so this
+// only matters when that couldn't run — kept under Caddy's 20MB body limit.
+const MAX_FILE_SIZE = 15 * 1024 * 1024;
 const ALLOWED_TYPES: Record<string, string> = {
   "image/jpeg": "jpg",
   "image/png": "png",
   "image/webp": "webp",
   "image/gif": "gif",
 };
-// Kept outside /public: next start serves /public from a manifest snapshotted
-// at build time, so files written here at request time would 404 until the
-// next rebuild. The /api/uploads/[filename] route reads this dir fresh instead.
-const UPLOAD_DIR = path.join(process.cwd(), ".uploads");
 
 export async function POST(request: Request) {
   const ip = getClientIp(request);
@@ -42,7 +38,7 @@ export async function POST(request: Request) {
   }
   if (file.size > MAX_FILE_SIZE) {
     return NextResponse.json(
-      { error: "Fayl hajmi 5MB dan oshmasligi kerak" },
+      { error: "Fayl hajmi 15MB dan oshmasligi kerak" },
       { status: 400 }
     );
   }
@@ -57,9 +53,19 @@ export async function POST(request: Request) {
     );
   }
 
-  await mkdir(UPLOAD_DIR, { recursive: true });
-  const filename = `${crypto.randomUUID()}.${ext}`;
-  await writeFile(path.join(UPLOAD_DIR, filename), buffer);
+  // Re-encoded rather than stored as sent: drops EXIF (the GPS position
+  // above all), fixes rotation and caps the size — see lib/images.ts.
+  let encoded: Buffer;
+  try {
+    encoded = await encodeUpload(buffer, ext === "gif");
+  } catch (err) {
+    if (!(err instanceof UnreadableImageError)) throw err;
+    return NextResponse.json(
+      { error: "Rasmni o'qib bo'lmadi — boshqa rasm tanlab ko'ring" },
+      { status: 400 }
+    );
+  }
+  const filename = await saveUpload(encoded, "webp");
 
   return NextResponse.json({ url: `/api/uploads/${filename}` });
 }

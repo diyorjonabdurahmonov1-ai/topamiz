@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import { readFile, stat } from "node:fs/promises";
 import path from "node:path";
+import { getVariant, isVariantWidth, UPLOAD_DIR } from "@/lib/images";
 
-const UPLOAD_DIR = path.join(process.cwd(), ".uploads");
 const CONTENT_TYPES: Record<string, string> = {
   jpg: "image/jpeg",
   png: "image/png",
@@ -28,6 +28,22 @@ export async function GET(request: Request, ctx: RouteContext<"/api/uploads/[fil
     size = (await stat(filePath)).size;
   } catch {
     return NextResponse.json({ error: "Topilmadi" }, { status: 404 });
+  }
+
+  // ?w=480 — a smaller copy for cards and avatars, so a list of listings
+  // doesn't download every photo at full size.
+  const width = Number(new URL(request.url).searchParams.get("w"));
+  if (isVariantWidth(width)) {
+    const variant = await getVariant(safeName, width).catch(() => null);
+    if (variant) {
+      return new NextResponse(new Uint8Array(variant), {
+        headers: {
+          "Content-Type": "image/webp",
+          "Content-Length": String(variant.length),
+          "Cache-Control": "public, max-age=31536000, immutable",
+        },
+      });
+    }
   }
 
   // <video> playback (ads can be short clips) issues Range requests even

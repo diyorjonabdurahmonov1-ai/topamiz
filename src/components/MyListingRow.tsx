@@ -8,6 +8,7 @@ import type { Listing } from "@/lib/types";
 import type { Dictionary } from "@/lib/i18n";
 import { formatSom } from "@/lib/data";
 import ResolveToggleButton from "./ResolveToggleButton";
+import { sizedImage } from "@/lib/image-url";
 
 export default function MyListingRow({ listing, dict }: { listing: Listing; dict: Dictionary }) {
   const router = useRouter();
@@ -27,7 +28,7 @@ export default function MyListingRow({ listing, dict }: { listing: Listing; dict
         <div className="h-12 w-12 shrink-0 overflow-hidden rounded-lg bg-surface-2">
           {listing.photoUrls[0] && (
             // eslint-disable-next-line @next/next/no-img-element -- runtime-uploaded file served from /api/uploads, not a build-time asset
-            <img src={listing.photoUrls[0]} alt="" className="h-full w-full object-cover" />
+            <img src={sizedImage(listing.photoUrls[0], 240)} alt="" className="h-full w-full object-cover" />
           )}
         </div>
         <div className="min-w-0 flex-1">
