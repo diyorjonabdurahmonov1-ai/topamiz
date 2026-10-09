@@ -221,3 +221,12 @@ body {
 .map-dark .leaflet-tile-pane {
   filter: invert(1) hue-rotate(180deg) brightness(0.95) contrast(0.9) saturate(0.7);
 }
+
+/* Leaflet gives its panes and controls z-indexes of 400–1000, which would
+   otherwise paint every map (zoom buttons included) over the sticky top bar,
+   the bottom nav and any menu while the page scrolls under them. A stacking
+   context of its own keeps all of that inside the map. */
+.leaflet-container {
+  isolation: isolate;
+  z-index: 0;
+}
