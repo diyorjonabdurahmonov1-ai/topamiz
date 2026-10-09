@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, type FormEvent, type ReactNode } from "react";
+import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import {
   ArrowLeft,
@@ -98,6 +98,19 @@ export default function AuthPanel({
     return () => clearTimeout(timer);
   }, [resendIn]);
 
+  // On a phone the keyboard takes the bottom half of the screen: whenever
+  // the step changes, bring the panel's top up under the header so the
+  // field being typed into isn't left behind the keyboard.
+  const panelRef = useRef<HTMLDivElement>(null);
+  const firstView = useRef(true);
+  useEffect(() => {
+    if (firstView.current) {
+      firstView.current = false;
+      return;
+    }
+    panelRef.current?.scrollIntoView({ block: "start", behavior: "smooth" });
+  }, [view.name]);
+
   const phone = `+998${phoneDigits}`;
   const phoneValid = phoneDigits.length === 9;
   const passwordValid = password.length >= MIN_PASSWORD && passwordScore(password) >= 2;
@@ -186,10 +199,17 @@ export default function AuthPanel({
 
   function submitRegisterCode(e: FormEvent) {
     e.preventDefault();
+    registerWithCode(code);
+  }
+
+  // Also called as soon as the last digit is typed or autofilled from the
+  // SMS, so there's nothing left to tap under the keyboard.
+  function registerWithCode(fullCode: string) {
+    if (busy) return;
     void run(async () => {
       const { ok, data } = await post("/api/auth/phone/register", {
         phone,
-        code,
+        code: fullCode,
         name,
         password,
         acceptTerms: consent,
@@ -328,7 +348,7 @@ export default function AuthPanel({
           <p className="text-center text-sm text-muted">
             {t.codeSentTo} <span className="font-semibold text-foreground">{phone}</span>
           </p>
-          <OtpInput value={code} onChange={setCode} label={t.codeLabel} />
+          <OtpInput value={code} onChange={setCode} onComplete={registerWithCode} label={t.codeLabel} />
           {errorLine}
           <SubmitButton busy={busy} disabled={code.length !== CODE_LENGTH}>
             {t.registerSubmit}
@@ -422,8 +442,21 @@ export default function AuthPanel({
           <p className="text-center text-sm text-muted">
             {t.codeSentTo} <span className="font-semibold text-foreground">{phone}</span>
           </p>
-          <OtpInput value={code} onChange={setCode} label={t.codeLabel} />
-          <PasswordField value={password} onChange={setPassword} label={t.newPasswordLabel} dict={dict} autoComplete="new-password" showStrength />
+          <OtpInput
+            value={code}
+            onChange={setCode}
+            onComplete={() => document.getElementById("reset-new-password")?.focus()}
+            label={t.codeLabel}
+          />
+          <PasswordField
+            id="reset-new-password"
+            value={password}
+            onChange={setPassword}
+            label={t.newPasswordLabel}
+            dict={dict}
+            autoComplete="new-password"
+            showStrength
+          />
           {errorLine}
           <SubmitButton busy={busy} disabled={code.length !== CODE_LENGTH || !passwordValid}>
             {t.resetSubmit}
@@ -437,7 +470,7 @@ export default function AuthPanel({
   const showTabs = view.name === "login" || view.name === "register-details";
 
   return (
-    <div className="relative">
+    <div ref={panelRef} className="relative scroll-mt-20">
       <div className="relative overflow-hidden rounded-3xl border border-border bg-surface/80 p-5 shadow-2xl shadow-brand-via/5 backdrop-blur-xl sm:p-6">
         {abroad && showTabs && (
           <div className="mb-4 flex gap-3 rounded-2xl border border-sky-500/30 bg-sky-500/10 p-3.5">
@@ -533,6 +566,7 @@ function Field({ icon, label, children }: { icon: ReactNode; label: string; chil
 }
 
 function PasswordField({
+  id,
   value,
   onChange,
   label,
@@ -540,6 +574,7 @@ function PasswordField({
   autoComplete,
   showStrength = false,
 }: {
+  id?: string;
   value: string;
   onChange: (v: string) => void;
   label: string;
@@ -561,6 +596,7 @@ function PasswordField({
     <div>
       <Field icon={<Lock className="h-4 w-4" />} label={label}>
         <input
+          id={id}
           value={value}
           onChange={(e) => onChange(e.target.value)}
           type={visible ? "text" : "password"}
@@ -601,7 +637,17 @@ function PasswordField({
 
 // One visual box per digit over one real input — keeps paste and the phone's SMS
 // code autofill (autocomplete="one-time-code") working.
-function OtpInput({ value, onChange, label }: { value: string; onChange: (v: string) => void; label: string }) {
+function OtpInput({
+  value,
+  onChange,
+  onComplete,
+  label,
+}: {
+  value: string;
+  onChange: (v: string) => void;
+  onComplete?: (code: string) => void;
+  label: string;
+}) {
   const [focused, setFocused] = useState(false);
   return (
     <div className="relative mx-auto w-full max-w-[17rem]">
@@ -627,7 +673,11 @@ function OtpInput({ value, onChange, label }: { value: string; onChange: (v: str
       </div>
       <input
         value={value}
-        onChange={(e) => onChange(e.target.value.replace(/\D/g, "").slice(0, CODE_LENGTH))}
+        onChange={(e) => {
+          const next = e.target.value.replace(/\D/g, "").slice(0, CODE_LENGTH);
+          onChange(next);
+          if (next.length === CODE_LENGTH && value.length !== CODE_LENGTH) onComplete?.(next);
+        }}
         onFocus={() => setFocused(true)}
         onBlur={() => setFocused(false)}
         inputMode="numeric"

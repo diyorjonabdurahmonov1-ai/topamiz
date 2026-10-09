@@ -71,6 +71,10 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
+  // Android: shrink the page when the keyboard opens (rather than letting
+  // it cover the bottom of the page), so the field being typed in and the
+  // button under it can always be scrolled into view.
+  interactiveWidget: "resizes-content",
 };
 
 export default async function RootLayout({ children }: LayoutProps<"/">) {
