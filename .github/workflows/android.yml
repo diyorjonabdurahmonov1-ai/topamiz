@@ -63,6 +63,9 @@ jobs:
           version=$(jq -r '.appVersionName + " (" + (.appVersionCode|tostring) + ")"' android/twa-manifest.json)
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          # The build regenerates android/app/src/main/res/xml/shortcuts.xml;
+          # discard that before leaving the source branch.
+          git reset -q --hard
           git switch --orphan android-build-tmp
           cp /tmp/findo-unsigned.aab findo-unsigned.aab
           printf 'version: %s\nsource commit: %s\n' "$version" "$GITHUB_SHA" > BUILD_INFO.txt
