@@ -15,6 +15,7 @@ import {
 import { containsProhibitedContent, recordModerationViolation } from "@/lib/moderation";
 import { getClientIp, rateLimit } from "@/lib/rate-limit";
 import { countryForIp } from "@/lib/geo";
+import { nearestCityForCoordinates } from "@/lib/city-coordinates";
 import { R2_PUBLIC_URL } from "@/lib/r2";
 import type { CategoryId, ListingKind } from "@/lib/types";
 
@@ -47,7 +48,6 @@ export async function POST(request: Request) {
     typeof body?.category === "string" && CATEGORY_IDS.has(body.category as CategoryId)
       ? (body.category as CategoryId)
       : null;
-  const city = typeof body?.city === "string" && cities.includes(body.city) ? body.city : null;
   const district =
     typeof body?.district === "string" && body.district.trim()
       ? body.district.trim().slice(0, MAX_DISTRICT_LENGTH)
@@ -93,9 +93,23 @@ export async function POST(request: Request) {
       ? lngRaw
       : undefined;
 
-  if (!kind || !title || !category || !city || !contactPhone) {
+  // Only what and where are required. "Where" is either one of our cities
+  // or a point on the map — a point posted while the form was still
+  // reverse-geocoding it falls back to the nearest city. The phone number
+  // is optional: anyone can reach the poster through the site's chat.
+  const city =
+    typeof body?.city === "string" && cities.includes(body.city)
+      ? body.city
+      : lat !== undefined && lng !== undefined
+        ? nearestCityForCoordinates(lat, lng)
+        : null;
+
+  if (!kind || !title || !category) {
+    return NextResponse.json({ error: "Nima yo'qolgani yoki topilganini yozing." }, { status: 400 });
+  }
+  if (!city) {
     return NextResponse.json(
-      { error: "Iltimos, * bilan belgilangan barcha maydonlarni to'ldiring." },
+      { error: "Taxminiy joyni belgilang — shahar yoki xaritadagi nuqta." },
       { status: 400 }
     );
   }

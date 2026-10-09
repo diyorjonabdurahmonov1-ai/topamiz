@@ -72,6 +72,13 @@ export function getUserById(id: number): AuthUser | null {
   return row ? rowToUser(row) : null;
 }
 
+// The account's own phone number (phone sign-up only) — for prefilling the
+// owner's own forms, never for showing to anyone else.
+export function getUserPhone(id: number): string | null {
+  const row = db.prepare("SELECT phone FROM users WHERE id = ?").get(id) as { phone: string | null } | undefined;
+  return row?.phone ?? null;
+}
+
 export function getUserByGoogleId(googleId: string): AuthUser | null {
   const row = db
     .prepare("SELECT * FROM users WHERE google_id = ?")
