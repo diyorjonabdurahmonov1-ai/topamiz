@@ -456,6 +456,8 @@ const ru: Dictionary = {
     friendAdded: "Ваш друг",
     friendsHeading: "Друзья",
     noFriends: "Пока нет друзей.",
+    followersHeading: "Подписчики",
+    noFollowers: "Пока никто не добавил в друзья.",
   },
 
   messages: {

@@ -455,6 +455,8 @@ const en: Dictionary = {
     friendAdded: "Friend",
     friendsHeading: "Friends",
     noFriends: "No friends yet.",
+    followersHeading: "Followers",
+    noFollowers: "No one has added them as a friend yet.",
   },
 
   messages: {

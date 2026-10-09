@@ -81,6 +81,23 @@ export function formatFriendsCount(locale: Locale, n: number): string {
   }
 }
 
+export function formatFollowersCount(locale: Locale, n: number): string {
+  switch (locale) {
+    case "ru":
+      return `${n} ${pluralRu(n, "подписчик", "подписчика", "подписчиков")}`;
+    case "en":
+      return `${n} follower${n === 1 ? "" : "s"}`;
+    case "kk":
+      return `${n} жазылушы`;
+    case "tg":
+      return `${n} обуначӣ`;
+    case "ky":
+      return `${n} жазылуучу`;
+    default:
+      return `${n} ta obunachi`;
+  }
+}
+
 export function formatCopyright(locale: Locale, year: number): string {
   switch (locale) {
     case "ru":

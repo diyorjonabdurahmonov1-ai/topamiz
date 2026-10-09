@@ -459,6 +459,8 @@ const uz: Dictionary = {
     friendAdded: "Do'stingiz",
     friendsHeading: "Do'stlar",
     noFriends: "Hozircha do'stlar yo'q.",
+    followersHeading: "Obunachilar",
+    noFollowers: "Hali hech kim do'stlar qatoriga qo'shmagan.",
   },
 
   messages: {
