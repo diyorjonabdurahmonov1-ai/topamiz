@@ -55,9 +55,10 @@ cold start or an ephemeral filesystem.
   approved under "Nik uchun ariza") in `.env.production.local`. Eskiz only
   delivers texts matching an approved template ("Mening matnlarim"), so the
   texts in `codeMessage()` must stay word-for-word identical to the two
-  templates approved there (4-digit code — `src/lib/verification-code.ts`):
-  sign-up `Findo: tasdiqlash kodingiz 1234. Kodni hech kimga bermang.` and
-  password reset `Findo: parolni tiklash kodingiz 1234. Agar buni siz so'ramagan bo'lsangiz, xabarga e'tibor bermang.`
+  templates approved there — Eskiz's "Punkt 2" rejects any code text that
+  doesn't name the site and what the code is for (4-digit code — `src/lib/verification-code.ts`):
+  sign-up `Findo.net.uz saytida ro'yxatdan o'tish uchun tasdiqlash kodi: 1234. Kodni hech kimga bermang!` and
+  password reset `Findo.net.uz saytida parolni tiklash uchun tasdiqlash kodi: 1234. Agar buni siz so'ramagan bo'lsangiz, e'tibor bermang.`
   Without the two vars, the phone form shows "SMS xizmati hozircha
   sozlanmagan" and Google sign-in keeps working.
 - The home-page ad banner (`/admin/reklama`, `src/lib/ads.ts`) is managed by

@@ -17,8 +17,8 @@ export function isEskizConfigured(): boolean {
 
 export function codeMessage(purpose: "register" | "reset", code: string): string {
   return purpose === "reset"
-    ? `Findo: parolni tiklash kodingiz ${code}. Agar buni siz so'ramagan bo'lsangiz, xabarga e'tibor bermang.`
-    : `Findo: tasdiqlash kodingiz ${code}. Kodni hech kimga bermang.`;
+    ? `Findo.net.uz saytida parolni tiklash uchun tasdiqlash kodi: ${code}. Agar buni siz so'ramagan bo'lsangiz, e'tibor bermang.`
+    : `Findo.net.uz saytida ro'yxatdan o'tish uchun tasdiqlash kodi: ${code}. Kodni hech kimga bermang!`;
 }
 
 async function login(): Promise<string> {

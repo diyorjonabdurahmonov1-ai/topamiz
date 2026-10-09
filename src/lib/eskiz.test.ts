@@ -34,10 +34,10 @@ describe("sendSms", () => {
     const form = init.body as FormData;
     expect(form.get("mobile_phone")).toBe("998901234567");
     expect(form.get("from")).toBe("4546");
-    expect(form.get("message")).toBe("Findo: tasdiqlash kodingiz 1234. Kodni hech kimga bermang.");
+    expect(form.get("message")).toBe("Findo.net.uz saytida ro'yxatdan o'tish uchun tasdiqlash kodi: 1234. Kodni hech kimga bermang!");
     const resetForm = fetchMock.mock.calls[2][1].body as FormData;
     expect(resetForm.get("message")).toBe(
-      "Findo: parolni tiklash kodingiz 4321. Agar buni siz so'ramagan bo'lsangiz, xabarga e'tibor bermang."
+      "Findo.net.uz saytida parolni tiklash uchun tasdiqlash kodi: 4321. Agar buni siz so'ramagan bo'lsangiz, e'tibor bermang."
     );
   });
 
