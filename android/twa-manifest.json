@@ -1,0 +1,48 @@
+{
+  "packageId": "uz.net.findo.app",
+  "host": "findo.net.uz",
+  "name": "Findo",
+  "launcherName": "Findo",
+  "display": "standalone",
+  "themeColor": "#6366F1",
+  "themeColorDark": "#05060A",
+  "navigationColor": "#05060A",
+  "navigationColorDark": "#05060A",
+  "navigationDividerColor": "#05060A",
+  "navigationDividerColorDark": "#05060A",
+  "backgroundColor": "#05060A",
+  "enableNotifications": true,
+  "startUrl": "/",
+  "iconUrl": "https://findo.net.uz/icon-512.png",
+  "maskableIconUrl": "https://findo.net.uz/icon-maskable-512.png",
+  "splashScreenFadeOutDuration": 300,
+  "signingKey": {
+    "path": "./findo-upload.jks",
+    "alias": "upload"
+  },
+  "appVersionName": "1.0.0",
+  "appVersionCode": 1,
+  "shortcuts": [],
+  "generatorApp": "bubblewrap-cli",
+  "webManifestUrl": "https://findo.net.uz/manifest.webmanifest",
+  "fallbackType": "customtabs",
+  "features": {
+    "locationDelegation": {
+      "enabled": true
+    }
+  },
+  "alphaDependencies": {
+    "enabled": false
+  },
+  "enableSiteSettingsShortcut": true,
+  "isChromeOSOnly": false,
+  "isMetaQuest": false,
+  "fullScopeUrl": "https://findo.net.uz/",
+  "minSdkVersion": 21,
+  "orientation": "portrait",
+  "fingerprints": [],
+  "additionalTrustedOrigins": [],
+  "retainedBundles": [],
+  "displayOverride": [],
+  "appVersion": "1.0.0"
+}
