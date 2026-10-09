@@ -1,157 +1,253 @@
-"use client";
-
-import { useState } from "react";
 import Link from "next/link";
-import { ArrowUpRight, ChevronRight, PackageSearch, QrCode, Search, SearchX, Tag } from "lucide-react";
+import {
+  ArrowRight,
+  ChevronRight,
+  LayoutGrid,
+  MapPin,
+  PackageSearch,
+  QrCode,
+  Search,
+  SearchX,
+  SlidersHorizontal,
+  Sparkles,
+  Tag,
+} from "lucide-react";
 import type { CategoryId, Listing } from "@/lib/types";
-import type { Dictionary } from "@/lib/i18n";
+import type { AdBanner } from "@/lib/ads";
+import type { Dictionary, Locale } from "@/lib/i18n";
 import { categoryIcons } from "@/lib/icons";
 import NearbyMapCard from "@/components/NearbyMapCard";
-import HomeTabCard from "@/components/HomeTabCard";
-import ListingsGrid from "@/components/ListingsGrid";
+import HomeHero from "@/components/HomeHero";
+import HomeListingCard from "@/components/HomeListingCard";
 
-type HomeTabKey = "lost" | "found";
-
-const QUICK_CATEGORIES: { id: CategoryId; color: string; label: (dict: Dictionary) => string }[] = [
-  { id: "hujjatlar", color: "#2563eb", label: (dict) => dict.homeQuickAccess.categoryHujjatlar },
-  { id: "texnika", color: "#1e293b", label: (dict) => dict.homeQuickAccess.categoryTelefon },
-  { id: "kalitlar", color: "#c2410c", label: (dict) => dict.homeQuickAccess.categoryKalitlar },
-  { id: "sumka", color: "#78350f", label: (dict) => dict.homeQuickAccess.categoryHamyon },
-  { id: "hayvonlar", color: "#15803d", label: (dict) => dict.homeQuickAccess.categoryHayvon },
-  { id: "kiyim", color: "#be185d", label: (dict) => dict.homeQuickAccess.categoryKiyim },
-  { id: "boshqa", color: "#475569", label: (dict) => dict.homeQuickAccess.categoryBoshqa },
+const QUICK_CATEGORIES: { id: CategoryId; label: (dict: Dictionary) => string }[] = [
+  { id: "hujjatlar", label: (dict) => dict.homeQuickAccess.categoryHujjatlar },
+  { id: "texnika", label: (dict) => dict.homeQuickAccess.categoryTelefon },
+  { id: "kalitlar", label: (dict) => dict.homeQuickAccess.categoryKalitlar },
+  { id: "sumka", label: (dict) => dict.homeQuickAccess.categoryHamyon },
+  { id: "hayvonlar", label: (dict) => dict.homeQuickAccess.categoryHayvon },
+  { id: "kiyim", label: (dict) => dict.homeQuickAccess.categoryKiyim },
+  { id: "boshqa", label: (dict) => dict.homeQuickAccess.categoryBoshqa },
 ];
 
 export default function HomeQuickAccess({
   dict,
+  locale,
+  ads,
   nearby,
-  lost,
-  found,
+  recent,
   promoCount,
 }: {
   dict: Dictionary;
+  locale: Locale;
+  ads: AdBanner[];
   nearby: Listing[];
-  lost: Listing[];
-  found: Listing[];
+  recent: Listing[];
   promoCount: number;
 }) {
-  const [activeTab, setActiveTab] = useState<HomeTabKey>("lost");
-  const activeListings = activeTab === "lost" ? lost : found;
-  const activeHref = activeTab === "lost" ? "/elonlar?kind=lost" : "/elonlar?kind=found";
-  const activeLabel = activeTab === "lost" ? dict.tabs.lost : dict.tabs.found;
+  const t = dict.homeQuickAccess;
 
   return (
-    <div className="mt-6 space-y-4">
-      <form action="/elonlar" className="flex items-center gap-2 rounded-2xl border border-border bg-surface pl-4 pr-1.5 py-1.5">
-        <Search className="h-4 w-4 shrink-0 text-muted" />
+    <div className="space-y-5">
+      <form
+        action="/elonlar"
+        className="flex items-center gap-2 rounded-2xl border border-border bg-surface py-1.5 pl-4 pr-1.5 shadow-sm"
+      >
+        <Search className="h-5 w-5 shrink-0 text-muted" />
         <input
           type="text"
           name="q"
           placeholder={dict.listingsPage.searchPlaceholder}
+          aria-label={t.searchButtonLabel}
           className="min-w-0 flex-1 bg-transparent py-2 text-sm outline-none placeholder:text-muted"
         />
-        <button
-          type="submit"
-          aria-label={dict.homeQuickAccess.searchButtonLabel}
-          className="btn-brand flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-white"
+        <Link
+          href="/elonlar"
+          aria-label={dict.listingsPage.allCategories}
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-muted hover:bg-surface-2 hover:text-foreground"
         >
-          <Search className="h-4 w-4" />
-        </button>
+          <SlidersHorizontal className="h-4 w-4" />
+        </Link>
       </form>
 
-      <div className="scrollbar-thin -mx-4 flex gap-5 overflow-x-auto px-4 sm:-mx-6 sm:px-6 lg:mx-0 lg:px-0">
-        {QUICK_CATEGORIES.map(({ id, color, label }) => {
+      <div className="-mx-4 flex gap-2.5 overflow-x-auto px-4 pb-1 [scrollbar-width:none] sm:-mx-6 sm:px-6 lg:mx-0 lg:px-0 [&::-webkit-scrollbar]:hidden">
+        <CategoryTile href="/elonlar" label={dict.listingsPage.kindAll} active>
+          <LayoutGrid className="h-6 w-6" />
+        </CategoryTile>
+        {QUICK_CATEGORIES.map(({ id, label }) => {
           const Icon = categoryIcons[id];
           return (
-            <Link
-              key={id}
-              href={`/elonlar?category=${id}`}
-              className="flex w-16 shrink-0 flex-col items-center gap-1.5 text-center"
-            >
-              <span
-                className="flex h-12 w-12 items-center justify-center rounded-full text-white"
-                style={{ backgroundColor: color }}
-              >
-                <Icon className="h-5 w-5" strokeWidth={2.25} />
-              </span>
-              <span className="line-clamp-1 text-[11px] font-semibold text-muted">{label(dict)}</span>
-            </Link>
+            <CategoryTile key={id} href={`/elonlar?category=${id}`} label={label(dict)}>
+              <Icon className="h-6 w-6" strokeWidth={1.75} />
+            </CategoryTile>
           );
         })}
       </div>
 
+      <HomeHero ads={ads} dict={dict} />
+
       <div className="grid grid-cols-2 gap-3">
-        <HomeTabCard
-          active={activeTab === "lost"}
-          label={dict.tabs.lost}
-          icon={Search}
-          gradient="linear-gradient(135deg, var(--danger), var(--accent-gold-2))"
-          onClick={() => setActiveTab("lost")}
+        <KindCard
+          href="/elonlar?kind=lost"
+          title={t.lostCardTitle}
+          subtitle={t.lostCardSubtitle}
+          icon={<Search className="h-5 w-5" />}
+          tone="bg-orange-500/10 dark:bg-orange-400/10"
+          iconTone="bg-orange-500/15 text-orange-600 dark:text-orange-300"
         />
-        <HomeTabCard
-          active={activeTab === "found"}
-          label={dict.tabs.found}
-          icon={PackageSearch}
-          gradient="linear-gradient(135deg, var(--success), var(--brand-to))"
-          onClick={() => setActiveTab("found")}
+        <KindCard
+          href="/elonlar?kind=found"
+          title={t.foundCardTitle}
+          subtitle={t.foundCardSubtitle}
+          icon={<PackageSearch className="h-5 w-5" />}
+          tone="bg-sky-500/10 dark:bg-sky-400/10"
+          iconTone="bg-sky-500/15 text-sky-600 dark:text-sky-300"
         />
-
-        <NearbyMapCard listings={nearby} dict={dict} />
-
-        <Link
-          href="/takliflar"
-          className="card-hover flex flex-col justify-center gap-1 rounded-2xl p-4 text-white"
-          style={{ backgroundImage: "linear-gradient(135deg, #0ea5e9, var(--brand-via))" }}
-        >
-          <span className="flex items-center gap-1 text-[10px] font-extrabold uppercase tracking-wide">
-            <Tag className="h-3 w-3" />
-            {dict.promo.title}
-          </span>
-          <span className="text-lg font-extrabold">{promoCount}</span>
-          <span className="text-xs font-semibold">{dict.promo.activeCount}</span>
-        </Link>
-
-        <Link
-          href="/belgilash"
-          className="card-hover col-span-2 flex items-center gap-3 rounded-2xl border border-border bg-surface p-4"
-        >
-          <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-brand-from to-brand-via text-white shadow-lg">
-            <QrCode className="h-6 w-6" />
-          </span>
-          <span className="min-w-0 flex-1">
-            <span className="block text-sm font-extrabold">{dict.homeQuickAccess.qrTitle}</span>
-            <span className="block text-xs text-muted">{dict.homeQuickAccess.qrSubtitle}</span>
-          </span>
-          <ChevronRight className="h-5 w-5 shrink-0 text-muted" />
-        </Link>
       </div>
 
-      <section className="animate-fade-up">
-        <div className="flex items-center justify-between">
-          <h2 className="text-lg font-bold sm:text-xl">
-            {activeLabel} {dict.tabs.itemsSuffix}
-          </h2>
-          <Link
-            href={activeHref}
-            className="flex shrink-0 items-center gap-1 text-sm font-semibold text-brand-via hover:text-brand-to"
-          >
-            {dict.tabs.viewAll}
-            <ArrowUpRight className="h-4 w-4" />
-          </Link>
-        </div>
+      <div className="grid grid-cols-3 gap-2.5">
+        <ExtraTile href="/takliflar" icon={<Tag className="h-4 w-4" />} gradient="from-sky-500 to-brand-via" title={dict.promo.title}>
+          {promoCount > 0 ? `${promoCount} · ${dict.promo.activeCount}` : t.promoSubtitle}
+        </ExtraTile>
+        <ExtraTile href="/sirli-quti" icon={<Sparkles className="h-4 w-4" />} gradient="from-accent-gold to-brand-via" title={dict.nav.mysteryBox}>
+          {t.mysteryBoxSubtitle}
+        </ExtraTile>
+        <ExtraTile href="/belgilash" icon={<QrCode className="h-4 w-4" />} gradient="from-brand-from to-brand-via" title={t.qrTitle}>
+          {t.qrSubtitle}
+        </ExtraTile>
+      </div>
 
-        {activeListings.length > 0 ? (
-          <div className="mt-5">
-            <ListingsGrid listings={activeListings} dict={dict} />
+      <section className="rounded-3xl border border-border bg-surface p-3 sm:p-4">
+        <SectionHeader
+          icon={<MapPin className="h-4 w-4 text-brand-via" />}
+          title={t.nearbyTitle}
+          href="/elonlar?view=map"
+          linkLabel={dict.listingDetail.showOnMap}
+        />
+        <NearbyMapCard listings={nearby} dict={dict} labelled={false} className="mt-3 h-44 sm:h-64" />
+      </section>
+
+      <section>
+        <SectionHeader title={t.recentTitle} href="/elonlar" linkLabel={dict.tabs.viewAll} />
+        {recent.length > 0 ? (
+          <div className="-mx-4 mt-3 flex snap-x gap-3 overflow-x-auto px-4 pb-2 [scrollbar-width:none] sm:mx-0 sm:grid sm:grid-cols-3 sm:px-0 lg:grid-cols-5 [&::-webkit-scrollbar]:hidden">
+            {recent.map((listing) => (
+              <HomeListingCard key={listing.id} listing={listing} dict={dict} locale={locale} />
+            ))}
           </div>
         ) : (
-          <div className="mt-5 flex flex-col items-center rounded-2xl border border-dashed border-border bg-surface py-12 text-center">
+          <div className="mt-3 flex flex-col items-center rounded-2xl border border-dashed border-border bg-surface py-12 text-center">
             <SearchX className="h-7 w-7 text-muted" />
             <p className="mt-3 text-sm font-semibold">{dict.tabs.emptyTitle}</p>
             <p className="mt-1 max-w-xs text-sm text-muted">{dict.tabs.emptyBody}</p>
           </div>
         )}
       </section>
+    </div>
+  );
+}
+
+function CategoryTile({
+  href,
+  label,
+  active = false,
+  children,
+}: {
+  href: string;
+  label: string;
+  active?: boolean;
+  children: React.ReactNode;
+}) {
+  return (
+    <Link href={href} className="flex w-[4.5rem] shrink-0 flex-col items-center gap-1.5 text-center">
+      <span
+        className={`flex h-16 w-16 items-center justify-center rounded-2xl transition-transform active:scale-95 ${
+          active
+            ? "bg-gradient-to-br from-brand-from to-brand-via text-white shadow-lg shadow-brand-via/30"
+            : "border border-border bg-surface text-foreground shadow-sm"
+        }`}
+      >
+        {children}
+      </span>
+      <span className={`line-clamp-1 text-[11px] font-semibold ${active ? "text-foreground" : "text-muted"}`}>{label}</span>
+    </Link>
+  );
+}
+
+function KindCard({
+  href,
+  title,
+  subtitle,
+  icon,
+  tone,
+  iconTone,
+}: {
+  href: string;
+  title: string;
+  subtitle: string;
+  icon: React.ReactNode;
+  tone: string;
+  iconTone: string;
+}) {
+  return (
+    <Link href={href} className={`card-hover relative flex flex-col rounded-2xl border border-border p-4 ${tone}`}>
+      <span className={`flex h-11 w-11 items-center justify-center rounded-full ${iconTone}`}>{icon}</span>
+      <span className="mt-3 text-sm font-extrabold sm:text-base">{title}</span>
+      <span className="mt-0.5 pr-8 text-[11px] leading-snug text-muted sm:text-xs">{subtitle}</span>
+      <span className="absolute bottom-4 right-3 flex h-7 w-7 items-center justify-center rounded-full bg-bg-elevated/80 text-foreground shadow-sm">
+        <ChevronRight className="h-4 w-4" />
+      </span>
+    </Link>
+  );
+}
+
+function ExtraTile({
+  href,
+  icon,
+  gradient,
+  title,
+  children,
+}: {
+  href: string;
+  icon: React.ReactNode;
+  gradient: string;
+  title: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <Link href={href} className="card-hover flex flex-col gap-2 rounded-2xl border border-border bg-surface p-3">
+      <span className={`flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br text-white shadow ${gradient}`}>
+        {icon}
+      </span>
+      <span>
+        <span className="line-clamp-1 block text-xs font-extrabold">{title}</span>
+        <span className="line-clamp-2 block text-[10px] leading-snug text-muted">{children}</span>
+      </span>
+    </Link>
+  );
+}
+
+function SectionHeader({
+  icon,
+  title,
+  href,
+  linkLabel,
+}: {
+  icon?: React.ReactNode;
+  title: string;
+  href: string;
+  linkLabel: string;
+}) {
+  return (
+    <div className="flex items-center justify-between gap-3">
+      <h2 className="flex items-center gap-1.5 text-base font-extrabold sm:text-lg">
+        {icon}
+        {title}
+      </h2>
+      <Link href={href} className="flex shrink-0 items-center gap-1 text-xs font-semibold text-brand-via hover:text-brand-to sm:text-sm">
+        {linkLabel}
+        <ArrowRight className="h-3.5 w-3.5" />
+      </Link>
     </div>
   );
 }

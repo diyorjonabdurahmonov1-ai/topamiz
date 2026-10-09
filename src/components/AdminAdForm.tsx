@@ -57,6 +57,10 @@ export default function AdminAdForm() {
           className="block w-full text-sm text-muted file:mr-3 file:rounded-lg file:border-0 file:bg-surface-2 file:px-3 file:py-2 file:text-sm file:font-semibold file:text-foreground"
         />
         <p className="mt-1 text-xs text-muted">JPG, PNG, WEBP, GIF, MP4, WEBM · 15MB gacha</p>
+        <p className="mt-0.5 text-xs text-muted">
+          Bosh sahifaning katta bannerida chiqadi — eng yaxshisi 1200×500 o&apos;lchamdagi keng rasm. Telefonda
+          chekkalari biroz qirqiladi, shuning uchun muhim yozuvni o&apos;rtaga joylang.
+        </p>
       </div>
       <div>
         <label className="mb-1.5 block text-xs font-semibold text-muted">Havola (link) *</label>

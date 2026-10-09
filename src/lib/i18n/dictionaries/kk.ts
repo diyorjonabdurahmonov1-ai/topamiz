@@ -92,6 +92,16 @@ const kk: Dictionary = {
     nearbyTitle: "Жаныңызда",
     qrTitle: "QR-белгі",
     qrSubtitle: "Затыңызды қорғаңыз",
+    heroTitle: "Жоғалтқан затыңызды тез әрі оңай табыңыз!",
+    heroSubtitle: "Хабарландыру беріңіз немесе тапқан затыңыз туралы хабарлаңыз.",
+    heroCta: "Хабарландыру беру",
+    lostCardTitle: "Жоғалған зат",
+    lostCardSubtitle: "Іздеу және хабарландыру беру",
+    foundCardTitle: "Табылған зат",
+    foundCardSubtitle: "Иесін табуға көмектесіңіз",
+    recentTitle: "Соңғы хабарландырулар",
+    mysteryBoxSubtitle: "Сыйлықты құпия қораптар",
+    promoSubtitle: "Жеңілдіктер мен акциялар",
   },
 
   listingsPage: {

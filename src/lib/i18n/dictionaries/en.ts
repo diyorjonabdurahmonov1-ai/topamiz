@@ -92,6 +92,16 @@ const en: Dictionary = {
     nearbyTitle: "Near you",
     qrTitle: "QR tag",
     qrSubtitle: "Protect your item",
+    heroTitle: "Find what you lost — fast and easy!",
+    heroSubtitle: "Post a listing or report something you found.",
+    heroCta: "Post a listing",
+    lostCardTitle: "Lost item",
+    lostCardSubtitle: "Search and post",
+    foundCardTitle: "Found item",
+    foundCardSubtitle: "Help it get back to its owner",
+    recentTitle: "Latest listings",
+    mysteryBoxSubtitle: "Mystery boxes with prizes",
+    promoSubtitle: "Discounts and deals",
   },
 
   listingsPage: {

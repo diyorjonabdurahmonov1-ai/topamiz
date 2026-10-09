@@ -98,6 +98,21 @@ export function formatFollowersCount(locale: Locale, n: number): string {
   }
 }
 
+// "2 soat oldin", "5 минут назад"… — `createdAt` is a UTC "YYYY-MM-DD HH:MM:SS"
+// as SQLite stores it.
+export function formatTimeAgo(locale: Locale, createdAt: string, now: number = Date.now()): string {
+  const then = new Date(createdAt.replace(" ", "T") + "Z").getTime();
+  const seconds = Math.round((then - now) / 1000);
+  const rtf = new Intl.RelativeTimeFormat(locale, { numeric: "auto" });
+  const abs = Math.abs(seconds);
+  if (abs < 60) return rtf.format(0, "minute");
+  if (abs < 3600) return rtf.format(Math.round(seconds / 60), "minute");
+  if (abs < 86400) return rtf.format(Math.round(seconds / 3600), "hour");
+  if (abs < 30 * 86400) return rtf.format(Math.round(seconds / 86400), "day");
+  if (abs < 365 * 86400) return rtf.format(Math.round(seconds / (30 * 86400)), "month");
+  return rtf.format(Math.round(seconds / (365 * 86400)), "year");
+}
+
 export function formatCopyright(locale: Locale, year: number): string {
   switch (locale) {
     case "ru":

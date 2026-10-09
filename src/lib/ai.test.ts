@@ -11,6 +11,7 @@ function makeListing(overrides: Partial<Listing>): Listing {
     ownerAvatarUrl: null,
     isMysteryBox: false,
     isPromo: false,
+    createdAt: "2026-01-01 10:00:00",
     promoCategory: null,
     expiresAt: null,
     startsAt: null,

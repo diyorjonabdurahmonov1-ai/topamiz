@@ -92,6 +92,16 @@ const ru: Dictionary = {
     nearbyTitle: "Рядом с вами",
     qrTitle: "QR-метка",
     qrSubtitle: "Защитите вашу вещь",
+    heroTitle: "Найдите потерянную вещь быстро и легко!",
+    heroSubtitle: "Разместите объявление или сообщите о найденной вещи.",
+    heroCta: "Подать объявление",
+    lostCardTitle: "Потерянная вещь",
+    lostCardSubtitle: "Искать и подать объявление",
+    foundCardTitle: "Найденная вещь",
+    foundCardSubtitle: "Помогите найти владельца",
+    recentTitle: "Последние объявления",
+    mysteryBoxSubtitle: "Таинственные коробки с призами",
+    promoSubtitle: "Скидки и акции",
   },
 
   listingsPage: {

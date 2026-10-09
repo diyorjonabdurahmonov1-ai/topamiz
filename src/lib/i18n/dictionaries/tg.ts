@@ -92,6 +92,16 @@ const tg: Dictionary = {
     nearbyTitle: "Дар наздикии шумо",
     qrTitle: "Тамғаи QR",
     qrSubtitle: "Чизи худро муҳофизат кунед",
+    heroTitle: "Чизи гумшудаи худро зуд ва осон ёбед!",
+    heroSubtitle: "Эълон гузоред ё дар бораи чизи ёфтаатон хабар диҳед.",
+    heroCta: "Эълон додан",
+    lostCardTitle: "Чизи гумшуда",
+    lostCardSubtitle: "Ҷустуҷӯ ва эълон додан",
+    foundCardTitle: "Чизи ёфташуда",
+    foundCardSubtitle: "Ба ёфтани соҳибаш кӯмак кунед",
+    recentTitle: "Эълонҳои охирин",
+    mysteryBoxSubtitle: "Қуттиҳои асрорангез бо туҳфа",
+    promoSubtitle: "Тахфифҳо ва аксияҳо",
   },
 
   listingsPage: {
