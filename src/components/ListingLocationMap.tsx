@@ -4,6 +4,7 @@ import { useState } from "react";
 import dynamic from "next/dynamic";
 import { ChevronDown, Loader2, Navigation } from "lucide-react";
 import type { Dictionary } from "@/lib/i18n";
+import type { CategoryId } from "@/lib/types";
 
 const LeafletPinMap = dynamic(() => import("./LeafletPinMap"), {
   ssr: false,
@@ -19,12 +20,18 @@ export default function ListingLocationMap({
   lng,
   city,
   district,
+  category,
+  colorFrom,
+  colorTo,
   dict,
 }: {
   lat: number;
   lng: number;
   city: string;
   district?: string;
+  category: CategoryId;
+  colorFrom: string;
+  colorTo: string;
   dict: Dictionary;
 }) {
   const [open, setOpen] = useState(false);
@@ -54,7 +61,7 @@ export default function ListingLocationMap({
 
       {open && (
         <div className="animate-fade-up mt-3">
-          <LeafletPinMap lat={lat} lng={lng} />
+          <LeafletPinMap lat={lat} lng={lng} category={category} colorFrom={colorFrom} colorTo={colorTo} />
           <a
             href={directionsUrl}
             target="_blank"
