@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   BarChart3,
+  Bug,
   Flag,
   LayoutDashboard,
   List,
@@ -26,6 +27,7 @@ const LINKS = [
   { href: "/admin/reklama", icon: Megaphone, label: "Reklama" },
   { href: "/admin/reklama-arizalari", icon: Mail, label: "Reklama arizalari" },
   { href: "/admin/tahlil", icon: BarChart3, label: "Tahlil" },
+  { href: "/admin/xatolar", icon: Bug, label: "Xatolar" },
 ];
 
 // Scrolls sideways on a phone instead of wrapping into four rows. `badges`

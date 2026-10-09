@@ -400,3 +400,22 @@ if (!adColumns.some((c) => c.name === "views")) {
   addColumn("ALTER TABLE ads ADD COLUMN views INTEGER NOT NULL DEFAULT 0");
   addColumn("ALTER TABLE ads ADD COLUMN clicks INTEGER NOT NULL DEFAULT 0");
 }
+
+// Errors from visitors' browsers and from the server itself (see
+// lib/error-log.ts) — read on /admin/xatolar, so the owner sees what breaks
+// on real phones without reading server logs.
+db.exec(`
+  CREATE TABLE IF NOT EXISTS app_errors (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    kind TEXT NOT NULL,
+    fingerprint TEXT NOT NULL,
+    message TEXT NOT NULL,
+    detail TEXT NOT NULL DEFAULT '',
+    path TEXT NOT NULL DEFAULT '',
+    user_agent TEXT NOT NULL DEFAULT '',
+    user_id INTEGER,
+    created_at TEXT NOT NULL DEFAULT (datetime('now'))
+  );
+  CREATE INDEX IF NOT EXISTS idx_app_errors_fingerprint ON app_errors(fingerprint, created_at);
+  CREATE INDEX IF NOT EXISTS idx_app_errors_created ON app_errors(created_at);
+`);

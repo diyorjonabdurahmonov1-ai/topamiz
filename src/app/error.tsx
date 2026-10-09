@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import Link from "next/link";
 import { Home, RotateCw, TriangleAlert } from "lucide-react";
+import { isStaleBuildError, reloadForStaleBuild, reportClientError } from "@/lib/error-report";
 
 export default function GlobalError({
   error,
@@ -13,6 +14,8 @@ export default function GlobalError({
 }) {
   useEffect(() => {
     console.error(error);
+    if (isStaleBuildError(error) && reloadForStaleBuild()) return;
+    reportClientError(error, error.digest ? { source: `digest:${error.digest}` } : undefined);
   }, [error]);
 
   return (
