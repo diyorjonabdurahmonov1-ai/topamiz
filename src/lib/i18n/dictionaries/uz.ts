@@ -635,6 +635,7 @@ const uz: Dictionary = {
 
   notifications: {
     pushServiceBody: "Bu telefonda bildirishnoma xizmati javob bermadi. Internet borligini va telefonda Google Play xizmatlari yoqilganini tekshirib, qayta urinib ko'ring. Huawei va ba'zi Xiaomi telefonlarida bildirishnomalar faqat Chrome orqali ishlaydi.",
+    deniedAppBody: "Bildirishnomalar telefon sozlamalarida o'chirilgan. Yoqish uchun: telefon «Sozlamalar» → «Ilovalar» → «Findo» → «Bildirishnomalar» → ruxsat bering, so'ng shu tugmani qayta bosing.",
     pushRetryBody: "Bildirishnomani yoqib bo'lmadi — internetni tekshirib, qayta urinib ko'ring.",
     title: "Bildirishnomalar",
     navLabel: "Bildirishnomalar",
@@ -644,17 +645,12 @@ const uz: Dictionary = {
     listingComment: "{name} e'loningizga izoh qoldirdi: «{title}»",
     listingLike: "{name} e'loningizni yoqtirdi: «{title}»",
     someone: "Kimdir",
-    promptTitle: "Bildirishnomalarni yoqing",
-    promptBody: "Yangi xabar, izoh yoki kimdir sizni do'st qilib qo'shsa — sayt yopiq bo'lsa ham telefoningizga ovozli xabar keladi.",
-    promptEnable: "Yoqish",
-    promptLater: "Keyinroq",
     toastNew: "Yangi bildirishnoma",
     toastOpen: "Ochish",
     iosInstallTitle: "iPhone'da bildirishnomalar",
     iosInstallBody: "iPhone'da bildirishnoma olish uchun Findo'ni bosh ekranga qo'shing: Safari'da «Ulashish» tugmasini bosing → «Bosh ekranga qo'shish». Keyin Findo'ni bosh ekrandan ochib, bildirishnomalarni yoqing (iOS 16.4 yoki yangisi kerak).",
     unsupportedBody: "Bu brauzer bildirishnomalarni qo'llab-quvvatlamaydi. Saytni Chrome yoki Safari'da oching — Telegram yoki Instagram ichidagi brauzerda ishlamaydi.",
     deniedBody: "Bildirishnomalar brauzerda bloklangan. Yoqish uchun manzil satridagi qulf belgisini bosing → «Ruxsatlar» / «Sayt sozlamalari» → «Bildirishnomalar» → «Ruxsat berish», so'ng sahifani yangilang.",
-    gotIt: "Tushunarli",
   },
 };
 

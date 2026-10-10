@@ -601,6 +601,7 @@ export interface Dictionary {
 
   notifications: {
     pushServiceBody: string;
+    deniedAppBody: string;
     pushRetryBody: string;
     title: string;
     navLabel: string;
@@ -611,16 +612,11 @@ export interface Dictionary {
     listingComment: string;
     listingLike: string;
     someone: string;
-    promptTitle: string;
-    promptBody: string;
-    promptEnable: string;
-    promptLater: string;
     toastNew: string;
     toastOpen: string;
     iosInstallTitle: string;
     iosInstallBody: string;
     unsupportedBody: string;
     deniedBody: string;
-    gotIt: string;
   };
 }

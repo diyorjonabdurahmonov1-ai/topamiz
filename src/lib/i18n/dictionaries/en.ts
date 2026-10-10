@@ -629,6 +629,7 @@ const en: Dictionary = {
 
   notifications: {
     pushServiceBody: "This phone's notification service didn't respond. Check your internet connection and that Google Play services are turned on, then try again. On Huawei and some Xiaomi phones notifications only work through Chrome.",
+    deniedAppBody: "Notifications are turned off in your phone's settings. To turn them on: Settings → Apps → Findo → Notifications → allow, then tap this button again.",
     pushRetryBody: "Couldn't turn on notifications — check your internet connection and try again.",
     title: "Notifications",
     navLabel: "Notifications",
@@ -638,17 +639,12 @@ const en: Dictionary = {
     listingComment: "{name} commented on your listing: “{title}”",
     listingLike: "{name} liked your listing: “{title}”",
     someone: "Someone",
-    promptTitle: "Turn on notifications",
-    promptBody: "Get an alert with sound on your phone for new messages, comments and friends — even when the site is closed.",
-    promptEnable: "Turn on",
-    promptLater: "Later",
     toastNew: "New notification",
     toastOpen: "Open",
     iosInstallTitle: "Notifications on iPhone",
     iosInstallBody: "To get notifications on iPhone, add Findo to your Home Screen: in Safari tap Share → “Add to Home Screen”. Then open Findo from the Home Screen and turn notifications on (iOS 16.4 or later).",
     unsupportedBody: "This browser doesn't support notifications. Open the site in Chrome or Safari — they don't work in Telegram's or Instagram's built-in browser.",
     deniedBody: "Notifications are blocked in your browser. To allow them, tap the lock icon in the address bar → Permissions / Site settings → Notifications → Allow, then reload the page.",
-    gotIt: "Got it",
   },
 };
 

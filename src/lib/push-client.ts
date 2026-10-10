@@ -155,6 +155,15 @@ export async function ensureSubscribed(): Promise<void> {
   if (!res.ok) throw new PushError("server");
 }
 
+// Runs on every page load: re-sends an existing subscription (and redoes it
+// if the server key changed). Never creates one — only the toggle does.
+export async function refreshSubscription(): Promise<void> {
+  if (Notification.permission !== "granted") return;
+  const reg = await activeRegistration();
+  const sub = await withTimeout(reg.pushManager.getSubscription(), 8_000, "push-service");
+  if (sub) await ensureSubscribed();
+}
+
 // Turning off must always succeed from the visitor's point of view: if the
 // browser hangs, the server still forgets the subscription.
 export async function disablePush(): Promise<void> {

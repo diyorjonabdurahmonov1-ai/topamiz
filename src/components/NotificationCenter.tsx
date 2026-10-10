@@ -3,13 +3,10 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Bell, Loader2, X } from "lucide-react";
+import { Bell } from "lucide-react";
 import type { Dictionary } from "@/lib/i18n";
-import { ensureSubscribed, getRegistration, pushAvailability, pushFailureCode, requestPermission } from "@/lib/push-client";
-import { reportClientError } from "@/lib/error-report";
+import { pushAvailability, refreshSubscription } from "@/lib/push-client";
 
-const DISMISS_KEY = "findo-push-prompt-dismissed";
-const DISMISS_MS = 7 * 24 * 60 * 60 * 1000;
 const POLL_MS = 30_000;
 const TOAST_MS = 6_000;
 
@@ -64,18 +61,9 @@ function playChime() {
   }
 }
 
-function recentlyDismissed(): boolean {
-  try {
-    const at = Number(localStorage.getItem(DISMISS_KEY));
-    return !!at && Date.now() - at < DISMISS_MS;
-  } catch {
-    return false;
-  }
-}
-
 // Site-wide for signed-in users:
-// - keeps this browser's push subscription alive, and asks once (until
-//   dismissed for a week) to turn notifications on;
+// - keeps this browser's push subscription alive once the visitor has
+//   turned it on (PushNotificationToggle) — it never asks on its own;
 // - while the site is open, chimes and shows a toast when something new
 //   arrives — via the service worker when push is on, otherwise by polling —
 //   and refreshes the page so the unread badges update.
@@ -88,11 +76,6 @@ export default function NotificationCenter({
 }) {
   const router = useRouter();
   const pathname = usePathname();
-  // "ios-install": an iPhone in Safari, where push only works once Findo is
-  // added to the Home Screen — show how instead of an enable button.
-  const [prompt, setPrompt] = useState<"enable" | "ios-install" | null>(null);
-  const [enabling, setEnabling] = useState(false);
-  const [enableError, setEnableError] = useState<string | null>(null);
   const [toast, setToast] = useState<Toast | null>(null);
   const counts = useRef<Counts>(initialCounts);
   const pathRef = useRef(pathname);
@@ -133,29 +116,11 @@ export default function NotificationCenter({
   }, []);
 
   useEffect(() => {
-    const availability = pushAvailability();
-    let cancelled = false;
-    if (availability === "ios-install") {
-      void Promise.resolve().then(() => {
-        if (!cancelled && !recentlyDismissed()) setPrompt("ios-install");
-      });
-    }
-    if (availability !== "supported") {
-      return () => {
-        cancelled = true;
-      };
-    }
-
-    (async () => {
-      if (Notification.permission === "granted") {
-        await ensureSubscribed().catch(() => {});
-        return;
-      }
-      if (Notification.permission === "default" && !recentlyDismissed()) {
-        await getRegistration().catch(() => {});
-        if (!cancelled) setPrompt("enable");
-      }
-    })();
+    if (pushAvailability() !== "supported") return;
+    // Only keeps an existing subscription fresh (new server key, current
+    // language). Someone who turned notifications off has no subscription,
+    // so they stay off — permission alone doesn't turn them back on.
+    void refreshSubscription().catch(() => {});
 
     const onMessage = (event: MessageEvent) => {
       const data = event.data as { type?: string; payload?: { title?: string; body?: string; url?: string } };
@@ -167,10 +132,7 @@ export default function NotificationCenter({
       });
     };
     navigator.serviceWorker.addEventListener("message", onMessage);
-    return () => {
-      cancelled = true;
-      navigator.serviceWorker.removeEventListener("message", onMessage);
-    };
+    return () => navigator.serviceWorker.removeEventListener("message", onMessage);
   }, [announce]);
 
   useEffect(() => {
@@ -198,35 +160,6 @@ export default function NotificationCenter({
     return () => clearInterval(timer);
   }, [announce, dict.nav.messages, t.title, t.toastNew]);
 
-  // The prompt stays open while this runs and shows what went wrong, so a
-  // phone where push can't work never leaves the button spinning or the
-  // prompt silently gone.
-  async function enable() {
-    unlockAudio();
-    setEnabling(true);
-    setEnableError(null);
-    try {
-      const permission = await requestPermission();
-      if (permission === "granted") await ensureSubscribed();
-      setPrompt(null);
-    } catch (err) {
-      const code = pushFailureCode(err);
-      reportClientError(err instanceof Error ? err : new Error(String(err)), { source: `push-prompt:${code}` });
-      setEnableError(code === "push-service" ? t.pushServiceBody : t.pushRetryBody);
-    } finally {
-      setEnabling(false);
-    }
-  }
-
-  function later() {
-    setPrompt(null);
-    try {
-      localStorage.setItem(DISMISS_KEY, String(Date.now()));
-    } catch {
-      // Private mode — the prompt simply comes back next visit.
-    }
-  }
-
   return (
     <>
       {toast && (
@@ -245,65 +178,6 @@ export default function NotificationCenter({
             </span>
             <span className="shrink-0 self-center text-xs font-semibold text-brand-via">{t.toastOpen}</span>
           </Link>
-        </div>
-      )}
-
-      {prompt && (
-        <div className="animate-sheet-up fixed inset-x-4 bottom-[calc(5.25rem+env(safe-area-inset-bottom))] z-[55] mx-auto max-w-sm rounded-2xl border border-border bg-bg-elevated p-4 shadow-2xl sm:bottom-6 sm:left-auto sm:right-6 sm:mx-0">
-          <button
-            type="button"
-            onClick={later}
-            aria-label={t.promptLater}
-            className="absolute right-3 top-3 flex h-7 w-7 items-center justify-center rounded-full text-muted hover:bg-surface-2 hover:text-foreground"
-          >
-            <X className="h-4 w-4" />
-          </button>
-          <div className="flex gap-3 pr-6">
-            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-brand-from to-brand-via text-white">
-              <Bell className="h-5 w-5" />
-            </span>
-            <div>
-              <p className="text-sm font-bold">{prompt === "ios-install" ? t.iosInstallTitle : t.promptTitle}</p>
-              <p className="mt-1 text-[13px] leading-relaxed text-muted">
-                {prompt === "ios-install" ? t.iosInstallBody : t.promptBody}
-              </p>
-              {enableError && (
-                <p role="alert" className="mt-2 text-[13px] font-medium leading-relaxed text-danger">
-                  {enableError}
-                </p>
-              )}
-            </div>
-          </div>
-          <div className="mt-3 flex gap-2">
-            {prompt === "ios-install" ? (
-              <button
-                type="button"
-                onClick={later}
-                className="btn-brand flex-1 rounded-xl px-4 py-2.5 text-sm font-bold text-white"
-              >
-                {t.gotIt}
-              </button>
-            ) : (
-              <>
-                <button
-                  type="button"
-                  onClick={enable}
-                  disabled={enabling}
-                  className="btn-brand flex flex-1 items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-bold text-white disabled:opacity-70"
-                >
-                  {enabling && <Loader2 className="h-4 w-4 animate-spin" />}
-                  {t.promptEnable}
-                </button>
-                <button
-                  type="button"
-                  onClick={later}
-                  className="rounded-xl border border-border px-4 py-2.5 text-sm font-semibold text-muted hover:text-foreground"
-                >
-                  {t.promptLater}
-                </button>
-              </>
-            )}
-          </div>
         </div>
       )}
     </>
