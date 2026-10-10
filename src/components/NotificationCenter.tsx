@@ -3,9 +3,10 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Bell, X } from "lucide-react";
+import { Bell, Loader2, X } from "lucide-react";
 import type { Dictionary } from "@/lib/i18n";
-import { ensureSubscribed, getRegistration, pushAvailability } from "@/lib/push-client";
+import { ensureSubscribed, getRegistration, pushAvailability, pushFailureCode, requestPermission } from "@/lib/push-client";
+import { reportClientError } from "@/lib/error-report";
 
 const DISMISS_KEY = "findo-push-prompt-dismissed";
 const DISMISS_MS = 7 * 24 * 60 * 60 * 1000;
@@ -90,6 +91,8 @@ export default function NotificationCenter({
   // "ios-install": an iPhone in Safari, where push only works once Findo is
   // added to the Home Screen — show how instead of an enable button.
   const [prompt, setPrompt] = useState<"enable" | "ios-install" | null>(null);
+  const [enabling, setEnabling] = useState(false);
+  const [enableError, setEnableError] = useState<string | null>(null);
   const [toast, setToast] = useState<Toast | null>(null);
   const counts = useRef<Counts>(initialCounts);
   const pathRef = useRef(pathname);
@@ -195,13 +198,23 @@ export default function NotificationCenter({
     return () => clearInterval(timer);
   }, [announce, dict.nav.messages, t.title, t.toastNew]);
 
+  // The prompt stays open while this runs and shows what went wrong, so a
+  // phone where push can't work never leaves the button spinning or the
+  // prompt silently gone.
   async function enable() {
     unlockAudio();
-    setPrompt(null);
+    setEnabling(true);
+    setEnableError(null);
     try {
-      if ((await Notification.requestPermission()) === "granted") await ensureSubscribed();
-    } catch {
-      // The profile page's toggle shows the error and lets them retry.
+      const permission = await requestPermission();
+      if (permission === "granted") await ensureSubscribed();
+      setPrompt(null);
+    } catch (err) {
+      const code = pushFailureCode(err);
+      reportClientError(err instanceof Error ? err : new Error(String(err)), { source: `push-prompt:${code}` });
+      setEnableError(code === "push-service" ? t.pushServiceBody : t.pushRetryBody);
+    } finally {
+      setEnabling(false);
     }
   }
 
@@ -254,6 +267,11 @@ export default function NotificationCenter({
               <p className="mt-1 text-[13px] leading-relaxed text-muted">
                 {prompt === "ios-install" ? t.iosInstallBody : t.promptBody}
               </p>
+              {enableError && (
+                <p role="alert" className="mt-2 text-[13px] font-medium leading-relaxed text-danger">
+                  {enableError}
+                </p>
+              )}
             </div>
           </div>
           <div className="mt-3 flex gap-2">
@@ -270,8 +288,10 @@ export default function NotificationCenter({
                 <button
                   type="button"
                   onClick={enable}
-                  className="btn-brand flex-1 rounded-xl px-4 py-2.5 text-sm font-bold text-white"
+                  disabled={enabling}
+                  className="btn-brand flex flex-1 items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-bold text-white disabled:opacity-70"
                 >
+                  {enabling && <Loader2 className="h-4 w-4 animate-spin" />}
                   {t.promptEnable}
                 </button>
                 <button
