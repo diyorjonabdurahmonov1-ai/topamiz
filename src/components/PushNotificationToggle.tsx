@@ -3,12 +3,31 @@
 import { useEffect, useState } from "react";
 import { Bell, BellOff, Info, Loader2 } from "lucide-react";
 import type { Dictionary } from "@/lib/i18n";
-import { disablePush, ensureSubscribed, isSubscribed, pushAvailability } from "@/lib/push-client";
+import {
+  disablePush,
+  ensureSubscribed,
+  isSubscribed,
+  pushAvailability,
+  pushFailureCode,
+  requestPermission,
+  type PushFailure,
+} from "@/lib/push-client";
+import { reportClientError } from "@/lib/error-report";
 
 type Status = "checking" | "ios-install" | "unsupported" | "off" | "on" | "denied" | "busy" | "error";
 
 export default function PushNotificationToggle({ dict }: { dict: Dictionary }) {
   const [status, setStatus] = useState<Status>("checking");
+  const [failure, setFailure] = useState<PushFailure | null>(null);
+
+  // Logged to /admin/xatolar with the phone's details, so "doesn't work on
+  // some phones" shows up as which phones and which step.
+  function fail(err: unknown, action: "enable" | "disable") {
+    const code = pushFailureCode(err);
+    reportClientError(err instanceof Error ? err : new Error(String(err)), { source: `push-${action}:${code}` });
+    setFailure(code);
+    setStatus(code === "denied" ? "denied" : "error");
+  }
 
   useEffect(() => {
     let cancelled = false;
@@ -38,26 +57,28 @@ export default function PushNotificationToggle({ dict }: { dict: Dictionary }) {
 
   async function handleEnable() {
     setStatus("busy");
+    setFailure(null);
     try {
-      const permission = await Notification.requestPermission();
+      const permission = await requestPermission();
       if (permission !== "granted") {
         setStatus("denied");
         return;
       }
       await ensureSubscribed();
       setStatus("on");
-    } catch {
-      setStatus("error");
+    } catch (err) {
+      fail(err, "enable");
     }
   }
 
   async function handleDisable() {
     setStatus("busy");
+    setFailure(null);
     try {
       await disablePush();
       setStatus("off");
-    } catch {
-      setStatus("error");
+    } catch (err) {
+      fail(err, "disable");
     }
   }
 
@@ -101,7 +122,11 @@ export default function PushNotificationToggle({ dict }: { dict: Dictionary }) {
         )}
         {status === "on" ? dict.profile.pushEnabled : dict.profile.pushEnable}
       </button>
-      {status === "error" && <p className="text-xs font-medium text-danger">{dict.profile.pushError}</p>}
+      {status === "error" && (
+        <p className="max-w-xs text-center text-xs font-medium leading-relaxed text-danger">
+          {failure === "push-service" ? dict.notifications.pushServiceBody : dict.notifications.pushRetryBody}
+        </p>
+      )}
     </div>
   );
 }

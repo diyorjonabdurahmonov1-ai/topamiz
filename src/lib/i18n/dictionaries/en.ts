@@ -628,6 +628,8 @@ const en: Dictionary = {
   },
 
   notifications: {
+    pushServiceBody: "This phone's notification service didn't respond. Check your internet connection and that Google Play services are turned on, then try again. On Huawei and some Xiaomi phones notifications only work through Chrome.",
+    pushRetryBody: "Couldn't turn on notifications — check your internet connection and try again.",
     title: "Notifications",
     navLabel: "Notifications",
     empty: "No notifications yet. When someone adds you as a friend, comments on or likes your listing, you'll see it here.",

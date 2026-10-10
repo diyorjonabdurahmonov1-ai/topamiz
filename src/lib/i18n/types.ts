@@ -600,6 +600,8 @@ export interface Dictionary {
   };
 
   notifications: {
+    pushServiceBody: string;
+    pushRetryBody: string;
     title: string;
     navLabel: string;
     empty: string;
