@@ -65,6 +65,34 @@
 
 html {
   color-scheme: light dark;
+  /* App feel on phones: no blue flash on every tap, and no double-tap zoom
+     (which also removes the browser's tap delay). */
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+/* On touch screens a long press shouldn't select text and offer "Search
+   with Google" — native apps don't do that, and in the Android app it gives
+   the browser away. Typing, pasting and selecting inside form fields still
+   work. Desktop browsers (a mouse) keep normal text selection. */
+@media (pointer: coarse) {
+  body {
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+  }
+  input,
+  textarea,
+  select,
+  [contenteditable="true"] {
+    -webkit-user-select: text;
+    user-select: text;
+    -webkit-touch-callout: default;
+  }
+  img,
+  video {
+    -webkit-user-drag: none;
+  }
 }
 
 body {
@@ -114,10 +142,14 @@ body {
   box-shadow: 0 8px 24px -8px color-mix(in srgb, var(--brand-via) 55%, transparent);
 }
 
-.btn-brand:hover {
-  background-position: 100% 50%;
-  transform: translateY(-1px);
-  box-shadow: 0 12px 30px -8px color-mix(in srgb, var(--brand-via) 65%, transparent);
+/* Hover lifts only where there is a real hover: on a phone a tap would
+   leave the button or card stuck in its lifted state. */
+@media (hover: hover) {
+  .btn-brand:hover {
+    background-position: 100% 50%;
+    transform: translateY(-1px);
+    box-shadow: 0 12px 30px -8px color-mix(in srgb, var(--brand-via) 65%, transparent);
+  }
 }
 
 .btn-brand:active {
@@ -128,10 +160,19 @@ body {
   transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
 }
 
-.card-hover:hover {
-  transform: translateY(-4px);
-  border-color: color-mix(in srgb, var(--brand-via) 45%, var(--border));
-  box-shadow: 0 20px 40px -16px color-mix(in srgb, var(--brand-via) 30%, transparent);
+@media (hover: hover) {
+  .card-hover:hover {
+    transform: translateY(-4px);
+    border-color: color-mix(in srgb, var(--brand-via) 45%, var(--border));
+    box-shadow: 0 20px 40px -16px color-mix(in srgb, var(--brand-via) 30%, transparent);
+  }
+}
+
+/* A press on a touch screen gets a quick "pushed in" response instead. */
+@media (hover: none) {
+  .card-hover:active {
+    transform: scale(0.98);
+  }
 }
 
 .blob {
