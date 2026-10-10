@@ -585,7 +585,8 @@ const uz: Dictionary = {
   },
 
   social: {
-    reelTapForSound: "Ovoz uchun bosing",
+    reelPlay: "Davom ettirish",
+    reelPause: "To'xtatish",
     reelSoundOn: "Ovozni yoqish",
     reelSoundOff: "Ovozni o'chirish",
     commentsHeading: "Izohlar",

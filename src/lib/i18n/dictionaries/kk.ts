@@ -581,7 +581,8 @@ const kk: Dictionary = {
   },
 
   social: {
-    reelTapForSound: "Дыбыс үшін басыңыз",
+    reelPlay: "Ойнату",
+    reelPause: "Кідірту",
     reelSoundOn: "Дыбысты қосу",
     reelSoundOff: "Дыбысты өшіру",
     commentsHeading: "Пікірлер",

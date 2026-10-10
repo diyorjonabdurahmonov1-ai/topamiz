@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, Loader2, Lock, MessageCircle, RotateCw, Sparkles, Tag, Volume2, VolumeX } from "lucide-react";
+import { ArrowLeft, Loader2, Lock, MessageCircle, Pause, Play, RotateCw, Sparkles, Tag, Volume2, VolumeX } from "lucide-react";
 import type { Listing } from "@/lib/types";
 import type { Dictionary } from "@/lib/i18n";
 import { useStartsAtLock } from "@/lib/useStartsAtLock";
@@ -47,6 +47,8 @@ function PhotoMedia({ photoUrls }: { photoUrls: string[] }) {
   );
 }
 
+const CONTROLS_HIDE_MS = 2500;
+
 export default function ReelSlide({
   listing,
   likedByMe,
@@ -74,8 +76,8 @@ export default function ReelSlide({
   // Instagram/TikTok-style shared mute state, not a per-slide setting.
   muted: boolean;
   onToggleMuted: () => void;
-  // The browser refused to start this video with sound (no tap on the page
-  // yet) — the feed goes back to muted until the next tap.
+  // The browser refused to start this video with sound — the feed goes
+  // back to muted.
   onSoundBlocked: () => void;
 }) {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -117,20 +119,45 @@ export default function ReelSlide({
   // eslint-disable-next-line react-hooks/exhaustive-deps -- only (re)start on these changes
   }, [active, isVideo, locked]);
 
-  // Phones never hand the volume buttons to a web page, so the quickest way
-  // to sound is one tap: while muted, a tap on the video turns sound on
-  // (Instagram-style) instead of pausing it. Once sound is on, a tap pauses.
-  function handleVideoTap() {
+  // Tap-to-show controls, TikTok-style: nothing sits on the video while it
+  // plays; a tap brings up pause/play and sound buttons, which fade after a
+  // moment. While paused they stay up (that also covers a phone that
+  // refused to autoplay — the play button is right there).
+  const [paused, setPaused] = useState(false);
+  const [controlsShown, setControlsShown] = useState(false);
+  const hideTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  useEffect(() => () => clearTimeout(hideTimer.current), []);
+  const controlsVisible = active && !failed && (controlsShown || paused);
+
+  function showControls() {
+    setControlsShown(true);
+    clearTimeout(hideTimer.current);
+    hideTimer.current = setTimeout(() => setControlsShown(false), CONTROLS_HIDE_MS);
+  }
+
+  function hideControls() {
+    clearTimeout(hideTimer.current);
+    setControlsShown(false);
+  }
+
+  function togglePlay() {
     const video = videoRef.current;
     if (!video) return;
-    if (muted) {
-      onToggleMuted();
-      video.muted = false;
-      if (video.paused) video.play().catch(() => {});
-      return;
-    }
     if (video.paused) video.play().catch(() => {});
     else video.pause();
+    showControls();
+  }
+
+  function toggleSound() {
+    const video = videoRef.current;
+    onToggleMuted();
+    // Set on the element right away, inside the tap — browsers only allow
+    // sound in direct response to one.
+    if (video) {
+      video.muted = !muted;
+      if (video.paused && muted) video.play().catch(() => {});
+    }
+    showControls();
   }
 
   const lockBackdropUrl = isVideo ? listing.videoThumbnailUrl : (listing.photoUrls[0] ?? null);
@@ -174,7 +201,9 @@ export default function ReelSlide({
             loop
             muted={muted}
             playsInline
-            onClick={handleVideoTap}
+            onClick={showControls}
+            onPlay={() => setPaused(false)}
+            onPause={() => setPaused(true)}
             onWaiting={() => setBuffering(true)}
             onPlaying={() => {
               setBuffering(false);
@@ -186,10 +215,41 @@ export default function ReelSlide({
             }}
             className="h-full w-full object-contain"
           />
-          {active && buffering && !failed && (
+          {active && buffering && !failed && !controlsVisible && (
             <span className="pointer-events-none absolute inset-0 flex items-center justify-center">
               <Loader2 className="h-9 w-9 animate-spin text-white/80 drop-shadow" />
             </span>
+          )}
+          {controlsVisible && (
+            // No z-index on purpose: the caption, like and share buttons
+            // come later in the page and stay on top of it and tappable.
+            <div
+              className="animate-fade-in absolute inset-0 flex items-center justify-center gap-6 bg-black/20"
+              onClick={() => (paused ? showControls() : hideControls())}
+            >
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  togglePlay();
+                }}
+                aria-label={paused ? dict.social.reelPlay : dict.social.reelPause}
+                className="flex h-16 w-16 items-center justify-center rounded-full bg-black/50 text-white backdrop-blur-md transition-transform active:scale-90"
+              >
+                {paused ? <Play className="ml-1 h-7 w-7 fill-white" /> : <Pause className="h-7 w-7 fill-white" />}
+              </button>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  toggleSound();
+                }}
+                aria-label={muted ? dict.social.reelSoundOn : dict.social.reelSoundOff}
+                className="flex h-16 w-16 items-center justify-center rounded-full bg-black/50 text-white backdrop-blur-md transition-transform active:scale-90"
+              >
+                {muted ? <VolumeX className="h-7 w-7" /> : <Volume2 className="h-7 w-7" />}
+              </button>
+            </div>
           )}
           {active && failed && (
             <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-black/60 px-6 text-center">
@@ -261,27 +321,7 @@ export default function ReelSlide({
         </span>
       )}
 
-      {isVideo && !locked && (
-        <button
-          type="button"
-          onClick={onToggleMuted}
-          aria-label={muted ? dict.social.reelSoundOn : dict.social.reelSoundOff}
-          className="absolute right-4 top-[calc(1rem+env(safe-area-inset-top))] z-10 flex h-9 w-9 items-center justify-center rounded-full bg-black/40 text-white backdrop-blur-sm"
-        >
-          {muted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
-        </button>
-      )}
 
-      {isVideo && videoMounted && !locked && active && muted && !buffering && !failed && (
-        <button
-          type="button"
-          onClick={handleVideoTap}
-          className="animate-fade-in absolute left-1/2 top-1/2 z-10 flex -translate-x-1/2 -translate-y-1/2 items-center gap-2 rounded-full bg-black/55 px-4 py-2.5 text-sm font-bold text-white shadow-lg backdrop-blur-md"
-        >
-          <VolumeX className="h-4 w-4" />
-          {dict.social.reelTapForSound}
-        </button>
-      )}
 
       {/* The caption gradient covers the lower part of the video — let taps
           through it to the video, except on the actual buttons. */}

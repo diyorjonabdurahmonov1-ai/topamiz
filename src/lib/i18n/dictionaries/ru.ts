@@ -581,7 +581,8 @@ const ru: Dictionary = {
   },
 
   social: {
-    reelTapForSound: "Нажмите для звука",
+    reelPlay: "Воспроизвести",
+    reelPause: "Пауза",
     reelSoundOn: "Включить звук",
     reelSoundOff: "Выключить звук",
     commentsHeading: "Комментарии",
