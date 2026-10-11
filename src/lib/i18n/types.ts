@@ -254,6 +254,8 @@ export interface Dictionary {
     videoReadHint: string;
     videoPickFromFiles: string;
     videoRecord: string;
+    photoUploadPrompt: string;
+    photoTake: string;
     videoServerError: string;
   };
 

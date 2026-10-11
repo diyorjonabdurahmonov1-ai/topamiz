@@ -120,6 +120,10 @@ cold start or an ephemeral filesystem.
   makes the poster pick the video again. When an upload fails on a phone,
   the browser reports the details (error code, file type/size, user agent)
   to the server log: `pm2 logs topamiz --lines 200 --nostream | grep video-upload-failure`.
+  On Android, the photo and video pickers open the phone's document picker
+  ("Files"), not the gallery (`src/lib/file-picker.ts`): the gallery can hand
+  the browser a converted or cloud copy it then can't read (`NotReadableError`).
+  Taking a photo or recording a video on the spot has its own button.
 
 ### Listings
 

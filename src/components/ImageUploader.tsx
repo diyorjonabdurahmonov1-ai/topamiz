@@ -1,10 +1,11 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { AlertCircle, ImagePlus, Loader2, X } from "lucide-react";
+import { AlertCircle, Camera, ImagePlus, Loader2, X } from "lucide-react";
 import type { Dictionary } from "@/lib/i18n";
 import PhotoRedactModal from "./PhotoRedactModal";
 import { prepareImageForUpload } from "@/lib/image-prepare";
+import { usePickerAccept } from "@/lib/file-picker";
 
 interface UploadImage {
   id: string;
@@ -32,6 +33,10 @@ export default function ImageUploader({
   const [dragActive, setDragActive] = useState(false);
   const [pendingQueue, setPendingQueue] = useState<{ id: string; file: File }[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
+  const cameraRef = useRef<HTMLInputElement>(null);
+  // On Android this opens the document picker rather than the gallery,
+  // which can hand over a copy the browser can't read (lib/file-picker).
+  const pickerAccept = usePickerAccept("image/*,.heic,.heif");
 
   function report(list: UploadImage[]) {
     onChange?.(list.filter((img) => img.status === "done" && img.url).map((img) => img.url!));
@@ -141,12 +146,12 @@ export default function ImageUploader({
           }`}
         >
           <ImagePlus className="h-5 w-5" />
-          Rasmni shu yerga tashlang yoki bosib tanlang
+          {dict.postListing.photoUploadPrompt}
           <span className="text-xs text-muted">JPG, PNG, HEIC, WEBP · {MAX_IMAGES} tagacha</span>
           <input
             ref={inputRef}
             type="file"
-            accept="image/*,.heic,.heif"
+            accept={pickerAccept}
             multiple
             hidden
             onChange={(e) => {
@@ -154,6 +159,29 @@ export default function ImageUploader({
               e.target.value = "";
             }}
           />
+        </div>
+      )}
+      {canAddMore && (
+        <div className="mt-2 flex justify-center">
+          <input
+            ref={cameraRef}
+            type="file"
+            accept="image/*"
+            capture="environment"
+            hidden
+            onChange={(e) => {
+              handleFiles(e.target.files);
+              e.target.value = "";
+            }}
+          />
+          <button
+            type="button"
+            onClick={() => cameraRef.current?.click()}
+            className="flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-xs font-semibold text-foreground transition-colors hover:border-brand-via/40"
+          >
+            <Camera className="h-3.5 w-3.5" />
+            {dict.postListing.photoTake}
+          </button>
         </div>
       )}
 
