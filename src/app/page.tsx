@@ -1,6 +1,6 @@
 import HomeQuickAccess from "@/components/HomeQuickAccess";
 import { getActiveAds } from "@/lib/ads";
-import { getAllActiveListings, getPromoListings } from "@/lib/listings";
+import { getAllActiveListings } from "@/lib/listings";
 import { getVisitorCountry } from "@/lib/geo";
 import { getLocale } from "@/lib/i18n/server";
 import { getDictionary } from "@/lib/i18n";
@@ -13,7 +13,6 @@ export default async function Home() {
   const dict = getDictionary(locale);
   // Already newest first.
   const active = getAllActiveListings(country);
-  const promoCount = getPromoListings(country).length;
   const ads = getActiveAds();
   const nearby = active.slice(0, 12);
 
@@ -42,7 +41,6 @@ export default async function Home() {
           ads={ads}
           nearby={nearby}
           recent={active.slice(0, RECENT_SIZE)}
-          promoCount={promoCount}
         />
       </div>
     </div>
