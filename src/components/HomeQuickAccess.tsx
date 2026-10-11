@@ -1,9 +1,7 @@
 import Link from "next/link";
 import {
   ArrowRight,
-  BriefcaseBusiness,
-  ChevronRight,
-  House,
+  KeyRound,
   LayoutGrid,
   MapPin,
   PackageSearch,
@@ -13,8 +11,6 @@ import {
   SlidersHorizontal,
   Sparkles,
   Tag,
-  Tags,
-  Wrench,
 } from "lucide-react";
 import type { CategoryId, Listing } from "@/lib/types";
 import type { AdBanner } from "@/lib/ads";
@@ -25,21 +21,35 @@ import NearbyMapCard from "@/components/NearbyMapCard";
 import HomeHero from "@/components/HomeHero";
 import HomeListingCard from "@/components/HomeListingCard";
 
-// The home page's category row: the classifieds categories people come for
-// most, then lost & found — where Findo started, and still its own section.
-// Below the banner, one swipeable row of cards opens each kind of listing.
-const SECTIONS: CategoryId[] = [
-  "transport",
-  "kochmas_mulk",
-  "ish",
-  "xizmatlar",
-  "texnika",
-  "uy_rozgor",
-  "kiyim",
-  "bolalar",
-  "hayvonlar",
-  "sport",
+// The home page's one row of sections, swiped sideways: the classifieds
+// categories people come for most, with renting and lost & found (where
+// Findo started) as entries of their own — each opens the listings page
+// already filtered.
+type Section =
+  | { category: CategoryId }
+  | { kind: "rent" | "lost" | "found" };
+
+const SECTIONS: Section[] = [
+  { category: "transport" },
+  { category: "kochmas_mulk" },
+  { kind: "rent" },
+  { category: "ish" },
+  { category: "xizmatlar" },
+  { category: "texnika" },
+  { category: "uy_rozgor" },
+  { category: "kiyim" },
+  { category: "bolalar" },
+  { category: "hayvonlar" },
+  { category: "sport" },
+  { kind: "lost" },
+  { kind: "found" },
 ];
+
+const KIND_TILES = {
+  rent: { Icon: KeyRound, color: "text-teal-500" },
+  lost: { Icon: Search, color: "text-orange-500" },
+  found: { Icon: PackageSearch, color: "text-sky-500" },
+};
 
 export default function HomeQuickAccess({
   dict,
@@ -85,73 +95,27 @@ export default function HomeQuickAccess({
         <CategoryTile href="/elonlar" label={dict.listingsPage.kindAll} active>
           <LayoutGrid className="h-6 w-6" />
         </CategoryTile>
-        {SECTIONS.map((id) => {
-          const Icon = categoryIcons[id];
-          const colors = CATEGORY_COLORS[id];
+        {SECTIONS.map((section) => {
+          if ("kind" in section) {
+            const { Icon, color } = KIND_TILES[section.kind];
+            const label =
+              section.kind === "rent" ? dict.classifieds.kindRent : section.kind === "lost" ? dict.tabs.lost : dict.tabs.found;
+            return (
+              <CategoryTile key={section.kind} href={`/elonlar?kind=${section.kind}`} label={label}>
+                <Icon className={`h-6 w-6 ${color}`} strokeWidth={1.75} />
+              </CategoryTile>
+            );
+          }
+          const Icon = categoryIcons[section.category];
           return (
-            <CategoryTile key={id} href={`/elonlar?category=${id}`} label={dict.categories[id]}>
-              <Icon className="h-6 w-6" strokeWidth={1.75} style={{ color: colors.from }} />
+            <CategoryTile key={section.category} href={`/elonlar?category=${section.category}`} label={dict.categories[section.category]}>
+              <Icon className="h-6 w-6" strokeWidth={1.75} style={{ color: CATEGORY_COLORS[section.category].from }} />
             </CategoryTile>
           );
         })}
-        <CategoryTile href="/elonlar?kind=lost" label={dict.classifieds.lostFoundTitle}>
-          <Search className="h-6 w-6 text-orange-500" strokeWidth={1.75} />
-        </CategoryTile>
       </div>
 
       <HomeHero ads={ads} dict={dict} />
-
-      <SectionHeader title={dict.classifieds.sectionsTitle} href="/elonlar" linkLabel={dict.tabs.viewAll} />
-      <div className="-mx-4 -mt-2 flex snap-x scroll-px-4 gap-2.5 overflow-x-auto px-4 pb-1 sm:scroll-px-6 [scrollbar-width:none] sm:-mx-6 sm:px-6 lg:mx-0 lg:grid lg:grid-cols-6 lg:px-0 [&::-webkit-scrollbar]:hidden">
-        <KindCard
-          href="/elonlar?kind=lost"
-          title={t.lostCardTitle}
-          subtitle={t.lostCardSubtitle}
-          icon={<Search className="h-4 w-4" />}
-          tone="bg-orange-500/10 dark:bg-orange-400/10"
-          iconTone="bg-orange-500/15 text-orange-600 dark:text-orange-300"
-        />
-        <KindCard
-          href="/elonlar?kind=found"
-          title={t.foundCardTitle}
-          subtitle={t.foundCardSubtitle}
-          icon={<PackageSearch className="h-4 w-4" />}
-          tone="bg-sky-500/10 dark:bg-sky-400/10"
-          iconTone="bg-sky-500/15 text-sky-600 dark:text-sky-300"
-        />
-        <KindCard
-          href="/elonlar?kind=sell"
-          title={dict.classifieds.kindSell}
-          subtitle={dict.classifieds.optSellHint}
-          icon={<Tags className="h-4 w-4" />}
-          tone="bg-emerald-500/10 dark:bg-emerald-400/10"
-          iconTone="bg-emerald-500/15 text-emerald-600 dark:text-emerald-300"
-        />
-        <KindCard
-          href="/elonlar?kind=rent"
-          title={dict.classifieds.kindRent}
-          subtitle={dict.classifieds.optRentHint}
-          icon={<House className="h-4 w-4" />}
-          tone="bg-teal-500/10 dark:bg-teal-400/10"
-          iconTone="bg-teal-500/15 text-teal-600 dark:text-teal-300"
-        />
-        <KindCard
-          href="/elonlar?kind=job"
-          title={dict.classifieds.kindJob}
-          subtitle={dict.classifieds.optJobHint}
-          icon={<BriefcaseBusiness className="h-4 w-4" />}
-          tone="bg-blue-500/10 dark:bg-blue-400/10"
-          iconTone="bg-blue-500/15 text-blue-600 dark:text-blue-300"
-        />
-        <KindCard
-          href="/elonlar?kind=service"
-          title={dict.classifieds.kindService}
-          subtitle={dict.classifieds.optServiceHint}
-          icon={<Wrench className="h-4 w-4" />}
-          tone="bg-cyan-500/10 dark:bg-cyan-400/10"
-          iconTone="bg-cyan-500/15 text-cyan-600 dark:text-cyan-300"
-        />
-      </div>
 
       <div className="grid grid-cols-3 gap-2.5">
         <ExtraTile href="/takliflar" icon={<Tag className="h-4 w-4" />} gradient="from-sky-500 to-brand-via" title={dict.promo.title}>
@@ -218,36 +182,6 @@ function CategoryTile({
         {children}
       </span>
       <span className={`line-clamp-2 text-[11px] font-semibold leading-tight ${active ? "text-foreground" : "text-muted"}`}>{label}</span>
-    </Link>
-  );
-}
-
-function KindCard({
-  href,
-  title,
-  subtitle,
-  icon,
-  tone,
-  iconTone,
-}: {
-  href: string;
-  title: string;
-  subtitle: string;
-  icon: React.ReactNode;
-  tone: string;
-  iconTone: string;
-}) {
-  return (
-    <Link
-      href={href}
-      className={`card-hover relative flex w-[8.25rem] shrink-0 snap-start flex-col rounded-2xl border border-border p-3 lg:w-auto ${tone}`}
-    >
-      <span className={`flex h-8 w-8 items-center justify-center rounded-full ${iconTone}`}>{icon}</span>
-      <span className="mt-2 line-clamp-2 pr-1 text-[13px] font-extrabold leading-tight">{title}</span>
-      <span className="mt-0.5 line-clamp-2 pr-5 text-[10.5px] leading-snug text-muted">{subtitle}</span>
-      <span className="absolute right-2 top-3 flex h-5 w-5 items-center justify-center rounded-full bg-bg-elevated/80 text-foreground shadow-sm">
-        <ChevronRight className="h-3 w-3" />
-      </span>
     </Link>
   );
 }
