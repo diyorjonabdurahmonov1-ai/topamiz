@@ -3,11 +3,13 @@
 import "leaflet/dist/leaflet.css";
 import { useEffect, useMemo, useState } from "react";
 import { divIcon, type LatLngBoundsExpression } from "leaflet";
-import { MapContainer, Marker, Popup, TileLayer, useMap } from "react-leaflet";
+import { MapContainer, Marker, Popup, TileLayer, ZoomControl, useMap } from "react-leaflet";
 import Link from "next/link";
-import { Gift, LocateFixed, MapPin } from "lucide-react";
+import { Gift, KeyRound, LayoutGrid, LocateFixed, MapPin, PackageSearch, Search, Sparkles, Tag, type LucideIcon } from "lucide-react";
 import type { Listing } from "@/lib/types";
 import type { Dictionary } from "@/lib/i18n";
+import { CATEGORY_COLORS } from "@/lib/category-colors";
+import { mapSectionOf, mapSections, type MapSection } from "@/lib/map-sections";
 import { categoryIcons } from "@/lib/icons";
 import { formatSom } from "@/lib/data";
 import { categoryPinIcon } from "@/lib/map-pins";
@@ -112,10 +114,21 @@ export default function ListingsMap({
   const [locating, setLocating] = useState(false);
   const [locateError, setLocateError] = useState("");
 
+  // One section at a time (null = all), so a busy map can be narrowed to
+  // just, say, lost items or cars. A section that drops out of the listings
+  // (the page's own filters changed) falls back to showing everything.
+  const sections = useMemo(() => mapSections(listings), [listings]);
+  const [picked, setPicked] = useState<MapSection | null>(null);
+  const section = picked && sections.some((s) => s.section === picked) ? picked : null;
+  const visible = useMemo(
+    () => (section ? listings.filter((l) => mapSectionOf(l) === section) : listings),
+    [listings, section]
+  );
+
   const bounds = useMemo<LatLngBoundsExpression | null>(() => {
-    if (listings.length === 0) return null;
-    return listings.map((l) => [l.lat, l.lng] as [number, number]);
-  }, [listings]);
+    if (visible.length === 0) return null;
+    return visible.map((l) => [l.lat, l.lng] as [number, number]);
+  }, [visible]);
 
   const center: [number, number] = listings[0] ? [listings[0].lat, listings[0].lng] : [41.2995, 69.2401];
 
@@ -161,23 +174,30 @@ export default function ListingsMap({
         doubleClickZoom={dragEnabled}
         boxZoom={dragEnabled}
         keyboard={dragEnabled}
-        zoomControl={interactive}
+        // Zoom buttons go bottom-left: the section chips take the top edge.
+        zoomControl={false}
         attributionControl={interactive}
         className={`h-full w-full ${isDark ? "map-dark" : ""}`}
         style={{ background: isDark ? "#1a1a2e" : "#eef1f6" }}
       >
         <TileLayer url={TILES} attribution={ATTRIBUTION} />
+        {interactive && <ZoomControl position="bottomleft" />}
         <TouchActionSync active={dragEnabled} />
         <FitBounds bounds={bounds} />
         <FlyTo target={me} />
 
-        {listings.map((listing) => {
+        {visible.map((listing) => {
           const Icon = categoryIcons[listing.category];
           return (
             <Marker
               key={listing.id}
               position={[listing.lat, listing.lng]}
-              icon={categoryPinIcon(listing.category, listing.colorFrom, listing.colorTo)}
+              icon={categoryPinIcon(
+                listing.category,
+                listing.colorFrom,
+                listing.colorTo,
+                listing.isMysteryBox || listing.isPromo ? undefined : listing.kind === "lost" || listing.kind === "found" ? listing.kind : undefined
+              )}
             >
               <Popup>
                 <div className="w-52">
@@ -222,6 +242,26 @@ export default function ListingsMap({
         )}
       </MapContainer>
 
+      {interactive && sections.length > 1 && (
+        <div className="absolute inset-x-0 top-0 z-[1000] flex gap-1.5 overflow-x-auto p-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <SectionChip active={section === null} onClick={() => setPicked(null)} Icon={LayoutGrid} label={dict.listingsPage.kindAll} count={listings.length} />
+          {sections.map(({ section: s, count }) => {
+            const { Icon, label, color } = sectionLook(s, dict);
+            return (
+              <SectionChip
+                key={s}
+                active={section === s}
+                onClick={() => setPicked(section === s ? null : s)}
+                Icon={Icon}
+                label={label}
+                count={count}
+                color={color}
+              />
+            );
+          })}
+        </div>
+      )}
+
       {interactive && (
         <button
           type="button"
@@ -249,5 +289,55 @@ export default function ListingsMap({
         </div>
       )}
     </div>
+  );
+}
+
+function sectionLook(section: MapSection, dict: Dictionary): { Icon: LucideIcon; label: string; color: string } {
+  switch (section) {
+    case "lost":
+      return { Icon: Search, label: dict.tabs.lost, color: "#f97316" };
+    case "found":
+      return { Icon: PackageSearch, label: dict.tabs.found, color: "#0ea5e9" };
+    case "rent":
+      return { Icon: KeyRound, label: dict.classifieds.kindRent, color: "#14b8a6" };
+    case "promo":
+      return { Icon: Tag, label: dict.promo.title, color: "#ec4899" };
+    case "mystery":
+      return { Icon: Sparkles, label: dict.nav.mysteryBox, color: "#f59e0b" };
+    default: {
+      const category = section.slice(4) as keyof typeof CATEGORY_COLORS;
+      return { Icon: categoryIcons[category], label: dict.categories[category], color: CATEGORY_COLORS[category].from };
+    }
+  }
+}
+
+function SectionChip({
+  active,
+  onClick,
+  Icon,
+  label,
+  count,
+  color,
+}: {
+  active: boolean;
+  onClick: () => void;
+  Icon: LucideIcon;
+  label: string;
+  count: number;
+  color?: string;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-pressed={active}
+      className={`flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold shadow-md backdrop-blur transition-colors ${
+        active ? "btn-brand text-white" : "border border-border bg-surface/95 text-foreground hover:bg-surface-2"
+      }`}
+    >
+      <Icon className="h-3.5 w-3.5" style={active || !color ? undefined : { color }} />
+      {label}
+      <span className={`rounded-full px-1.5 text-[10px] ${active ? "bg-white/25" : "bg-surface-2 text-muted"}`}>{count}</span>
+    </button>
   );
 }
