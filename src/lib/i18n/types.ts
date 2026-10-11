@@ -77,10 +77,6 @@ export interface Dictionary {
     heroTitle: string;
     heroSubtitle: string;
     heroCta: string;
-    lostCardTitle: string;
-    lostCardSubtitle: string;
-    foundCardTitle: string;
-    foundCardSubtitle: string;
     recentTitle: string;
     mysteryBoxSubtitle: string;
     promoSubtitle: string;
@@ -666,9 +662,6 @@ export interface Dictionary {
     sortNew: string;
     sortCheap: string;
     sortExpensive: string;
-    sectionsTitle: string;
-    lostFoundTitle: string;
-    lostFoundSubtitle: string;
     attrs: Record<AttrKey, string>;
     options: Record<string, string>;
   };
