@@ -9,11 +9,20 @@ import type { CategoryId } from "./types";
 // category and reused. Client-only — import from components loaded with
 // `ssr: false` (Leaflet touches `window`). The pin's own z-index:0 is
 // load-bearing: Leaflet gives every svg in the map pane z-index 200, which
-// would otherwise paint the pin over its icon.
+// would otherwise paint the pin over its icon. Lost and found pins carry a
+// coloured dot (orange, sky) so they stand apart from a sale in the same
+// category.
 const cache = new Map<string, DivIcon>();
 
-export function categoryPinIcon(category: CategoryId, colorFrom: string, colorTo: string): DivIcon {
-  const key = `${category}|${colorFrom}|${colorTo}`;
+const MARK_COLORS = { lost: "#f97316", found: "#0ea5e9" };
+
+export function categoryPinIcon(
+  category: CategoryId,
+  colorFrom: string,
+  colorTo: string,
+  mark?: keyof typeof MARK_COLORS
+): DivIcon {
+  const key = `${category}|${colorFrom}|${colorTo}|${mark ?? ""}`;
   const cached = cache.get(key);
   if (cached) return cached;
 
@@ -32,6 +41,7 @@ export function categoryPinIcon(category: CategoryId, colorFrom: string, colorTo
         <circle cx="19" cy="18.5" r="12" fill="#fff"/>
       </svg>
       <div style="position:absolute;z-index:1;left:7px;top:6.5px;width:24px;height:24px;display:flex;align-items:center;justify-content:center">${svg}</div>
+      ${mark ? `<div style="position:absolute;z-index:2;right:-2px;top:-2px;width:14px;height:14px;border-radius:50%;background:${MARK_COLORS[mark]};border:2px solid #fff"></div>` : ""}
     </div>`,
     iconSize: [38, 46],
     iconAnchor: [19, 45],
