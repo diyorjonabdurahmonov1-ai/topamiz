@@ -7,9 +7,11 @@ import { formatSom } from "@/lib/data";
 import Avatar from "./Avatar";
 import CountdownTimer from "./CountdownTimer";
 import { sizedImage } from "@/lib/image-url";
+import { KIND_BADGE_CLASS, kindLabel, priceText, resolvedLabel } from "@/lib/listing-labels";
 
 export default function ListingCard({ listing, dict }: { listing: Listing; dict: Dictionary }) {
   const Icon = categoryIcons[listing.category];
+  const price = listing.isPromo || listing.isMysteryBox ? null : priceText(dict, listing);
 
   return (
     <div
@@ -33,7 +35,7 @@ export default function ListingCard({ listing, dict }: { listing: Listing; dict:
       {listing.status === "resolved" && (
         <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center bg-bg/70 backdrop-blur-[2px]">
           <span className="rounded-full border border-border bg-surface px-3 py-1 text-[11px] font-semibold text-muted">
-            {dict.listingCard.resolved}
+            {listing.isPromo || listing.isMysteryBox ? dict.listingCard.resolved : resolvedLabel(dict, listing.kind)}
           </span>
         </div>
       )}
@@ -90,13 +92,9 @@ export default function ListingCard({ listing, dict }: { listing: Listing; dict:
           </span>
         ) : (
           <span
-            className={`absolute left-1.5 top-1.5 rounded-full px-2 py-0.5 text-[10px] font-semibold shadow ${
-              listing.kind === "lost"
-                ? "bg-danger/90 text-white"
-                : "bg-success/90 text-white"
-            }`}
+            className={`absolute left-1.5 top-1.5 rounded-full px-2 py-0.5 text-[10px] font-semibold text-white shadow ${KIND_BADGE_CLASS[listing.kind]}`}
           >
-            {listing.kind === "lost" ? dict.common.lost : dict.common.found}
+            {kindLabel(dict, listing.kind)}
           </span>
         )}
 
@@ -128,6 +126,7 @@ export default function ListingCard({ listing, dict }: { listing: Listing; dict:
       </div>
 
       <div className="pointer-events-none p-2.5">
+        {price && <p className="mb-0.5 truncate text-sm font-extrabold text-foreground">{price}</p>}
         <h3 className="line-clamp-2 text-xs font-semibold leading-snug text-foreground">
           {listing.title}
         </h3>

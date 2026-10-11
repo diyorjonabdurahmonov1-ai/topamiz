@@ -4,9 +4,11 @@ import { useEffect, useRef, useState, type FormEvent, type ReactNode, type Ref }
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import {
+  BriefcaseBusiness,
   Check,
   ChevronDown,
   Gift,
+  House,
   ListPlus,
   Loader2,
   LocateFixed,
@@ -18,12 +20,25 @@ import {
   Search,
   Send,
   Sparkles,
+  Tags,
+  Wrench,
   X,
 } from "lucide-react";
-import type { CategoryId, ListingKind } from "@/lib/types";
+import type { CategoryId, Currency, ListingKind } from "@/lib/types";
 import type { Dictionary, Locale } from "@/lib/i18n";
 import { formatPostSuccessBody } from "@/lib/i18n/format";
-import { categories, cities } from "@/lib/data";
+import { cities } from "@/lib/data";
+import {
+  categoriesFor,
+  defaultCategory,
+  defaultCurrency,
+  fieldsFor,
+  isCategoryAllowed,
+  isLostFound,
+  kindHasPrice,
+  type FieldDef,
+} from "@/lib/sections";
+import { priceLabel } from "@/lib/listing-labels";
 import { categoryIcons } from "@/lib/icons";
 import { CATEGORY_COLORS } from "@/lib/category-colors";
 import { guessCategory } from "@/lib/guess-category";
@@ -50,19 +65,28 @@ const inputClass =
   "w-full rounded-xl border border-border bg-bg-elevated px-4 py-3 text-sm focus:border-brand-via/50 focus:outline-none focus:ring-2 focus:ring-brand-via/30";
 
 // Posting asks for two things — what and where — and everything else is
-// optional, tucked under "more details". The category is guessed from the
+// optional: the price and category fields, photos or a video, the phone.
+// The kind (sell, rent, job, service, lost, found) decides which categories
+// and fields are offered (lib/sections.ts). The category is guessed from the
 // title as the poster types; picking a tile overrides the guess.
 export default function PostListingForm({
   dict,
   locale,
   defaultPhone,
+  initialKind = "sell",
 }: {
   dict: Dictionary;
   locale: Locale;
   defaultPhone: string;
+  initialKind?: ListingKind;
 }) {
   const t = dict.postListing;
-  const [kind, setKind] = useState<ListingKind>("lost");
+  const c = dict.classifieds;
+  const [kind, setKind] = useState<ListingKind>(initialKind);
+  const [price, setPrice] = useState("");
+  const [pickedCurrency, setPickedCurrency] = useState<Currency | null>(null);
+  const [negotiable, setNegotiable] = useState(false);
+  const [attrs, setAttrs] = useState<Record<string, string>>({});
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [pickedCategory, setPickedCategory] = useState<CategoryId | null>(null);
@@ -94,8 +118,26 @@ export default function PostListingForm({
   const whereRef = useRef<HTMLElement>(null);
   const titleInputRef = useRef<HTMLInputElement>(null);
 
-  const guessedCategory = guessCategory(title);
-  const category: CategoryId = pickedCategory ?? guessedCategory ?? "boshqa";
+  const allowedCategories = categoriesFor(kind);
+  const guessedCategory = guessCategory(title, allowedCategories);
+  const category: CategoryId =
+    (pickedCategory && isCategoryAllowed(kind, pickedCategory) ? pickedCategory : null) ??
+    guessedCategory ??
+    defaultCategory(kind);
+  const currency: Currency = pickedCurrency ?? defaultCurrency(kind, category);
+  const fields = fieldsFor(kind, category);
+  const showDetails = kindHasPrice(kind) || fields.length > 0;
+  const lostFound = isLostFound(kind);
+  const whatTitle = { lost: t.stepWhatLost, found: t.stepWhatFound, sell: c.whatSell, rent: c.whatRent, job: c.whatJob, service: c.whatService }[kind];
+  const whatPlaceholder = {
+    lost: t.titlePlaceholder,
+    found: t.titlePlaceholderFound,
+    sell: c.placeholderSell,
+    rent: c.placeholderRent,
+    job: c.placeholderJob,
+    service: c.placeholderService,
+  }[kind];
+  const whereTitle = kind === "lost" ? t.stepWhereLost : kind === "found" ? t.stepWhereFound : c.whereTitle;
   const whatDone = title.trim().length > 0;
   const whereDone = !!city || !!coords;
 
@@ -167,7 +209,7 @@ export default function PostListingForm({
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
-    if (!whatDone) return failOn("what", t.requiredFieldsError);
+    if (!whatDone) return failOn("what", lostFound ? t.requiredFieldsError : c.titleRequired);
     if (!whereDone) return failOn("where", t.locationRequiredError);
     if (getVideoUpload(videoHandle)?.stage === "error") {
       setError(t.videoBlockingError);
@@ -197,6 +239,10 @@ export default function PostListingForm({
           city: city || undefined,
           district: district.trim() || undefined,
           reward: kind === "lost" && reward ? Number(reward) : null,
+          price: kindHasPrice(kind) && price ? Number(price) : null,
+          currency,
+          priceNegotiable: kindHasPrice(kind) && negotiable,
+          attrs: Object.fromEntries(fields.map((f) => [f.key, attrs[f.key]]).filter(([, v]) => v)),
           contactPhone,
           photoUrls: imageUrls,
           ...videoFields,
@@ -226,6 +272,10 @@ export default function PostListingForm({
     setCity("");
     setDistrict("");
     setReward("");
+    setPrice("");
+    setPickedCurrency(null);
+    setNegotiable(false);
+    setAttrs({});
     setContactPhone(defaultPhone);
     setImageUrls([]);
     setVideoHandle(null);
@@ -240,6 +290,9 @@ export default function PostListingForm({
 
   if (status === "success") {
     const kindLabel = kind === "lost" ? t.successKindLost : t.successKindFound;
+    const successBody = lostFound
+      ? formatPostSuccessBody(locale, kindLabel, title)
+      : c.successBodyGeneric.replace("{title}", title);
     return (
       <div className="animate-fade-up relative overflow-hidden rounded-3xl border border-border bg-surface p-8 text-center sm:p-10">
         <div className="pointer-events-none absolute inset-x-0 -top-24 mx-auto h-48 w-72 rounded-full bg-gradient-to-r from-brand-from via-brand-via to-brand-to opacity-20 blur-3xl" />
@@ -248,7 +301,7 @@ export default function PostListingForm({
         </div>
         <h2 className="relative mt-5 text-2xl font-extrabold">{t.successTitle}</h2>
         <p className="relative mx-auto mt-2 max-w-md text-sm text-muted">
-          {formatPostSuccessBody(locale, kindLabel, title)}
+          {successBody}
         </p>
         {videoPending && <p className="relative mx-auto mt-2 max-w-md text-xs text-muted">{t.videoPostedPending}</p>}
         {imageUrls.length > 0 && (
@@ -285,26 +338,23 @@ export default function PostListingForm({
 
   return (
     <form onSubmit={handleSubmit} noValidate className="space-y-4">
-      <Step number={1} done title={t.stepKindTitle} badge={t.requiredBadge}>
-        <div className="grid grid-cols-2 gap-3">
-          <KindOption
-            active={kind === "lost"}
-            onClick={() => setKind("lost")}
-            icon={<Search className="h-5 w-5" />}
-            title={t.lostOption}
-            hint={t.lostOptionHint}
-            tone="from-orange-500 to-rose-500"
-            soft="bg-orange-500/10 text-orange-600 dark:text-orange-300"
-          />
-          <KindOption
-            active={kind === "found"}
-            onClick={() => setKind("found")}
-            icon={<PackageSearch className="h-5 w-5" />}
-            title={t.foundOption}
-            hint={t.foundOptionHint}
-            tone="from-sky-500 to-brand-from"
-            soft="bg-sky-500/10 text-sky-600 dark:text-sky-300"
-          />
+      <Step number={1} done title={c.kindQuestion} badge={t.requiredBadge}>
+        <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3">
+          {KIND_OPTIONS.map((opt) => (
+            <KindOption
+              key={opt.kind}
+              active={kind === opt.kind}
+              onClick={() => {
+                setKind(opt.kind);
+                if (errorStep === "what") clearError();
+              }}
+              icon={<opt.icon className="h-5 w-5" />}
+              title={opt.title(dict)}
+              hint={opt.hint(dict)}
+              tone={opt.tone}
+              soft={opt.soft}
+            />
+          ))}
         </div>
       </Step>
 
@@ -312,7 +362,7 @@ export default function PostListingForm({
         ref={whatRef}
         number={2}
         done={whatDone}
-        title={kind === "lost" ? t.stepWhatLost : t.stepWhatFound}
+        title={whatTitle}
         badge={t.requiredBadge}
         shake={errorStep === "what"}
       >
@@ -324,20 +374,21 @@ export default function PostListingForm({
             if (errorStep === "what") clearError();
           }}
           aria-label={t.titleLabel}
-          placeholder={kind === "lost" ? t.titlePlaceholder : t.titlePlaceholderFound}
+          placeholder={whatPlaceholder}
           maxLength={120}
           className={`${inputClass} text-base font-semibold ${errorStep === "what" ? "border-danger ring-2 ring-danger/30" : ""}`}
         />
-        <div className="mt-3 grid grid-cols-4 gap-2 sm:grid-cols-7">
-          {categories.map((c) => {
-            const Icon = categoryIcons[c.id];
-            const colors = CATEGORY_COLORS[c.id];
-            const active = category === c.id;
+        {allowedCategories.length > 1 && (
+        <div className="mt-3 grid grid-cols-4 gap-2 sm:grid-cols-5">
+          {allowedCategories.map((id) => {
+            const Icon = categoryIcons[id];
+            const colors = CATEGORY_COLORS[id];
+            const active = category === id;
             return (
               <button
-                key={c.id}
+                key={id}
                 type="button"
-                onClick={() => setPickedCategory(c.id)}
+                onClick={() => setPickedCategory(id)}
                 aria-pressed={active}
                 className={`flex flex-col items-center gap-1.5 rounded-2xl border p-2 text-center transition-all active:scale-95 ${
                   active ? "border-transparent bg-surface-2 shadow-sm" : "border-border hover:bg-surface-2"
@@ -352,13 +403,14 @@ export default function PostListingForm({
                   <Icon className="h-5 w-5" strokeWidth={2} />
                 </span>
                 <span className={`line-clamp-2 text-[10.5px] font-semibold leading-tight ${active ? "text-foreground" : "text-muted"}`}>
-                  {dict.categories[c.id]}
+                  {dict.categories[id]}
                 </span>
               </button>
             );
           })}
         </div>
-        {!pickedCategory && guessedCategory && (
+        )}
+        {allowedCategories.length > 1 && !pickedCategory && guessedCategory && (
           <p className="mt-1.5 flex items-center gap-1 text-[11px] font-medium text-brand-via">
             <Sparkles className="h-3 w-3" />
             {t.categoryAutoHint}
@@ -366,11 +418,74 @@ export default function PostListingForm({
         )}
       </Step>
 
+      {showDetails && (
+        <Step number={3} done={!!price || negotiable || Object.values(attrs).some(Boolean)} title={c.detailsTitle} badge={t.optionalBadge} optional hint={c.detailsHint}>
+          {kindHasPrice(kind) && (
+            <div>
+              <label htmlFor="post-price" className="mb-1.5 block text-xs font-semibold text-muted">
+                {priceLabel(dict, kind)}
+              </label>
+              <div className="flex gap-2">
+                <input
+                  id="post-price"
+                  type="number"
+                  inputMode="numeric"
+                  min={0}
+                  value={price}
+                  onChange={(e) => setPrice(e.target.value)}
+                  placeholder="0"
+                  className={`${inputClass} flex-1 text-base font-semibold`}
+                />
+                <div className="flex shrink-0 rounded-xl border border-border bg-bg-elevated p-1" role="group" aria-label={priceLabel(dict, kind)}>
+                  {(["UZS", "USD"] as const).map((cur) => (
+                    <button
+                      key={cur}
+                      type="button"
+                      onClick={() => setPickedCurrency(cur)}
+                      aria-pressed={currency === cur}
+                      className={`rounded-lg px-3 text-sm font-bold transition-colors ${
+                        currency === cur ? "bg-foreground text-bg" : "text-muted hover:text-foreground"
+                      }`}
+                    >
+                      {cur === "USD" ? "$" : c.currencyUZS}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <label className="mt-2.5 flex w-fit cursor-pointer items-center gap-2 text-sm font-semibold">
+                <input
+                  type="checkbox"
+                  checked={negotiable}
+                  onChange={(e) => setNegotiable(e.target.checked)}
+                  className="h-4 w-4 accent-[var(--brand-via)]"
+                />
+                {c.negotiable}
+              </label>
+            </div>
+          )}
+          {fields.length > 0 && (
+            <div className={`grid grid-cols-2 gap-3 ${kindHasPrice(kind) ? "mt-4 border-t border-border pt-4" : ""}`}>
+              {fields.map((field) => (
+                <AttrInput
+                  key={field.key}
+                  field={field}
+                  label={c.attrs[field.key]}
+                  options={c.options}
+                  unit={field.type === "number" && field.unit ? (field.unit === "km" ? c.unitKm : c.unitM2) : undefined}
+                  value={attrs[field.key] ?? ""}
+                  onChange={(value) => setAttrs((prev) => ({ ...prev, [field.key]: value }))}
+                />
+              ))}
+            </div>
+          )}
+        </Step>
+      )}
+
       <Step
         ref={whereRef}
-        number={3}
+        number={showDetails ? 4 : 3}
         done={whereDone}
-        title={kind === "lost" ? t.stepWhereLost : t.stepWhereFound}
+        title={whereTitle}
         badge={t.requiredBadge}
         hint={t.whereHint}
         shake={errorStep === "where"}
@@ -445,7 +560,7 @@ export default function PostListingForm({
         {locateError && <p className="mt-2 text-xs font-medium text-danger">{locateError}</p>}
       </Step>
 
-      <Step number={4} done={imageUrls.length > 0 || !!videoHandle} title={t.stepMediaTitle} badge={t.optionalBadge} optional hint={t.stepMediaHint}>
+      <Step number={showDetails ? 5 : 4} done={imageUrls.length > 0 || !!videoHandle} title={t.stepMediaTitle} badge={t.optionalBadge} optional hint={t.stepMediaHint}>
         <MediaUploader
           onImagesChange={setImageUrls}
           videoHandle={videoHandle}
@@ -455,7 +570,7 @@ export default function PostListingForm({
         />
       </Step>
 
-      <Step number={5} done={!!contactPhone.trim()} title={t.contactHeading} badge={t.optionalBadge} optional>
+      <Step number={showDetails ? 6 : 5} done={!!contactPhone.trim()} title={t.contactHeading} badge={t.optionalBadge} optional>
         <div className="relative">
           <Phone className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
           <input
@@ -585,6 +700,79 @@ export default function PostListingForm({
         </button>
       </div>
     </form>
+  );
+}
+
+const KIND_OPTIONS: {
+  kind: ListingKind;
+  icon: typeof Tags;
+  title: (d: Dictionary) => string;
+  hint: (d: Dictionary) => string;
+  tone: string;
+  soft: string;
+}[] = [
+  { kind: "sell", icon: Tags, title: (d) => d.classifieds.optSellTitle, hint: (d) => d.classifieds.optSellHint, tone: "from-emerald-500 to-teal-500", soft: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-300" },
+  { kind: "rent", icon: House, title: (d) => d.classifieds.optRentTitle, hint: (d) => d.classifieds.optRentHint, tone: "from-teal-500 to-sky-500", soft: "bg-teal-500/10 text-teal-600 dark:text-teal-300" },
+  { kind: "job", icon: BriefcaseBusiness, title: (d) => d.classifieds.optJobTitle, hint: (d) => d.classifieds.optJobHint, tone: "from-blue-600 to-brand-via", soft: "bg-blue-500/10 text-blue-600 dark:text-blue-300" },
+  { kind: "service", icon: Wrench, title: (d) => d.classifieds.optServiceTitle, hint: (d) => d.classifieds.optServiceHint, tone: "from-cyan-600 to-emerald-500", soft: "bg-cyan-500/10 text-cyan-600 dark:text-cyan-300" },
+  { kind: "lost", icon: Search, title: (d) => d.postListing.lostOption, hint: (d) => d.postListing.lostOptionHint, tone: "from-orange-500 to-rose-500", soft: "bg-orange-500/10 text-orange-600 dark:text-orange-300" },
+  { kind: "found", icon: PackageSearch, title: (d) => d.postListing.foundOption, hint: (d) => d.postListing.foundOptionHint, tone: "from-sky-500 to-brand-from", soft: "bg-sky-500/10 text-sky-600 dark:text-sky-300" },
+];
+
+// One category field: a number with its unit, or a row of choice chips.
+function AttrInput({
+  field,
+  label,
+  options,
+  unit,
+  value,
+  onChange,
+}: {
+  field: FieldDef;
+  label: string;
+  options: Record<string, string>;
+  unit?: string;
+  value: string;
+  onChange: (value: string) => void;
+}) {
+  if (field.type === "select") {
+    return (
+      <div className="col-span-2">
+        <p className="mb-1.5 text-xs font-semibold text-muted">{label}</p>
+        <div className="flex flex-wrap gap-1.5">
+          {field.options.map((opt) => (
+            <button
+              key={opt}
+              type="button"
+              onClick={() => onChange(value === opt ? "" : opt)}
+              aria-pressed={value === opt}
+              className={`rounded-full border px-3.5 py-2 text-xs font-semibold transition-colors ${
+                value === opt ? "border-transparent bg-foreground text-bg" : "border-border text-muted hover:text-foreground"
+              }`}
+            >
+              {options[opt] ?? opt}
+            </button>
+          ))}
+        </div>
+      </div>
+    );
+  }
+  return (
+    <label className="block">
+      <span className="mb-1.5 block text-xs font-semibold text-muted">{label}</span>
+      <span className="relative block">
+        <input
+          type="number"
+          inputMode="numeric"
+          min={field.min}
+          max={field.max}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          className={`${inputClass} ${unit ? "pr-12" : ""}`}
+        />
+        {unit && <span className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-xs font-semibold text-muted">{unit}</span>}
+      </span>
+    </label>
   );
 }
 

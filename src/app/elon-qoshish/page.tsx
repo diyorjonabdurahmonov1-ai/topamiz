@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ArrowRight, IdCard, KeyRound, PawPrint, Smartphone, Sparkles, Tag, Zap } from "lucide-react";
+import { ArrowRight, BriefcaseBusiness, Car, House, Smartphone, Sparkles, Tag, Zap } from "lucide-react";
+import { LISTING_KINDS } from "@/lib/sections";
+import type { ListingKind } from "@/lib/types";
 import { getCurrentUser, getUserPhone } from "@/lib/auth";
 import { getLocale } from "@/lib/i18n/server";
 import { getDictionary } from "@/lib/i18n";
@@ -18,7 +20,12 @@ function formatPhone(phone: string | null): string {
   return m ? `+998 ${m[1]} ${m[2]} ${m[3]} ${m[4]}` : (phone ?? "");
 }
 
-export default async function PostListingPage() {
+export default async function PostListingPage(props: PageProps<"/elon-qoshish">) {
+  const searchParams = await props.searchParams;
+  // ?kind=lost and friends: links from the home page open the form on the
+  // right kind of listing.
+  const kindParam = typeof searchParams.kind === "string" ? searchParams.kind : "";
+  const initialKind = (LISTING_KINDS as string[]).includes(kindParam) ? (kindParam as ListingKind) : undefined;
   const user = await getCurrentUser();
   if (!user) redirect("/kirish");
   const locale = await getLocale();
@@ -31,10 +38,10 @@ export default async function PostListingPage() {
         <span className="pointer-events-none absolute -right-10 -top-12 h-40 w-40 rounded-full bg-white/10" />
         <span className="pointer-events-none absolute -bottom-16 right-20 h-32 w-32 rounded-full bg-white/10" />
         <div aria-hidden className="pointer-events-none absolute right-4 top-1/2 hidden -translate-y-1/2 grid-cols-2 gap-2 opacity-90 min-[400px]:grid">
-          <FloatingIcon className="animate-float rotate-[-8deg]"><IdCard className="h-5 w-5" /></FloatingIcon>
+          <FloatingIcon className="animate-float rotate-[-8deg]"><Car className="h-5 w-5" /></FloatingIcon>
           <FloatingIcon className="animate-float-slow mt-5 rotate-[10deg]"><Smartphone className="h-5 w-5" /></FloatingIcon>
-          <FloatingIcon className="animate-float-slow -mt-2 rotate-[6deg]"><KeyRound className="h-5 w-5" /></FloatingIcon>
-          <FloatingIcon className="animate-float mt-3 rotate-[-6deg]"><PawPrint className="h-5 w-5" /></FloatingIcon>
+          <FloatingIcon className="animate-float-slow -mt-2 rotate-[6deg]"><House className="h-5 w-5" /></FloatingIcon>
+          <FloatingIcon className="animate-float mt-3 rotate-[-6deg]"><BriefcaseBusiness className="h-5 w-5" /></FloatingIcon>
         </div>
         <div className="relative max-w-[68%] sm:max-w-[72%]">
           <span className="inline-flex items-center gap-1 rounded-full bg-white/20 px-2.5 py-1 text-[11px] font-bold backdrop-blur-sm">
@@ -48,7 +55,12 @@ export default async function PostListingPage() {
         </div>
       </div>
 
-      <PostListingForm dict={dict} locale={locale} defaultPhone={formatPhone(getUserPhone(user.id))} />
+      <PostListingForm
+        dict={dict}
+        locale={locale}
+        defaultPhone={formatPhone(getUserPhone(user.id))}
+        initialKind={initialKind}
+      />
 
       <h2 className="mb-3 mt-8 text-sm font-extrabold text-muted">{t.otherTypesTitle}</h2>
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">

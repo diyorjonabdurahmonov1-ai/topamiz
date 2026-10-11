@@ -27,6 +27,7 @@ import MysteryBoxVideo from "@/components/MysteryBoxVideo";
 import MysteryBoxGallery from "@/components/MysteryBoxGallery";
 import MysteryBoxLocationGate from "@/components/MysteryBoxLocationGate";
 import MysteryBoxStartNotice from "@/components/MysteryBoxStartNotice";
+import { attrRows, KIND_BADGE_CLASS, kindLabel, priceText, resolvedLabel } from "@/lib/listing-labels";
 
 export async function generateMetadata(props: PageProps<"/elonlar/[id]">): Promise<Metadata> {
   const { id } = await props.params;
@@ -53,6 +54,8 @@ export default async function ListingDetailPage(props: PageProps<"/elonlar/[id]"
   const isExpiredMysteryBox =
     listing.isMysteryBox && listing.expiresAt ? new Date(listing.expiresAt) < new Date() : false;
   const likedByMe = user ? isLikedByUser(Number(listing.id), user.id) : false;
+  const price = listing.isPromo || listing.isMysteryBox ? null : priceText(dict, listing);
+  const details = listing.isPromo || listing.isMysteryBox ? [] : attrRows(dict, listing);
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:px-8">
@@ -94,19 +97,13 @@ export default async function ListingDetailPage(props: PageProps<"/elonlar/[id]"
                 {dict.listingCard.mysteryBox}
               </span>
             ) : (
-              <span
-                className={`rounded-full px-3 py-1 text-xs font-semibold ${
-                  listing.kind === "lost"
-                    ? "bg-danger/10 text-danger"
-                    : "bg-success/10 text-success"
-                }`}
-              >
-                {listing.kind === "lost" ? dict.common.lost : dict.common.found}
+              <span className={`rounded-full px-3 py-1 text-xs font-semibold text-white ${KIND_BADGE_CLASS[listing.kind]}`}>
+                {kindLabel(dict, listing.kind)}
               </span>
             )}
             {!listing.isPromo && listing.status === "resolved" && (
               <span className="rounded-full border border-border px-3 py-1 text-xs font-semibold text-muted">
-                {dict.common.resolved}
+                {resolvedLabel(dict, listing.kind)}
               </span>
             )}
             {!listing.isPromo && listing.status === "resolved" && listing.resolvedByName && (
@@ -128,6 +125,16 @@ export default async function ListingDetailPage(props: PageProps<"/elonlar/[id]"
           <h1 className="mt-4 text-2xl font-extrabold tracking-tight sm:text-3xl">
             {listing.title}
           </h1>
+          {price && (
+            <p className="mt-2 flex flex-wrap items-baseline gap-2">
+              <span className="text-3xl font-extrabold tracking-tight text-brand-via">{price}</span>
+              {listing.price && listing.priceNegotiable && (
+                <span className="rounded-full bg-surface-2 px-2.5 py-0.5 text-xs font-semibold text-muted">
+                  {dict.classifieds.negotiable}
+                </span>
+              )}
+            </p>
+          )}
 
           <div className="mt-3 flex flex-wrap items-center gap-4 text-sm text-muted">
             <span className="flex items-center gap-1.5">
@@ -254,10 +261,24 @@ export default async function ListingDetailPage(props: PageProps<"/elonlar/[id]"
                 </p>
               )
             )}
-            <h2 className="mt-2 text-sm font-bold">{dict.listingDetail.descriptionLabel}</h2>
-            <p className="mt-1.5 whitespace-pre-line text-sm leading-relaxed text-muted">
-              {listing.description}
-            </p>
+            {details.length > 0 && (
+              <dl className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3">
+                {details.map((row) => (
+                  <div key={row.label} className="rounded-xl bg-surface-2 px-3 py-2">
+                    <dt className="text-[11px] font-semibold text-muted">{row.label}</dt>
+                    <dd className="mt-0.5 text-sm font-bold">{row.value}</dd>
+                  </div>
+                ))}
+              </dl>
+            )}
+            {listing.description && (
+              <>
+                <h2 className="mt-4 text-sm font-bold">{dict.listingDetail.descriptionLabel}</h2>
+                <p className="mt-1.5 whitespace-pre-line text-sm leading-relaxed text-muted">
+                  {listing.description}
+                </p>
+              </>
+            )}
           </div>
         </div>
 
@@ -266,11 +287,12 @@ export default async function ListingDetailPage(props: PageProps<"/elonlar/[id]"
             <ResolveToggleButton
               listingId={listing.id}
               status={listing.status}
+              kind={listing.kind}
               dict={dict}
               className="w-full justify-center py-2.5"
             />
           )}
-          {!listing.isPromo && owner && user?.id === owner.id && listing.status === "active" && (
+          {(listing.kind === "lost" || listing.isMysteryBox) && owner && user?.id === owner.id && listing.status === "active" && (
             <ListingClaimants listingId={listing.id} dict={dict} />
           )}
           {!listing.isPromo &&

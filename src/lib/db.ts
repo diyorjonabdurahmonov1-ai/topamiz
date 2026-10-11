@@ -419,3 +419,14 @@ db.exec(`
   CREATE INDEX IF NOT EXISTS idx_app_errors_fingerprint ON app_errors(fingerprint, created_at);
   CREATE INDEX IF NOT EXISTS idx_app_errors_created ON app_errors(created_at);
 `);
+
+// General classifieds (sale, rent, jobs, services): an asking price with its
+// currency, a "negotiable" flag and the category's own fields as JSON (see
+// lib/sections.ts). Lost-and-found listings simply leave these empty.
+const classifiedColumns = db.prepare("PRAGMA table_info(listings)").all() as { name: string }[];
+if (!classifiedColumns.some((c) => c.name === "price")) {
+  addColumn("ALTER TABLE listings ADD COLUMN price INTEGER");
+  addColumn("ALTER TABLE listings ADD COLUMN currency TEXT NOT NULL DEFAULT 'UZS'");
+  addColumn("ALTER TABLE listings ADD COLUMN price_negotiable INTEGER NOT NULL DEFAULT 0");
+  addColumn("ALTER TABLE listings ADD COLUMN attrs TEXT NOT NULL DEFAULT '{}'");
+}

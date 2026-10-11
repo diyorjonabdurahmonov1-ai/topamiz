@@ -121,6 +121,16 @@ cold start or an ephemeral filesystem.
   the browser reports the details (error code, file type/size, user agent)
   to the server log: `pm2 logs topamiz --lines 200 --nostream | grep video-upload-failure`.
 
+### Listings
+
+Findo is a general classifieds site (sell, rent, jobs, services) that also
+keeps its original lost & found section. Which kinds of listing exist, which
+categories each offers, and each category's own fields (a car's year and
+mileage, a flat's rooms) are defined in one place, `src/lib/sections.ts`,
+which the post form, the API's validation and the display all read. Labels and
+price formatting live in `src/lib/listing-labels.ts`. Findo only hosts the
+listings; it never handles payment or delivery.
+
 ### Android app
 
 `android/` is a Trusted Web Activity (package `uz.net.findo.app`) — the

@@ -18,6 +18,15 @@ import { countryForIp } from "@/lib/geo";
 import { nearestCityForCoordinates } from "@/lib/city-coordinates";
 import { R2_PUBLIC_URL } from "@/lib/r2";
 import type { CategoryId, ListingKind } from "@/lib/types";
+import {
+  defaultCategory,
+  isCategoryAllowed,
+  isLostFound,
+  kindHasPrice,
+  LISTING_KINDS,
+  MAX_PRICE,
+  sanitizeAttrs,
+} from "@/lib/sections";
 
 // Uploaded photos only ever come back from POST /api/upload as this prefix —
 // anything else is a client claiming an arbitrary external URL is one of ours.
@@ -38,25 +47,43 @@ export async function POST(request: Request) {
   }
 
   const body = await request.json().catch(() => null);
-  const kind = body?.kind === "lost" || body?.kind === "found" ? (body.kind as ListingKind) : null;
+  const kind = LISTING_KINDS.includes(body?.kind) ? (body.kind as ListingKind) : null;
   const title = typeof body?.title === "string" ? body.title.trim().slice(0, MAX_LISTING_TITLE_LENGTH) : "";
   const description =
     typeof body?.description === "string"
       ? body.description.trim().slice(0, MAX_LISTING_DESCRIPTION_LENGTH)
       : "";
-  const category =
+  // A category that doesn't belong to this kind of listing (a "car" lost
+  // listing, a "documents" sale) falls back to the kind's default.
+  const requestedCategory =
     typeof body?.category === "string" && CATEGORY_IDS.has(body.category as CategoryId)
       ? (body.category as CategoryId)
       : null;
+  const category = kind
+    ? requestedCategory && isCategoryAllowed(kind, requestedCategory)
+      ? requestedCategory
+      : defaultCategory(kind)
+    : null;
   const district =
     typeof body?.district === "string" && body.district.trim()
       ? body.district.trim().slice(0, MAX_DISTRICT_LENGTH)
       : null;
   const rewardRaw = body?.reward;
+  // A reward only makes sense for something lost; a price for everything
+  // that isn't lost or found.
   const reward =
-    typeof rewardRaw === "number" && Number.isFinite(rewardRaw) && rewardRaw > 0
+    kind === "lost" && typeof rewardRaw === "number" && Number.isFinite(rewardRaw) && rewardRaw > 0
       ? Math.round(rewardRaw)
       : null;
+  const withPrice = !!kind && kindHasPrice(kind);
+  const priceRaw = body?.price;
+  const price =
+    withPrice && typeof priceRaw === "number" && Number.isFinite(priceRaw) && priceRaw > 0 && priceRaw <= MAX_PRICE
+      ? Math.round(priceRaw)
+      : null;
+  const currency = withPrice && body?.currency === "USD" ? "USD" : "UZS";
+  const priceNegotiable = withPrice && body?.priceNegotiable === true;
+  const attrs = kind && category && !isLostFound(kind) ? sanitizeAttrs(kind, category, body?.attrs) : {};
   // The poster's contact name is always their own account name — not a
   // separate form field — so there's nothing here for a client to spoof.
   const contactName = user.name.trim().slice(0, MAX_CONTACT_NAME_LENGTH);
@@ -105,7 +132,7 @@ export async function POST(request: Request) {
         : null;
 
   if (!kind || !title || !category) {
-    return NextResponse.json({ error: "Nima yo'qolgani yoki topilganini yozing." }, { status: 400 });
+    return NextResponse.json({ error: "E'lon sarlavhasini yozing." }, { status: 400 });
   }
   if (!city) {
     return NextResponse.json(
@@ -136,6 +163,10 @@ export async function POST(request: Request) {
     city,
     district,
     reward,
+    price,
+    currency,
+    priceNegotiable,
+    attrs,
     contactName,
     contactPhone,
     photoUrls,

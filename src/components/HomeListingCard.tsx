@@ -5,6 +5,7 @@ import type { Dictionary, Locale } from "@/lib/i18n";
 import { categoryIcons } from "@/lib/icons";
 import { formatSom } from "@/lib/data";
 import { formatTimeAgo } from "@/lib/i18n/format";
+import { KIND_BADGE_CLASS, kindLabel, priceText } from "@/lib/listing-labels";
 import { sizedImage } from "@/lib/image-url";
 
 // The home page's "latest listings" card: a bigger photo than the grid card,
@@ -22,6 +23,7 @@ export default function HomeListingCard({
   const Icon = categoryIcons[listing.category];
   const image = listing.videoThumbnailUrl ?? listing.photoUrls[0] ?? null;
   const place = [listing.city, listing.district].filter(Boolean).join(", ");
+  const price = listing.isPromo || listing.isMysteryBox ? null : priceText(dict, listing);
 
   return (
     <Link
@@ -64,9 +66,7 @@ export default function HomeListingCard({
             {dict.listingCard.mysteryBox}
           </Badge>
         ) : (
-          <Badge className={listing.kind === "lost" ? "bg-danger" : "bg-sky-500"}>
-            {listing.kind === "lost" ? dict.common.lost : dict.common.found}
-          </Badge>
+          <Badge className={KIND_BADGE_CLASS[listing.kind]}>{kindLabel(dict, listing.kind)}</Badge>
         )}
 
         {listing.likeCount > 0 && (
@@ -84,6 +84,7 @@ export default function HomeListingCard({
       </div>
 
       <div className="flex flex-1 flex-col gap-1 p-3">
+        {price && <p className="truncate text-base font-extrabold">{price}</p>}
         <h3 className="line-clamp-1 text-sm font-bold">{listing.title}</h3>
         {place && (
           <p className="flex items-center gap-1 text-[11px] text-muted">
