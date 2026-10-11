@@ -103,7 +103,6 @@ const ru: Dictionary = {
     heroCta: "Подать объявление",
     recentTitle: "Последние объявления",
     mysteryBoxSubtitle: "Таинственные коробки с призами",
-    promoSubtitle: "Скидки и акции",
   },
 
   listingsPage: {
@@ -337,7 +336,6 @@ const ru: Dictionary = {
     title: "Предложения",
     subtitle: "Следите за последними предложениями магазинов и услуг.",
     postButton: "Разместить предложение",
-    activeCount: "Активных предложений",
     allCategories: "Все",
     emptyTitle: "Пока нет предложений",
     emptyBody: "Скоро здесь появятся предложения магазинов и услуг.",

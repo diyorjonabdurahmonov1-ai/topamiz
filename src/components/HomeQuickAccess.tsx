@@ -22,17 +22,15 @@ import HomeHero from "@/components/HomeHero";
 import HomeListingCard from "@/components/HomeListingCard";
 
 // The home page's one row of sections, swiped sideways: the classifieds
-// categories people come for most, with renting and lost & found (where
-// Findo started) as entries of their own — each opens the listings page
-// already filtered.
-type Section =
-  | { category: CategoryId }
-  | { kind: "rent" | "lost" | "found" };
+// categories people come for most, with renting, businesses' offers and
+// lost & found (where Findo started) as entries of their own.
+type Special = "rent" | "promo" | "lost" | "found";
+type Section = { category: CategoryId } | { special: Special };
 
 const SECTIONS: Section[] = [
   { category: "transport" },
   { category: "kochmas_mulk" },
-  { kind: "rent" },
+  { special: "rent" },
   { category: "ish" },
   { category: "xizmatlar" },
   { category: "texnika" },
@@ -41,14 +39,16 @@ const SECTIONS: Section[] = [
   { category: "bolalar" },
   { category: "hayvonlar" },
   { category: "sport" },
-  { kind: "lost" },
-  { kind: "found" },
+  { special: "promo" },
+  { special: "lost" },
+  { special: "found" },
 ];
 
-const KIND_TILES = {
-  rent: { Icon: KeyRound, color: "text-teal-500" },
-  lost: { Icon: Search, color: "text-orange-500" },
-  found: { Icon: PackageSearch, color: "text-sky-500" },
+const SPECIAL_TILES: Record<Special, { href: string; Icon: typeof Search; color: string; label: (d: Dictionary) => string }> = {
+  rent: { href: "/elonlar?kind=rent", Icon: KeyRound, color: "text-teal-500", label: (d) => d.classifieds.kindRent },
+  promo: { href: "/takliflar", Icon: Tag, color: "text-pink-500", label: (d) => d.promo.title },
+  lost: { href: "/elonlar?kind=lost", Icon: Search, color: "text-orange-500", label: (d) => d.tabs.lost },
+  found: { href: "/elonlar?kind=found", Icon: PackageSearch, color: "text-sky-500", label: (d) => d.tabs.found },
 };
 
 export default function HomeQuickAccess({
@@ -57,14 +57,12 @@ export default function HomeQuickAccess({
   ads,
   nearby,
   recent,
-  promoCount,
 }: {
   dict: Dictionary;
   locale: Locale;
   ads: AdBanner[];
   nearby: Listing[];
   recent: Listing[];
-  promoCount: number;
 }) {
   const t = dict.homeQuickAccess;
 
@@ -96,12 +94,10 @@ export default function HomeQuickAccess({
           <LayoutGrid className="h-6 w-6" />
         </CategoryTile>
         {SECTIONS.map((section) => {
-          if ("kind" in section) {
-            const { Icon, color } = KIND_TILES[section.kind];
-            const label =
-              section.kind === "rent" ? dict.classifieds.kindRent : section.kind === "lost" ? dict.tabs.lost : dict.tabs.found;
+          if ("special" in section) {
+            const { href, Icon, color, label } = SPECIAL_TILES[section.special];
             return (
-              <CategoryTile key={section.kind} href={`/elonlar?kind=${section.kind}`} label={label}>
+              <CategoryTile key={section.special} href={href} label={label(dict)}>
                 <Icon className={`h-6 w-6 ${color}`} strokeWidth={1.75} />
               </CategoryTile>
             );
@@ -117,10 +113,7 @@ export default function HomeQuickAccess({
 
       <HomeHero ads={ads} dict={dict} />
 
-      <div className="grid grid-cols-3 gap-2.5">
-        <ExtraTile href="/takliflar" icon={<Tag className="h-4 w-4" />} gradient="from-sky-500 to-brand-via" title={dict.promo.title}>
-          {promoCount > 0 ? `${promoCount} · ${dict.promo.activeCount}` : t.promoSubtitle}
-        </ExtraTile>
+      <div className="grid grid-cols-2 gap-2.5">
         <ExtraTile href="/sirli-quti" icon={<Sparkles className="h-4 w-4" />} gradient="from-accent-gold to-brand-via" title={dict.nav.mysteryBox}>
           {t.mysteryBoxSubtitle}
         </ExtraTile>

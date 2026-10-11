@@ -103,7 +103,6 @@ const kk: Dictionary = {
     heroCta: "Хабарландыру беру",
     recentTitle: "Соңғы хабарландырулар",
     mysteryBoxSubtitle: "Сыйлықты құпия қораптар",
-    promoSubtitle: "Жеңілдіктер мен акциялар",
   },
 
   listingsPage: {
@@ -337,7 +336,6 @@ const kk: Dictionary = {
     title: "Ұсыныстар",
     subtitle: "Дүкендер мен қызметтердің ең соңғы ұсыныстарын осы жерден қадағалаңыз.",
     postButton: "Ұсыныс орналастыру",
-    activeCount: "Белсенді ұсыныс",
     allCategories: "Барлығы",
     emptyTitle: "Әзірге ұсыныстар жоқ",
     emptyBody: "Жақында мұнда дүкендер мен қызметтердің ұсыныстары пайда болады.",

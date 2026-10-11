@@ -103,7 +103,6 @@ const en: Dictionary = {
     heroCta: "Post a listing",
     recentTitle: "Latest listings",
     mysteryBoxSubtitle: "Mystery boxes with prizes",
-    promoSubtitle: "Discounts and deals",
   },
 
   listingsPage: {
@@ -336,7 +335,6 @@ const en: Dictionary = {
     title: "Offers",
     subtitle: "Keep up with the latest offers from stores and services.",
     postButton: "Post an offer",
-    activeCount: "Active offers",
     allCategories: "All",
     emptyTitle: "No offers yet",
     emptyBody: "Offers from stores and services will appear here soon.",

@@ -79,7 +79,6 @@ export interface Dictionary {
     heroCta: string;
     recentTitle: string;
     mysteryBoxSubtitle: string;
-    promoSubtitle: string;
   };
 
   listingsPage: {
@@ -308,7 +307,6 @@ export interface Dictionary {
     title: string;
     subtitle: string;
     postButton: string;
-    activeCount: string;
     allCategories: string;
     emptyTitle: string;
     emptyBody: string;

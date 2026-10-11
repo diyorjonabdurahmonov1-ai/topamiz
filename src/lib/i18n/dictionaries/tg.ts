@@ -103,7 +103,6 @@ const tg: Dictionary = {
     heroCta: "Эълон додан",
     recentTitle: "Эълонҳои охирин",
     mysteryBoxSubtitle: "Қуттиҳои асрорангез бо туҳфа",
-    promoSubtitle: "Тахфифҳо ва аксияҳо",
   },
 
   listingsPage: {
@@ -337,7 +336,6 @@ const tg: Dictionary = {
     title: "Пешниҳодҳо",
     subtitle: "Пешниҳодҳои охирини дӯконҳо ва хидматҳоро дар ин ҷо пайгирӣ кунед.",
     postButton: "Гузоштани пешниҳод",
-    activeCount: "Пешниҳоди фаъол",
     allCategories: "Ҳама",
     emptyTitle: "Ҳанӯз пешниҳод нест",
     emptyBody: "Ба зудӣ дар ин ҷо пешниҳодҳои дӯконҳо ва хидматҳо пайдо мешаванд.",

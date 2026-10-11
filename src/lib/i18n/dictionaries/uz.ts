@@ -103,7 +103,6 @@ const uz: Dictionary = {
     heroCta: "E'lon berish",
     recentTitle: "So'nggi e'lonlar",
     mysteryBoxSubtitle: "Sovg'ali sirli qutilar",
-    promoSubtitle: "Chegirma va aksiyalar",
   },
 
   listingsPage: {
@@ -340,7 +339,6 @@ const uz: Dictionary = {
     title: "Takliflar",
     subtitle: "Do'kon va xizmatlarning eng so'nggi takliflarini shu yerda kuzatib boring.",
     postButton: "Taklif joylash",
-    activeCount: "Faol taklif",
     allCategories: "Barchasi",
     emptyTitle: "Hozircha takliflar yo'q",
     emptyBody: "Tez orada bu yerda do'kon va xizmatlarning takliflari paydo bo'ladi.",
