@@ -693,6 +693,9 @@ const tg: Dictionary = {
     sortNew: "Навтаринҳо",
     sortCheap: "Арзонтаринҳо",
     sortExpensive: "Гаронтаринҳо",
+    lostFoundPrompt: "Чизе гум кардед ё ёфтед?",
+    iLost: "Гум кардам",
+    iFound: "Ёфтам",
     attrs: {
       year: "Сол",
       mileage: "Масофаи тайшуда",

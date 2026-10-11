@@ -692,6 +692,9 @@ const en: Dictionary = {
     sortNew: "Newest",
     sortCheap: "Cheapest",
     sortExpensive: "Most expensive",
+    lostFoundPrompt: "Lost or found something?",
+    iLost: "I lost it",
+    iFound: "I found it",
     attrs: {
       year: "Year",
       mileage: "Mileage",

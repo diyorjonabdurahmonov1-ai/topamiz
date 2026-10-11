@@ -698,6 +698,9 @@ const uz: Dictionary = {
     sortNew: "Yangilari",
     sortCheap: "Arzonlari",
     sortExpensive: "Qimmatlari",
+    lostFoundPrompt: "Biror narsa yo'qotdingizmi yoki topdingizmi?",
+    iLost: "Yo'qotdim",
+    iFound: "Topdim",
     attrs: {
       year: "Yili",
       mileage: "Probeg",
