@@ -693,6 +693,9 @@ const kk: Dictionary = {
     sortNew: "Жаңалары",
     sortCheap: "Арзандары",
     sortExpensive: "Қымбаттары",
+    lostFoundPrompt: "Бір зат жоғалттыңыз ба, таптыңыз ба?",
+    iLost: "Жоғалттым",
+    iFound: "Таптым",
     attrs: {
       year: "Жылы",
       mileage: "Жүрісі",

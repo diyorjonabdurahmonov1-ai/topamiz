@@ -693,6 +693,9 @@ const ru: Dictionary = {
     sortNew: "Новые",
     sortCheap: "Дешевле",
     sortExpensive: "Дороже",
+    lostFoundPrompt: "Что-то потеряли или нашли?",
+    iLost: "Я потерял",
+    iFound: "Я нашёл",
     attrs: {
       year: "Год",
       mileage: "Пробег",

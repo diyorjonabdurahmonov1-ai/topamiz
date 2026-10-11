@@ -660,6 +660,9 @@ export interface Dictionary {
     sortNew: string;
     sortCheap: string;
     sortExpensive: string;
+    lostFoundPrompt: string;
+    iLost: string;
+    iFound: string;
     attrs: Record<AttrKey, string>;
     options: Record<string, string>;
   };

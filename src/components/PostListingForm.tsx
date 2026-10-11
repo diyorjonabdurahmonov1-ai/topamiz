@@ -339,8 +339,8 @@ export default function PostListingForm({
   return (
     <form onSubmit={handleSubmit} noValidate className="space-y-4">
       <Step number={1} done title={c.kindQuestion} badge={t.requiredBadge}>
-        <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3">
-          {KIND_OPTIONS.map((opt) => (
+        <div className="grid grid-cols-2 gap-2.5">
+          {KIND_OPTIONS.filter((opt) => !opt.lostFound).map((opt) => (
             <KindOption
               key={opt.kind}
               active={kind === opt.kind}
@@ -353,6 +353,27 @@ export default function PostListingForm({
               hint={opt.hint(dict)}
               tone={opt.tone}
               soft={opt.soft}
+            />
+          ))}
+        </div>
+        {/* Lost & found on a tinted row of their own, so they don't get lost
+            at the bottom of the list. */}
+        <p className="mb-2 mt-4 text-xs font-bold text-muted">{c.lostFoundPrompt}</p>
+        <div className="grid grid-cols-2 gap-2.5">
+          {KIND_OPTIONS.filter((opt) => opt.lostFound).map((opt) => (
+            <KindOption
+              key={opt.kind}
+              active={kind === opt.kind}
+              onClick={() => {
+                setKind(opt.kind);
+                if (errorStep === "what") clearError();
+              }}
+              icon={<opt.icon className="h-5 w-5" />}
+              title={opt.title(dict)}
+              hint={opt.hint(dict)}
+              tone={opt.tone}
+              soft={opt.soft}
+              idle={opt.idle}
             />
           ))}
         </div>
@@ -710,13 +731,16 @@ const KIND_OPTIONS: {
   hint: (d: Dictionary) => string;
   tone: string;
   soft: string;
+  lostFound?: boolean;
+  // Background while not selected, for the lost & found pair.
+  idle?: string;
 }[] = [
   { kind: "sell", icon: Tags, title: (d) => d.classifieds.optSellTitle, hint: (d) => d.classifieds.optSellHint, tone: "from-emerald-500 to-teal-500", soft: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-300" },
   { kind: "rent", icon: House, title: (d) => d.classifieds.optRentTitle, hint: (d) => d.classifieds.optRentHint, tone: "from-teal-500 to-sky-500", soft: "bg-teal-500/10 text-teal-600 dark:text-teal-300" },
   { kind: "job", icon: BriefcaseBusiness, title: (d) => d.classifieds.optJobTitle, hint: (d) => d.classifieds.optJobHint, tone: "from-blue-600 to-brand-via", soft: "bg-blue-500/10 text-blue-600 dark:text-blue-300" },
   { kind: "service", icon: Wrench, title: (d) => d.classifieds.optServiceTitle, hint: (d) => d.classifieds.optServiceHint, tone: "from-cyan-600 to-emerald-500", soft: "bg-cyan-500/10 text-cyan-600 dark:text-cyan-300" },
-  { kind: "lost", icon: Search, title: (d) => d.postListing.lostOption, hint: (d) => d.postListing.lostOptionHint, tone: "from-orange-500 to-rose-500", soft: "bg-orange-500/10 text-orange-600 dark:text-orange-300" },
-  { kind: "found", icon: PackageSearch, title: (d) => d.postListing.foundOption, hint: (d) => d.postListing.foundOptionHint, tone: "from-sky-500 to-brand-from", soft: "bg-sky-500/10 text-sky-600 dark:text-sky-300" },
+  { kind: "lost", icon: Search, title: (d) => d.postListing.lostOption, hint: (d) => d.postListing.lostOptionHint, tone: "from-orange-500 to-rose-500", soft: "bg-orange-500/15 text-orange-600 dark:text-orange-300", lostFound: true, idle: "border-orange-500/40 bg-orange-500/5 hover:bg-orange-500/10" },
+  { kind: "found", icon: PackageSearch, title: (d) => d.postListing.foundOption, hint: (d) => d.postListing.foundOptionHint, tone: "from-sky-500 to-brand-from", soft: "bg-sky-500/15 text-sky-600 dark:text-sky-300", lostFound: true, idle: "border-sky-500/40 bg-sky-500/5 hover:bg-sky-500/10" },
 ];
 
 // One category field: a number with its unit, or a row of choice chips.
@@ -843,6 +867,7 @@ function KindOption({
   hint,
   tone,
   soft,
+  idle = "border-border bg-bg-elevated hover:bg-surface-2",
 }: {
   active: boolean;
   onClick: () => void;
@@ -851,6 +876,7 @@ function KindOption({
   hint: string;
   tone: string;
   soft: string;
+  idle?: string;
 }) {
   return (
     <button
@@ -860,7 +886,7 @@ function KindOption({
       className={`relative flex flex-col items-start overflow-hidden rounded-2xl p-3.5 text-left transition-all active:scale-[0.98] sm:p-4 ${
         active
           ? `bg-gradient-to-br ${tone} text-white shadow-lg`
-          : "border border-border bg-bg-elevated hover:bg-surface-2"
+          : `border ${idle}`
       }`}
     >
       {active && (

@@ -21,13 +21,16 @@ import NearbyMapCard from "@/components/NearbyMapCard";
 import HomeHero from "@/components/HomeHero";
 import HomeListingCard from "@/components/HomeListingCard";
 
-// The home page's one row of sections, swiped sideways: the classifieds
-// categories people come for most, with renting, businesses' offers and
-// lost & found (where Findo started) as entries of their own.
+// The home page's one row of sections, swiped sideways: lost & found first
+// and tinted (where Findo started, and still what it's known for), then the
+// classifieds categories people come for most, with renting and businesses'
+// offers as entries of their own.
 type Special = "rent" | "promo" | "lost" | "found";
 type Section = { category: CategoryId } | { special: Special };
 
 const SECTIONS: Section[] = [
+  { special: "lost" },
+  { special: "found" },
   { category: "transport" },
   { category: "kochmas_mulk" },
   { special: "rent" },
@@ -40,15 +43,28 @@ const SECTIONS: Section[] = [
   { category: "hayvonlar" },
   { category: "sport" },
   { special: "promo" },
-  { special: "lost" },
-  { special: "found" },
 ];
 
-const SPECIAL_TILES: Record<Special, { href: string; Icon: typeof Search; color: string; label: (d: Dictionary) => string }> = {
+const SPECIAL_TILES: Record<
+  Special,
+  { href: string; Icon: typeof Search; color: string; label: (d: Dictionary) => string; tint?: string }
+> = {
   rent: { href: "/elonlar?kind=rent", Icon: KeyRound, color: "text-teal-500", label: (d) => d.classifieds.kindRent },
   promo: { href: "/takliflar", Icon: Tag, color: "text-pink-500", label: (d) => d.promo.title },
-  lost: { href: "/elonlar?kind=lost", Icon: Search, color: "text-orange-500", label: (d) => d.tabs.lost },
-  found: { href: "/elonlar?kind=found", Icon: PackageSearch, color: "text-sky-500", label: (d) => d.tabs.found },
+  lost: {
+    href: "/elonlar?kind=lost",
+    Icon: Search,
+    color: "text-orange-500",
+    label: (d) => d.tabs.lost,
+    tint: "border-orange-500/40 bg-orange-500/10",
+  },
+  found: {
+    href: "/elonlar?kind=found",
+    Icon: PackageSearch,
+    color: "text-sky-500",
+    label: (d) => d.tabs.found,
+    tint: "border-sky-500/40 bg-sky-500/10",
+  },
 };
 
 export default function HomeQuickAccess({
@@ -95,9 +111,9 @@ export default function HomeQuickAccess({
         </CategoryTile>
         {SECTIONS.map((section) => {
           if ("special" in section) {
-            const { href, Icon, color, label } = SPECIAL_TILES[section.special];
+            const { href, Icon, color, label, tint } = SPECIAL_TILES[section.special];
             return (
-              <CategoryTile key={section.special} href={href} label={label(dict)}>
+              <CategoryTile key={section.special} href={href} label={label(dict)} tint={tint}>
                 <Icon className={`h-6 w-6 ${color}`} strokeWidth={1.75} />
               </CategoryTile>
             );
@@ -112,6 +128,26 @@ export default function HomeQuickAccess({
       </div>
 
       <HomeHero ads={ads} dict={dict} />
+
+      <div className="flex items-center gap-3 rounded-2xl border border-orange-500/25 bg-gradient-to-r from-orange-500/10 to-sky-500/10 p-3">
+        <p className="min-w-0 flex-1 text-[13px] font-bold leading-snug">{dict.classifieds.lostFoundPrompt}</p>
+        <div className="flex shrink-0 gap-1.5">
+          <Link
+            href="/elon-qoshish?kind=lost"
+            className="flex items-center gap-1 rounded-full bg-orange-500 px-3 py-2 text-xs font-bold text-white shadow-sm active:scale-95"
+          >
+            <Search className="h-3.5 w-3.5" />
+            {dict.classifieds.iLost}
+          </Link>
+          <Link
+            href="/elon-qoshish?kind=found"
+            className="flex items-center gap-1 rounded-full bg-sky-500 px-3 py-2 text-xs font-bold text-white shadow-sm active:scale-95"
+          >
+            <PackageSearch className="h-3.5 w-3.5" />
+            {dict.classifieds.iFound}
+          </Link>
+        </div>
+      </div>
 
       <div className="grid grid-cols-2 gap-2.5">
         <ExtraTile href="/sirli-quti" icon={<Sparkles className="h-4 w-4" />} gradient="from-accent-gold to-brand-via" title={dict.nav.mysteryBox}>
@@ -156,11 +192,14 @@ function CategoryTile({
   href,
   label,
   active = false,
+  tint,
   children,
 }: {
   href: string;
   label: string;
   active?: boolean;
+  // A coloured background that singles the tile out from the plain ones.
+  tint?: string;
   children: React.ReactNode;
 }) {
   return (
@@ -169,12 +208,16 @@ function CategoryTile({
         className={`flex h-16 w-16 items-center justify-center rounded-2xl transition-transform active:scale-95 ${
           active
             ? "bg-gradient-to-br from-brand-from to-brand-via text-white shadow-lg shadow-brand-via/30"
-            : "border border-border bg-surface text-foreground shadow-sm"
+            : `border shadow-sm ${tint ?? "border-border bg-surface"} text-foreground`
         }`}
       >
         {children}
       </span>
-      <span className={`line-clamp-2 text-[11px] font-semibold leading-tight ${active ? "text-foreground" : "text-muted"}`}>{label}</span>
+      <span
+        className={`line-clamp-2 text-[11px] font-semibold leading-tight ${active || tint ? "text-foreground" : "text-muted"}`}
+      >
+        {label}
+      </span>
     </Link>
   );
 }
