@@ -2,12 +2,12 @@
 
 import { useState } from "react";
 import type { Listing } from "@/lib/types";
-import type { Dictionary } from "@/lib/i18n";
+import type { Dictionary, Locale } from "@/lib/i18n";
 import ListingCard from "./ListingCard";
 
 const PAGE_SIZE = 16;
 
-export default function ListingsGrid({ listings, dict }: { listings: Listing[]; dict: Dictionary }) {
+export default function ListingsGrid({ listings, dict, locale }: { listings: Listing[]; dict: Dictionary; locale: Locale }) {
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const visible = listings.slice(0, visibleCount);
   const hasMore = visibleCount < listings.length;
@@ -16,7 +16,7 @@ export default function ListingsGrid({ listings, dict }: { listings: Listing[]; 
     <div>
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
         {visible.map((listing) => (
-          <ListingCard key={listing.id} listing={listing} dict={dict} />
+          <ListingCard key={listing.id} listing={listing} dict={dict} locale={locale} />
         ))}
       </div>
 

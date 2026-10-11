@@ -106,7 +106,7 @@ const uz: Dictionary = {
   },
 
   listingsPage: {
-    title: "Yo'qolgan va topilgan",
+    title: "Barcha",
     titleHighlight: "e'lonlar",
     subtitle: "Barcha e'lonlarni ko'ring, qidiring va filtrlang.",
     searchPlaceholder: "Qidiruv: mashina, kvartira, telefon, ish...",

@@ -1,7 +1,8 @@
 import Link from "next/link";
-import { Gift, Play, Sparkles, Tag } from "lucide-react";
+import { Clock, Gift, Play, Sparkles, Tag } from "lucide-react";
 import type { Listing } from "@/lib/types";
-import type { Dictionary } from "@/lib/i18n";
+import type { Dictionary, Locale } from "@/lib/i18n";
+import { formatTimeAgo } from "@/lib/i18n/format";
 import { categoryIcons } from "@/lib/icons";
 import { formatSom } from "@/lib/data";
 import Avatar from "./Avatar";
@@ -9,7 +10,7 @@ import CountdownTimer from "./CountdownTimer";
 import { sizedImage } from "@/lib/image-url";
 import { KIND_BADGE_CLASS, kindLabel, priceText, resolvedLabel } from "@/lib/listing-labels";
 
-export default function ListingCard({ listing, dict }: { listing: Listing; dict: Dictionary }) {
+export default function ListingCard({ listing, dict, locale }: { listing: Listing; dict: Dictionary; locale: Locale }) {
   const Icon = categoryIcons[listing.category];
   const price = listing.isPromo || listing.isMysteryBox ? null : priceText(dict, listing);
 
@@ -130,6 +131,10 @@ export default function ListingCard({ listing, dict }: { listing: Listing; dict:
         <h3 className="line-clamp-2 text-xs font-semibold leading-snug text-foreground">
           {listing.title}
         </h3>
+        <p className="mt-1 flex items-center gap-1 text-[10px] text-muted">
+          <Clock className="h-3 w-3 shrink-0" />
+          <span suppressHydrationWarning>{formatTimeAgo(locale, listing.createdAt)}</span>
+        </p>
       </div>
     </div>
   );

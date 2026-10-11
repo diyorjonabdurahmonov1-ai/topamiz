@@ -5,13 +5,14 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ExternalLink, Gift, Loader2, Trash2 } from "lucide-react";
 import type { Listing } from "@/lib/types";
-import type { Dictionary } from "@/lib/i18n";
+import type { Dictionary, Locale } from "@/lib/i18n";
+import { formatTimeAgo } from "@/lib/i18n/format";
 import { formatSom } from "@/lib/data";
 import ResolveToggleButton from "./ResolveToggleButton";
 import { sizedImage } from "@/lib/image-url";
 import { kindLabel, priceText, resolvedLabel } from "@/lib/listing-labels";
 
-export default function MyListingRow({ listing, dict }: { listing: Listing; dict: Dictionary }) {
+export default function MyListingRow({ listing, dict, locale }: { listing: Listing; dict: Dictionary; locale: Locale }) {
   const router = useRouter();
   const [deleting, setDeleting] = useState(false);
 
@@ -39,6 +40,7 @@ export default function MyListingRow({ listing, dict }: { listing: Listing; dict
               {kindLabel(dict, listing.kind)}
             </span>
             {priceText(dict, listing) && <span className="font-semibold text-foreground">· {priceText(dict, listing)}</span>}
+            <span suppressHydrationWarning>· {formatTimeAgo(locale, listing.createdAt)}</span>
             {listing.status === "resolved" && <span>· {resolvedLabel(dict, listing.kind)}</span>}
             {listing.reward ? (
               <span className="flex items-center gap-1 text-accent-gold">

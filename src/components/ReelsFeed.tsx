@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, Clapperboard } from "lucide-react";
 import type { Listing } from "@/lib/types";
-import type { Dictionary } from "@/lib/i18n";
+import type { Dictionary, Locale } from "@/lib/i18n";
 import ReelSlide from "./ReelSlide";
 import ReelCommentsSheet from "./ReelCommentsSheet";
 
@@ -14,10 +14,12 @@ export default function ReelsFeed({
   initialListings,
   loggedIn,
   dict,
+  locale,
 }: {
   initialListings: ReelListing[];
   loggedIn: boolean;
   dict: Dictionary;
+  locale: Locale;
 }) {
   const [listings, setListings] = useState(initialListings);
   const [activeId, setActiveId] = useState(initialListings[0]?.id ?? null);
@@ -118,6 +120,7 @@ export default function ReelsFeed({
         >
           <ReelSlide
             listing={listing}
+            locale={locale}
             likedByMe={listing.likedByMe}
             active={activeId === listing.id}
             distance={i - activeIndex}

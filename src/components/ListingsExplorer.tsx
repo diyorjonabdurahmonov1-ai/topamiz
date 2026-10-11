@@ -238,7 +238,7 @@ export default function ListingsExplorer({
         </div>
       ) : results.length > 0 ? (
         <div className="mt-5">
-          <ListingsGrid key={`${query}|${kind}|${category}|${city}|${sort}`} listings={results} dict={dict} />
+          <ListingsGrid key={`${query}|${kind}|${category}|${city}|${sort}`} listings={results} dict={dict} locale={locale} />
         </div>
       ) : (
         <div className="mt-10 flex flex-col items-center rounded-2xl border border-dashed border-border py-16 text-center">

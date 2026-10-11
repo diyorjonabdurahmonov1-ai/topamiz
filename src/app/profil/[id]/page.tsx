@@ -70,7 +70,7 @@ export default async function PublicProfilePage(props: PageProps<"/profil/[id]">
         <h2 className="text-lg font-bold">{dict.publicProfile.listingsHeading}</h2>
         {listings.length > 0 ? (
           <div className="mt-4">
-            <ListingsGrid listings={listings} dict={dict} />
+            <ListingsGrid listings={listings} dict={dict} locale={locale} />
           </div>
         ) : (
           <p className="mt-4 rounded-2xl border border-dashed border-border py-10 text-center text-sm text-muted">

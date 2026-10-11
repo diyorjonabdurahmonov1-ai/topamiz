@@ -106,7 +106,7 @@ const ky: Dictionary = {
   },
 
   listingsPage: {
-    title: "Жоголгон жана табылган",
+    title: "Бардык",
     titleHighlight: "жарыялар",
     subtitle: "Бардык жарыяларды көрүңүз, издеңиз жана чыпкалаңыз.",
     searchPlaceholder: "Издөө: унаа, батир, телефон, жумуш...",

@@ -15,7 +15,8 @@ export const metadata: Metadata = {
 export default async function RewardedPage() {
   const rewarded = getRewardedListings(await getVisitorCountry());
   const totalReward = rewarded.reduce((sum, l) => sum + (l.reward ?? 0), 0);
-  const dict = getDictionary(await getLocale());
+  const locale = await getLocale();
+  const dict = getDictionary(locale);
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
@@ -44,7 +45,7 @@ export default async function RewardedPage() {
         </div>
       ) : (
         <div className="mt-8">
-          <ListingsGrid listings={rewarded} dict={dict} />
+          <ListingsGrid listings={rewarded} dict={dict} locale={locale} />
         </div>
       )}
     </div>

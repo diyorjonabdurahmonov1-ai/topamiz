@@ -13,7 +13,8 @@ export const metadata: Metadata = {
 
 export default async function PromoPage() {
   const listings = getPromoListings(await getVisitorCountry());
-  const dict = getDictionary(await getLocale());
+  const locale = await getLocale();
+  const dict = getDictionary(locale);
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
@@ -33,7 +34,7 @@ export default async function PromoPage() {
       </div>
 
       <div className="mt-8">
-        <PromoGrid listings={listings} dict={dict} />
+        <PromoGrid listings={listings} dict={dict} locale={locale} />
       </div>
     </div>
   );

@@ -13,7 +13,8 @@ export const metadata: Metadata = {
 export default async function MyListingsPage() {
   const user = await getCurrentUser();
   if (!user) redirect("/kirish");
-  const dict = getDictionary(await getLocale());
+  const locale = await getLocale();
+  const dict = getDictionary(locale);
   const listings = getListingsByOwner(user.id);
 
   return (
@@ -26,7 +27,7 @@ export default async function MyListingsPage() {
             {dict.myListings.emptyBody}
           </p>
         ) : (
-          listings.map((listing) => <MyListingRow key={listing.id} listing={listing} dict={dict} />)
+          listings.map((listing) => <MyListingRow key={listing.id} listing={listing} dict={dict} locale={locale} />)
         )}
       </div>
     </div>

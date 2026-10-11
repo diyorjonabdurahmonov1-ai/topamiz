@@ -10,7 +10,7 @@ import { isFriend } from "@/lib/friends";
 import { isLikedByUser } from "@/lib/listing-likes";
 import { getLocale } from "@/lib/i18n/server";
 import { getDictionary } from "@/lib/i18n";
-import { formatViewsCount } from "@/lib/i18n/format";
+import { formatTimeAgo, formatViewsCount } from "@/lib/i18n/format";
 import ContactCard from "@/components/ContactCard";
 import ReportListingButton from "@/components/ReportListingButton";
 import ListingGallery from "@/components/ListingGallery";
@@ -139,7 +139,9 @@ export default async function ListingDetailPage(props: PageProps<"/elonlar/[id]"
           <div className="mt-3 flex flex-wrap items-center gap-4 text-sm text-muted">
             <span className="flex items-center gap-1.5">
               <Calendar1 className="h-4 w-4" />
-              {formatDate(listing.date)}
+              <time dateTime={listing.date} title={formatDate(listing.date)} suppressHydrationWarning>
+                {formatTimeAgo(locale, listing.createdAt)}
+              </time>
             </span>
             <span className="flex items-center gap-1.5">
               <Eye className="h-4 w-4" />
