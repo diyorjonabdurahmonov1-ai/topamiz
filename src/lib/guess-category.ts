@@ -9,6 +9,27 @@ import type { CategoryId } from "./types";
 // ("pasportim", "паспорта"). Keywords starting with "=" must be the whole
 // word — short ones like "it" (dog) would otherwise match half the language.
 const KEYWORDS: [CategoryId, string[]][] = [
+  ["transport", [
+    "mashina", "avtomobil", "машин", "автомоб", "=avto", "=авто", "=car", "nexia", "cobalt", "gentra", "lacetti",
+    "spark", "matiz", "damas", "malibu", "captiva", "tracker", "onix", "monza", "equinox", "chevrolet", "шевроле",
+    "kia", "hyundai", "toyota", "byd", "chery", "haval", "lada", "лада", "bmw", "mercedes", "мерседес",
+    "mototsikl", "мотоцикл", "skuter", "скутер", "moped", "мопед",
+  ]],
+  ["kochmas_mulk", [
+    "kvartira", "квартир", "xonali", "комнатн", "=uy", "=uyim", "=uyimni", "=uylar", "hovli", "=дом", "=house",
+    "apartment", "=flat", "ofis", "офис", "uchastka", "участ", "dacha", "дача", "=yer", "ijaraga", "аренд",
+  ]],
+  ["uy_rozgor", [
+    "mebel", "мебел", "divan", "диван", "=stol", "=stul", "стул", "kreslo", "кресл", "shkaf", "шкаф", "krovat",
+    "кроват", "muzlatgich", "холодильн", "gilam", "ковер", "ковёр", "parda", "штор", "sofa", "furniture",
+  ]],
+  ["bolalar", [
+    "kolyaska", "коляск", "bolalar", "детск", "o'yinchoq", "игрушк", "stroller", "=toy", "toys",
+  ]],
+  ["sport", [
+    "velosiped", "велосипед", "bike", "bicycle", "trenajyor", "тренажер", "тренажёр", "gantel", "гантел",
+    "samokat", "самокат", "=futbol", "футбол",
+  ]],
   ["hujjatlar", [
     "pasport", "passport", "паспорт", "hujjat", "ҳуҷҷат", "документ", "document", "құжат",
     "guvohnoma", "удостоверен", "права", "prava", "diplom", "диплом", "metrika", "метрик",
@@ -19,7 +40,8 @@ const KEYWORDS: [CategoryId, string[]][] = [
     "airpods", "naushnik", "наушник", "quloqchin", "headphone", "earbud", "planshet", "планшет",
     "tablet", "ipad", "noutbuk", "ноутбук", "laptop", "macbook", "kompyuter", "компьютер",
     "computer", "kamera", "камер", "camera", "zaryad", "заряд", "charger", "powerbank",
-    "смартфон", "smartfon", "smartphone", "watch", "смарт",
+    "смартфон", "smartfon", "smartphone", "watch", "смарт", "televizor", "телевизор", "konditsioner",
+    "кондиционер", "playstation", "noutbuk",
   ]],
   ["sumka", [
     "sumka", "сумк", "bag", "hamyon", "ҳамён", "кошел", "wallet", "purse", "әмиян", "капчык",
@@ -43,7 +65,9 @@ const KEYWORDS: [CategoryId, string[]][] = [
   ]],
 ];
 
-export function guessCategory(title: string): CategoryId | null {
+// `allowed` limits the guess to the categories the listing's kind offers:
+// "mashina kalitlari" posted as lost is keys, not a car.
+export function guessCategory(title: string, allowed?: readonly CategoryId[]): CategoryId | null {
   const words = title
     .toLowerCase()
     .replace(/[ʻʼ‘’`]/g, "'")
@@ -53,6 +77,7 @@ export function guessCategory(title: string): CategoryId | null {
   // a lost wallet that happens to hold a passport.
   for (const word of words) {
     for (const [category, keywords] of KEYWORDS) {
+      if (allowed && !allowed.includes(category)) continue;
       if (keywords.some((k) => (k.startsWith("=") ? word === k.slice(1) : word.startsWith(k)))) {
         return category;
       }

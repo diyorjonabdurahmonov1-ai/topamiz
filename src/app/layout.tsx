@@ -24,7 +24,7 @@ const manrope = Manrope({
   weight: ["400", "500", "600", "700", "800"],
 });
 
-const TITLE = `${SITE_NAME} — Yo'qolgan buyumni topish platformasi`;
+const TITLE = `${SITE_NAME} — videoli e'lonlar: sotish, ijara, ish va yo'qolgan buyumlar`;
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -35,6 +35,10 @@ export const metadata: Metadata = {
   title: TITLE,
   description: SITE_DESCRIPTION,
   keywords: [
+    "e'lonlar",
+    "mashina sotish",
+    "kvartira ijara",
+    "ish e'lonlari",
     "yo'qolgan buyum",
     "topilgan buyum",
     "e'lon",

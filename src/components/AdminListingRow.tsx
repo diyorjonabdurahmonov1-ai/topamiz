@@ -46,7 +46,7 @@ export default function AdminListingRow({ listing }: { listing: Listing }) {
           <p className="truncate text-sm font-semibold">{listing.title}</p>
           <p className="mt-0.5 flex flex-wrap items-center gap-x-2 text-xs text-muted">
             <span className={listing.kind === "lost" ? "text-danger" : "text-success"}>
-              {listing.kind === "lost" ? "Yo'qoldi" : "Topildi"}
+              {{ lost: "Yo'qoldi", found: "Topildi", sell: "Sotiladi", rent: "Ijaraga", job: "Ish", service: "Xizmat" }[listing.kind]}
             </span>
             <span>· {countryName(listing.country)}</span>
             <span>· {listing.city}</span>

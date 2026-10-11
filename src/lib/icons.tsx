@@ -11,6 +11,12 @@ import {
   Scissors,
   Wrench,
   Tag,
+  Car,
+  Building2,
+  Sofa,
+  Baby,
+  Dumbbell,
+  BriefcaseBusiness,
   type LucideIcon,
 } from "lucide-react";
 import type { CategoryId, PromoCategoryId } from "./types";
@@ -23,6 +29,13 @@ export const categoryIcons: Record<CategoryId, LucideIcon> = {
   kalitlar: KeyRound,
   kiyim: Shirt,
   boshqa: Sparkles,
+  transport: Car,
+  kochmas_mulk: Building2,
+  uy_rozgor: Sofa,
+  bolalar: Baby,
+  sport: Dumbbell,
+  ish: BriefcaseBusiness,
+  xizmatlar: Wrench,
 };
 
 export const promoCategoryIcons: Record<PromoCategoryId, LucideIcon> = {

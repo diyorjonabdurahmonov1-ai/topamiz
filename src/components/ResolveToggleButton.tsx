@@ -3,17 +3,21 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { CheckCircle2, Loader2, RotateCcw } from "lucide-react";
-import type { ListingStatus } from "@/lib/types";
+import type { ListingKind, ListingStatus } from "@/lib/types";
+import { markDoneLabel } from "@/lib/listing-labels";
 import type { Dictionary } from "@/lib/i18n";
 
 export default function ResolveToggleButton({
   listingId,
   status,
+  kind,
   dict,
   className = "",
 }: {
   listingId: string;
   status: ListingStatus;
+  // Says what "done" means for this listing: sold, rented, position filled…
+  kind: ListingKind;
   dict: Dictionary;
   className?: string;
 }) {
@@ -53,7 +57,7 @@ export default function ResolveToggleButton({
       ) : (
         <CheckCircle2 className="h-3.5 w-3.5" />
       )}
-      {resolved ? dict.myListings.markActive : dict.myListings.markResolved}
+      {resolved ? dict.myListings.markActive : markDoneLabel(dict, kind)}
     </button>
   );
 }

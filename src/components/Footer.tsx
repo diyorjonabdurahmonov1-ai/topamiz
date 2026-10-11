@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Phone } from "lucide-react";
 import Logo from "./Logo";
-import { categories } from "@/lib/data";
+import { ALL_CATEGORIES } from "@/lib/sections";
 import type { Dictionary, Locale } from "@/lib/i18n";
 import { formatCopyright } from "@/lib/i18n/format";
 
@@ -37,10 +37,10 @@ export default function Footer({ dict, locale }: { dict: Dictionary; locale: Loc
           <div>
             <h4 className="text-sm font-semibold text-foreground">{dict.footer.categoriesHeading}</h4>
             <ul className="mt-4 space-y-2.5 text-sm text-muted">
-              {categories.slice(0, 5).map((c) => (
-                <li key={c.id}>
-                  <Link href={`/elonlar?category=${c.id}`} className="hover:text-foreground">
-                    {dict.categories[c.id]}
+              {ALL_CATEGORIES.slice(0, 5).map((id) => (
+                <li key={id}>
+                  <Link href={`/elonlar?category=${id}`} className="hover:text-foreground">
+                    {dict.categories[id]}
                   </Link>
                 </li>
               ))}

@@ -12,4 +12,11 @@ export const CATEGORY_COLORS: Record<CategoryId, { from: string; to: string }> =
   kalitlar: { from: "#22c55e", to: "#16a34a" },
   kiyim: { from: "#0ea5e9", to: "#6366f1" },
   boshqa: { from: "#eab308", to: "#f59e0b" },
+  transport: { from: "#ef4444", to: "#f97316" },
+  kochmas_mulk: { from: "#14b8a6", to: "#0ea5e9" },
+  uy_rozgor: { from: "#8b5cf6", to: "#ec4899" },
+  bolalar: { from: "#f472b6", to: "#fb923c" },
+  sport: { from: "#22c55e", to: "#84cc16" },
+  ish: { from: "#2563eb", to: "#7c3aed" },
+  xizmatlar: { from: "#0891b2", to: "#22c55e" },
 };

@@ -1,5 +1,5 @@
 import { db } from "./db";
-import type { CategoryId, Listing, ListingKind, PromoCategoryId } from "./types";
+import type { CategoryId, Currency, Listing, ListingAttrs, ListingKind, PromoCategoryId } from "./types";
 import { coordinatesForCity } from "./city-coordinates";
 import { CATEGORY_COLORS } from "./category-colors";
 import { displayIdentity } from "./auth";
@@ -21,6 +21,10 @@ interface RawListingRow {
   city: string;
   district: string | null;
   reward: number | null;
+  price: number | null;
+  currency: string | null;
+  price_negotiable: number | null;
+  attrs: string | null;
   contact_name: string;
   contact_phone: string;
   status: string;
@@ -73,6 +77,15 @@ const LISTING_SELECT = `
   LEFT JOIN users resolver ON resolver.id = listings.resolved_by
 `;
 
+function parseAttrs(raw: string | null): ListingAttrs {
+  try {
+    const value = JSON.parse(raw || "{}");
+    return value && typeof value === "object" && !Array.isArray(value) ? (value as ListingAttrs) : {};
+  } catch {
+    return {};
+  }
+}
+
 function toListing(row: RawListingRow): Listing {
   const category = row.category as CategoryId;
   const colors = CATEGORY_COLORS[category] ?? CATEGORY_COLORS.boshqa;
@@ -109,6 +122,10 @@ function toListing(row: RawListingRow): Listing {
     date: row.created_at.slice(0, 10),
     createdAt: row.created_at,
     reward: row.reward ?? undefined,
+    price: row.price ?? null,
+    currency: row.currency === "USD" ? "USD" : "UZS",
+    priceNegotiable: !!row.price_negotiable,
+    attrs: parseAttrs(row.attrs),
     contactName: row.contact_name,
     contactPhone: row.contact_phone,
     status: row.status as Listing["status"],
@@ -306,6 +323,10 @@ export function createListing(params: {
   city: string;
   district?: string | null;
   reward: number | null;
+  price?: number | null;
+  currency?: Currency;
+  priceNegotiable?: boolean;
+  attrs?: ListingAttrs;
   contactName: string;
   contactPhone: string;
   photoUrls: string[];
@@ -323,8 +344,8 @@ export function createListing(params: {
   const info = db
     .prepare(
       `INSERT INTO listings
-        (owner_id, kind, title, description, category, city, district, reward, contact_name, contact_phone, photo_urls, video_url, video_thumbnail_url, country, lat, lng, is_mystery_box, expires_at, starts_at, is_promo, promo_category)
-       VALUES (@ownerId, @kind, @title, @description, @category, @city, @district, @reward, @contactName, @contactPhone, @photoUrls, @videoUrl, @videoThumbnailUrl, @country, @lat, @lng, @isMysteryBox, @expiresAt, @startsAt, @isPromo, @promoCategory)`
+        (owner_id, kind, title, description, category, city, district, reward, price, currency, price_negotiable, attrs, contact_name, contact_phone, photo_urls, video_url, video_thumbnail_url, country, lat, lng, is_mystery_box, expires_at, starts_at, is_promo, promo_category)
+       VALUES (@ownerId, @kind, @title, @description, @category, @city, @district, @reward, @price, @currency, @priceNegotiable, @attrs, @contactName, @contactPhone, @photoUrls, @videoUrl, @videoThumbnailUrl, @country, @lat, @lng, @isMysteryBox, @expiresAt, @startsAt, @isPromo, @promoCategory)`
     )
     .run({
       ownerId: params.ownerId,
@@ -335,6 +356,10 @@ export function createListing(params: {
       city: params.city,
       district: params.district ?? null,
       reward: params.reward,
+      price: params.price ?? null,
+      currency: params.currency ?? "UZS",
+      priceNegotiable: params.priceNegotiable ? 1 : 0,
+      attrs: JSON.stringify(params.attrs ?? {}),
       contactName: params.contactName,
       contactPhone: params.contactPhone,
       photoUrls: JSON.stringify(params.photoUrls),

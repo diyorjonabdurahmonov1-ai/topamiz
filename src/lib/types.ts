@@ -1,14 +1,34 @@
 export type ListingStatus = "active" | "resolved";
-export type ListingKind = "lost" | "found";
+// What the listing is: something for sale or rent, a job opening, a service
+// — or, where Findo started, something lost or found. Which categories and
+// fields each one offers lives in lib/sections.ts.
+export type ListingKind = "sell" | "rent" | "job" | "service" | "lost" | "found";
 
 export type CategoryId =
+  // lost & found
   | "hujjatlar"
-  | "texnika"
   | "sumka"
-  | "hayvonlar"
   | "kalitlar"
+  // shared with sale listings
+  | "texnika"
+  | "hayvonlar"
   | "kiyim"
-  | "boshqa";
+  | "boshqa"
+  // sale / rent / jobs / services
+  | "transport"
+  | "kochmas_mulk"
+  | "uy_rozgor"
+  | "bolalar"
+  | "sport"
+  | "ish"
+  | "xizmatlar";
+
+export type Currency = "UZS" | "USD";
+
+// Category-specific details — a car's year and mileage, a flat's rooms and
+// area, a job's schedule. Keys and allowed values are defined (and
+// validated) in lib/sections.ts.
+export type ListingAttrs = Record<string, string | number>;
 
 export interface Category {
   id: CategoryId;
@@ -50,6 +70,12 @@ export interface Listing {
   // When it was posted (UTC, "YYYY-MM-DD HH:MM:SS") — for "2 soat oldin".
   createdAt: string;
   reward?: number;
+  // Asking price (or salary for a job). Null = not given, which reads as
+  // "kelishiladi" when priceNegotiable is set.
+  price: number | null;
+  currency: Currency;
+  priceNegotiable: boolean;
+  attrs: ListingAttrs;
   contactName: string;
   contactPhone: string;
   status: ListingStatus;

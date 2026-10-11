@@ -8,6 +8,13 @@ export const categories: Category[] = [
   { id: "kalitlar", label: "Kalitlar", icon: "KeyRound" },
   { id: "kiyim", label: "Kiyim-kechak", icon: "Shirt" },
   { id: "boshqa", label: "Boshqa", icon: "Sparkles" },
+  { id: "transport", label: "Transport", icon: "Car" },
+  { id: "kochmas_mulk", label: "Ko'chmas mulk", icon: "Building2" },
+  { id: "uy_rozgor", label: "Uy-ro'zg'or", icon: "Sofa" },
+  { id: "bolalar", label: "Bolalar uchun", icon: "Baby" },
+  { id: "sport", label: "Sport va hobbi", icon: "Dumbbell" },
+  { id: "ish", label: "Ish", icon: "BriefcaseBusiness" },
+  { id: "xizmatlar", label: "Xizmatlar", icon: "Wrench" },
 ];
 
 export const promoCategories: PromoCategory[] = [

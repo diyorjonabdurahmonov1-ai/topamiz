@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import ListingsExplorer from "@/components/ListingsExplorer";
 import type { CategoryId, ListingKind } from "@/lib/types";
 import { categories } from "@/lib/data";
+import { LISTING_KINDS } from "@/lib/sections";
 import { getAllListings } from "@/lib/listings";
 import { getVisitorCountry } from "@/lib/geo";
 import { getLocale } from "@/lib/i18n/server";
@@ -17,7 +18,7 @@ export default async function ElonlarPage(props: PageProps<"/elonlar">) {
   const searchParams = await props.searchParams;
   const q = typeof searchParams.q === "string" ? searchParams.q : "";
   const kindRaw = typeof searchParams.kind === "string" ? searchParams.kind : "all";
-  const kind = kindRaw === "lost" || kindRaw === "found" ? (kindRaw as ListingKind) : "all";
+  const kind = (LISTING_KINDS as string[]).includes(kindRaw) ? (kindRaw as ListingKind) : "all";
   const categoryRaw = typeof searchParams.category === "string" ? searchParams.category : "all";
   const category = categoryIds.has(categoryRaw as CategoryId)
     ? (categoryRaw as CategoryId)

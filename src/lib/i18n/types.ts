@@ -1,3 +1,4 @@
+import type { AttrKey } from "@/lib/sections";
 import type { CategoryId, PromoCategoryId } from "@/lib/types";
 
 export interface Dictionary {
@@ -618,5 +619,57 @@ export interface Dictionary {
     iosInstallBody: string;
     unsupportedBody: string;
     deniedBody: string;
+  };
+  classifieds: {
+    titleRequired: string;
+    currencyUZS: string;
+    detailsHint: string;
+    kindSell: string;
+    kindRent: string;
+    kindJob: string;
+    kindService: string;
+    optSellTitle: string;
+    optSellHint: string;
+    optRentTitle: string;
+    optRentHint: string;
+    optJobTitle: string;
+    optJobHint: string;
+    optServiceTitle: string;
+    optServiceHint: string;
+    kindQuestion: string;
+    whatSell: string;
+    whatRent: string;
+    whatJob: string;
+    whatService: string;
+    placeholderSell: string;
+    placeholderRent: string;
+    placeholderJob: string;
+    placeholderService: string;
+    whereTitle: string;
+    detailsTitle: string;
+    priceSell: string;
+    priceRent: string;
+    priceJob: string;
+    priceService: string;
+    negotiable: string;
+    unitKm: string;
+    unitM2: string;
+    resolvedSell: string;
+    resolvedRent: string;
+    resolvedJob: string;
+    resolvedService: string;
+    markDoneSell: string;
+    markDoneRent: string;
+    markDoneJob: string;
+    markDoneService: string;
+    successBodyGeneric: string;
+    sortNew: string;
+    sortCheap: string;
+    sortExpensive: string;
+    sectionsTitle: string;
+    lostFoundTitle: string;
+    lostFoundSubtitle: string;
+    attrs: Record<AttrKey, string>;
+    options: Record<string, string>;
   };
 }

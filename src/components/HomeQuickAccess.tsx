@@ -16,18 +16,24 @@ import type { CategoryId, Listing } from "@/lib/types";
 import type { AdBanner } from "@/lib/ads";
 import type { Dictionary, Locale } from "@/lib/i18n";
 import { categoryIcons } from "@/lib/icons";
+import { CATEGORY_COLORS } from "@/lib/category-colors";
 import NearbyMapCard from "@/components/NearbyMapCard";
 import HomeHero from "@/components/HomeHero";
 import HomeListingCard from "@/components/HomeListingCard";
 
-const QUICK_CATEGORIES: { id: CategoryId; label: (dict: Dictionary) => string }[] = [
-  { id: "hujjatlar", label: (dict) => dict.homeQuickAccess.categoryHujjatlar },
-  { id: "texnika", label: (dict) => dict.homeQuickAccess.categoryTelefon },
-  { id: "kalitlar", label: (dict) => dict.homeQuickAccess.categoryKalitlar },
-  { id: "sumka", label: (dict) => dict.homeQuickAccess.categoryHamyon },
-  { id: "hayvonlar", label: (dict) => dict.homeQuickAccess.categoryHayvon },
-  { id: "kiyim", label: (dict) => dict.homeQuickAccess.categoryKiyim },
-  { id: "boshqa", label: (dict) => dict.homeQuickAccess.categoryBoshqa },
+// The home page's section row: the classifieds categories people come for
+// most, then lost & found — where Findo started, and still its own section.
+const SECTIONS: CategoryId[] = [
+  "transport",
+  "kochmas_mulk",
+  "ish",
+  "xizmatlar",
+  "texnika",
+  "uy_rozgor",
+  "kiyim",
+  "bolalar",
+  "hayvonlar",
+  "sport",
 ];
 
 export default function HomeQuickAccess({
@@ -74,19 +80,24 @@ export default function HomeQuickAccess({
         <CategoryTile href="/elonlar" label={dict.listingsPage.kindAll} active>
           <LayoutGrid className="h-6 w-6" />
         </CategoryTile>
-        {QUICK_CATEGORIES.map(({ id, label }) => {
+        {SECTIONS.map((id) => {
           const Icon = categoryIcons[id];
+          const colors = CATEGORY_COLORS[id];
           return (
-            <CategoryTile key={id} href={`/elonlar?category=${id}`} label={label(dict)}>
-              <Icon className="h-6 w-6" strokeWidth={1.75} />
+            <CategoryTile key={id} href={`/elonlar?category=${id}`} label={dict.categories[id]}>
+              <Icon className="h-6 w-6" strokeWidth={1.75} style={{ color: colors.from }} />
             </CategoryTile>
           );
         })}
+        <CategoryTile href="/elonlar?kind=lost" label={dict.classifieds.lostFoundTitle}>
+          <Search className="h-6 w-6 text-orange-500" strokeWidth={1.75} />
+        </CategoryTile>
       </div>
 
       <HomeHero ads={ads} dict={dict} />
 
-      <div className="grid grid-cols-2 gap-3">
+      <SectionHeader title={dict.classifieds.lostFoundTitle} href="/elonlar?kind=lost" linkLabel={dict.tabs.viewAll} />
+      <div className="-mt-2 grid grid-cols-2 gap-3">
         <KindCard
           href="/elonlar?kind=lost"
           title={t.lostCardTitle}
@@ -169,7 +180,7 @@ function CategoryTile({
       >
         {children}
       </span>
-      <span className={`line-clamp-1 text-[11px] font-semibold ${active ? "text-foreground" : "text-muted"}`}>{label}</span>
+      <span className={`line-clamp-2 text-[11px] font-semibold leading-tight ${active ? "text-foreground" : "text-muted"}`}>{label}</span>
     </Link>
   );
 }

@@ -9,6 +9,7 @@ import type { Dictionary } from "@/lib/i18n";
 import { formatSom } from "@/lib/data";
 import ResolveToggleButton from "./ResolveToggleButton";
 import { sizedImage } from "@/lib/image-url";
+import { kindLabel, priceText, resolvedLabel } from "@/lib/listing-labels";
 
 export default function MyListingRow({ listing, dict }: { listing: Listing; dict: Dictionary }) {
   const router = useRouter();
@@ -35,9 +36,10 @@ export default function MyListingRow({ listing, dict }: { listing: Listing; dict
           <p className="truncate text-sm font-semibold">{listing.title}</p>
           <p className="mt-0.5 flex flex-wrap items-center gap-x-2 text-xs text-muted">
             <span className={listing.kind === "lost" ? "text-danger" : "text-success"}>
-              {listing.kind === "lost" ? dict.common.lost : dict.common.found}
+              {kindLabel(dict, listing.kind)}
             </span>
-            {listing.status === "resolved" && <span>· {dict.common.resolved}</span>}
+            {priceText(dict, listing) && <span className="font-semibold text-foreground">· {priceText(dict, listing)}</span>}
+            {listing.status === "resolved" && <span>· {resolvedLabel(dict, listing.kind)}</span>}
             {listing.reward ? (
               <span className="flex items-center gap-1 text-accent-gold">
                 <Gift className="h-3 w-3" />
@@ -65,7 +67,7 @@ export default function MyListingRow({ listing, dict }: { listing: Listing; dict
       </div>
 
       <div className="mt-3 border-t border-border pt-3">
-        <ResolveToggleButton listingId={listing.id} status={listing.status} dict={dict} />
+        <ResolveToggleButton listingId={listing.id} status={listing.status} kind={listing.kind} dict={dict} />
       </div>
     </div>
   );
