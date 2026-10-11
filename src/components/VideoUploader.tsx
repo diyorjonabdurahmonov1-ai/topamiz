@@ -10,13 +10,9 @@ import {
   useVideoUpload,
   type VideoSource,
 } from "@/lib/video-upload-store";
+import { usePickerAccept } from "@/lib/file-picker";
 
 const ACCEPTED_TYPES = "video/*";
-// Adding a non-media type makes Android open its document picker ("My
-// Files") instead of the photo picker. The photo picker can hand the
-// browser a converted copy of an HEVC video that the browser then refuses
-// to read (NotReadableError); the document picker hands over the original.
-const FILES_ACCEPTED_TYPES = "video/*,application/octet-stream";
 
 // A view of one upload in the site-wide store (lib/video-upload-store). The
 // form only holds the upload's handle, so the upload itself keeps going if
@@ -32,7 +28,9 @@ export default function VideoUploader({
   dict: Dictionary;
 }) {
   const entry = useVideoUpload(handle);
-  const galleryRef = useRef<HTMLInputElement>(null);
+  // On Android this opens the document picker rather than the gallery,
+  // which can hand over a copy the browser can't read (lib/file-picker).
+  const pickerAccept = usePickerAccept(ACCEPTED_TYPES);
   const filesRef = useRef<HTMLInputElement>(null);
   const cameraRef = useRef<HTMLInputElement>(null);
 
@@ -50,19 +48,9 @@ export default function VideoUploader({
   const inputs = (
     <>
       <input
-        ref={galleryRef}
-        type="file"
-        accept={ACCEPTED_TYPES}
-        hidden
-        onChange={(e) => {
-          pick(e.target.files?.[0], "gallery");
-          e.target.value = "";
-        }}
-      />
-      <input
         ref={filesRef}
         type="file"
-        accept={FILES_ACCEPTED_TYPES}
+        accept={pickerAccept}
         hidden
         onChange={(e) => {
           pick(e.target.files?.[0], "files");
@@ -122,7 +110,7 @@ export default function VideoUploader({
       <div className="space-y-2">
         {inputs}
         <div
-          onClick={() => galleryRef.current?.click()}
+          onClick={() => filesRef.current?.click()}
           role="button"
           tabIndex={0}
           className="flex h-32 cursor-pointer flex-col items-center justify-center gap-1.5 rounded-xl border-2 border-dashed border-border text-center text-sm text-muted transition-colors hover:border-brand-via/40 hover:text-foreground"

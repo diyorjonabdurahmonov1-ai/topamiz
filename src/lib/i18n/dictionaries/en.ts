@@ -280,6 +280,8 @@ const en: Dictionary = {
     videoReadHint: "This usually happens with gallery videos recorded in HEVC (high efficiency) format. Pick the video through Files instead, or record it right here.",
     videoPickFromFiles: "Pick from Files",
     videoRecord: "Record video",
+    photoUploadPrompt: "Drop photos here or tap to choose",
+    photoTake: "Take a photo",
     videoServerError: "the server didn't respond, please try again shortly",
   },
 

@@ -282,6 +282,8 @@ const uz: Dictionary = {
     videoReadHint: "Bu ko'pincha galereyadagi HEVC (yuqori samarali) formatda yozilgan videolarda bo'ladi. Videoni Fayllar orqali tanlang yoki shu yerning o'zida yozib oling.",
     videoPickFromFiles: "Fayllar orqali tanlash",
     videoRecord: "Kamerada yozish",
+    photoUploadPrompt: "Rasmni shu yerga tashlang yoki bosib tanlang",
+    photoTake: "Suratga olish",
     videoServerError: "server javob bermadi, birozdan so'ng qayta urinib ko'ring",
   },
 
