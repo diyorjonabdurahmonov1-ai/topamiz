@@ -1,7 +1,9 @@
 import Link from "next/link";
 import {
   ArrowRight,
+  BriefcaseBusiness,
   ChevronRight,
+  House,
   LayoutGrid,
   MapPin,
   PackageSearch,
@@ -11,6 +13,8 @@ import {
   SlidersHorizontal,
   Sparkles,
   Tag,
+  Tags,
+  Wrench,
 } from "lucide-react";
 import type { CategoryId, Listing } from "@/lib/types";
 import type { AdBanner } from "@/lib/ads";
@@ -21,8 +25,9 @@ import NearbyMapCard from "@/components/NearbyMapCard";
 import HomeHero from "@/components/HomeHero";
 import HomeListingCard from "@/components/HomeListingCard";
 
-// The home page's section row: the classifieds categories people come for
+// The home page's category row: the classifieds categories people come for
 // most, then lost & found — where Findo started, and still its own section.
+// Below the banner, one swipeable row of cards opens each kind of listing.
 const SECTIONS: CategoryId[] = [
   "transport",
   "kochmas_mulk",
@@ -96,13 +101,13 @@ export default function HomeQuickAccess({
 
       <HomeHero ads={ads} dict={dict} />
 
-      <SectionHeader title={dict.classifieds.lostFoundTitle} href="/elonlar?kind=lost" linkLabel={dict.tabs.viewAll} />
-      <div className="-mt-2 grid grid-cols-2 gap-3">
+      <SectionHeader title={dict.classifieds.sectionsTitle} href="/elonlar" linkLabel={dict.tabs.viewAll} />
+      <div className="-mx-4 -mt-2 flex snap-x scroll-px-4 gap-2.5 overflow-x-auto px-4 pb-1 sm:scroll-px-6 [scrollbar-width:none] sm:-mx-6 sm:px-6 lg:mx-0 lg:grid lg:grid-cols-6 lg:px-0 [&::-webkit-scrollbar]:hidden">
         <KindCard
           href="/elonlar?kind=lost"
           title={t.lostCardTitle}
           subtitle={t.lostCardSubtitle}
-          icon={<Search className="h-5 w-5" />}
+          icon={<Search className="h-4 w-4" />}
           tone="bg-orange-500/10 dark:bg-orange-400/10"
           iconTone="bg-orange-500/15 text-orange-600 dark:text-orange-300"
         />
@@ -110,9 +115,41 @@ export default function HomeQuickAccess({
           href="/elonlar?kind=found"
           title={t.foundCardTitle}
           subtitle={t.foundCardSubtitle}
-          icon={<PackageSearch className="h-5 w-5" />}
+          icon={<PackageSearch className="h-4 w-4" />}
           tone="bg-sky-500/10 dark:bg-sky-400/10"
           iconTone="bg-sky-500/15 text-sky-600 dark:text-sky-300"
+        />
+        <KindCard
+          href="/elonlar?kind=sell"
+          title={dict.classifieds.kindSell}
+          subtitle={dict.classifieds.optSellHint}
+          icon={<Tags className="h-4 w-4" />}
+          tone="bg-emerald-500/10 dark:bg-emerald-400/10"
+          iconTone="bg-emerald-500/15 text-emerald-600 dark:text-emerald-300"
+        />
+        <KindCard
+          href="/elonlar?kind=rent"
+          title={dict.classifieds.kindRent}
+          subtitle={dict.classifieds.optRentHint}
+          icon={<House className="h-4 w-4" />}
+          tone="bg-teal-500/10 dark:bg-teal-400/10"
+          iconTone="bg-teal-500/15 text-teal-600 dark:text-teal-300"
+        />
+        <KindCard
+          href="/elonlar?kind=job"
+          title={dict.classifieds.kindJob}
+          subtitle={dict.classifieds.optJobHint}
+          icon={<BriefcaseBusiness className="h-4 w-4" />}
+          tone="bg-blue-500/10 dark:bg-blue-400/10"
+          iconTone="bg-blue-500/15 text-blue-600 dark:text-blue-300"
+        />
+        <KindCard
+          href="/elonlar?kind=service"
+          title={dict.classifieds.kindService}
+          subtitle={dict.classifieds.optServiceHint}
+          icon={<Wrench className="h-4 w-4" />}
+          tone="bg-cyan-500/10 dark:bg-cyan-400/10"
+          iconTone="bg-cyan-500/15 text-cyan-600 dark:text-cyan-300"
         />
       </div>
 
@@ -201,12 +238,15 @@ function KindCard({
   iconTone: string;
 }) {
   return (
-    <Link href={href} className={`card-hover relative flex flex-col rounded-2xl border border-border p-4 ${tone}`}>
-      <span className={`flex h-11 w-11 items-center justify-center rounded-full ${iconTone}`}>{icon}</span>
-      <span className="mt-3 text-sm font-extrabold sm:text-base">{title}</span>
-      <span className="mt-0.5 pr-8 text-[11px] leading-snug text-muted sm:text-xs">{subtitle}</span>
-      <span className="absolute bottom-4 right-3 flex h-7 w-7 items-center justify-center rounded-full bg-bg-elevated/80 text-foreground shadow-sm">
-        <ChevronRight className="h-4 w-4" />
+    <Link
+      href={href}
+      className={`card-hover relative flex w-[8.25rem] shrink-0 snap-start flex-col rounded-2xl border border-border p-3 lg:w-auto ${tone}`}
+    >
+      <span className={`flex h-8 w-8 items-center justify-center rounded-full ${iconTone}`}>{icon}</span>
+      <span className="mt-2 line-clamp-2 pr-1 text-[13px] font-extrabold leading-tight">{title}</span>
+      <span className="mt-0.5 line-clamp-2 pr-5 text-[10.5px] leading-snug text-muted">{subtitle}</span>
+      <span className="absolute right-2 top-3 flex h-5 w-5 items-center justify-center rounded-full bg-bg-elevated/80 text-foreground shadow-sm">
+        <ChevronRight className="h-3 w-3" />
       </span>
     </Link>
   );

@@ -698,7 +698,7 @@ const en: Dictionary = {
     sortNew: "Newest",
     sortCheap: "Cheapest",
     sortExpensive: "Most expensive",
-    sectionsTitle: "Categories",
+    sectionsTitle: "Sections",
     lostFoundTitle: "Lost & found",
     lostFoundSubtitle: "Lost or found something? We help return it",
     attrs: {
