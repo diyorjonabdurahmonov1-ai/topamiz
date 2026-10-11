@@ -106,8 +106,8 @@ const tg: Dictionary = {
   },
 
   listingsPage: {
-    title: "Эълонҳои гумшуда ва",
-    titleHighlight: "ёфтшуда",
+    title: "Ҳамаи",
+    titleHighlight: "эълонҳо",
     subtitle: "Ҳамаи эълонҳоро бинед, ҷустуҷӯ кунед ва филтр кунед.",
     searchPlaceholder: "Ҷустуҷӯ: мошин, хона, телефон, кор...",
     filters: "Филтрҳо",

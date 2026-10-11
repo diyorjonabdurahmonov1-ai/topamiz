@@ -2,14 +2,14 @@
 
 import { useMemo, useState } from "react";
 import type { Listing, PromoCategoryId } from "@/lib/types";
-import type { Dictionary } from "@/lib/i18n";
+import type { Dictionary, Locale } from "@/lib/i18n";
 import { promoCategories } from "@/lib/data";
 import { promoCategoryIcons } from "@/lib/icons";
 import ListingsGrid from "./ListingsGrid";
 
 type FilterValue = "all" | PromoCategoryId;
 
-export default function PromoGrid({ listings, dict }: { listings: Listing[]; dict: Dictionary }) {
+export default function PromoGrid({ listings, dict, locale }: { listings: Listing[]; dict: Dictionary; locale: Locale }) {
   const [filter, setFilter] = useState<FilterValue>("all");
 
   const filtered = useMemo(
@@ -58,7 +58,7 @@ export default function PromoGrid({ listings, dict }: { listings: Listing[]; dic
         </div>
       ) : (
         <div className="mt-6">
-          <ListingsGrid listings={filtered} dict={dict} />
+          <ListingsGrid listings={filtered} dict={dict} locale={locale} />
         </div>
       )}
     </div>

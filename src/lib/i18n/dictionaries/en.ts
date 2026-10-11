@@ -106,7 +106,7 @@ const en: Dictionary = {
   },
 
   listingsPage: {
-    title: "Lost and found",
+    title: "All",
     titleHighlight: "listings",
     subtitle: "Browse, search, and filter all listings.",
     searchPlaceholder: "Search: car, flat, phone, job...",

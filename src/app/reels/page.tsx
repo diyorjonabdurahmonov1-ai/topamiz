@@ -21,5 +21,5 @@ export default async function ReelsPage() {
   const likedIds = user ? getLikedListingIds(user.id, listings.map((l) => Number(l.id))) : new Set<number>();
   const initialListings = listings.map((l) => ({ ...l, likedByMe: likedIds.has(Number(l.id)) }));
 
-  return <ReelsFeed initialListings={initialListings} loggedIn={!!user} dict={dict} />;
+  return <ReelsFeed initialListings={initialListings} loggedIn={!!user} dict={dict} locale={locale} />;
 }

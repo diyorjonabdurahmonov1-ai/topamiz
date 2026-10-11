@@ -106,7 +106,7 @@ const ru: Dictionary = {
   },
 
   listingsPage: {
-    title: "Потерянные и найденные",
+    title: "Все",
     titleHighlight: "объявления",
     subtitle: "Смотрите, ищите и фильтруйте все объявления.",
     searchPlaceholder: "Поиск: машина, квартира, телефон, работа...",

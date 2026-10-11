@@ -106,7 +106,7 @@ const kk: Dictionary = {
   },
 
   listingsPage: {
-    title: "Жоғалған және табылған",
+    title: "Барлық",
     titleHighlight: "хабарландырулар",
     subtitle: "Барлық хабарландыруларды қараңыз, іздеңіз және сүзгілеңіз.",
     searchPlaceholder: "Іздеу: көлік, пәтер, телефон, жұмыс...",

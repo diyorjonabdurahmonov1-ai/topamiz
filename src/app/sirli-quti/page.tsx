@@ -18,7 +18,8 @@ export default async function MysteryBoxPage() {
   const user = await getCurrentUser();
   if (!user) redirect("/kirish");
   const boxes = getMysteryBoxListings(await getVisitorCountry());
-  const dict = getDictionary(await getLocale());
+  const locale = await getLocale();
+  const dict = getDictionary(locale);
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
@@ -48,7 +49,7 @@ export default async function MysteryBoxPage() {
         </div>
       ) : (
         <div className="mt-8">
-          <ListingsGrid listings={boxes} dict={dict} />
+          <ListingsGrid listings={boxes} dict={dict} locale={locale} />
         </div>
       )}
     </div>

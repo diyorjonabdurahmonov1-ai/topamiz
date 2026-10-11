@@ -4,7 +4,8 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, Loader2, Lock, MessageCircle, Pause, Play, RotateCw, Sparkles, Tag, Volume2, VolumeX } from "lucide-react";
 import type { Listing } from "@/lib/types";
-import type { Dictionary } from "@/lib/i18n";
+import type { Dictionary, Locale } from "@/lib/i18n";
+import { formatTimeAgo } from "@/lib/i18n/format";
 import { useStartsAtLock } from "@/lib/useStartsAtLock";
 import Avatar from "./Avatar";
 import LikeButton from "./LikeButton";
@@ -57,6 +58,7 @@ export default function ReelSlide({
   distance,
   loggedIn,
   dict,
+  locale,
   commentCount,
   onOpenComments,
   muted,
@@ -71,6 +73,7 @@ export default function ReelSlide({
   distance: number;
   loggedIn: boolean;
   dict: Dictionary;
+  locale: Locale;
   commentCount: number;
   onOpenComments: () => void;
   // Lifted to the feed so toggling it on one video applies to every video —
@@ -332,6 +335,9 @@ export default function ReelSlide({
             <p className="text-lg font-extrabold drop-shadow">{priceText(dict, listing)}</p>
           )}
           <p className="line-clamp-2 text-sm">{listing.title}</p>
+          <p className="mt-0.5 text-[11px] text-white/70 drop-shadow" suppressHydrationWarning>
+            {formatTimeAgo(locale, listing.createdAt)}
+          </p>
           <Link
             href={`/elonlar/${listing.id}`}
             className="pointer-events-auto mt-2 inline-block rounded-full bg-white/15 px-3 py-1.5 text-xs font-semibold backdrop-blur-sm"
