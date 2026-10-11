@@ -1,4 +1,4 @@
-import { AlertTriangle, Eye, Lock, MapPin, ShieldCheck, Wallet } from "lucide-react";
+import { AlertTriangle, Eye, FileSearch, Lock, MapPin, ShieldCheck, Wallet } from "lucide-react";
 import type { Locale } from "@/lib/i18n";
 import type { LegalContent } from "./types";
 import en from "./en";
@@ -18,6 +18,6 @@ export function getLegal(locale: Locale): LegalContent {
 }
 
 // Pairs with LegalContent.safety.rules by index.
-export const SAFETY_ICONS = [MapPin, Eye, Wallet, Lock, AlertTriangle, ShieldCheck];
+export const SAFETY_ICONS = [MapPin, Eye, Wallet, FileSearch, Lock, AlertTriangle, ShieldCheck];
 
 export type { LegalContent, LegalDoc, LegalSection } from "./types";

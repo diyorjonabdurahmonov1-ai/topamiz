@@ -7,7 +7,7 @@ const en: LegalContent = {
     "sections": [
       {
         "title": "1. What data we collect",
-        "body": "When you sign up with a phone number, your name, phone number and password are stored — the password is never stored as is, only in an irreversibly encrypted (hashed) form that nobody, including the site owner, can read. When you sign in with Google, your name, email and profile picture are taken from your account. When you create a listing or a QR tag, the title, description, photos, location, phone number and reward amount you enter are stored. Your messages to other users and the photos you send are stored on the site as well."
+        "body": "When you sign up with a phone number, your name, phone number and password are stored — the password is never stored as is, only in an irreversibly encrypted (hashed) form that nobody, including the site owner, can read. When you sign in with Google, your name, email and profile picture are taken from your account. When you create a listing or a QR tag, the title, description, photos and video, price and details (such as a car's year or a flat's number of rooms), location, phone number and reward amount you enter are stored. Your messages to other users and the photos you send are stored on the site as well."
       },
       {
         "title": "2. Device and visit data",
@@ -15,7 +15,7 @@ const en: LegalContent = {
       },
       {
         "title": "3. How we use your data",
-        "body": "Your data is used only to run the service: showing your listing to other users, letting you exchange messages, and sending notifications about found and lost items. Your data is never sold to third parties or passed on to other companies for advertising."
+        "body": "Your data is used only to run the service: showing your listing to other users, letting you exchange messages, and sending notifications about your listings and messages. Your data is never sold to third parties or passed on to other companies for advertising."
       },
       {
         "title": "4. Third-party services",
@@ -53,7 +53,7 @@ const en: LegalContent = {
     "sections": [
       {
         "title": "1. About the platform",
-        "body": "Findo (findo.net.uz) is a platform for posting and searching listings about lost and found items and contacting their owners. By using the service, you agree to the terms below."
+        "body": "Findo (findo.net.uz) is a listings platform: you can sell or rent out goods, vehicles and property, offer jobs and services, post about lost and found items, search listings and contact the people who posted them. Findo only hosts the listings; it takes no part in deals, payment or delivery. By using the service, you agree to the terms below."
       },
       {
         "title": "2. Registration",
@@ -61,11 +61,11 @@ const en: LegalContent = {
       },
       {
         "title": "3. Content of listings and messages",
-        "body": "Listings, photos and messages you post must be accurate and truthful. Posting fake listings, claiming someone else's item as your own, or promising a reward for fraudulent purposes is strictly prohibited."
+        "body": "Listings, photos, videos and messages you post must be accurate and truthful: the price, condition and details must match the actual item, service or job. Posting fake listings, selling or renting out something that isn't yours, claiming someone else's item as your own, or promising a reward for fraudulent purposes is strictly prohibited."
       },
       {
         "title": "4. Prohibited actions",
-        "body": "Any listing or message that is illegal, abusive, incites violence, or aims to deceive or harass other users is prohibited. When such cases are found, the listing is removed and the account may be blocked."
+        "body": "Any listing or message that is illegal, abusive, incites violence, or aims to deceive or harass other users is prohibited. Selling or offering anything whose trade the law restricts (weapons and ammunition, narcotic or potent substances, prescription medicines, stolen or counterfeit goods, personal documents) is prohibited as well. When such cases are found, the listing is removed and the account may be blocked."
       },
       {
         "title": "5. Reports and moderation",
@@ -73,7 +73,7 @@ const en: LegalContent = {
       },
       {
         "title": "6. Meetings between users",
-        "body": "Findo is only a means of connecting users with each other; it does not take part in meetings, reward payments or item handovers between them and is not liable for any harm that may arise in that process. Advice on meeting safely is on the Safety Rules page."
+        "body": "Findo is only a means of connecting users with each other; it does not take part in their arrangements, deals, payments, deliveries, meetings, reward payments or item handovers and is not liable for any harm that may arise in that process. Advice on dealing safely is on the Safety Rules page."
       },
       {
         "title": "7. Personal data",
@@ -91,7 +91,7 @@ const en: LegalContent = {
   },
   "safety": {
     "title": "Safety Rules",
-    "intro": "Handing over a lost or found item always means meeting a stranger. Follow these rules to protect yourself and your belongings.",
+    "intro": "Selling, buying, renting, agreeing on a job or a service, handing over a lost item — all of it means dealing with a stranger, and often meeting one. Follow these rules to protect yourself, your money and your belongings.",
     "rules": [
       {
         "title": "Meet only in open, busy places",
@@ -102,8 +102,12 @@ const en: LegalContent = {
         "body": "Bring a family member or friend to the meeting, or at least tell someone close to you where you're going and who you're meeting."
       },
       {
-        "title": "Hand over a reward only after seeing the item",
-        "body": "If a reward was promised, give it only in person, once you've confirmed the item really is yours. Being asked to transfer money to a bank card in advance can be a sign of fraud."
+        "title": "Don't pay in advance",
+        "body": "Don't send money up front for a \"reservation\", \"delivery\" or \"paperwork\" before you've seen the item, home or service with your own eyes. An employer asking you to pay to get the job is a sign of fraud. Even a promised reward should be given only in person, once you've confirmed the item really is yours. Findo never asks you for payment."
+      },
+      {
+        "title": "Check the item and the documents",
+        "body": "Before buying, inspect and try out the item carefully. For a car, check the registration certificate and the VIN; for a house or flat, check the ownership documents and the seller's identity; put a rental in a written contract. If the price is far below the market, be careful."
       },
       {
         "title": "Share personal information carefully",

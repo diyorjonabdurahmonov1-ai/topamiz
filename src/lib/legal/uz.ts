@@ -7,7 +7,7 @@ const uz: LegalContent = {
     "sections": [
       {
         "title": "1. Qaysi ma'lumotlarni to'playmiz",
-        "body": "Telefon raqam bilan ro'yxatdan o'tganingizda ismingiz, telefon raqamingiz va parolingiz saqlanadi — parol ochiq holda emas, faqat qaytarib bo'lmaydigan shifrlangan ko'rinishda (hash) saqlanadi va uni hech kim, jumladan sayt egasi ham, ko'ra olmaydi. Google orqali kirganingizda hisobingizdan ism, email va profil rasmi olinadi. E'lon yoki QR-belgi yaratganda siz o'zingiz kiritgan sarlavha, tavsif, rasm, lokatsiya, telefon raqami va mukofot summasi saqlanadi. Boshqa foydalanuvchilar bilan yozishgan xabarlaringiz va yuborgan rasmlaringiz ham saytda saqlanadi."
+        "body": "Telefon raqam bilan ro'yxatdan o'tganingizda ismingiz, telefon raqamingiz va parolingiz saqlanadi — parol ochiq holda emas, faqat qaytarib bo'lmaydigan shifrlangan ko'rinishda (hash) saqlanadi va uni hech kim, jumladan sayt egasi ham, ko'ra olmaydi. Google orqali kirganingizda hisobingizdan ism, email va profil rasmi olinadi. E'lon yoki QR-belgi yaratganda siz o'zingiz kiritgan sarlavha, tavsif, rasm va video, narx va tafsilotlar (masalan, mashinaning yili yoki xonadonning xonalari soni), lokatsiya, telefon raqami va mukofot summasi saqlanadi. Boshqa foydalanuvchilar bilan yozishgan xabarlaringiz va yuborgan rasmlaringiz ham saytda saqlanadi."
       },
       {
         "title": "2. Qurilma va tashrif ma'lumotlari",
@@ -15,7 +15,7 @@ const uz: LegalContent = {
       },
       {
         "title": "3. Ma'lumotlardan qanday foydalanamiz",
-        "body": "Ma'lumotlaringiz faqat xizmatni ishga tushirish uchun ishlatiladi: e'loningizni boshqa foydalanuvchilarga ko'rsatish, xabarlashish imkonini berish, topilma/yo'qotma bo'yicha bildirishnoma yuborish. Ma'lumotlaringiz uchinchi shaxslarga sotilmaydi va reklama maqsadida boshqa kompaniyalarga uzatilmaydi."
+        "body": "Ma'lumotlaringiz faqat xizmatni ishga tushirish uchun ishlatiladi: e'loningizni boshqa foydalanuvchilarga ko'rsatish, xabarlashish imkonini berish, e'lonlaringiz va xabarlaringiz bo'yicha bildirishnoma yuborish. Ma'lumotlaringiz uchinchi shaxslarga sotilmaydi va reklama maqsadida boshqa kompaniyalarga uzatilmaydi."
       },
       {
         "title": "4. Uchinchi tomon xizmatlari",
@@ -53,7 +53,7 @@ const uz: LegalContent = {
     "sections": [
       {
         "title": "1. Platforma haqida",
-        "body": "Findo (findo.net.uz) — yo'qolgan va topilgan buyumlar haqida e'lon joylash, izlash va egasi bilan bog'lanish imkonini beruvchi platforma. Xizmatdan foydalanish orqali siz quyidagi shartlarga rozilik bildirasiz."
+        "body": "Findo (findo.net.uz) — e'lonlar platformasi: unda buyum, transport yoki ko'chmas mulk sotish, ijaraga berish, ish va xizmat taklif qilish, shuningdek yo'qolgan va topilgan buyumlar haqida e'lon joylash, izlash va e'lon egasi bilan bog'lanish mumkin. Findo faqat e'lonlarni joylaydi: savdo, to'lov yoki yetkazib berishda ishtirok etmaydi. Xizmatdan foydalanish orqali siz quyidagi shartlarga rozilik bildirasiz."
       },
       {
         "title": "2. Ro'yxatdan o'tish",
@@ -61,11 +61,11 @@ const uz: LegalContent = {
       },
       {
         "title": "3. E'lon va xabarlar mazmuni",
-        "body": "Joylashtirilgan e'lon, rasm va xabarlar to'g'ri va haqiqiy bo'lishi kerak. Soxta e'lon berish, boshqa odamning buyumini o'ziniki qilib ko'rsatish, firibgarlik maqsadida mukofot va'da qilish qat'iyan taqiqlanadi."
+        "body": "Joylashtirilgan e'lon, rasm, video va xabarlar to'g'ri va haqiqiy bo'lishi kerak: narx, holat va tafsilotlar buyum, xizmat yoki ishning o'ziga mos kelishi lozim. Soxta e'lon berish, o'zingizga tegishli bo'lmagan narsani sotish yoki ijaraga berish, boshqa odamning buyumini o'ziniki qilib ko'rsatish, firibgarlik maqsadida mukofot va'da qilish qat'iyan taqiqlanadi."
       },
       {
         "title": "4. Taqiqlangan harakatlar",
-        "body": "Qonunga zid, haqoratli, zo'ravonlikka chaqiruvchi, boshqa foydalanuvchilarni aldash yoki bezovta qilish maqsadidagi har qanday e'lon yoki xabar taqiqlanadi. Bunday holatlar aniqlansa, e'lon o'chiriladi, hisob bloklanishi mumkin."
+        "body": "Qonunga zid, haqoratli, zo'ravonlikka chaqiruvchi, boshqa foydalanuvchilarni aldash yoki bezovta qilish maqsadidagi har qanday e'lon yoki xabar taqiqlanadi. Qonun bilan muomaladan cheklangan narsalarni (qurol va o'q-dorilar, giyohvand va kuchli ta'sir qiluvchi moddalar, retseptli dorilar, o'g'irlangan yoki soxta buyumlar, shaxsiy hujjatlar) sotish yoki taklif qilish ham taqiqlanadi. Bunday holatlar aniqlansa, e'lon o'chiriladi, hisob bloklanishi mumkin."
       },
       {
         "title": "5. Shikoyat va moderatsiya",
@@ -73,7 +73,7 @@ const uz: LegalContent = {
       },
       {
         "title": "6. Foydalanuvchilar orasidagi uchrashuvlar",
-        "body": "Findo faqat foydalanuvchilarni bir-biri bilan bog'lash vositasi bo'lib, ular orasidagi uchrashuv, mukofot to'lovi yoki buyum topshirish jarayoniga aralashmaydi va bu jarayonda yuzaga kelishi mumkin bo'lgan har qanday zarar uchun javobgar emas. Uchrashuv xavfsizligi bo'yicha tavsiyalar \"Xavfsizlik qoidalari\" sahifasida keltirilgan."
+        "body": "Findo faqat foydalanuvchilarni bir-biri bilan bog'lash vositasi bo'lib, ular orasidagi kelishuv, savdo, to'lov, yetkazib berish, uchrashuv, mukofot to'lovi yoki buyum topshirish jarayoniga aralashmaydi va bu jarayonda yuzaga kelishi mumkin bo'lgan har qanday zarar uchun javobgar emas. Xavfsiz kelishuv bo'yicha tavsiyalar \"Xavfsizlik qoidalari\" sahifasida keltirilgan."
       },
       {
         "title": "7. Shaxsiy ma'lumotlar",
@@ -91,7 +91,7 @@ const uz: LegalContent = {
   },
   "safety": {
     "title": "Xavfsizlik qoidalari",
-    "intro": "Yo'qolgan yoki topilgan buyumni topshirish har doim begona odam bilan uchrashuvni anglatadi. O'zingizni va buyumingizni himoya qilish uchun quyidagi qoidalarga amal qiling.",
+    "intro": "Sotish, sotib olish, ijara, ish yoki xizmat bo'yicha kelishish, yo'qolgan buyumni topshirish — bularning barchasi notanish odam bilan muloqot va ko'pincha uchrashuvni anglatadi. O'zingizni, pulingizni va buyumingizni himoya qilish uchun quyidagi qoidalarga amal qiling.",
     "rules": [
       {
         "title": "Faqat ochiq va odam ko'p joyda uchrashing",
@@ -102,8 +102,12 @@ const uz: LegalContent = {
         "body": "Uchrashuvga oila a'zosi yoki do'stingiz bilan boring, yoki hech bo'lmasa qayerga va kim bilan borayotganingizni yaqiningizga xabar qilib qo'ying."
       },
       {
-        "title": "Mukofotni faqat buyumni ko'rgach bering",
-        "body": "Mukofot va'da qilingan bo'lsa, uni faqat buyum haqiqatan ham sizniki ekanini tasdiqlagandan so'ng, yuzma-yuz uchrashuvda bering. Oldindan bank kartasi orqali pul o'tkazishni so'rasa, bu firibgarlik belgisi bo'lishi mumkin."
+        "title": "Oldindan pul o'tkazmang",
+        "body": "Buyum, uy yoki xizmatni o'z ko'zingiz bilan ko'rmaguningizcha \"band qilish\", \"yetkazib berish\" yoki \"hujjat rasmiylashtirish\" uchun oldindan pul o'tkazmang. Ish beruvchi ishga olish uchun pul so'rasa — bu firibgarlik belgisi. Mukofot va'da qilingan bo'lsa ham, uni faqat buyum haqiqatan ham sizniki ekanini tasdiqlagach, yuzma-yuz bering. Findo hech qachon sizdan to'lov so'ramaydi."
+      },
+      {
+        "title": "Buyum va hujjatlarni tekshiring",
+        "body": "Sotib olishdan oldin buyumni yaxshilab ko'zdan kechiring va sinab ko'ring. Mashina uchun texpasport va kuzov raqamini, uy yoki kvartira uchun egalik hujjatini va sotuvchining shaxsini tekshiring; ijarada shartnoma tuzing. Narx bozor narxidan juda arzon bo'lsa — ehtiyot bo'ling."
       },
       {
         "title": "Shaxsiy ma'lumotni ehtiyot bo'lib bering",
