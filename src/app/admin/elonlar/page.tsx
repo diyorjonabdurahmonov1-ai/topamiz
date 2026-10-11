@@ -14,6 +14,10 @@ export const metadata: Metadata = {
 const PAGE_SIZE = 50;
 
 const TYPES: { id: string; label: string; match: (l: Listing) => boolean }[] = [
+  { id: "sell", label: "Sotiladi", match: (l) => !l.isMysteryBox && !l.isPromo && l.kind === "sell" },
+  { id: "rent", label: "Ijara", match: (l) => !l.isMysteryBox && !l.isPromo && l.kind === "rent" },
+  { id: "job", label: "Ish", match: (l) => !l.isMysteryBox && !l.isPromo && l.kind === "job" },
+  { id: "service", label: "Xizmat", match: (l) => !l.isMysteryBox && !l.isPromo && l.kind === "service" },
   { id: "lost", label: "Yo'qolgan", match: (l) => !l.isMysteryBox && !l.isPromo && l.kind === "lost" },
   { id: "found", label: "Topilgan", match: (l) => !l.isMysteryBox && !l.isPromo && l.kind === "found" },
   { id: "mystery", label: "Sirli quti", match: (l) => l.isMysteryBox },
