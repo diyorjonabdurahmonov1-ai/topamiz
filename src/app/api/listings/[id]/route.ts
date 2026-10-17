@@ -31,7 +31,7 @@ export async function DELETE(_request: Request, ctx: RouteContext<"/api/listings
   if (!user) return NextResponse.json({ error: "Kirish talab qilinadi" }, { status: 401 });
 
   const { id } = await ctx.params;
-  const listing = getListingById(id);
+  const listing = getListingById(id, { includeHidden: true });
   if (!listing) return NextResponse.json({ error: "Topilmadi" }, { status: 404 });
 
   if (listing.ownerId !== user.id && !isAdmin(user)) {
@@ -47,7 +47,7 @@ export async function PATCH(request: Request, ctx: RouteContext<"/api/listings/[
   if (!user) return NextResponse.json({ error: "Kirish talab qilinadi" }, { status: 401 });
 
   const { id } = await ctx.params;
-  const listing = getListingById(id);
+  const listing = getListingById(id, { includeHidden: true });
   if (!listing) return NextResponse.json({ error: "Topilmadi" }, { status: 404 });
 
   if (listing.ownerId !== user.id && !isAdmin(user)) {

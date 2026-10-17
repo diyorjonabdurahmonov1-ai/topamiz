@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { displayIdentity, getCurrentUser, getUserById } from "@/lib/auth";
+import { displayIdentity, getCurrentUser, getUserById, isAdmin, isUserBlocked } from "@/lib/auth";
 import { getListingById } from "@/lib/listings";
 import { getThread, markThreadRead, MAX_MESSAGE_LENGTH, MAX_MESSAGE_PHOTOS, sendMessage } from "@/lib/messages";
 import { rateLimit } from "@/lib/rate-limit";
@@ -15,7 +15,7 @@ export async function GET(_request: Request, ctx: RouteContext<"/api/messages/[u
 
   const { userId } = await ctx.params;
   const otherId = Number(userId);
-  if (!getUserById(otherId)) {
+  if (!getUserById(otherId) || (isUserBlocked(otherId) && !isAdmin(user))) {
     return NextResponse.json({ error: "Foydalanuvchi topilmadi" }, { status: 404 });
   }
 
@@ -30,7 +30,7 @@ export async function POST(request: Request, ctx: RouteContext<"/api/messages/[u
   const { userId } = await ctx.params;
   const otherId = Number(userId);
   const recipient = getUserById(otherId);
-  if (!recipient) {
+  if (!recipient || (isUserBlocked(otherId) && !isAdmin(user))) {
     return NextResponse.json({ error: "Foydalanuvchi topilmadi" }, { status: 404 });
   }
   if (otherId === user.id) {

@@ -111,7 +111,9 @@ export function getNotifications(userId: number, limit = 50): AppNotification[] 
     .prepare(
       `SELECT n.id, n.type, n.actor_id, n.listing_id, l.title AS listing_title, n.created_at, n.read_at
        FROM notifications n LEFT JOIN listings l ON l.id = n.listing_id
-       WHERE n.user_id = ? ORDER BY n.created_at DESC, n.id DESC LIMIT ?`
+       LEFT JOIN users a ON a.id = n.actor_id
+       WHERE n.user_id = ? AND a.blocked_at IS NULL
+       ORDER BY n.created_at DESC, n.id DESC LIMIT ?`
     )
     .all(userId, limit) as NotificationRow[];
   return rows.map((r) => ({
@@ -127,7 +129,10 @@ export function getNotifications(userId: number, limit = 50): AppNotification[] 
 
 export function unreadNotificationCount(userId: number): number {
   const row = db
-    .prepare("SELECT COUNT(*) AS c FROM notifications WHERE user_id = ? AND read_at IS NULL")
+    .prepare(
+      `SELECT COUNT(*) AS c FROM notifications n LEFT JOIN users a ON a.id = n.actor_id
+       WHERE n.user_id = ? AND n.read_at IS NULL AND a.blocked_at IS NULL`
+    )
     .get(userId) as { c: number };
   return row.c;
 }

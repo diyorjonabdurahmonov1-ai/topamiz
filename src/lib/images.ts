@@ -1,4 +1,4 @@
-import { mkdir, readdir, readFile, rename, stat, writeFile } from "node:fs/promises";
+import { mkdir, readdir, readFile, rename, stat, unlink, writeFile } from "node:fs/promises";
 import path from "node:path";
 import crypto from "node:crypto";
 import sharp from "sharp";
@@ -51,6 +51,15 @@ export async function saveUpload(data: Buffer, ext: string): Promise<string> {
   const filename = `${crypto.randomUUID()}.${ext}`;
   await writeAtomically(path.join(UPLOAD_DIR, filename), data);
   return filename;
+}
+
+// Removes an upload and its resized copies; a file already gone is fine.
+export async function removeUpload(filename: string): Promise<void> {
+  const name = path.basename(filename);
+  await unlink(path.join(UPLOAD_DIR, name)).catch(() => {});
+  await Promise.all(
+    VARIANT_WIDTHS.map((w) => unlink(path.join(VARIANT_DIR, `${w}-${name}.webp`)).catch(() => {}))
+  );
 }
 
 export function isVariantWidth(value: number): value is VariantWidth {

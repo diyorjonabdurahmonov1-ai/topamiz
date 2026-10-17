@@ -72,7 +72,7 @@ export default function AdminUserRow({ user }: { user: AdminUserRowType }) {
             )}
             {blocked && (
               <span className="shrink-0 rounded-full bg-danger/10 px-2 py-0.5 text-[10px] font-semibold text-danger">
-                Bloklangan
+                Bloklangan · e'lonlari yashirin
               </span>
             )}
           </div>

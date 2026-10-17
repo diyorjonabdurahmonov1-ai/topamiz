@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
-import { displayIdentity, getCurrentUser, getUserById, isAdmin } from "@/lib/auth";
+import { displayIdentity, getCurrentUser, getUserById, isAdmin, isUserBlocked } from "@/lib/auth";
 import { getThread, markThreadRead } from "@/lib/messages";
 import { getLocale } from "@/lib/i18n/server";
 import { getDictionary } from "@/lib/i18n";
@@ -15,7 +15,7 @@ export async function generateMetadata(
 ): Promise<Metadata> {
   const { userId } = await props.params;
   const other = getUserById(Number(userId));
-  const name = other ? displayIdentity(other).name : null;
+  const name = other && !isUserBlocked(other.id) ? displayIdentity(other).name : null;
   return { title: name ? `${name} — Xabarlar — Findo` : "Xabarlar — Findo" };
 }
 
@@ -28,7 +28,8 @@ export default async function ChatPage(props: PageProps<"/xabarlar/[userId]">) {
   if (otherId === user.id) redirect("/xabarlar");
 
   const other = getUserById(otherId);
-  if (!other) notFound();
+  // A blocked user's chats are hidden from everyone but admins.
+  if (!other || (isUserBlocked(otherId) && !isAdmin(user))) notFound();
 
   const hadUnread = getThread(user.id, otherId).some(
     (m) => m.recipientId === user.id && !m.readAt

@@ -74,8 +74,15 @@ export function createTag(params: {
   return toTag(row);
 }
 
+// The public QR page and its contact form: a tag whose owner an admin has
+// blocked reads as not found.
 export function getTagByCode(code: string): ItemTag | null {
-  const row = db.prepare("SELECT * FROM tags WHERE code = ?").get(code) as RawTagRow | undefined;
+  const row = db
+    .prepare(
+      `SELECT tags.* FROM tags JOIN users ON users.id = tags.owner_id
+       WHERE tags.code = ? AND users.blocked_at IS NULL`
+    )
+    .get(code) as RawTagRow | undefined;
   return row ? toTag(row) : null;
 }
 

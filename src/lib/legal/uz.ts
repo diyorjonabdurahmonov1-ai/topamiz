@@ -27,7 +27,7 @@ const uz: LegalContent = {
       },
       {
         "title": "6. Hisobni va ma'lumotlarni o'chirish",
-        "body": "Hisobingizni istalgan vaqtda butunlay o'chirishingiz mumkin — bu amal profilingiz, xabarlaringiz va QR-belgilaringizni qaytarib bo'lmas tarzda o'chiradi (e'lonlaringiz saytda qoladi, lekin egasiz bo'lib qoladi). Buni \"Mening profilim\" sahifasidan yoki quyidagi havola orqali amalga oshirishingiz mumkin.",
+        "body": "Hisobingizni istalgan vaqtda butunlay o'chirishingiz mumkin — bu amal profilingiz, xabarlaringiz va QR-belgilaringizni, shuningdek barcha e'lonlaringizni ularning rasm va videolari bilan, izohlaringiz va yoqtirishlaringizni qaytarib bo'lmas tarzda o'chiradi. Buni \"Mening profilim\" sahifasidan yoki quyidagi havola orqali amalga oshirishingiz mumkin.",
         "link": {
           "href": "/hisobni-ochirish",
           "label": "Hisobni o'chirish sahifasi"
@@ -69,7 +69,7 @@ const uz: LegalContent = {
       },
       {
         "title": "5. Shikoyat va moderatsiya",
-        "body": "Har bir e'lonni foydalanuvchilar shikoyat qilishi mumkin. Bir nechta mustaqil shikoyat kelib tushgan e'lon avtomatik ko'rib chiqiladi va, qoidabuzarlik tasdiqlansa, olib tashlanadi. Findo ma'muriyati zarur hollarda e'lon yoki hisobni oldindan ogohlantirmasdan o'chirish huquqini saqlab qoladi."
+        "body": "Har bir e'lonni foydalanuvchilar shikoyat qilishi mumkin. Bir nechta mustaqil shikoyat kelib tushgan e'lon avtomatik ko'rib chiqiladi va, qoidabuzarlik tasdiqlansa, olib tashlanadi. Findo ma'muriyati zarur hollarda e'lon yoki hisobni oldindan ogohlantirmasdan o'chirish huquqini saqlab qoladi. Qoidalarni buzgan hisob bloklanishi mumkin: bloklangan hisobning profili, e'lonlari, izohlari va xabarlari saytda boshqalarga ko'rinmaydi."
       },
       {
         "title": "6. Foydalanuvchilar orasidagi uchrashuvlar",

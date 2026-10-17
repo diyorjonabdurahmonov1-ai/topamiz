@@ -481,7 +481,7 @@ const uz: Dictionary = {
     findPeoplePlaceholder: "Ism bo'yicha qidiring...",
     deleteAccount: "Hisobni o'chirish",
     deleteAccountConfirm:
-      "Hisobingizni butunlay o'chirmoqchimisiz? Profilingiz, xabarlaringiz va QR-belgilaringiz qaytarib bo'lmas tarzda o'chiriladi. E'lonlaringiz saytda qoladi, lekin egasiz bo'lib qoladi.",
+      "Hisobingizni butunlay o'chirmoqchimisiz? Profilingiz, xabarlaringiz va QR-belgilaringiz qaytarib bo'lmas tarzda o'chiriladi. Barcha e'lonlaringiz ham rasm va videolari bilan o'chiriladi.",
     deleteAccountError: "Hisobni o'chirishda xatolik yuz berdi. Birozdan keyin qayta urinib ko'ring.",
   },
 

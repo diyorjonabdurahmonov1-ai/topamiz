@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { MessageCircle } from "lucide-react";
-import { getCurrentUser, getUserById } from "@/lib/auth";
+import { getCurrentUser, getPublicUserById, getUserById, isAdmin, isUserBlocked } from "@/lib/auth";
 import { getListingsByOwner } from "@/lib/listings";
 import { getFollowerCount, getFriendCount, isFriend } from "@/lib/friends";
 import { getLocale } from "@/lib/i18n/server";
@@ -14,7 +14,7 @@ import FriendCounts from "@/components/FriendCounts";
 
 export async function generateMetadata(props: PageProps<"/profil/[id]">): Promise<Metadata> {
   const { id } = await props.params;
-  const user = getUserById(Number(id));
+  const user = getPublicUserById(Number(id));
   return { title: user ? `${user.name} — Findo` : "Foydalanuvchi topilmadi — Findo" };
 }
 
@@ -27,7 +27,8 @@ export default async function PublicProfilePage(props: PageProps<"/profil/[id]">
   if (currentUser && currentUser.id === userId) redirect("/profil");
 
   const user = getUserById(userId);
-  if (!user) notFound();
+  // A blocked user's profile is gone for everyone but admins.
+  if (!user || (isUserBlocked(userId) && !isAdmin(currentUser))) notFound();
   const locale = await getLocale();
   const dict = getDictionary(locale);
   const listings = getListingsByOwner(user.id)

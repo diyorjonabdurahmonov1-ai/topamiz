@@ -10,6 +10,7 @@ import {
   MAX_NAME_LENGTH,
 } from "@/lib/auth";
 import { isOwnUploadUrl } from "@/lib/upload-url";
+import { removeStoredFiles } from "@/lib/stored-files";
 
 // Uploaded photos only ever come back from POST /api/upload as this prefix —
 // anything else is a client claiming an arbitrary external URL is one of ours.
@@ -56,7 +57,8 @@ export async function DELETE() {
   const user = await getCurrentUser();
   if (!user) return NextResponse.json({ error: "Kirish talab qilinadi" }, { status: 401 });
 
-  deleteUserAccount(user.id);
+  const files = deleteUserAccount(user.id);
   await clearSessionCookie();
+  await removeStoredFiles(files);
   return NextResponse.json({ ok: true });
 }
