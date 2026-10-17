@@ -2,10 +2,21 @@ import { NextResponse } from "next/server";
 import { getCurrentUser, getUserById } from "@/lib/auth";
 import { addFriend, isFriend, removeFriend } from "@/lib/friends";
 import { notify, removeNotification } from "@/lib/notifications";
+import { rateLimit } from "@/lib/rate-limit";
 
 export async function POST(_request: Request, ctx: RouteContext<"/api/friends/[id]">) {
   const user = await getCurrentUser();
   if (!user) return NextResponse.json({ error: "Kirish talab qilinadi" }, { status: 401 });
+
+  // Each add notifies (and pushes to) the other person, so adding and
+  // removing someone in a loop would flood their phone.
+  const limit = rateLimit(`friend-add:${user.id}`, 30, 60 * 60 * 1000);
+  if (!limit.allowed) {
+    return NextResponse.json(
+      { error: "Juda ko'p urinish. Birozdan so'ng qayta urinib ko'ring." },
+      { status: 429, headers: { "Retry-After": String(limit.retryAfterSeconds) } }
+    );
+  }
 
   const { id } = await ctx.params;
   const targetId = Number(id);

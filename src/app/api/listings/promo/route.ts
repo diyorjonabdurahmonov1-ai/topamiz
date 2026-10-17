@@ -15,10 +15,10 @@ import { getClientIp, rateLimit } from "@/lib/rate-limit";
 import { countryForIp } from "@/lib/geo";
 import { R2_PUBLIC_URL } from "@/lib/r2";
 import type { PromoCategoryId } from "@/lib/types";
+import { isOwnUploadUrl } from "@/lib/upload-url";
 
 // Uploaded photos only ever come back from POST /api/upload as this prefix —
 // anything else is a client claiming an arbitrary external URL is one of ours.
-const OWN_UPLOAD_PREFIX = "/api/uploads/";
 const PROMO_CATEGORY_IDS = new Set(promoCategories.map((c) => c.id));
 const MAX_TARIFFS_LENGTH = 500;
 
@@ -62,7 +62,7 @@ export async function POST(request: Request) {
       : "";
   const photoUrls = Array.isArray(body?.photoUrls)
     ? body.photoUrls
-        .filter((u: unknown): u is string => typeof u === "string" && u.startsWith(OWN_UPLOAD_PREFIX))
+        .filter(isOwnUploadUrl)
         .slice(0, MAX_LISTING_PHOTOS)
     : [];
   const videoUrl =

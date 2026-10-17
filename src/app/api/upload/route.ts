@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { matchesImageSignature } from "@/lib/image-signature";
 import { encodeUpload, saveUpload, UnreadableImageError } from "@/lib/images";
+import { getCurrentUser } from "@/lib/auth";
 import { getClientIp, rateLimit } from "@/lib/rate-limit";
 
 // Phones shrink photos before sending them (lib/image-prepare.ts), so this
@@ -14,12 +15,17 @@ const ALLOWED_TYPES: Record<string, string> = {
 };
 
 export async function POST(request: Request) {
+  // Every form that uploads photos is behind sign-in, so nobody anonymous
+  // can fill the disk with files that no listing ever uses.
+  const user = await getCurrentUser();
+  if (!user) return NextResponse.json({ error: "Kirish talab qilinadi" }, { status: 401 });
   const ip = getClientIp(request);
   const limit = rateLimit(`upload:${ip}`, 30, 60 * 60 * 1000);
-  if (!limit.allowed) {
+  const byUser = rateLimit(`upload-user:${user.id}`, 60, 60 * 60 * 1000);
+  if (!limit.allowed || !byUser.allowed) {
     return NextResponse.json(
       { error: "Juda ko'p fayl yuklandi. Birozdan so'ng qayta urinib ko'ring." },
-      { status: 429, headers: { "Retry-After": String(limit.retryAfterSeconds) } }
+      { status: 429, headers: { "Retry-After": String(Math.max(limit.retryAfterSeconds ?? 0, byUser.retryAfterSeconds ?? 0)) } }
     );
   }
 
