@@ -14,10 +14,10 @@ import { getClientIp, rateLimit } from "@/lib/rate-limit";
 import { countryForIp } from "@/lib/geo";
 import { R2_PUBLIC_URL } from "@/lib/r2";
 import { getUploadSession } from "@/lib/video-uploads";
+import { isOwnUploadUrl } from "@/lib/upload-url";
 
 // Uploaded photos only ever come back from POST /api/upload as this prefix —
 // anything else is a client claiming an arbitrary external URL is one of ours.
-const OWN_UPLOAD_PREFIX = "/api/uploads/";
 const MIN_MINUTES_AHEAD = 5;
 const MAX_DAYS_AHEAD = 30;
 
@@ -49,7 +49,7 @@ export async function POST(request: Request) {
   const city = typeof body?.city === "string" && cities.includes(body.city) ? body.city : null;
   const photoUrls = Array.isArray(body?.photoUrls)
     ? body.photoUrls
-        .filter((u: unknown): u is string => typeof u === "string" && u.startsWith(OWN_UPLOAD_PREFIX))
+        .filter(isOwnUploadUrl)
         .slice(0, MAX_LISTING_PHOTOS)
     : [];
   const videoUrl =

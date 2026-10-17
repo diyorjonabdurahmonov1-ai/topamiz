@@ -9,10 +9,10 @@ import {
   MAX_TAG_TITLE_LENGTH,
 } from "@/lib/tags";
 import { generateQrDataUrl, getBaseUrl, tagUrl } from "@/lib/qr";
+import { isOwnUploadUrl } from "@/lib/upload-url";
 
 // Uploaded photos only ever come back from POST /api/upload as this prefix —
 // anything else is a client claiming an arbitrary external URL is one of ours.
-const OWN_UPLOAD_PREFIX = "/api/uploads/";
 
 export async function POST(request: Request) {
   const user = await getCurrentUser();
@@ -33,7 +33,7 @@ export async function POST(request: Request) {
       : "";
   const photoUrls = Array.isArray(body?.photoUrls)
     ? body.photoUrls
-        .filter((u: unknown): u is string => typeof u === "string" && u.startsWith(OWN_UPLOAD_PREFIX))
+        .filter(isOwnUploadUrl)
         .slice(0, MAX_TAG_PHOTOS)
     : [];
 

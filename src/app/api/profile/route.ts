@@ -9,10 +9,10 @@ import {
   MAX_BIO_LENGTH,
   MAX_NAME_LENGTH,
 } from "@/lib/auth";
+import { isOwnUploadUrl } from "@/lib/upload-url";
 
 // Uploaded photos only ever come back from POST /api/upload as this prefix —
 // anything else is a client claiming an arbitrary external URL is one of ours.
-const OWN_UPLOAD_PREFIX = "/api/uploads/";
 
 export async function PATCH(request: Request) {
   const user = await getCurrentUser();
@@ -39,7 +39,7 @@ export async function PATCH(request: Request) {
     values.push(body.bio.trim().slice(0, MAX_BIO_LENGTH));
   }
 
-  if (typeof body?.avatarUrl === "string" && body.avatarUrl.startsWith(OWN_UPLOAD_PREFIX)) {
+  if (isOwnUploadUrl(body?.avatarUrl)) {
     updates.push("avatar_url = ?");
     values.push(body.avatarUrl);
   }

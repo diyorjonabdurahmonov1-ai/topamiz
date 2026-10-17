@@ -27,10 +27,10 @@ import {
   MAX_PRICE,
   sanitizeAttrs,
 } from "@/lib/sections";
+import { isOwnUploadUrl } from "@/lib/upload-url";
 
 // Uploaded photos only ever come back from POST /api/upload as this prefix —
 // anything else is a client claiming an arbitrary external URL is one of ours.
-const OWN_UPLOAD_PREFIX = "/api/uploads/";
 const CATEGORY_IDS = new Set(categories.map((c) => c.id));
 
 export async function POST(request: Request) {
@@ -93,7 +93,7 @@ export async function POST(request: Request) {
       : "";
   const photoUrls = Array.isArray(body?.photoUrls)
     ? body.photoUrls
-        .filter((u: unknown): u is string => typeof u === "string" && u.startsWith(OWN_UPLOAD_PREFIX))
+        .filter(isOwnUploadUrl)
         .slice(0, MAX_LISTING_PHOTOS)
     : [];
   // Uploaded videos/thumbnails only ever come back from POST /api/upload-video
