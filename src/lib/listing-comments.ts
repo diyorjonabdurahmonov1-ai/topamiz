@@ -1,5 +1,5 @@
 import { db } from "./db";
-import { displayIdentity, getUserById } from "./auth";
+import { displayIdentity, getUserById, isUserBlocked } from "./auth";
 
 export const MAX_COMMENT_LENGTH = 500;
 
@@ -36,7 +36,7 @@ export function getComments(listingId: number): ListingComment[] {
   return rows
     .map((row) => {
       const user = getUserById(row.user_id);
-      if (!user) return null;
+      if (!user || isUserBlocked(row.user_id)) return null;
       const identity = displayIdentity(user);
       return {
         id: row.id,

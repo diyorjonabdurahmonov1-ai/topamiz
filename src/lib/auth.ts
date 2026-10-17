@@ -27,9 +27,12 @@ export function toPublicUser(user: AuthUser): PublicUser {
   return { id: user.id, bio: user.bio, createdAt: user.createdAt, ...displayIdentity(user) };
 }
 
+// What other people see of a user: nothing at all once an admin has blocked
+// them, so they drop out of search, friend lists, chats, comments and
+// notifications everywhere this is used. Admin pages read users directly.
 export function getPublicUserById(id: number): PublicUser | null {
   const user = getUserById(id);
-  return user ? toPublicUser(user) : null;
+  return user && !isUserBlocked(id) ? toPublicUser(user) : null;
 }
 
 interface UserRow {
@@ -195,19 +198,53 @@ export async function clearSessionCookie() {
   store.delete(SESSION_COOKIE);
 }
 
-// Permanent: removes the account and everything FK-cascades from it
-// (sessions, tags, listing_reports, friendships, push subscriptions, and
-// messages where they're the recipient; messages they sent keep the thread
-// with sender_id set null). Listings they owned persist ownerless
-// (owner_id is ON DELETE SET NULL) so other users' history on them isn't
-// disrupted. resolved_by has no FK (added via a later ALTER TABLE), so it
-// needs clearing by hand first to avoid a dangling reference.
-export function deleteUserAccount(userId: number): void {
+function parseUrls(raw: string | null): string[] {
+  try {
+    const value = JSON.parse(raw || "[]");
+    return Array.isArray(value) ? value.filter((u): u is string => typeof u === "string") : [];
+  } catch {
+    return [];
+  }
+}
+
+// Permanent: removes the account and everything that belongs to it — their
+// listings (with the likes, comments and reports on them), the messages
+// they sent, and through the FK cascades their sessions, tags, comments,
+// likes, friendships, notifications, push subscriptions and messages sent
+// to them. Google Play requires an account's data to go with it, and a
+// listing left behind would keep their name and phone number public.
+// resolved_by has no FK (added via a later ALTER TABLE), so it's cleared by
+// hand. Returns the URLs of the photos and videos those rows pointed at, for
+// the caller to delete from disk and R2 (lib/stored-files.ts).
+export function deleteUserAccount(userId: number): string[] {
+  const files: string[] = [];
   const tx = db.transaction(() => {
+    const listings = db
+      .prepare("SELECT photo_urls, video_url, video_thumbnail_url FROM listings WHERE owner_id = ?")
+      .all(userId) as { photo_urls: string; video_url: string | null; video_thumbnail_url: string | null }[];
+    for (const l of listings) {
+      files.push(...parseUrls(l.photo_urls));
+      if (l.video_url) files.push(l.video_url);
+      if (l.video_thumbnail_url) files.push(l.video_thumbnail_url);
+    }
+    for (const t of db.prepare("SELECT photo_urls FROM tags WHERE owner_id = ?").all(userId) as { photo_urls: string }[]) {
+      files.push(...parseUrls(t.photo_urls));
+    }
+    for (const m of db.prepare("SELECT photo_urls FROM messages WHERE sender_id = ?").all(userId) as { photo_urls: string }[]) {
+      files.push(...parseUrls(m.photo_urls));
+    }
+    const avatar = db.prepare("SELECT avatar_url FROM users WHERE id = ?").get(userId) as
+      | { avatar_url: string | null }
+      | undefined;
+    if (avatar?.avatar_url) files.push(avatar.avatar_url);
+
     db.prepare("UPDATE listings SET resolved_by = NULL WHERE resolved_by = ?").run(userId);
+    db.prepare("DELETE FROM messages WHERE sender_id = ?").run(userId);
+    db.prepare("DELETE FROM listings WHERE owner_id = ?").run(userId);
     db.prepare("DELETE FROM users WHERE id = ?").run(userId);
   });
   tx();
+  return files;
 }
 
 export function isUserBlocked(id: number): boolean {

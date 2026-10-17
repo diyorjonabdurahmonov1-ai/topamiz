@@ -130,9 +130,7 @@ describe("deleteUserAccount", () => {
     const tag = createTag({ ownerId: finder.id, title: "Kalit", description: "test", photoUrls: [] });
 
     // Deleting the finder clears their listings.resolved_by credit (no FK on
-    // that column) and cascades their own tag, but the message they sent
-    // only loses its sender_id (ON DELETE SET NULL) since the recipient
-    // (owner) still exists.
+    // that column), cascades their own tag and deletes the message they sent.
     deleteUserAccount(finder.id);
 
     expect(getUserById(finder.id)).toBeNull();
@@ -140,21 +138,17 @@ describe("deleteUserAccount", () => {
       resolved_by: null,
     });
     expect(db.prepare("SELECT COUNT(*) c FROM tags WHERE id = ?").get(tag.id)).toEqual({ c: 0 });
-    const message = db
-      .prepare("SELECT sender_id, recipient_id FROM messages WHERE listing_id = ?")
-      .get(listing.id) as { sender_id: number | null; recipient_id: number };
-    expect(message.sender_id).toBeNull();
-    expect(message.recipient_id).toBe(owner.id);
+    expect(db.prepare("SELECT COUNT(*) c FROM messages WHERE listing_id = ?").get(listing.id)).toEqual({
+      c: 0,
+    });
 
-    // Deleting the owner (the listing's only remaining link) leaves the
-    // listing itself in place, just ownerless, and cascades the message
-    // where they were the recipient.
+    // Deleting the owner takes their listing with it (it carries their name
+    // and phone number) and cascades the message where they were the
+    // recipient.
     deleteUserAccount(owner.id);
 
     expect(getUserById(owner.id)).toBeNull();
-    expect(db.prepare("SELECT owner_id FROM listings WHERE id = ?").get(listing.id)).toEqual({
-      owner_id: null,
-    });
+    expect(db.prepare("SELECT COUNT(*) c FROM listings WHERE id = ?").get(listing.id)).toEqual({ c: 0 });
     expect(db.prepare("SELECT COUNT(*) c FROM messages WHERE listing_id = ?").get(listing.id)).toEqual({
       c: 0,
     });

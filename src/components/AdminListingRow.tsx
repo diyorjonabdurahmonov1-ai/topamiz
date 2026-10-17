@@ -52,6 +52,7 @@ export default function AdminListingRow({ listing }: { listing: Listing }) {
             <span>· {listing.city}</span>
             {listing.status === "resolved" && <span>· Yechildi</span>}
             {listing.isMysteryBox && <span className="text-accent-gold">· Sirli quti</span>}
+            {listing.ownerBlocked && <span className="font-semibold text-danger">· Egasi bloklangan, saytda ko'rinmaydi</span>}
             {listing.reward ? (
               <span className="flex items-center gap-1 text-accent-gold">
                 <Gift className="h-3 w-3" />

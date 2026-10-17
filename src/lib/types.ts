@@ -60,6 +60,8 @@ export interface Listing {
   ownerName: string | null;
   ownerAvatarColor: string | null;
   ownerAvatarUrl: string | null;
+  // The owner is blocked by an admin; only admin screens ever see such a listing.
+  ownerBlocked?: boolean;
   kind: ListingKind;
   title: string;
   description: string;

@@ -27,7 +27,7 @@ const en: LegalContent = {
       },
       {
         "title": "6. Deleting your account and data",
-        "body": "You can delete your account completely at any time — this irreversibly deletes your profile, messages and QR tags (your listings stay on the site, but without an owner). You can do this from your profile page or via the link below.",
+        "body": "You can delete your account completely at any time — this irreversibly deletes your profile, messages and QR tags, along with all your listings and their photos and videos, your comments and your likes. You can do this from your profile page or via the link below.",
         "link": {
           "href": "/hisobni-ochirish",
           "label": "Account deletion page"
@@ -69,7 +69,7 @@ const en: LegalContent = {
       },
       {
         "title": "5. Reports and moderation",
-        "body": "Users can report any listing. A listing that receives several independent reports is reviewed automatically and removed if a violation is confirmed. Findo's administration reserves the right to remove a listing or account without prior notice when necessary."
+        "body": "Users can report any listing. A listing that receives several independent reports is reviewed automatically and removed if a violation is confirmed. Findo's administration reserves the right to remove a listing or account without prior notice when necessary. An account that breaks the rules may be blocked: a blocked account's profile, listings, comments and messages are no longer visible to anyone on the site."
       },
       {
         "title": "6. Meetings between users",

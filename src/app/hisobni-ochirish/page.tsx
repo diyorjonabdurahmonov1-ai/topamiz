@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 };
 
 const DELETE_CONFIRM =
-  "Hisobingizni butunlay o'chirmoqchimisiz? Profilingiz, xabarlaringiz va QR-belgilaringiz qaytarib bo'lmas tarzda o'chiriladi. E'lonlaringiz saytda qoladi, lekin egasiz bo'lib qoladi.";
+  "Hisobingizni butunlay o'chirmoqchimisiz? Profilingiz, xabarlaringiz va QR-belgilaringiz qaytarib bo'lmas tarzda o'chiriladi. Barcha e'lonlaringiz ham rasm va videolari bilan o'chiriladi.";
 const DELETE_ERROR = "Hisobni o'chirishda xatolik yuz berdi. Birozdan keyin qayta urinib ko'ring.";
 
 export default async function AccountDeletionPage() {
@@ -35,10 +35,8 @@ export default async function AccountDeletionPage() {
           <li>Profilingiz (ism, bio, rasm) butunlay o'chiriladi.</li>
           <li>Barcha xabar yozishmalaringiz va QR-belgilaringiz o'chiriladi.</li>
           <li>Do'stlar ro'yxati va push-bildirishnoma obunalari bekor qilinadi.</li>
-          <li>
-            Joylashtirgan e'lonlaringiz saytda qoladi (boshqalarning ular bo'yicha yozishmalari buzilmasligi
-            uchun), lekin ularning egasi ko'rsatilmay qoladi.
-          </li>
+          <li>Joylashtirgan barcha e'lonlaringiz rasm va videolari bilan birga o'chiriladi.</li>
+          <li>Qoldirgan izohlaringiz va yoqtirishlaringiz o'chiriladi.</li>
           <li>Bu amalni ortga qaytarib bo'lmaydi.</li>
         </ul>
       </div>

@@ -135,6 +135,13 @@ which the post form, the API's validation and the display all read. Labels and
 price formatting live in `src/lib/listing-labels.ts`. Findo only hosts the
 listings; it never handles payment or delivery.
 
+An admin blocking a user (`/admin/foydalanuvchilar`) hides everything of
+theirs from the rest of the site — listings, QR tags, profile, comments,
+chats and notifications — until they are unblocked; admin pages still show
+it. Deleting an account removes the user's listings, sent messages and the
+photo and video files behind them too (`deleteUserAccount` in
+`src/lib/auth.ts`, `src/lib/stored-files.ts`), as Google Play requires.
+
 ### Android app
 
 `android/` is a Trusted Web Activity (package `uz.net.findo.app`) — the

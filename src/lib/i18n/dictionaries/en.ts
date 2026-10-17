@@ -477,7 +477,7 @@ const en: Dictionary = {
     findPeoplePlaceholder: "Search by name...",
     deleteAccount: "Delete account",
     deleteAccountConfirm:
-      "Permanently delete your account? Your profile, messages, and QR tags will be removed and cannot be recovered. Your listings will stay on the site but become ownerless.",
+      "Permanently delete your account? Your profile, messages, and QR tags will be removed and cannot be recovered. All your listings will be deleted too, with their photos and videos.",
     deleteAccountError: "Couldn't delete your account. Please try again shortly.",
   },
 

@@ -5,7 +5,7 @@ import { ArrowLeft, Calendar1, Eye, Gift, Sparkles, Tag } from "lucide-react";
 import { formatDate, formatSom } from "@/lib/data";
 import { categoryIcons } from "@/lib/icons";
 import { getListingById, incrementListingViews } from "@/lib/listings";
-import { displayIdentity, getCurrentUser, getUserById } from "@/lib/auth";
+import { displayIdentity, getCurrentUser, getUserById, isAdmin } from "@/lib/auth";
 import { isFriend } from "@/lib/friends";
 import { isLikedByUser } from "@/lib/listing-likes";
 import { getLocale } from "@/lib/i18n/server";
@@ -37,10 +37,11 @@ export async function generateMetadata(props: PageProps<"/elonlar/[id]">): Promi
 
 export default async function ListingDetailPage(props: PageProps<"/elonlar/[id]">) {
   const { id } = await props.params;
-  const listing = getListingById(id);
+  const user = await getCurrentUser();
+  // An admin can still open a blocked owner's listing (from the admin list).
+  const listing = getListingById(id, { includeHidden: isAdmin(user) });
   if (!listing) notFound();
 
-  const user = await getCurrentUser();
   if (listing.isMysteryBox && !user) redirect("/kirish");
 
   incrementListingViews(id);

@@ -46,6 +46,7 @@ interface RawListingRow {
   owner_email: string | null;
   owner_avatar_color: string | null;
   owner_avatar_url: string | null;
+  owner_blocked_at: string | null;
   resolver_name: string | null;
   resolver_email: string | null;
   resolver_avatar_color: string | null;
@@ -66,6 +67,7 @@ const LISTING_SELECT = `
     users.email AS owner_email,
     users.avatar_color AS owner_avatar_color,
     users.avatar_url AS owner_avatar_url,
+    users.blocked_at AS owner_blocked_at,
     resolver.name AS resolver_name,
     resolver.email AS resolver_email,
     resolver.avatar_color AS resolver_avatar_color,
@@ -74,8 +76,14 @@ const LISTING_SELECT = `
     (SELECT COUNT(*) FROM listing_comments WHERE listing_comments.listing_id = listings.id) AS comment_count
   FROM listings
   LEFT JOIN users ON users.id = listings.owner_id
-  LEFT JOIN users resolver ON resolver.id = listings.resolved_by
+  LEFT JOIN users resolver ON resolver.id = listings.resolved_by AND resolver.blocked_at IS NULL
 `;
+
+// Listings whose owner an admin has blocked disappear from every public
+// list and page; unblocking brings them back. Listings with no owner (the
+// user deleted their account before listings went with it, or seeded ones)
+// stay visible. Admin pages use getAllListingsForAdmin or includeHidden.
+const VISIBLE = "users.blocked_at IS NULL";
 
 function parseAttrs(raw: string | null): ListingAttrs {
   try {
@@ -113,6 +121,7 @@ function toListing(row: RawListingRow): Listing {
     ownerName: ownerIdentity?.name ?? null,
     ownerAvatarColor: ownerIdentity?.avatarColor ?? null,
     ownerAvatarUrl: ownerIdentity?.avatarUrl ?? null,
+    ownerBlocked: !!row.owner_blocked_at,
     kind: row.kind as ListingKind,
     title: row.title,
     description: row.description,
@@ -166,7 +175,7 @@ export function getAllActiveListings(country: string): Listing[] {
   const rows = db
     .prepare(
       `${LISTING_SELECT} WHERE listings.status = 'active' AND listings.country = ?
-       AND listings.is_mystery_box = 0 AND listings.is_promo = 0
+       AND listings.is_mystery_box = 0 AND listings.is_promo = 0 AND ${VISIBLE}
        ORDER BY listings.created_at DESC, listings.id DESC`
     )
     .all(country) as RawListingRow[];
@@ -182,16 +191,21 @@ export function getAllListings(country: string): Listing[] {
   const rows = db
     .prepare(
       `${LISTING_SELECT} WHERE listings.country = ? AND listings.is_mystery_box = 0 AND listings.is_promo = 0
+       AND ${VISIBLE}
        ORDER BY listings.created_at DESC, listings.id DESC`
     )
     .all(country) as RawListingRow[];
   return rows.map(toListing);
 }
 
-export function getListingById(id: string): Listing | null {
+// A blocked owner's listing reads as not found unless the caller is an admin
+// screen (`includeHidden`), so likes, comments, messages and the page itself
+// all treat it as gone.
+export function getListingById(id: string, { includeHidden = false }: { includeHidden?: boolean } = {}): Listing | null {
   const numId = Number(id);
   if (!Number.isInteger(numId)) return null;
-  const row = db.prepare(`${LISTING_SELECT} WHERE listings.id = ?`).get(numId) as
+  const visibility = includeHidden ? "" : `AND ${VISIBLE}`;
+  const row = db.prepare(`${LISTING_SELECT} WHERE listings.id = ? ${visibility}`).get(numId) as
     | RawListingRow
     | undefined;
   return row ? toListing(row) : null;
@@ -201,7 +215,7 @@ export function getRewardedListings(country: string): Listing[] {
   const rows = db
     .prepare(
       `${LISTING_SELECT} WHERE listings.status = 'active' AND listings.country = ? AND listings.reward IS NOT NULL
-       AND listings.is_promo = 0
+       AND listings.is_promo = 0 AND ${VISIBLE}
        ORDER BY listings.reward DESC, listings.id DESC`
     )
     .all(country) as RawListingRow[];
@@ -215,6 +229,7 @@ export function getPromoListings(country: string): Listing[] {
   const rows = db
     .prepare(
       `${LISTING_SELECT} WHERE listings.status = 'active' AND listings.country = ? AND listings.is_promo = 1
+       AND ${VISIBLE}
        ORDER BY listings.created_at DESC, listings.id DESC`
     )
     .all(country) as RawListingRow[];
@@ -230,6 +245,7 @@ export function getMysteryBoxListings(country: string): Listing[] {
     .prepare(
       `${LISTING_SELECT} WHERE listings.status = 'active' AND listings.country = ? AND listings.is_mystery_box = 1
        AND (listings.expires_at IS NULL OR listings.expires_at > datetime('now'))
+       AND ${VISIBLE}
        ORDER BY listings.created_at DESC, listings.id DESC`
     )
     .all(country) as RawListingRow[];
@@ -260,6 +276,7 @@ export function getReelsListings(
       `${LISTING_SELECT} WHERE listings.status = 'active' AND listings.country = ?
        ${mysteryBoxClause}
        AND (listings.video_url IS NOT NULL OR listings.photo_urls != '[]')
+       AND ${VISIBLE}
        ${excludeClause}
        ORDER BY RANDOM() LIMIT 30`
     )

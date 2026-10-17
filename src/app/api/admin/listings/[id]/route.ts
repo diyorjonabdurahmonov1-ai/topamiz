@@ -7,7 +7,7 @@ export async function DELETE(_request: Request, ctx: RouteContext<"/api/admin/li
   if (!isAdmin(admin)) return NextResponse.json({ error: "Ruxsat yo'q" }, { status: 403 });
 
   const { id } = await ctx.params;
-  if (!getListingById(id)) return NextResponse.json({ error: "Topilmadi" }, { status: 404 });
+  if (!getListingById(id, { includeHidden: true })) return NextResponse.json({ error: "Topilmadi" }, { status: 404 });
 
   deleteListing(id);
   return NextResponse.json({ ok: true });
@@ -18,7 +18,7 @@ export async function PATCH(request: Request, ctx: RouteContext<"/api/admin/list
   if (!isAdmin(admin)) return NextResponse.json({ error: "Ruxsat yo'q" }, { status: 403 });
 
   const { id } = await ctx.params;
-  if (!getListingById(id)) return NextResponse.json({ error: "Topilmadi" }, { status: 404 });
+  if (!getListingById(id, { includeHidden: true })) return NextResponse.json({ error: "Topilmadi" }, { status: 404 });
 
   const body = await request.json().catch(() => null);
   if (typeof body?.isMysteryBox !== "boolean") {
