@@ -564,6 +564,7 @@ export interface Dictionary {
     pushServiceBody: string;
     deniedAppBody: string;
     pushRetryBody: string;
+    pushSlowHint: string;
     title: string;
     navLabel: string;
     empty: string;

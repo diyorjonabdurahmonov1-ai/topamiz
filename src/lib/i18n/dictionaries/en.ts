@@ -596,6 +596,7 @@ const en: Dictionary = {
     pushServiceBody: "This phone's notification service didn't respond. Check your internet connection and that Google Play services are turned on, then try again. On Huawei and some Xiaomi phones notifications only work through Chrome.",
     deniedAppBody: "Notifications are turned off in your phone's settings. To turn them on: Settings → Apps → Findo → Notifications → allow, then tap this button again.",
     pushRetryBody: "Couldn't turn on notifications — check your internet connection and try again.",
+    pushSlowHint: "Connecting to the phone's notification service — on some phones this takes a few seconds…",
     title: "Notifications",
     navLabel: "Notifications",
     empty: "No notifications yet. When someone adds you as a friend, comments on or likes your listing, you'll see it here.",

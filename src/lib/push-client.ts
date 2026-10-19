@@ -99,8 +99,43 @@ export function requestPermission(): Promise<NotificationPermission> {
   return withTimeout(asked, 60_000, "permission-timeout");
 }
 
-export async function getRegistration(): Promise<ServiceWorkerRegistration> {
-  return navigator.serviceWorker.register("/sw.js");
+// Both the worker and the server key are fetched once per page and shared:
+// warmUpPush starts them as soon as a page loads (and again when the button
+// is tapped, while the permission prompt is still open), so by the time the
+// visitor says "Allow" only the push service itself is left to wait for.
+// A failed attempt is forgotten, so the next call tries again.
+let registrationPromise: Promise<ServiceWorkerRegistration> | null = null;
+let keyPromise: Promise<Uint8Array> | null = null;
+
+export function getRegistration(): Promise<ServiceWorkerRegistration> {
+  if (!registrationPromise) {
+    registrationPromise = navigator.serviceWorker.register("/sw.js");
+    registrationPromise.catch(() => {
+      registrationPromise = null;
+    });
+  }
+  return registrationPromise;
+}
+
+function serverKey(): Promise<Uint8Array> {
+  if (!keyPromise) {
+    keyPromise = (async () => {
+      const res = await fetchWithTimeout("/api/push/key");
+      if (!res.ok) throw new PushError("server");
+      const { key } = (await res.json()) as { key: string };
+      return urlBase64ToUint8Array(key);
+    })();
+    keyPromise.catch(() => {
+      keyPromise = null;
+    });
+  }
+  return keyPromise;
+}
+
+export function warmUpPush(): void {
+  if (!pushSupported()) return;
+  getRegistration().catch(() => {});
+  serverKey().catch(() => {});
 }
 
 // Push needs an *active* worker; register() can resolve while it's still
@@ -121,21 +156,16 @@ export async function isSubscribed(): Promise<boolean> {
 // server also learns the current language and recovers subscriptions it
 // dropped.
 export async function ensureSubscribed(): Promise<void> {
-  const keyRes = await fetchWithTimeout("/api/push/key");
-  if (!keyRes.ok) throw new PushError("server");
-  const { key } = (await keyRes.json()) as { key: string };
-  const serverKey = urlBase64ToUint8Array(key);
-
-  const reg = await activeRegistration();
+  const [key, reg] = await Promise.all([serverKey(), activeRegistration()]);
   let sub = await withTimeout(reg.pushManager.getSubscription(), 8_000, "push-service");
-  if (sub && !sameKey(sub.options.applicationServerKey, serverKey)) {
+  if (sub && !sameKey(sub.options.applicationServerKey, key)) {
     await withTimeout(sub.unsubscribe(), 8_000, "push-service").catch(() => {});
     sub = null;
   }
   if (!sub) {
     try {
       sub = await withTimeout(
-        reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: serverKey as BufferSource }),
+        reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: key as BufferSource }),
         15_000,
         "push-service"
       );
