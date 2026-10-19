@@ -10,7 +10,6 @@ import {
   SearchX,
   SlidersHorizontal,
   Sparkles,
-  Tag,
 } from "lucide-react";
 import type { CategoryId, Listing } from "@/lib/types";
 import type { AdBanner } from "@/lib/ads";
@@ -25,7 +24,7 @@ import HomeListingCard from "@/components/HomeListingCard";
 // and tinted (where Findo started, and still what it's known for), then the
 // classifieds categories people come for most, with renting and businesses'
 // offers as entries of their own.
-type Special = "rent" | "promo" | "lost" | "found";
+type Special = "rent" | "lost" | "found";
 type Section = { category: CategoryId } | { special: Special };
 
 const SECTIONS: Section[] = [
@@ -42,7 +41,6 @@ const SECTIONS: Section[] = [
   { category: "bolalar" },
   { category: "hayvonlar" },
   { category: "sport" },
-  { special: "promo" },
 ];
 
 const SPECIAL_TILES: Record<
@@ -50,7 +48,6 @@ const SPECIAL_TILES: Record<
   { href: string; Icon: typeof Search; color: string; label: (d: Dictionary) => string; tint?: string }
 > = {
   rent: { href: "/elonlar?kind=rent", Icon: KeyRound, color: "text-teal-500", label: (d) => d.classifieds.kindRent },
-  promo: { href: "/takliflar", Icon: Tag, color: "text-pink-500", label: (d) => d.promo.title },
   lost: {
     href: "/elonlar?kind=lost",
     Icon: Search,

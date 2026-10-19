@@ -301,7 +301,7 @@ function sectionLook(section: MapSection, dict: Dictionary): { Icon: LucideIcon;
     case "rent":
       return { Icon: KeyRound, label: dict.classifieds.kindRent, color: "#14b8a6" };
     case "promo":
-      return { Icon: Tag, label: dict.promo.title, color: "#ec4899" };
+      return { Icon: Tag, label: dict.listingCard.promo, color: "#ec4899" };
     case "mystery":
       return { Icon: Sparkles, label: dict.nav.mysteryBox, color: "#f59e0b" };
     default: {

@@ -22,6 +22,14 @@ const nextConfig: NextConfig = {
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];
   },
+  // The Takliflar (business offers) section was removed; old links and
+  // bookmarks land on the listings instead of a 404.
+  async redirects() {
+    return [
+      { source: "/takliflar", destination: "/elonlar", permanent: true },
+      { source: "/elon-qoshish/taklif", destination: "/elon-qoshish", permanent: true },
+    ];
+  },
 };
 
 export default nextConfig;
