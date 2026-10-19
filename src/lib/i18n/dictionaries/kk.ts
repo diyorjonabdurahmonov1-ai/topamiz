@@ -629,6 +629,8 @@ const kk: Dictionary = {
     optServiceTitle: "Қызмет көрсетемін",
     optServiceHint: "Жөндеу, оқыту, жеткізу",
     kindQuestion: "Қандай хабарландыру?",
+    kindPickHint: "Түрін таңдаңыз — келесі терезеде хабарландыруыңызды жазасыз",
+    changeKind: "Өзгерту",
     whatSell: "Не сатасыз?",
     whatRent: "Нені жалға бересіз?",
     whatJob: "Қандай жұмысшы керек?",

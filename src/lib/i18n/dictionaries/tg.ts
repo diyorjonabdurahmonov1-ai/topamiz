@@ -629,6 +629,8 @@ const tg: Dictionary = {
     optServiceTitle: "Хизмат мерасонам",
     optServiceHint: "Таъмир, таълим, расонидан",
     kindQuestion: "Чӣ гуна эълон?",
+    kindPickHint: "Навъро интихоб кунед — дар равзанаи навбатӣ эълони худро менависед",
+    changeKind: "Иваз кардан",
     whatSell: "Чӣ мефурӯшед?",
     whatRent: "Чиро ба иҷора медиҳед?",
     whatJob: "Чӣ гуна коргар лозим?",

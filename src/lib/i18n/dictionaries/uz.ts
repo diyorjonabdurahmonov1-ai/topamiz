@@ -634,6 +634,8 @@ const uz: Dictionary = {
     optServiceTitle: "Xizmat ko'rsataman",
     optServiceHint: "Ta'mirlash, o'qitish, yetkazish",
     kindQuestion: "Qanday e'lon?",
+    kindPickHint: "Turini tanlang — keyingi oynada e'loningizni yozasiz",
+    changeKind: "O'zgartirish",
     whatSell: "Nima sotyapsiz?",
     whatRent: "Nimani ijaraga beryapsiz?",
     whatJob: "Qanday ishchi kerak?",

@@ -4,9 +4,11 @@ import { useEffect, useRef, useState, type FormEvent, type ReactNode, type Ref }
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import {
+  ArrowLeft,
   BriefcaseBusiness,
   Check,
   ChevronDown,
+  ChevronRight,
   Gift,
   House,
   ListPlus,
@@ -36,6 +38,7 @@ import {
   isCategoryAllowed,
   isLostFound,
   kindHasPrice,
+  LISTING_KINDS,
   type FieldDef,
 } from "@/lib/sections";
 import { priceLabel } from "@/lib/listing-labels";
@@ -61,28 +64,45 @@ const LocationPickerMap = dynamic(() => import("./LocationPickerMap"), {
 
 type Status = "idle" | "submitting" | "success";
 
+// Fields use their own tokens (globals.css) so they stand out from the card
+// in both themes; in dark mode the card colours left them almost invisible.
 const inputClass =
-  "w-full rounded-xl border border-border bg-bg-elevated px-4 py-3 text-sm focus:border-brand-via/50 focus:outline-none focus:ring-2 focus:ring-brand-via/30";
+  "w-full rounded-xl border border-field-border bg-field px-4 py-3 text-sm placeholder:text-muted focus:border-brand-via focus:outline-none focus:ring-2 focus:ring-brand-via/30";
+// A required field that's still empty gets the brand colour, so nobody
+// scrolls past it thinking it's optional.
+const requiredEmptyClass = "border-brand-via/70 ring-1 ring-brand-via/25";
 
 // Posting asks for two things — what and where — and everything else is
 // optional: the price and category fields, photos or a video, the phone.
 // The kind (sell, rent, job, service, lost, found) decides which categories
 // and fields are offered (lib/sections.ts). The category is guessed from the
 // title as the poster types; picking a tile overrides the guess.
+//
+// Two screens: first only the kinds, then — once one is tapped — the form
+// for it, as its own screen with a way back. A first-time poster who just
+// saw a tile change colour didn't know what to do next. The pick is pushed
+// to the history (?kind=), so the phone's back button returns to the kinds.
 export default function PostListingForm({
   dict,
   locale,
   defaultPhone,
-  initialKind = "sell",
+  initialKind,
+  pickFooter,
 }: {
   dict: Dictionary;
   locale: Locale;
   defaultPhone: string;
+  // Set when a link already says which kind (?kind=lost): open on the form.
   initialKind?: ListingKind;
+  // Shown under the kinds on the first screen only (the other listing types).
+  pickFooter?: ReactNode;
 }) {
   const t = dict.postListing;
   const c = dict.classifieds;
-  const [kind, setKind] = useState<ListingKind>(initialKind);
+  const [kind, setKind] = useState<ListingKind>(initialKind ?? "sell");
+  const [phase, setPhase] = useState<"pick" | "form">(initialKind ? "form" : "pick");
+  const pushedRef = useRef(false);
+  const formTopRef = useRef<HTMLDivElement>(null);
   const [price, setPrice] = useState("");
   const [pickedCurrency, setPickedCurrency] = useState<Currency | null>(null);
   const [negotiable, setNegotiable] = useState(false);
@@ -117,6 +137,50 @@ export default function PostListingForm({
   const whatRef = useRef<HTMLElement>(null);
   const whereRef = useRef<HTMLElement>(null);
   const titleInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    function onPopState() {
+      const next = new URLSearchParams(window.location.search).get("kind");
+      pushedRef.current = false;
+      if (next && (LISTING_KINDS as string[]).includes(next)) {
+        setKind(next as ListingKind);
+        setPhase("form");
+      } else {
+        setPhase("pick");
+      }
+    }
+    window.addEventListener("popstate", onPopState);
+    return () => window.removeEventListener("popstate", onPopState);
+  }, []);
+
+  // Each screen starts at its top, like a new page; the form puts the cursor
+  // in the first field, which is where the poster writes next.
+  useEffect(() => {
+    if (phase === "form") {
+      formTopRef.current?.scrollIntoView({ block: "start" });
+      titleInputRef.current?.focus({ preventScroll: true });
+    }
+  }, [phase]);
+
+  function chooseKind(next: ListingKind) {
+    setKind(next);
+    clearError();
+    setPhase("form");
+    window.history.pushState(null, "", `?kind=${next}`);
+    pushedRef.current = true;
+  }
+
+  function backToKinds() {
+    // Undo our own history entry so back/forward stay in step; when the
+    // form was opened straight from a ?kind= link there's none to undo.
+    if (pushedRef.current) {
+      window.history.back();
+      return;
+    }
+    window.history.replaceState(null, "", window.location.pathname);
+    setPhase("pick");
+    window.scrollTo({ top: 0 });
+  }
 
   const allowedCategories = categoriesFor(kind);
   const guessedCategory = guessCategory(title, allowedCategories);
@@ -286,6 +350,10 @@ export default function PostListingForm({
     setShowMap(false);
     setShowMore(false);
     setLocateError("");
+    pushedRef.current = false;
+    window.history.replaceState(null, "", window.location.pathname);
+    setPhase("pick");
+    window.scrollTo({ top: 0 });
   }
 
   if (status === "success") {
@@ -336,52 +404,81 @@ export default function PostListingForm({
     );
   }
 
+  if (phase === "pick") {
+    return (
+      <div className="space-y-4">
+        <section className="rounded-3xl border border-border bg-surface p-4 sm:p-5">
+          <h2 className="text-lg font-extrabold">{c.kindQuestion}</h2>
+          <p className="mt-0.5 text-xs text-muted">{c.kindPickHint}</p>
+          <div className="mt-4 grid grid-cols-2 gap-2.5">
+            {KIND_OPTIONS.filter((opt) => !opt.lostFound).map((opt) => (
+              <KindOption
+                key={opt.kind}
+                onClick={() => chooseKind(opt.kind)}
+                icon={<opt.icon className="h-5 w-5" />}
+                title={opt.title(dict)}
+                hint={opt.hint(dict)}
+                soft={opt.soft}
+              />
+            ))}
+          </div>
+          {/* Lost & found on a tinted row of their own, so they don't get lost
+              at the bottom of the list. */}
+          <p className="mb-2 mt-4 text-xs font-bold text-muted">{c.lostFoundPrompt}</p>
+          <div className="grid grid-cols-2 gap-2.5">
+            {KIND_OPTIONS.filter((opt) => opt.lostFound).map((opt) => (
+              <KindOption
+                key={opt.kind}
+                onClick={() => chooseKind(opt.kind)}
+                icon={<opt.icon className="h-5 w-5" />}
+                title={opt.title(dict)}
+                hint={opt.hint(dict)}
+                soft={opt.soft}
+                idle={opt.idle}
+              />
+            ))}
+          </div>
+        </section>
+        {pickFooter}
+      </div>
+    );
+  }
+
+  const chosen = KIND_OPTIONS.find((opt) => opt.kind === kind) ?? KIND_OPTIONS[0];
+
   return (
     <form onSubmit={handleSubmit} noValidate className="space-y-4">
-      <Step number={1} done title={c.kindQuestion} badge={t.requiredBadge}>
-        <div className="grid grid-cols-2 gap-2.5">
-          {KIND_OPTIONS.filter((opt) => !opt.lostFound).map((opt) => (
-            <KindOption
-              key={opt.kind}
-              active={kind === opt.kind}
-              onClick={() => {
-                setKind(opt.kind);
-                if (errorStep === "what") clearError();
-              }}
-              icon={<opt.icon className="h-5 w-5" />}
-              title={opt.title(dict)}
-              hint={opt.hint(dict)}
-              tone={opt.tone}
-              soft={opt.soft}
-            />
-          ))}
-        </div>
-        {/* Lost & found on a tinted row of their own, so they don't get lost
-            at the bottom of the list. */}
-        <p className="mb-2 mt-4 text-xs font-bold text-muted">{c.lostFoundPrompt}</p>
-        <div className="grid grid-cols-2 gap-2.5">
-          {KIND_OPTIONS.filter((opt) => opt.lostFound).map((opt) => (
-            <KindOption
-              key={opt.kind}
-              active={kind === opt.kind}
-              onClick={() => {
-                setKind(opt.kind);
-                if (errorStep === "what") clearError();
-              }}
-              icon={<opt.icon className="h-5 w-5" />}
-              title={opt.title(dict)}
-              hint={opt.hint(dict)}
-              tone={opt.tone}
-              soft={opt.soft}
-              idle={opt.idle}
-            />
-          ))}
-        </div>
-      </Step>
+      <div
+        ref={formTopRef}
+        className="animate-fade-in flex scroll-mt-20 items-center gap-3 rounded-3xl border border-border bg-surface p-3"
+      >
+        <button
+          type="button"
+          onClick={backToKinds}
+          aria-label={c.changeKind}
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-border text-muted transition-colors hover:bg-surface-2 hover:text-foreground"
+        >
+          <ArrowLeft className="h-5 w-5" />
+        </button>
+        <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br text-white shadow-md ${chosen.tone}`}>
+          <chosen.icon className="h-5 w-5" />
+        </span>
+        <span className="min-w-0 flex-1">
+          <span className="block truncate text-sm font-extrabold">{chosen.title(dict)}</span>
+          <span className="block truncate text-[11px] text-muted">{chosen.hint(dict)}</span>
+        </span>
+        <button
+          type="button"
+          onClick={backToKinds}
+          className="shrink-0 rounded-lg px-2 py-1.5 text-xs font-bold text-brand-via hover:bg-brand-via/10"
+        >
+          {c.changeKind}
+        </button>
+      </div>
 
       <Step
         ref={whatRef}
-        number={2}
+        number={1}
         done={whatDone}
         title={whatTitle}
         badge={t.requiredBadge}
@@ -397,7 +494,9 @@ export default function PostListingForm({
           aria-label={t.titleLabel}
           placeholder={whatPlaceholder}
           maxLength={120}
-          className={`${inputClass} text-base font-semibold ${errorStep === "what" ? "border-danger ring-2 ring-danger/30" : ""}`}
+          className={`${inputClass} text-base font-semibold ${
+            errorStep === "what" ? "border-danger ring-2 ring-danger/30" : title.trim() ? "" : requiredEmptyClass
+          }`}
         />
         {allowedCategories.length > 1 && (
         <div className="mt-3 grid grid-cols-4 gap-2 sm:grid-cols-5">
@@ -440,7 +539,7 @@ export default function PostListingForm({
       </Step>
 
       {showDetails && (
-        <Step number={3} done={!!price || negotiable || Object.values(attrs).some(Boolean)} title={c.detailsTitle} badge={t.optionalBadge} optional hint={c.detailsHint}>
+        <Step number={2} done={!!price || negotiable || Object.values(attrs).some(Boolean)} title={c.detailsTitle} badge={t.optionalBadge} optional hint={c.detailsHint}>
           {kindHasPrice(kind) && (
             <div>
               <label htmlFor="post-price" className="mb-1.5 block text-xs font-semibold text-muted">
@@ -504,7 +603,7 @@ export default function PostListingForm({
 
       <Step
         ref={whereRef}
-        number={showDetails ? 4 : 3}
+        number={showDetails ? 3 : 2}
         done={whereDone}
         title={whereTitle}
         badge={t.requiredBadge}
@@ -581,7 +680,7 @@ export default function PostListingForm({
         {locateError && <p className="mt-2 text-xs font-medium text-danger">{locateError}</p>}
       </Step>
 
-      <Step number={showDetails ? 5 : 4} done={imageUrls.length > 0 || !!videoHandle} title={t.stepMediaTitle} badge={t.optionalBadge} optional hint={t.stepMediaHint}>
+      <Step number={showDetails ? 4 : 3} done={imageUrls.length > 0 || !!videoHandle} title={t.stepMediaTitle} badge={t.optionalBadge} optional hint={t.stepMediaHint}>
         <MediaUploader
           onImagesChange={setImageUrls}
           videoHandle={videoHandle}
@@ -591,7 +690,7 @@ export default function PostListingForm({
         />
       </Step>
 
-      <Step number={showDetails ? 6 : 5} done={!!contactPhone.trim()} title={t.contactHeading} badge={t.optionalBadge} optional>
+      <Step number={showDetails ? 5 : 4} done={!!contactPhone.trim()} title={t.contactHeading} badge={t.optionalBadge} optional>
         <div className="relative">
           <Phone className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
           <input
@@ -859,22 +958,20 @@ function Step({
   );
 }
 
+// A kind on the first screen: tapping it opens the form for it, so it reads
+// as a link (the chevron) rather than a toggle.
 function KindOption({
-  active,
   onClick,
   icon,
   title,
   hint,
-  tone,
   soft,
   idle = "border-border bg-bg-elevated hover:bg-surface-2",
 }: {
-  active: boolean;
   onClick: () => void;
   icon: ReactNode;
   title: string;
   hint: string;
-  tone: string;
   soft: string;
   idle?: string;
 }) {
@@ -882,26 +979,12 @@ function KindOption({
     <button
       type="button"
       onClick={onClick}
-      aria-pressed={active}
-      className={`relative flex flex-col items-start overflow-hidden rounded-2xl p-3.5 text-left transition-all active:scale-[0.98] sm:p-4 ${
-        active
-          ? `bg-gradient-to-br ${tone} text-white shadow-lg`
-          : `border ${idle}`
-      }`}
+      className={`relative flex flex-col items-start overflow-hidden rounded-2xl border p-3.5 text-left transition-all hover:border-brand-via/50 active:scale-[0.98] sm:p-4 ${idle}`}
     >
-      {active && (
-        <>
-          <span className="pointer-events-none absolute -right-6 -top-6 h-20 w-20 rounded-full bg-white/15" />
-          <span className="absolute right-2.5 top-2.5 flex h-5 w-5 items-center justify-center rounded-full bg-white text-gray-900">
-            <Check className="h-3 w-3" strokeWidth={3} />
-          </span>
-        </>
-      )}
-      <span className={`flex h-10 w-10 items-center justify-center rounded-xl ${active ? "bg-white/20 text-white" : soft}`}>
-        {icon}
-      </span>
-      <span className="mt-2.5 text-sm font-extrabold leading-tight">{title}</span>
-      <span className={`mt-0.5 text-[11px] leading-snug ${active ? "text-white/85" : "text-muted"}`}>{hint}</span>
+      <ChevronRight className="absolute right-2.5 top-3 h-4 w-4 text-muted" />
+      <span className={`flex h-10 w-10 items-center justify-center rounded-xl ${soft}`}>{icon}</span>
+      <span className="mt-2.5 pr-4 text-sm font-extrabold leading-tight">{title}</span>
+      <span className="mt-0.5 text-[11px] leading-snug text-muted">{hint}</span>
     </button>
   );
 }
