@@ -34,6 +34,17 @@ export default function ChatThread({
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight });
   }, [messages.length]);
 
+  // Opening the chat reads its messages, so the phone's own notifications
+  // for it (tagged chat-<sender>, see the push senders) go too, instead of
+  // staying in the notification shade.
+  useEffect(() => {
+    if (!("serviceWorker" in navigator)) return;
+    navigator.serviceWorker.getRegistration().then(
+      (reg) => reg?.getNotifications({ tag: `chat-${otherUserId}` }).then((list) => list.forEach((n) => n.close())),
+      () => {}
+    );
+  }, [otherUserId, messages.length]);
+
   useEffect(() => {
     const interval = setInterval(async () => {
       const res = await fetch(`/api/messages/${otherUserId}`);

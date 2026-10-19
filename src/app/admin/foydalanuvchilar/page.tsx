@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 };
 
 export default async function AdminUsersPage(props: PageProps<"/admin/foydalanuvchilar">) {
-  await requireAdmin();
+  const admin = await requireAdmin();
   const searchParams = await props.searchParams;
   const q = typeof searchParams.q === "string" ? searchParams.q : "";
   const filter = typeof searchParams.filter === "string" ? searchParams.filter : "";
@@ -58,7 +58,7 @@ export default async function AdminUsersPage(props: PageProps<"/admin/foydalanuv
             Hech kim topilmadi.
           </p>
         ) : (
-          users.map((u) => <AdminUserRow key={u.id} user={u} />)
+          users.map((u) => <AdminUserRow key={u.id} user={u} isSelf={u.id === admin.id} />)
         )}
       </div>
     </div>

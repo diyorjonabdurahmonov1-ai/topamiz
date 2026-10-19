@@ -18,7 +18,9 @@ function relativeLastSeen(lastSeenAt: string | null): string {
   return `${diffDays} kun oldin`;
 }
 
-export default function AdminUserRow({ user }: { user: AdminUserRowType }) {
+// `isSelf`: the admin's own row — messaging or blocking yourself makes no
+// sense, so it gets neither button.
+export default function AdminUserRow({ user, isSelf = false }: { user: AdminUserRowType; isSelf?: boolean }) {
   const router = useRouter();
   const [busy, setBusy] = useState(false);
   const [composing, setComposing] = useState(false);
@@ -64,6 +66,11 @@ export default function AdminUserRow({ user }: { user: AdminUserRowType }) {
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
             <p className="truncate text-sm font-semibold">{user.name}</p>
+            {isSelf && (
+              <span className="shrink-0 rounded-full bg-brand-via/10 px-2 py-0.5 text-[10px] font-semibold text-brand-via">
+                Siz
+              </span>
+            )}
             {user.online && (
               <span className="flex shrink-0 items-center gap-1 rounded-full bg-success/10 px-2 py-0.5 text-[10px] font-semibold text-success">
                 <span className="h-1.5 w-1.5 rounded-full bg-success" />
@@ -79,36 +86,40 @@ export default function AdminUserRow({ user }: { user: AdminUserRowType }) {
           <p className="truncate text-xs text-muted">{user.email}</p>
           {!user.online && <p className="text-xs text-muted">{relativeLastSeen(user.lastSeenAt)}</p>}
         </div>
-        <button
-          type="button"
-          onClick={() => setComposing((v) => !v)}
-          aria-label="Xabar yuborish"
-          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-border text-muted hover:text-foreground"
-        >
-          <Send className="h-4 w-4" />
-        </button>
-        <button
-          type="button"
-          onClick={handleToggleBlock}
-          disabled={busy}
-          aria-label={blocked ? "Blokdan chiqarish" : "Bloklash"}
-          className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border disabled:opacity-60 ${
-            blocked
-              ? "border-border text-success hover:bg-success/10"
-              : "border-border text-danger hover:bg-danger/10"
-          }`}
-        >
-          {busy ? (
-            <Loader2 className="h-4 w-4 animate-spin" />
-          ) : blocked ? (
-            <ShieldCheck className="h-4 w-4" />
-          ) : (
-            <ShieldOff className="h-4 w-4" />
-          )}
-        </button>
+        {!isSelf && (
+          <>
+            <button
+              type="button"
+              onClick={() => setComposing((v) => !v)}
+              aria-label="Xabar yuborish"
+              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-border text-muted hover:text-foreground"
+            >
+              <Send className="h-4 w-4" />
+            </button>
+            <button
+              type="button"
+              onClick={handleToggleBlock}
+              disabled={busy}
+              aria-label={blocked ? "Blokdan chiqarish" : "Bloklash"}
+              className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border disabled:opacity-60 ${
+                blocked
+                  ? "border-border text-success hover:bg-success/10"
+                  : "border-border text-danger hover:bg-danger/10"
+              }`}
+            >
+              {busy ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : blocked ? (
+                <ShieldCheck className="h-4 w-4" />
+              ) : (
+                <ShieldOff className="h-4 w-4" />
+              )}
+            </button>
+          </>
+        )}
       </div>
 
-      {composing && (
+      {composing && !isSelf && (
         <div className="mt-3 border-t border-border pt-3">
           {sendStatus === "sent" ? (
             <p className="text-xs font-medium text-success">Xabar yuborildi!</p>

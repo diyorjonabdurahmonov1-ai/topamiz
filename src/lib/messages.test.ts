@@ -77,6 +77,15 @@ describe("direct messaging", () => {
   });
 });
 
+describe("messages to oneself", () => {
+  it("are refused, since no chat could ever mark them read", () => {
+    const a = makeUser("aziz@example.com", "Aziz");
+    expect(() => sendMessage({ senderId: a.id, recipientId: a.id, body: "salom" })).toThrow();
+    expect(unreadTotal(a.id)).toBe(0);
+    expect(getConversations(a.id)).toEqual([]);
+  });
+});
+
 describe("guest (QR tag) messages", () => {
   it("routes an anonymous contact message to the tag owner's guest notifications", () => {
     const owner = makeUser("egasi@example.com", "Egasi");
