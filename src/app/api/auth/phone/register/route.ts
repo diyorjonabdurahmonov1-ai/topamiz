@@ -1,4 +1,5 @@
-import { MAX_NAME_LENGTH, createPhoneUser, getPhoneAccount, isReservedName } from "@/lib/auth";
+import { MAX_NAME_LENGTH, createPhoneUser, getPhoneAccount } from "@/lib/auth";
+import { isNameConflict, nameProblem } from "@/lib/user-names";
 import { getClientIp, rateLimit } from "@/lib/rate-limit";
 import { checkCode, normalizeUzPhone, passwordProblem } from "@/lib/phone-login";
 import { isCodeShaped } from "@/lib/verification-code";
@@ -16,8 +17,8 @@ export async function POST(request: Request) {
   if (!phone) return authError("invalidPhone", 400);
   if (!isCodeShaped(code)) return authError("codeWrong", 400);
   if (body?.acceptTerms !== true) return authError("consentRequired", 400);
-  if (name.length < 2) return authError("nameRequired", 400);
-  if (isReservedName(name)) return authError("nameReserved", 400);
+  const badName = nameProblem(name);
+  if (badName) return authError(badName, badName === "nameTaken" ? 409 : 400);
   const badPassword = passwordProblem(body?.password);
   if (badPassword) return authError(badPassword, 400);
 
@@ -25,5 +26,10 @@ export async function POST(request: Request) {
   const result = checkCode("register", phone, code);
   if (result !== "ok") return authError(CODE_RESULT_ERRORS[result], 400);
 
-  return signIn(createPhoneUser({ phone, name, password: body.password }));
+  try {
+    return signIn(createPhoneUser({ phone, name, password: body.password }));
+  } catch (err) {
+    if (isNameConflict(err)) return authError("nameTaken", 409);
+    throw err;
+  }
 }

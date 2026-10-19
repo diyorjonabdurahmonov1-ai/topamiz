@@ -365,6 +365,9 @@ export interface Dictionary {
     setPassword: string;
     googleNeedsConsent: string;
     loginFinePrint: string;
+    nameChecking: string;
+    nameAvailable: string;
+    nameTakenHint: string;
     haveAccount: string;
     loginInstead: string;
     signupTitle: string;
@@ -384,6 +387,7 @@ export interface Dictionary {
       consentRequired: string;
       nameRequired: string;
       nameReserved: string;
+      nameTaken: string;
       passwordShort: string;
       passwordLong: string;
       passwordWeak: string;

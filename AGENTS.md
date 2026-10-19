@@ -135,6 +135,14 @@ which the post form, the API's validation and the display all read. Labels and
 price formatting live in `src/lib/listing-labels.ts`. Findo only hosts the
 listings; it never handles payment or delivery.
 
+Profile names are unique, Instagram-style (`src/lib/user-names.ts`): two
+names are the same if they differ only in case, spacing or which Uzbek
+apostrophe was typed (`src/lib/name-key.ts`); a unique index on
+`users.name_key` enforces it. The sign-up form and the profile editor check
+the name as it's typed (`/api/name-check`). A Google name that's taken gets
+a number ("Aziz 2"); accounts that shared a name before this were numbered
+the same way at server start, oldest keeping the plain name.
+
 A visitor who isn't signed in sees only a short preview of a listing (one
 picture, title, price, place, the start of the description) with the sign-up
 form right under it (`src/components/GuestListingGate.tsx`); the full listing

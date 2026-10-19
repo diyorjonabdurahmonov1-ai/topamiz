@@ -2,10 +2,12 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import crypto from "node:crypto";
 import { db } from "./db";
+import { nameKey } from "./name-key";
+import { BRAND_NAME, isReservedName, MAX_NAME_LENGTH, uniqueName } from "./user-names";
 
 export const SESSION_COOKIE = "topamiz_session";
 const SESSION_DAYS = 30;
-export const MAX_NAME_LENGTH = 80;
+export { BRAND_NAME, isReservedName, MAX_NAME_LENGTH };
 export const MAX_BIO_LENGTH = 280;
 
 export interface AuthUser {
@@ -115,14 +117,16 @@ export function findOrCreateGoogleUser(params: {
     return existingByEmail;
   }
 
-  const name = params.name.trim().slice(0, MAX_NAME_LENGTH) || params.email.split("@")[0];
+  // Names are unique (lib/user-names): a Google name someone already has
+  // gets a number, which its owner can change on their profile.
+  const name = uniqueName(params.name.trim().slice(0, MAX_NAME_LENGTH) || params.email.split("@")[0]);
   const avatarColor = pickAvatarColor(params.email);
   const info = db
     .prepare(
-      `INSERT INTO users (google_id, email, name, avatar_color, avatar_url)
-       VALUES (?, ?, ?, ?, ?)`
+      `INSERT INTO users (google_id, email, name, name_key, avatar_color, avatar_url)
+       VALUES (?, ?, ?, ?, ?, ?)`
     )
-    .run(params.googleId, params.email, name, avatarColor, params.avatarUrl ?? null);
+    .run(params.googleId, params.email, name, nameKey(name), avatarColor, params.avatarUrl ?? null);
   const user = getUserById(Number(info.lastInsertRowid));
   if (!user) throw new Error("Foydalanuvchi yaratilmadi");
   return user;
@@ -156,10 +160,10 @@ export function getPhoneAccount(phone: string): { user: AuthUser; passwordHash: 
 export function createPhoneUser(params: { phone: string; name: string; password: string }): AuthUser {
   const info = db
     .prepare(
-      `INSERT INTO users (phone, password_hash, name, avatar_color, terms_accepted_at)
-       VALUES (?, ?, ?, ?, datetime('now'))`
+      `INSERT INTO users (phone, password_hash, name, name_key, avatar_color, terms_accepted_at)
+       VALUES (?, ?, ?, ?, ?, datetime('now'))`
     )
-    .run(params.phone, hashPassword(params.password), params.name, pickAvatarColor(params.phone));
+    .run(params.phone, hashPassword(params.password), params.name, nameKey(params.name), pickAvatarColor(params.phone));
   const user = getUserById(Number(info.lastInsertRowid));
   if (!user) throw new Error("Foydalanuvchi yaratilmadi");
   return user;
@@ -276,12 +280,7 @@ export async function requireAdmin(): Promise<AuthUser> {
 
 // The admin's messages should read as coming from the platform itself, not
 // their personal Google account — reserved so no regular user can impersonate it.
-export const BRAND_NAME = "Findo";
 const BRAND_AVATAR_COLOR = "#6366f1";
-
-export function isReservedName(name: string): boolean {
-  return name.trim().toLowerCase().replace(/\s+/g, "") === BRAND_NAME.toLowerCase();
-}
 
 // A PublicUser (no email) already has the brand identity applied by
 // toPublicUser, so only a full user needs the admin check here.

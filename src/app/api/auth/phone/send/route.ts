@@ -4,6 +4,7 @@ import { getClientIp, rateLimit } from "@/lib/rate-limit";
 import { codeMessage, isEskizConfigured, sendSms } from "@/lib/eskiz";
 import { RESEND_COOLDOWN_SECONDS, discardCode, issueCode, normalizeUzPhone } from "@/lib/phone-login";
 import { authError } from "@/lib/phone-auth-responses";
+import { MAX_NAME_LENGTH, nameProblem } from "@/lib/user-names";
 
 // Sends a verification code for signing up or for resetting a forgotten
 // password. Every SMS costs money, so sends are capped per IP and per number
@@ -19,6 +20,11 @@ export async function POST(request: Request) {
   const account = getPhoneAccount(phone);
   if (purpose === "register" && account) return authError("exists", 409);
   if (purpose === "reset" && !account) return authError("notFound", 404);
+  // A name someone already has is caught before an SMS is paid for.
+  if (purpose === "register" && typeof body?.name === "string") {
+    const badName = nameProblem(body.name.trim().slice(0, MAX_NAME_LENGTH));
+    if (badName) return authError(badName, badName === "nameTaken" ? 409 : 400);
+  }
 
   const byIp = rateLimit(`phone-send-ip:${getClientIp(request)}`, 10, 60 * 60 * 1000);
   const byPhone = rateLimit(`phone-send:${phone}`, 5, 60 * 60 * 1000);

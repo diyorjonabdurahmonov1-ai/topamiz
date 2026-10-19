@@ -23,6 +23,8 @@ import type { Dictionary } from "@/lib/i18n";
 import { CODE_LENGTH } from "@/lib/verification-code";
 import GoogleLoginButton from "../GoogleLoginButton";
 import { loginHref } from "@/lib/safe-next";
+import { useNameCheck } from "@/lib/use-name-check";
+import { NameCheckIcon, NameCheckMessage, nameCheckBorder } from "../NameCheckStatus";
 import type { LegalContent } from "@/lib/legal";
 import LegalSheet, { type LegalDoc } from "./LegalSheet";
 
@@ -91,6 +93,8 @@ export default function AuthPanel({
     initialTab === "login" ? { name: "login" } : { name: "register-details" }
   );
   const [name, setName] = useState("");
+  // Names are unique; checked as it's typed (lib/user-names).
+  const nameCheck = useNameCheck(name);
   const [phoneDigits, setPhoneDigits] = useState("");
   const [password, setPassword] = useState("");
   const [code, setCode] = useState("");
@@ -179,7 +183,7 @@ export default function AuthPanel({
 
   function sendCode(purpose: "register" | "reset", onSent: () => void) {
     return run(async () => {
-      const { ok, data } = await post("/api/auth/phone/send", { phone, purpose });
+      const { ok, data } = await post("/api/auth/phone/send", purpose === "register" ? { phone, purpose, name } : { phone, purpose });
       if (typeof data.resendIn === "number") setResendIn(data.resendIn);
       if (data.code === "exists") return go({ name: "exists" });
       if (data.code === "notFound") return go({ name: "not-found" });
@@ -325,24 +329,40 @@ export default function AuthPanel({
       body = (
         <form onSubmit={submitRegisterDetails} className="space-y-3">
           <Steps current={1} dict={dict} />
-          <Field icon={<User className="h-4 w-4" />} label={t.nameLabel}>
-            <input
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              autoComplete="name"
-              placeholder={t.namePlaceholder}
-              aria-label={t.nameLabel}
-              maxLength={80}
-              className="min-w-0 flex-1 bg-transparent text-sm outline-none placeholder:text-muted/60"
-            />
-          </Field>
+          <div>
+            <Field icon={<User className="h-4 w-4" />} label={t.nameLabel} className={nameCheckBorder(nameCheck)}>
+              <input
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                autoComplete="name"
+                placeholder={t.namePlaceholder}
+                aria-label={t.nameLabel}
+                aria-invalid={nameCheck === "taken" || nameCheck === "invalid"}
+                maxLength={80}
+                className="min-w-0 flex-1 bg-transparent text-sm outline-none placeholder:text-muted/60"
+              />
+              <NameCheckIcon status={nameCheck} />
+            </Field>
+            <NameCheckMessage status={nameCheck} dict={dict} className="mt-1.5" />
+          </div>
           {phoneField}
           <PasswordField value={password} onChange={setPassword} label={t.passwordLabel} dict={dict} autoComplete="new-password" showStrength />
           <Consent checked={consent} onChange={setConsent}>
             {fill(t.consentText, legalLinks)}
           </Consent>
           {errorLine}
-          <SubmitButton busy={busy} disabled={!consent || name.trim().length < 2 || !phoneValid || !passwordValid}>
+          <SubmitButton
+            busy={busy}
+            disabled={
+              !consent ||
+              name.trim().length < 2 ||
+              nameCheck === "taken" ||
+              nameCheck === "invalid" ||
+              nameCheck === "checking" ||
+              !phoneValid ||
+              !passwordValid
+            }
+          >
             {t.registerContinue}
           </SubmitButton>
           {!consent && <p className="text-center text-[11px] text-muted">{t.consentRequired}</p>}
@@ -571,11 +591,25 @@ export default function AuthPanel({
   );
 }
 
-function Field({ icon, label, children }: { icon: ReactNode; label: string; children: ReactNode }) {
+function Field({
+  icon,
+  label,
+  children,
+  className = "",
+}: {
+  icon: ReactNode;
+  label: string;
+  children: ReactNode;
+  className?: string;
+}) {
   return (
     <label className="block">
       <span className="mb-1.5 block text-xs font-semibold text-muted">{label}</span>
-      <span className="flex items-center gap-2.5 rounded-xl border border-border bg-bg-elevated px-3.5 py-3 transition-colors focus-within:border-brand-via/60 focus-within:ring-2 focus-within:ring-brand-via/25">
+      <span
+        className={`flex items-center gap-2.5 rounded-xl border bg-bg-elevated px-3.5 py-3 transition-colors focus-within:ring-2 focus-within:ring-brand-via/25 ${
+          className || "border-border focus-within:border-brand-via/60"
+        }`}
+      >
         <span className="text-muted">{icon}</span>
         {children}
       </span>
