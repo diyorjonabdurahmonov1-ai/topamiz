@@ -44,7 +44,6 @@ const uz: Dictionary = {
     listings: "E'lonlar",
     rewarded: "Mukofotli",
     mysteryBox: "Sirli quti",
-    promo: "Takliflar",
     ads: "Reklama",
     messages: "Xabarlar",
     login: "Kirish",
@@ -251,9 +250,6 @@ const uz: Dictionary = {
     mysteryBoxCalloutTitle: "Sirli quti yaratmoqchimisiz?",
     mysteryBoxCalloutBody: "Sovg'a, chegirma yoki qiziqarli topilma yashiring — odamlar uni qidirib topsin!",
     mysteryBoxCalloutButton: "Sirli quti yaratish",
-    promoCalloutTitle: "Biznesingiz uchun taklif joylamoqchimisiz?",
-    promoCalloutBody: "Do'kon yoki xizmatingiz haqidagi taklifni rasm, video va manzil bilan e'lon qiling.",
-    promoCalloutButton: "Taklif joylash",
     redactHeading: "Nozik ma'lumotlarni yashiring",
     redactHint:
       "Hujjat raqami, seriya yoki boshqa nozik yozuvlar ustidan barmog'ingiz bilan chizib, qora rang bilan yoping.",
@@ -337,40 +333,7 @@ const uz: Dictionary = {
     emptyBody: "Yo'qolgan buyumingizga mukofot taklif qilsangiz, u shu yerda ko'rinadi.",
   },
 
-  promo: {
-    title: "Takliflar",
-    subtitle: "Do'kon va xizmatlarning eng so'nggi takliflarini shu yerda kuzatib boring.",
-    postButton: "Taklif joylash",
-    allCategories: "Barchasi",
-    emptyTitle: "Hozircha takliflar yo'q",
-    emptyBody: "Tez orada bu yerda do'kon va xizmatlarning takliflari paydo bo'ladi.",
-  },
 
-  promoForm: {
-    pageTitle: "Taklif joylash",
-    pageSubtitle: "Do'kon, kafe yoki xizmatingiz haqidagi taklifingizni odamlarga yetkazing.",
-    explainHeading: "Bu bo'lim nima uchun?",
-    explainBody:
-      "Takliflar — biznesingiz uchun maxsus bo'lim: do'kon, kafe, salon yoki boshqa xizmatingiz haqidagi taklifni rasm yoki video bilan e'lon qiling. Manzil va tariflarni yozish ixtiyoriy. Bu YO'QOLGAN yoki TOPILGAN buyumlar uchun emas — ular uchun oddiy e'lon bo'limidan foydalaning.",
-    titleLabel: "Taklif nomi *",
-    titlePlaceholder: "Masalan: Barcha kiyimlarga 30% chegirma",
-    descriptionLabel: "Tavsif (ixtiyoriy)",
-    descriptionPlaceholder: "Taklif shartlari, muddati va boshqa tafsilotlarni yozing...",
-    categoryLabel: "Turkum *",
-    tariffsLabel: "Narxlar / tariflar (ixtiyoriy)",
-    tariffsPlaceholder: "Masalan: Erkaklar soch oldirish — 40 000 so'm",
-    mapPickerHint: "Xaritadan do'koningiz joylashgan nuqtani belgilang (ixtiyoriy).",
-    contactHeading: "Aloqa ma'lumotlari",
-    phoneLabel: "Telefon raqami (ixtiyoriy)",
-    requiredFieldsError: "Iltimos, * bilan belgilangan maydonlarni to'ldiring.",
-    genericError: "Xatolik yuz berdi",
-    submitting: "Joylanmoqda...",
-    submit: "Taklifni joylash",
-    successTitle: "Taklif joylandi!",
-    successBody: "E'loningiz Takliflar bo'limida ko'rinadi.",
-    viewPromoLink: "Takliflar bo'limini ko'rish",
-    backToNormalLink: "Oddiy e'lon joylashga qaytish",
-  },
 
   mysteryBox: {
     title: "Sirli quti",

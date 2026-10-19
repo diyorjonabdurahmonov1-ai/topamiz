@@ -45,7 +45,6 @@ export default function Navbar({
   const links = [
     { href: "/elonlar", label: dict.nav.listings },
     { href: "/reels", label: dict.social.reelsNavLabel },
-    { href: "/takliflar", label: dict.nav.promo },
     { href: "/mukofotli", label: dict.nav.rewarded },
     { href: "/sirli-quti", label: dict.nav.mysteryBox },
     { href: "/reklama", label: dict.nav.ads },

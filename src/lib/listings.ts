@@ -168,9 +168,9 @@ function toListing(row: RawListingRow): Listing {
 // `country` filters listings down to the visitor's own country (detected via
 // IP, see lib/geo.ts) so that as this site expands beyond Uzbekistan, users
 // in different countries never see each other's listings mixed together.
-// Excludes Sirli quti and Takliflar listings — both have their own
-// dedicated pages (getMysteryBoxListings, getPromoListings) and must never
-// surface in the general lost/found feed this powers (home page tabs, etc).
+// Excludes Sirli quti listings, which have their own page
+// (getMysteryBoxListings), and the business offers of the former Takliflar
+// section, which no longer has a page of its own.
 export function getAllActiveListings(country: string): Listing[] {
   const rows = db
     .prepare(
@@ -186,7 +186,7 @@ export function getAllActiveListings(country: string): Listing[] {
 // only by the main browse/search page, so someone who finds a listing via
 // search still sees it (with the resolved overlay) instead of it silently
 // vanishing, which would look like it never existed. Also excludes Sirli
-// quti and Takliflar listings, same reason as getAllActiveListings above.
+// quti and old Takliflar listings, same reason as getAllActiveListings above.
 export function getAllListings(country: string): Listing[] {
   const rows = db
     .prepare(
@@ -222,20 +222,6 @@ export function getRewardedListings(country: string): Listing[] {
   return rows.map(toListing);
 }
 
-// "Takliflar" — business promos/deals get their own dedicated page, same
-// pattern as Sirli quti. No expiry concept here (unlike Sirli quti), so no
-// extra date filter beyond status/country.
-export function getPromoListings(country: string): Listing[] {
-  const rows = db
-    .prepare(
-      `${LISTING_SELECT} WHERE listings.status = 'active' AND listings.country = ? AND listings.is_promo = 1
-       AND ${VISIBLE}
-       ORDER BY listings.created_at DESC, listings.id DESC`
-    )
-    .all(country) as RawListingRow[];
-  return rows.map(toListing);
-}
-
 // "Sirli quti" — creative promotional listings (a hidden prize, a partner's
 // discount code) get their own dedicated page, separate from ordinary
 // lost/found browsing. No background jobs run in this app, so an expired
@@ -256,7 +242,7 @@ export function getMysteryBoxListings(country: string): Listing[] {
 // least one photo, shuffled at query time so the order is different (and
 // unpredictable) on each load — there's no "trending" ranking here, just a
 // random walk through whatever visual content exists. Video and photo
-// listings — lost/found, Takliflar, and (for logged-in viewers) Sirli
+// listings — every kind, and (for logged-in viewers) Sirli
 // quti — are deliberately mixed together rather than shown in separate
 // feeds. Sirli quti stays out of a guest's feed the same way it's gated
 // everywhere else on the site; its video itself may still be time-locked,
@@ -276,7 +262,7 @@ export function getReelsListings(
       `${LISTING_SELECT} WHERE listings.status = 'active' AND listings.country = ?
        ${mysteryBoxClause}
        AND (listings.video_url IS NOT NULL OR listings.photo_urls != '[]')
-       AND ${VISIBLE}
+       AND listings.is_promo = 0 AND ${VISIBLE}
        ${excludeClause}
        ORDER BY RANDOM() LIMIT 30`
     )

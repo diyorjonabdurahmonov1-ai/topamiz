@@ -20,7 +20,6 @@ export interface Dictionary {
     listings: string;
     rewarded: string;
     mysteryBox: string;
-    promo: string;
     ads: string;
     messages: string;
     login: string;
@@ -224,9 +223,6 @@ export interface Dictionary {
     mysteryBoxCalloutTitle: string;
     mysteryBoxCalloutBody: string;
     mysteryBoxCalloutButton: string;
-    promoCalloutTitle: string;
-    promoCalloutBody: string;
-    promoCalloutButton: string;
     redactHeading: string;
     redactHint: string;
     redactUndo: string;
@@ -305,39 +301,7 @@ export interface Dictionary {
     emptyBody: string;
   };
 
-  promo: {
-    title: string;
-    subtitle: string;
-    postButton: string;
-    allCategories: string;
-    emptyTitle: string;
-    emptyBody: string;
-  };
 
-  promoForm: {
-    pageTitle: string;
-    pageSubtitle: string;
-    explainHeading: string;
-    explainBody: string;
-    titleLabel: string;
-    titlePlaceholder: string;
-    descriptionLabel: string;
-    descriptionPlaceholder: string;
-    categoryLabel: string;
-    tariffsLabel: string;
-    tariffsPlaceholder: string;
-    mapPickerHint: string;
-    contactHeading: string;
-    phoneLabel: string;
-    requiredFieldsError: string;
-    genericError: string;
-    submitting: string;
-    submit: string;
-    successTitle: string;
-    successBody: string;
-    viewPromoLink: string;
-    backToNormalLink: string;
-  };
 
   mysteryBox: {
     title: string;

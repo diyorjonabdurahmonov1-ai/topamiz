@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ArrowRight, BriefcaseBusiness, Car, House, Smartphone, Sparkles, Tag, Zap } from "lucide-react";
+import { ArrowRight, BriefcaseBusiness, Car, House, Smartphone, Sparkles, Zap } from "lucide-react";
 import { LISTING_KINDS } from "@/lib/sections";
 import type { ListingKind } from "@/lib/types";
 import { getCurrentUser, getUserPhone } from "@/lib/auth";
@@ -63,7 +63,7 @@ export default async function PostListingPage(props: PageProps<"/elon-qoshish">)
       />
 
       <h2 className="mb-3 mt-8 text-sm font-extrabold text-muted">{t.otherTypesTitle}</h2>
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+      <div className="grid grid-cols-1 gap-3">
         <OtherKind
           href="/elon-qoshish/sirli-quti"
           icon={<Sparkles className="h-5 w-5" />}
@@ -71,14 +71,6 @@ export default async function PostListingPage(props: PageProps<"/elon-qoshish">)
           border="border-accent-gold/30 hover:border-accent-gold/60"
           title={t.mysteryBoxCalloutButton}
           body={t.mysteryBoxCalloutBody}
-        />
-        <OtherKind
-          href="/elon-qoshish/taklif"
-          icon={<Tag className="h-5 w-5" />}
-          gradient="from-sky-500 to-brand-via"
-          border="border-sky-500/30 hover:border-sky-500/60"
-          title={t.promoCalloutButton}
-          body={t.promoCalloutBody}
         />
       </div>
     </div>
