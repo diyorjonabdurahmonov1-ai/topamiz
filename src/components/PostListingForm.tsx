@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, type FormEvent, type ReactNode, type Ref } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, type FormEvent, type ReactNode, type Ref } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import {
@@ -19,6 +19,7 @@ import {
   PackageSearch,
   PartyPopper,
   Phone,
+  RotateCcw,
   Search,
   Send,
   Sparkles,
@@ -50,8 +51,20 @@ import {
   cancelVideoUpload,
   getVideoUpload,
   markVideoSubmitted,
+  restoreFinishedVideo,
+  startVideoUpload,
+  useVideoUpload,
   videoFieldsForListing,
+  videoFileFor,
 } from "@/lib/video-upload-store";
+import {
+  clearDraft,
+  deleteDraftVideo,
+  loadDraft,
+  loadDraftVideo,
+  saveDraft,
+  saveDraftVideo,
+} from "@/lib/listing-draft";
 
 const LocationPickerMap = dynamic(() => import("./LocationPickerMap"), {
   ssr: false,
@@ -123,13 +136,9 @@ export default function PostListingForm({
   const [postedId, setPostedId] = useState<string | null>(null);
   const [showMap, setShowMap] = useState(false);
   const [showMore, setShowMore] = useState(false);
-  // Leaving the form without publishing drops its upload; a published
-  // listing's upload is never dropped (cancelVideoUpload checks that).
-  const videoHandleRef = useRef<string | null>(null);
-  useEffect(() => {
-    videoHandleRef.current = videoHandle;
-  }, [videoHandle]);
-  useEffect(() => () => cancelVideoUpload(videoHandleRef.current), []);
+  // Leaving the form keeps its video uploading — it's part of the draft
+  // below, and the form picks it up again on return.
+  const videoEntry = useVideoUpload(videoHandle);
   const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
   const [locating, setLocating] = useState(false);
   const [locateError, setLocateError] = useState("");
@@ -137,6 +146,171 @@ export default function PostListingForm({
   const whatRef = useRef<HTMLElement>(null);
   const whereRef = useRef<HTMLElement>(null);
   const titleInputRef = useRef<HTMLInputElement>(null);
+  // The draft (lib/listing-draft): restored once on arrival, then saved on
+  // every change. Saving waits for the restore (state, not a ref: the first
+  // render's effects must still see "not ready"), or the empty first render
+  // would wipe what's being restored.
+  const draftIdRef = useRef("");
+  const [draftReady, setDraftReady] = useState(false);
+  // A reload cut a video off and its copy is being read back.
+  const [restoringVideo, setRestoringVideo] = useState(false);
+  const savedVideoRef = useRef<string | null>(null);
+  const [restored, setRestored] = useState(false);
+  // Remounts the photo uploader with the restored photos.
+  const [mediaKey, setMediaKey] = useState(0);
+
+  // Before the first paint, so a restored draft opens straight on the form
+  // instead of flashing the kinds screen first.
+  useLayoutEffect(() => {
+    const draft = loadDraft();
+    // sessionStorage only exists in the browser, so this can't be initial
+    // state without a hydration mismatch.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setDraftReady(true);
+    if (!draft) {
+      draftIdRef.current = crypto.randomUUID();
+      void deleteDraftVideo();
+      return;
+    }
+    draftIdRef.current = draft.id;
+    setKind(initialKind ?? draft.kind);
+    setTitle(draft.title);
+    setDescription(draft.description);
+    setPickedCategory(draft.pickedCategory);
+    setPrice(draft.price);
+    setPickedCurrency(draft.pickedCurrency);
+    setNegotiable(draft.negotiable);
+    setAttrs(draft.attrs ?? {});
+    setCity(draft.city);
+    setDistrict(draft.district);
+    setReward(draft.reward);
+    setContactPhone(draft.contactPhone);
+    setImageUrls(draft.imageUrls ?? []);
+    setMediaKey((k) => k + 1);
+    setCoords(draft.coords);
+    if (draft.coords) setShowMap(true);
+    if (Object.values(draft.attrs ?? {}).some(Boolean) || draft.description) setShowMore(true);
+    setRestored(true);
+    if (!initialKind) {
+      setPhase("form");
+      window.history.replaceState(null, "", `?kind=${draft.kind}`);
+    }
+
+    // Still uploading in this tab (moved between pages): carry on with it.
+    // Finished before a reload: its result is enough. Cut off by a reload:
+    // start again from the copy kept on the phone.
+    const video = draft.video;
+    if (video && getVideoUpload(video.handle)) {
+      setVideoHandle(video.handle);
+      savedVideoRef.current = video.handle;
+    } else if (video?.result) {
+      setVideoHandle(restoreFinishedVideo(video.result));
+    } else if (video) {
+      setRestoringVideo(true);
+      void loadDraftVideo(draft.id)
+        .then((stored) => {
+          if (!stored) return;
+          const handle = startVideoUpload(stored.file, stored.source, dict);
+          savedVideoRef.current = handle;
+          setVideoHandle((current) => current ?? handle);
+        })
+        .finally(() => setRestoringVideo(false));
+    }
+    // Only ever on arrival.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const hasContent =
+    !!title.trim() ||
+    !!description.trim() ||
+    imageUrls.length > 0 ||
+    !!videoHandle ||
+    !!price ||
+    negotiable ||
+    Object.values(attrs).some(Boolean) ||
+    !!city ||
+    !!coords ||
+    !!reward ||
+    contactPhone !== defaultPhone;
+
+  useEffect(() => {
+    if (!draftReady || restoringVideo || status === "success") return;
+    if (!hasContent) {
+      clearDraft();
+      return;
+    }
+    saveDraft({
+      id: draftIdRef.current,
+      kind,
+      title,
+      description,
+      pickedCategory,
+      price,
+      pickedCurrency,
+      negotiable,
+      attrs,
+      city,
+      district,
+      reward,
+      contactPhone,
+      imageUrls,
+      coords,
+      video: videoHandle ? { handle: videoHandle, result: videoEntry?.result ?? null } : null,
+    });
+  }, [
+    draftReady,
+    restoringVideo,
+    hasContent,
+    status,
+    kind,
+    title,
+    description,
+    pickedCategory,
+    price,
+    pickedCurrency,
+    negotiable,
+    attrs,
+    city,
+    district,
+    reward,
+    contactPhone,
+    imageUrls,
+    coords,
+    videoHandle,
+    videoEntry?.result,
+  ]);
+
+  // The video file itself, for a reload mid-upload: kept once it's been read
+  // into memory, dropped once the upload is finished (the URLs do then).
+  // (The store shows a preview as soon as the file is in memory.)
+  const videoFileReady = !!videoEntry?.previewUrl;
+  const videoDone = videoEntry?.stage === "done";
+  useEffect(() => {
+    if (!draftReady || restoringVideo) return;
+    if (!videoHandle) {
+      savedVideoRef.current = null;
+      void deleteDraftVideo();
+      return;
+    }
+    if (videoDone) {
+      void deleteDraftVideo();
+      return;
+    }
+    if (!videoFileReady || savedVideoRef.current === videoHandle) return;
+    const picked = videoFileFor(videoHandle);
+    if (!picked) return;
+    savedVideoRef.current = videoHandle;
+    void saveDraftVideo({ draftId: draftIdRef.current, handle: videoHandle, ...picked });
+  }, [draftReady, restoringVideo, videoHandle, videoFileReady, videoDone]);
+
+  // Starts over: the draft, its video and the form all go.
+  function discardDraft() {
+    cancelVideoUpload(videoHandle);
+    clearDraft();
+    draftIdRef.current = crypto.randomUUID();
+    setRestored(false);
+    resetForm();
+  }
 
   useEffect(() => {
     function onPopState() {
@@ -321,6 +495,8 @@ export default function PostListingForm({
         setVideoPending(true);
       }
       setPostedId(String(data.listing.id));
+      clearDraft();
+      setRestored(false);
       setStatus("success");
       window.scrollTo({ top: 0, behavior: "smooth" });
     } catch (err) {
@@ -350,6 +526,7 @@ export default function PostListingForm({
     setShowMap(false);
     setShowMore(false);
     setLocateError("");
+    setMediaKey((k) => k + 1);
     pushedRef.current = false;
     window.history.replaceState(null, "", window.location.pathname);
     setPhase("pick");
@@ -475,6 +652,21 @@ export default function PostListingForm({
           {c.changeKind}
         </button>
       </div>
+
+      {restored && (
+        <div className="animate-fade-in flex items-center gap-2.5 rounded-2xl border border-brand-via/30 bg-brand-via/5 px-3.5 py-2.5">
+          <Check className="h-4 w-4 shrink-0 text-brand-via" />
+          <p className="min-w-0 flex-1 text-xs font-medium">{t.draftRestored}</p>
+          <button
+            type="button"
+            onClick={discardDraft}
+            className="flex shrink-0 items-center gap-1 rounded-lg px-2 py-1.5 text-xs font-bold text-muted hover:bg-surface-2 hover:text-foreground"
+          >
+            <RotateCcw className="h-3.5 w-3.5" />
+            {t.draftDiscard}
+          </button>
+        </div>
+      )}
 
       <Step
         ref={whatRef}
@@ -682,7 +874,9 @@ export default function PostListingForm({
 
       <Step number={showDetails ? 4 : 3} done={imageUrls.length > 0 || !!videoHandle} title={t.stepMediaTitle} badge={t.optionalBadge} optional hint={t.stepMediaHint}>
         <MediaUploader
+          key={mediaKey}
           onImagesChange={setImageUrls}
+          imageUrls={imageUrls}
           videoHandle={videoHandle}
           onVideoHandleChange={setVideoHandle}
           dict={dict}

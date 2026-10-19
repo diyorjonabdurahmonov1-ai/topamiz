@@ -279,6 +279,8 @@ const kk: Dictionary = {
     photoUploadPrompt: "Суретті осында тастаңыз немесе басып таңдаңыз",
     photoTake: "Суретке түсіру",
     videoServerError: "сервер жауап бермеді, сәлден соң қайта көріңіз",
+    draftRestored: "Аяқталмаған хабарландыруыңыз сақталды — жалғастырыңыз.",
+    draftDiscard: "Қайта бастау",
   },
 
   mysteryBoxForm: {

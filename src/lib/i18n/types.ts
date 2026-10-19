@@ -253,6 +253,8 @@ export interface Dictionary {
     photoUploadPrompt: string;
     photoTake: string;
     videoServerError: string;
+    draftRestored: string;
+    draftDiscard: string;
   };
 
   mysteryBoxForm: {

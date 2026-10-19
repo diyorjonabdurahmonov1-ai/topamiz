@@ -279,6 +279,8 @@ const tg: Dictionary = {
     photoUploadPrompt: "Аксро ба ин ҷо кашед ё пахш карда интихоб кунед",
     photoTake: "Акс гирифтан",
     videoServerError: "сервер ҷавоб надод, каме баъд бори дигар кӯшиш кунед",
+    draftRestored: "Эълони нотамоми шумо нигоҳ дошта шуд — давом диҳед.",
+    draftDiscard: "Аз нав",
   },
 
   mysteryBoxForm: {

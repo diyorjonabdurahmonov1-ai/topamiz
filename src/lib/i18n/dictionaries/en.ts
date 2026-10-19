@@ -279,6 +279,8 @@ const en: Dictionary = {
     photoUploadPrompt: "Drop photos here or tap to choose",
     photoTake: "Take a photo",
     videoServerError: "the server didn't respond, please try again shortly",
+    draftRestored: "Your unfinished listing was saved — carry on.",
+    draftDiscard: "Start over",
   },
 
   mysteryBoxForm: {

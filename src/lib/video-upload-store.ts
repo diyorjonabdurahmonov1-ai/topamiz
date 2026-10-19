@@ -140,6 +140,41 @@ export function startVideoUpload(picked: File, source: VideoSource, dict: Dictio
   return id;
 }
 
+// A video that finished uploading before the page was reloaded: there's no
+// file any more, only the result, which is all a listing needs.
+export function restoreFinishedVideo(result: { videoUrl: string; thumbnailUrl: string }): string {
+  const id = crypto.randomUUID();
+  entries = [
+    ...entries,
+    {
+      id,
+      stage: "done",
+      progress: 100,
+      previewUrl: result.videoUrl,
+      error: "",
+      errorCode: "",
+      readFailed: false,
+      result,
+      serverUploadId: null,
+      listingId: null,
+    },
+  ];
+  emit();
+  return id;
+}
+
+// The video as read into memory, once it has been (a gallery file's own
+// access can lapse) — what a draft keeps so a reload can upload it again.
+export function videoFileFor(id: string | null): { file: File; source: VideoSource } | null {
+  const it = id ? internals.get(id) : undefined;
+  if (!it?.file) return null;
+  const file =
+    it.file instanceof File
+      ? it.file
+      : new File([it.file], it.picked.name, { type: it.picked.type, lastModified: it.picked.lastModified });
+  return { file, source: it.source };
+}
+
 // Drops an upload nobody will use (the poster removed the video, or left
 // the form without publishing). A published listing's upload is never
 // cancelled this way.
@@ -159,7 +194,7 @@ export function dismissVideoUpload(id: string) {
 
 function removeEntry(id: string) {
   const entry = getVideoUpload(id);
-  if (entry?.previewUrl) URL.revokeObjectURL(entry.previewUrl);
+  if (entry?.previewUrl?.startsWith("blob:")) URL.revokeObjectURL(entry.previewUrl);
   internals.delete(id);
   entries = entries.filter((e) => e.id !== id);
   emit();
