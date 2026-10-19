@@ -7,6 +7,8 @@ import type { AuthUser } from "@/lib/auth";
 import type { Dictionary } from "@/lib/i18n";
 import Avatar from "./Avatar";
 import { prepareImageForUpload } from "@/lib/image-prepare";
+import { useNameCheck } from "@/lib/use-name-check";
+import { NameCheckIcon, NameCheckMessage, nameCheckBorder } from "./NameCheckStatus";
 
 export default function ProfileEditForm({ user, dict }: { user: AuthUser; dict: Dictionary }) {
   const router = useRouter();
@@ -15,6 +17,9 @@ export default function ProfileEditForm({ user, dict }: { user: AuthUser; dict: 
   const [bio, setBio] = useState(user.bio);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  // Their own current name is theirs to keep; anything else must be free.
+  const nameCheck = useNameCheck(editing ? name : user.name, user.name);
+  const nameBlocked = nameCheck === "taken" || nameCheck === "invalid" || nameCheck === "checking";
 
   const avatarInputRef = useRef<HTMLInputElement>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
@@ -124,12 +129,25 @@ export default function ProfileEditForm({ user, dict }: { user: AuthUser; dict: 
     <form onSubmit={handleSubmit} className="flex flex-col items-center gap-3 text-center">
       {avatarPicker}
       {avatarError && <p className="text-xs font-medium text-danger">{avatarError}</p>}
-      <input
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-        placeholder={dict.profile.namePlaceholder}
-        className="w-full max-w-xs rounded-xl border border-border bg-bg-elevated px-4 py-2.5 text-center text-sm focus:outline-none focus:ring-2 focus:ring-brand-via/40"
-      />
+      <div className="w-full max-w-xs">
+        <div className="relative">
+          <input
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder={dict.profile.namePlaceholder}
+            aria-label={dict.profile.namePlaceholder}
+            aria-invalid={nameCheck === "taken" || nameCheck === "invalid"}
+            maxLength={80}
+            className={`w-full rounded-xl border bg-bg-elevated px-10 py-2.5 text-center text-sm focus:outline-none focus:ring-2 focus:ring-brand-via/40 ${
+              nameCheckBorder(nameCheck) || "border-border"
+            }`}
+          />
+          <span className="absolute right-3 top-1/2 -translate-y-1/2">
+            <NameCheckIcon status={nameCheck} />
+          </span>
+        </div>
+        <NameCheckMessage status={nameCheck} dict={dict} className="mt-1.5" />
+      </div>
       <textarea
         value={bio}
         onChange={(e) => setBio(e.target.value)}
@@ -150,7 +168,7 @@ export default function ProfileEditForm({ user, dict }: { user: AuthUser; dict: 
         </button>
         <button
           type="submit"
-          disabled={loading}
+          disabled={loading || nameBlocked || name.trim().length < 2}
           className="btn-brand flex items-center gap-1.5 rounded-xl px-4 py-2 text-sm font-semibold text-white disabled:opacity-70"
         >
           {loading && <Loader2 className="h-3.5 w-3.5 animate-spin" />}

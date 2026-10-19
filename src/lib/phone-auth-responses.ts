@@ -16,6 +16,7 @@ const AUTH_ERRORS = {
   consentRequired: "Ro'yxatdan o'tish uchun shartlarga rozilik bildiring.",
   nameRequired: "Ismingizni kiriting.",
   nameReserved: "Bu ismni tanlab bo'lmaydi.",
+  nameTaken: "Bu nom band — boshqa nom toping.",
   passwordShort: "Parol kamida 8 belgidan iborat bo'lishi kerak.",
   passwordLong: "Parol juda uzun.",
   passwordWeak: "Parolda kamida bitta harf va bitta raqam bo'lishi kerak.",

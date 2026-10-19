@@ -2,6 +2,7 @@ import Database from "better-sqlite3";
 import path from "node:path";
 import { mkdirSync } from "node:fs";
 import { coordinatesForCity } from "./city-coordinates";
+import { nameKey } from "./name-key";
 
 const DATA_DIR = path.join(process.cwd(), ".data");
 // Tests point this at ":memory:" (see vitest.config.ts) to run against an
@@ -231,6 +232,44 @@ if (!userColumns2.some((c) => c.name === "moderation_strikes")) {
 if (!userColumns2.some((c) => c.name === "terms_accepted_at")) {
   addColumn("ALTER TABLE users ADD COLUMN terms_accepted_at TEXT");
 }
+
+// Profile names are unique (lib/user-names): name_key is the normalized
+// name the unique index is on. Accounts from before this that share a name:
+// the oldest keeps it, each later one gets a number ("Aziz 2"), which its
+// owner can change on their profile. Rows without a key are filled in on
+// every start, so nothing can slip past the index unkeyed for long.
+const userColumns3 = db.prepare("PRAGMA table_info(users)").all() as { name: string }[];
+if (!userColumns3.some((c) => c.name === "name_key")) {
+  addColumn("ALTER TABLE users ADD COLUMN name_key TEXT");
+}
+{
+  const unkeyed = db.prepare("SELECT id, name FROM users WHERE name_key IS NULL ORDER BY id").all() as {
+    id: number;
+    name: string;
+  }[];
+  if (unkeyed.length > 0) {
+    const taken = new Set(
+      (db.prepare("SELECT name_key FROM users WHERE name_key IS NOT NULL").all() as { name_key: string }[]).map(
+        (r) => r.name_key
+      )
+    );
+    const update = db.prepare("UPDATE users SET name = ?, name_key = ? WHERE id = ?");
+    db.transaction(() => {
+      for (const row of unkeyed) {
+        let name = row.name;
+        let key = nameKey(name);
+        for (let n = 2; taken.has(key); n++) {
+          const suffix = ` ${n}`;
+          name = `${row.name.trim().slice(0, 80 - suffix.length)}${suffix}`;
+          key = nameKey(name);
+        }
+        taken.add(key);
+        update.run(name, key, row.id);
+      }
+    })();
+  }
+}
+db.exec("CREATE UNIQUE INDEX IF NOT EXISTS idx_users_name_key ON users(name_key)");
 
 // Lets a message carry proof photos — used by the "I found this" flow on a
 // lost listing, so a finder can attach a picture instead of just text.
