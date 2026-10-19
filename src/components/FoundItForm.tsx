@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { signupHref } from "@/lib/safe-next";
 import { CheckCircle2, Loader2, PackageCheck } from "lucide-react";
 import type { Dictionary } from "@/lib/i18n";
 import ImageUploader from "./ImageUploader";
@@ -19,6 +20,7 @@ export default function FoundItForm({
   dict: Dictionary;
 }) {
   const router = useRouter();
+  const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState("");
   const [photoUrls, setPhotoUrls] = useState<string[]>([]);
@@ -37,7 +39,7 @@ export default function FoundItForm({
 
   if (!loggedIn) {
     return (
-      <Link href="/kirish" className={buttonClassName}>
+      <Link href={signupHref(pathname)} className={buttonClassName}>
         {buttonLabel}
       </Link>
     );

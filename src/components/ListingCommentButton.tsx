@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { signupHrefHere } from "@/lib/safe-next";
 import { MessageCircle } from "lucide-react";
 import type { Dictionary } from "@/lib/i18n";
 import ReelCommentsSheet from "./ReelCommentsSheet";
@@ -26,7 +27,7 @@ export default function ListingCommentButton({
 
   function handleClick() {
     if (!loggedIn) {
-      router.push("/kirish");
+      router.push(signupHrefHere());
       return;
     }
     setOpen(true);

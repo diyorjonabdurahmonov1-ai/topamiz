@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { signupHrefHere } from "@/lib/safe-next";
 import { Heart } from "lucide-react";
 
 export default function LikeButton({
@@ -26,7 +27,7 @@ export default function LikeButton({
 
   async function handleClick() {
     if (!loggedIn) {
-      router.push("/kirish");
+      router.push(signupHrefHere());
       return;
     }
     if (busy) return;

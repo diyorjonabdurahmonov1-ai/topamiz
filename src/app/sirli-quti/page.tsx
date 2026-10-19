@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { signupHref } from "@/lib/safe-next";
 import { Plus, Sparkles } from "lucide-react";
 import ListingsGrid from "@/components/ListingsGrid";
 import StatCard from "@/components/StatCard";
@@ -16,7 +17,7 @@ export const metadata: Metadata = {
 
 export default async function MysteryBoxPage() {
   const user = await getCurrentUser();
-  if (!user) redirect("/kirish");
+  if (!user) redirect(signupHref("/sirli-quti"));
   const boxes = getMysteryBoxListings(await getVisitorCountry());
   const locale = await getLocale();
   const dict = getDictionary(locale);

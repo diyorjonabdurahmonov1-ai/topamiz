@@ -27,6 +27,10 @@ import MysteryBoxVideo from "@/components/MysteryBoxVideo";
 import MysteryBoxGallery from "@/components/MysteryBoxGallery";
 import MysteryBoxLocationGate from "@/components/MysteryBoxLocationGate";
 import MysteryBoxStartNotice from "@/components/MysteryBoxStartNotice";
+import GuestListingGate from "@/components/GuestListingGate";
+import { getVisitorCountry } from "@/lib/geo";
+import { getLegal } from "@/lib/legal";
+import { signupHref } from "@/lib/safe-next";
 import { attrRows, KIND_BADGE_CLASS, kindLabel, priceText, resolvedLabel } from "@/lib/listing-labels";
 
 export async function generateMetadata(props: PageProps<"/elonlar/[id]">): Promise<Metadata> {
@@ -39,14 +43,29 @@ export default async function ListingDetailPage(props: PageProps<"/elonlar/[id]"
   const { id } = await props.params;
   const user = await getCurrentUser();
   // An admin can still open a blocked owner's listing (from the admin list).
-  const listing = getListingById(id, { includeHidden: isAdmin(user) });
+  // The poster's phone is only ever loaded for a signed-in visitor.
+  const listing = getListingById(id, { includeHidden: isAdmin(user), withContact: !!user });
   if (!listing) notFound();
 
-  if (listing.isMysteryBox && !user) redirect("/kirish");
+  if (listing.isMysteryBox && !user) redirect(signupHref(`/elonlar/${id}`));
 
   incrementListingViews(id);
   const locale = await getLocale();
   const dict = getDictionary(locale);
+
+  // Not registered: a short preview and the sign-up form, nothing more.
+  if (!user) {
+    return (
+      <GuestListingGate
+        listing={listing}
+        dict={dict}
+        locale={locale}
+        legal={getLegal(locale)}
+        abroad={(await getVisitorCountry()) !== "UZ"}
+      />
+    );
+  }
+
   const Icon = categoryIcons[listing.category];
   const categoryLabel = dict.categories[listing.category];
   const owner = listing.ownerId ? getUserById(listing.ownerId) : null;

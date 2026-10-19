@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
+import { signupHref } from "@/lib/safe-next";
 import { Sparkles } from "lucide-react";
 import { getCurrentUser } from "@/lib/auth";
 import { getLocale } from "@/lib/i18n/server";
@@ -12,7 +13,7 @@ export const metadata: Metadata = {
 
 export default async function CreateMysteryBoxPage() {
   const user = await getCurrentUser();
-  if (!user) redirect("/kirish");
+  if (!user) redirect(signupHref("/elon-qoshish/sirli-quti"));
   const locale = await getLocale();
   const dict = getDictionary(locale);
 

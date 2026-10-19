@@ -6,16 +6,18 @@ import { getDictionary } from "@/lib/i18n";
 import { getVisitorCountry } from "@/lib/geo";
 import { getLegal } from "@/lib/legal";
 import AuthPanel from "@/components/auth/AuthPanel";
+import { safeNextPath } from "@/lib/safe-next";
 
 export const metadata: Metadata = {
   title: "Kirish — Findo",
 };
 
 export default async function LoginPage(props: PageProps<"/kirish">) {
-  const user = await getCurrentUser();
-  if (user) redirect("/profil");
-
   const searchParams = await props.searchParams;
+  const next = safeNextPath(searchParams.next);
+  const user = await getCurrentUser();
+  if (user) redirect(next ?? "/profil");
+
   const error = typeof searchParams.error === "string" ? searchParams.error : null;
   const initialTab = searchParams.tab === "register" ? "register" : "login";
   const locale = await getLocale();
@@ -46,7 +48,7 @@ export default async function LoginPage(props: PageProps<"/kirish">) {
           </p>
         )}
 
-        <AuthPanel dict={dict} initialTab={initialTab} legal={getLegal(locale)} abroad={abroad} />
+        <AuthPanel dict={dict} initialTab={initialTab} legal={getLegal(locale)} abroad={abroad} next={next} />
       </div>
     </div>
   );

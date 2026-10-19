@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { signupHrefHere } from "@/lib/safe-next";
 import { CheckCircle2, Link2, Loader2, Search, Share2, Users, X } from "lucide-react";
 import type { PublicUser } from "@/lib/auth";
 import type { Dictionary } from "@/lib/i18n";
@@ -70,7 +71,7 @@ export default function ShareMenu({
 
   function openMenu() {
     if (!loggedIn) {
-      router.push("/kirish");
+      router.push(signupHrefHere());
       return;
     }
     setView("menu");

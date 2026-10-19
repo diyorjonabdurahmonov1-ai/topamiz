@@ -1,6 +1,7 @@
 import crypto from "node:crypto";
 
 export const OAUTH_STATE_COOKIE = "topamiz_oauth_state";
+export const OAUTH_NEXT_COOKIE = "topamiz_oauth_next";
 
 const GOOGLE_AUTH_URL = "https://accounts.google.com/o/oauth2/v2/auth";
 const GOOGLE_TOKEN_URL = "https://oauth2.googleapis.com/token";

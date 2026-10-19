@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { signupHref } from "@/lib/safe-next";
 import { CheckCircle2, Flag, Loader2 } from "lucide-react";
 import type { Dictionary } from "@/lib/i18n";
 
@@ -14,6 +16,7 @@ export default function ReportListingButton({
   isLoggedIn: boolean;
   dict: Dictionary;
 }) {
+  const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [reason, setReason] = useState("");
   const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
@@ -22,7 +25,7 @@ export default function ReportListingButton({
   if (!isLoggedIn) {
     return (
       <Link
-        href="/kirish"
+        href={signupHref(pathname)}
         className="flex items-center gap-1.5 text-xs font-semibold text-muted hover:text-danger"
       >
         <Flag className="h-3.5 w-3.5" />

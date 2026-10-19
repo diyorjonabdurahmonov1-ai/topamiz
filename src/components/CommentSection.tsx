@@ -2,6 +2,7 @@
 
 import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
+import { signupHrefHere } from "@/lib/safe-next";
 import { Loader2, Send } from "lucide-react";
 import type { ListingComment } from "@/lib/listing-comments";
 import type { Dictionary } from "@/lib/i18n";
@@ -33,7 +34,7 @@ export default function CommentSection({
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     if (!loggedIn) {
-      router.push("/kirish");
+      router.push(signupHrefHere());
       return;
     }
     const text = input.trim();

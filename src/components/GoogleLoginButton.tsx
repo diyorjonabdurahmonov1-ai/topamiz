@@ -1,7 +1,7 @@
-export default function GoogleLoginButton({ label }: { label: string }) {
+export default function GoogleLoginButton({ label, next }: { label: string; next?: string | null }) {
   return (
     <a
-      href="/api/auth/google"
+      href={next ? `/api/auth/google?next=${encodeURIComponent(next)}` : "/api/auth/google"}
       className="flex w-full items-center justify-center gap-2.5 rounded-xl border border-border bg-surface px-5 py-3.5 text-sm font-bold text-foreground shadow-sm transition-colors hover:bg-surface-2"
     >
       <svg className="h-5 w-5 shrink-0" viewBox="0 0 24 24" aria-hidden="true">
