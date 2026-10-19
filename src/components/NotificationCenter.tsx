@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { Bell } from "lucide-react";
 import type { Dictionary } from "@/lib/i18n";
-import { pushAvailability, refreshSubscription } from "@/lib/push-client";
+import { pushAvailability, refreshSubscription, warmUpPush } from "@/lib/push-client";
 
 const POLL_MS = 30_000;
 const TOAST_MS = 6_000;
@@ -121,6 +121,10 @@ export default function NotificationCenter({
     // language). Someone who turned notifications off has no subscription,
     // so they stay off — permission alone doesn't turn them back on.
     void refreshSubscription().catch(() => {});
+    // Installing the worker ahead of time is what makes turning push on
+    // quick later: on slower phones the first install alone takes seconds.
+    // Deferred a little so it never competes with the page itself.
+    const warmUp = setTimeout(warmUpPush, 2_000);
 
     const onMessage = (event: MessageEvent) => {
       const data = event.data as { type?: string; payload?: { title?: string; body?: string; url?: string } };
@@ -132,7 +136,10 @@ export default function NotificationCenter({
       });
     };
     navigator.serviceWorker.addEventListener("message", onMessage);
-    return () => navigator.serviceWorker.removeEventListener("message", onMessage);
+    return () => {
+      clearTimeout(warmUp);
+      navigator.serviceWorker.removeEventListener("message", onMessage);
+    };
   }, [announce]);
 
   useEffect(() => {

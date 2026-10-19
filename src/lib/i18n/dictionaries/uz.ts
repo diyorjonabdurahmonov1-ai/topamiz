@@ -602,6 +602,7 @@ const uz: Dictionary = {
     pushServiceBody: "Bu telefonda bildirishnoma xizmati javob bermadi. Internet borligini va telefonda Google Play xizmatlari yoqilganini tekshirib, qayta urinib ko'ring. Huawei va ba'zi Xiaomi telefonlarida bildirishnomalar faqat Chrome orqali ishlaydi.",
     deniedAppBody: "Bildirishnomalar telefon sozlamalarida o'chirilgan. Yoqish uchun: telefon «Sozlamalar» → «Ilovalar» → «Findo» → «Bildirishnomalar» → ruxsat bering, so'ng shu tugmani qayta bosing.",
     pushRetryBody: "Bildirishnomani yoqib bo'lmadi — internetni tekshirib, qayta urinib ko'ring.",
+    pushSlowHint: "Telefonning bildirishnoma xizmatiga ulanmoqda — ba'zi telefonlarda bu bir necha soniya oladi…",
     title: "Bildirishnomalar",
     navLabel: "Bildirishnomalar",
     empty: "Hozircha bildirishnoma yo'q. Kimdir sizni do'st qilib qo'shsa, e'loningizga izoh yozsa yoki uni yoqtirsa — shu yerda ko'rasiz.",

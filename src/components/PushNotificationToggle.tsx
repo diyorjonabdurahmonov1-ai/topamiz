@@ -10,6 +10,7 @@ import {
   pushAvailability,
   pushFailureCode,
   requestPermission,
+  warmUpPush,
 } from "@/lib/push-client";
 import { reportClientError } from "@/lib/error-report";
 
@@ -33,6 +34,9 @@ export default function PushNotificationToggle({ dict }: { dict: Dictionary }) {
   const t = dict.notifications;
   const [status, setStatus] = useState<Status>("checking");
   const [notice, setNotice] = useState<Notice | null>(null);
+  // Set once subscribing has run past a few seconds, so a slow phone shows
+  // it's still working rather than looking stuck.
+  const [slow, setSlow] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -73,6 +77,10 @@ export default function PushNotificationToggle({ dict }: { dict: Dictionary }) {
       return;
     }
     setStatus("busy");
+    // Gets the worker and server key ready while the permission prompt is
+    // still on screen, instead of only after the visitor answers it.
+    warmUpPush();
+    let slowTimer: ReturnType<typeof setTimeout> | undefined;
     try {
       const permission = await requestPermission();
       if (permission !== "granted") {
@@ -80,11 +88,15 @@ export default function PushNotificationToggle({ dict }: { dict: Dictionary }) {
         setStatus("off");
         return;
       }
+      slowTimer = setTimeout(() => setSlow(true), 4_000);
       await ensureSubscribed();
       setStatus("on");
     } catch (err) {
       fail(err, "enable");
       setStatus("off");
+    } finally {
+      clearTimeout(slowTimer);
+      setSlow(false);
     }
   }
 
@@ -134,6 +146,11 @@ export default function PushNotificationToggle({ dict }: { dict: Dictionary }) {
         )}
         {status === "on" ? dict.profile.pushEnabled : dict.profile.pushEnable}
       </button>
+      {slow && status === "busy" && (
+        <p role="status" className="animate-fade-in max-w-xs text-center text-xs leading-relaxed text-muted">
+          {t.pushSlowHint}
+        </p>
+      )}
       {notice && (
         <div role="alert" className="animate-fade-in flex max-w-sm gap-2.5 rounded-xl border border-border bg-surface p-3 text-left">
           <Info className="mt-0.5 h-4 w-4 shrink-0 text-brand-via" />
