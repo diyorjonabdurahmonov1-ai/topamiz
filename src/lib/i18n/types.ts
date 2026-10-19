@@ -597,6 +597,8 @@ export interface Dictionary {
     optServiceTitle: string;
     optServiceHint: string;
     kindQuestion: string;
+    kindPickHint: string;
+    changeKind: string;
     whatSell: string;
     whatRent: string;
     whatJob: string;

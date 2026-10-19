@@ -60,19 +60,20 @@ export default async function PostListingPage(props: PageProps<"/elon-qoshish">)
         locale={locale}
         defaultPhone={formatPhone(getUserPhone(user.id))}
         initialKind={initialKind}
+        pickFooter={
+          <>
+            <h2 className="mb-3 mt-8 text-sm font-extrabold text-muted">{t.otherTypesTitle}</h2>
+            <OtherKind
+              href="/elon-qoshish/sirli-quti"
+              icon={<Sparkles className="h-5 w-5" />}
+              gradient="from-accent-gold to-brand-via"
+              border="border-accent-gold/30 hover:border-accent-gold/60"
+              title={t.mysteryBoxCalloutButton}
+              body={t.mysteryBoxCalloutBody}
+            />
+          </>
+        }
       />
-
-      <h2 className="mb-3 mt-8 text-sm font-extrabold text-muted">{t.otherTypesTitle}</h2>
-      <div className="grid grid-cols-1 gap-3">
-        <OtherKind
-          href="/elon-qoshish/sirli-quti"
-          icon={<Sparkles className="h-5 w-5" />}
-          gradient="from-accent-gold to-brand-via"
-          border="border-accent-gold/30 hover:border-accent-gold/60"
-          title={t.mysteryBoxCalloutButton}
-          body={t.mysteryBoxCalloutBody}
-        />
-      </div>
     </div>
   );
 }

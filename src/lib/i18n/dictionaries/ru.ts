@@ -629,6 +629,8 @@ const ru: Dictionary = {
     optServiceTitle: "Оказываю услуги",
     optServiceHint: "Ремонт, обучение, доставка",
     kindQuestion: "Какое объявление?",
+    kindPickHint: "Выберите тип — на следующем экране вы напишете объявление",
+    changeKind: "Изменить",
     whatSell: "Что продаёте?",
     whatRent: "Что сдаёте?",
     whatJob: "Кто нужен?",

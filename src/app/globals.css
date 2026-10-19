@@ -8,6 +8,10 @@
   --surface: #ffffff;
   --surface-2: #eef0f7;
   --border: #e2e5ef;
+  /* Text fields: a step apart from the card they sit on, so an empty one
+     still reads as "type here" — in dark mode above all. */
+  --field: #f7f8fc;
+  --field-border: #c6cbdc;
   --foreground: #0e1016;
   --muted: #5b6072;
 
@@ -29,6 +33,8 @@
   --surface-2: #12162400;
   --surface-2: #131829;
   --border: #22273a;
+  --field: #171c2f;
+  --field-border: #3b4466;
   --foreground: #f3f4f8;
   --muted: #9199b3;
 
@@ -47,6 +53,8 @@
   --color-surface: var(--surface);
   --color-surface-2: var(--surface-2);
   --color-border: var(--border);
+  --color-field: var(--field);
+  --color-field-border: var(--field-border);
   --color-foreground: var(--foreground);
   --color-muted: var(--muted);
   --color-brand-from: var(--brand-from);

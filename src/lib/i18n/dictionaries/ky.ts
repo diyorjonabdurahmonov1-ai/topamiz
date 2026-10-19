@@ -629,6 +629,8 @@ const ky: Dictionary = {
     optServiceTitle: "Кызмат көрсөтөм",
     optServiceHint: "Оңдоо, окутуу, жеткирүү",
     kindQuestion: "Кандай жарыя?",
+    kindPickHint: "Түрүн тандаңыз — кийинки терезеде жарыяңызды жазасыз",
+    changeKind: "Өзгөртүү",
     whatSell: "Эмне сатасыз?",
     whatRent: "Эмнени ижарага бересиз?",
     whatJob: "Кандай жумушчу керек?",

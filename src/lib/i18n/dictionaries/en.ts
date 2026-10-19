@@ -628,6 +628,8 @@ const en: Dictionary = {
     optServiceTitle: "Offer a service",
     optServiceHint: "Repairs, tutoring, delivery",
     kindQuestion: "What kind of listing?",
+    kindPickHint: "Pick a type — you'll write your listing on the next screen",
+    changeKind: "Change",
     whatSell: "What are you selling?",
     whatRent: "What are you renting out?",
     whatJob: "Who are you hiring?",
