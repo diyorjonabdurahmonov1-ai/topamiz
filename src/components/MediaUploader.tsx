@@ -14,12 +14,16 @@ type MediaTab = "photo" | "video";
 // upload sections."
 export default function MediaUploader({
   onImagesChange,
+  imageUrls,
   videoHandle,
   onVideoHandleChange,
   dict,
   allowRedaction = false,
 }: {
   onImagesChange: (urls: string[]) => void;
+  // The photos uploaded so far, so switching tabs (which remounts the
+  // uploader) doesn't lose them.
+  imageUrls?: string[];
   videoHandle: string | null;
   onVideoHandleChange: (handle: string | null) => void;
   dict: Dictionary;
@@ -47,7 +51,7 @@ export default function MediaUploader({
       </div>
       <div className="mt-3">
         {tab === "photo" ? (
-          <ImageUploader onChange={onImagesChange} dict={dict} allowRedaction={allowRedaction} />
+          <ImageUploader onChange={onImagesChange} initialUrls={imageUrls} dict={dict} allowRedaction={allowRedaction} />
         ) : (
           <VideoUploader handle={videoHandle} onHandleChange={onVideoHandleChange} dict={dict} />
         )}

@@ -279,6 +279,8 @@ const ru: Dictionary = {
     photoUploadPrompt: "Перетащите фото сюда или нажмите, чтобы выбрать",
     photoTake: "Сфотографировать",
     videoServerError: "сервер не ответил, попробуйте чуть позже",
+    draftRestored: "Ваше незаконченное объявление сохранилось — продолжайте.",
+    draftDiscard: "Заново",
   },
 
   mysteryBoxForm: {

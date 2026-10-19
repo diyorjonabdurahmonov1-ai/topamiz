@@ -21,15 +21,26 @@ export default function ImageUploader({
   onChange,
   dict,
   allowRedaction = false,
+  initialUrls,
 }: {
   onChange?: (urls: string[]) => void;
+  // Photos already uploaded (a restored draft, or switching back from the
+  // video tab), shown as done.
+  initialUrls?: string[];
   dict: Dictionary;
   // Offers a black-out-before-upload editor for each selected photo — only
   // worth the extra step for document/card photos, which is why callers
   // opt in rather than every photo upload in the app getting it.
   allowRedaction?: boolean;
 }) {
-  const [images, setImages] = useState<UploadImage[]>([]);
+  const [images, setImages] = useState<UploadImage[]>(() =>
+    (initialUrls ?? []).map((url) => ({
+      id: crypto.randomUUID(),
+      previewUrl: url.startsWith("/api/uploads/") ? `${url}?w=240` : url,
+      status: "done",
+      url,
+    }))
+  );
   const [dragActive, setDragActive] = useState(false);
   const [pendingQueue, setPendingQueue] = useState<{ id: string; file: File }[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);

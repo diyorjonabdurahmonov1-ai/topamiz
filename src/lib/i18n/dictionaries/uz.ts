@@ -281,6 +281,8 @@ const uz: Dictionary = {
     photoUploadPrompt: "Rasmni shu yerga tashlang yoki bosib tanlang",
     photoTake: "Suratga olish",
     videoServerError: "server javob bermadi, birozdan so'ng qayta urinib ko'ring",
+    draftRestored: "Tugallanmagan e'loningiz saqlangan edi — davom ettiring.",
+    draftDiscard: "Boshidan",
   },
 
   mysteryBoxForm: {
