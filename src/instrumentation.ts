@@ -13,8 +13,9 @@ export async function register() {
 export const onRequestError: Instrumentation.onRequestError = async (err, request, context) => {
   if (process.env.NEXT_RUNTIME !== "nodejs") return;
   try {
-    const { recordError } = await import("./lib/error-log");
     const error = err instanceof Error ? err : new Error(String(err));
+    if (isNoise(error)) return;
+    const { recordError } = await import("./lib/error-log");
     const digest = typeof err === "object" && err && "digest" in err ? String(err.digest) : "";
     const ua = request.headers["user-agent"];
     recordError({
@@ -31,3 +32,16 @@ export const onRequestError: Instrumentation.onRequestError = async (err, reques
     // Never let error logging take the request down with it.
   }
 };
+
+// Not faults of the site, and nothing to act on: a visitor closing the page
+// or losing signal mid-upload ("aborted"), and a request carrying a server
+// action id from another build — the site has no server actions, so that's
+// a tab left open from an old deploy or a bot.
+function isNoise(error: Error): boolean {
+  const code = (error as Error & { code?: string }).code;
+  return (
+    error.message === "aborted" ||
+    code === "ECONNRESET" ||
+    error.message.startsWith("Failed to find Server Action")
+  );
+}

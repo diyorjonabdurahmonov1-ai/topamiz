@@ -3,8 +3,16 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Globe } from "lucide-react";
-import { LOCALES, LOCALE_LABELS, type Locale } from "@/lib/i18n/locales";
-import { setLocaleAction } from "@/lib/i18n/actions";
+import { LOCALE_COOKIE, LOCALES, LOCALE_LABELS, type Locale } from "@/lib/i18n/locales";
+
+// The language is just a cookie the server reads on the next render, so it's
+// set right here rather than through a server action: an action breaks for
+// anyone whose tab was opened before a deploy ("Failed to find Server
+// Action"), leaving the language unchanged.
+function saveLocale(locale: Locale) {
+  const secure = location.protocol === "https:" ? "; secure" : "";
+  document.cookie = `${LOCALE_COOKIE}=${locale}; path=/; max-age=${60 * 60 * 24 * 365}; samesite=lax${secure}`;
+}
 
 export default function LanguageSwitcher({
   locale,
@@ -22,10 +30,8 @@ export default function LanguageSwitcher({
   function choose(next: Locale) {
     setOpen(false);
     if (next === locale) return;
-    startTransition(async () => {
-      await setLocaleAction(next);
-      router.refresh();
-    });
+    saveLocale(next);
+    startTransition(() => router.refresh());
   }
 
   return (
