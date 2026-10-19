@@ -74,7 +74,7 @@ export function getConversations(userId: number): ConversationSummary[] {
   const rows = db
     .prepare(
       `SELECT * FROM messages
-       WHERE sender_id IS NOT NULL AND (sender_id = ? OR recipient_id = ?)
+       WHERE sender_id IS NOT NULL AND sender_id != recipient_id AND (sender_id = ? OR recipient_id = ?)
        ORDER BY created_at ASC`
     )
     .all(userId, userId) as RawMessageRow[];
@@ -124,6 +124,10 @@ export function sendMessage(params: {
   guestPhone?: string;
   photoUrls?: string[];
 }): MessageRow {
+  // Never readable (see the chat page), so it would stay unread for good.
+  if (params.senderId !== null && params.senderId === params.recipientId) {
+    throw new Error("A message can't be sent to oneself");
+  }
   const info = db
     .prepare(
       `INSERT INTO messages (tag_id, listing_id, sender_id, recipient_id, guest_name, guest_phone, body, photo_urls)

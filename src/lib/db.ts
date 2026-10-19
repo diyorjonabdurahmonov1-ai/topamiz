@@ -271,6 +271,10 @@ if (!userColumns3.some((c) => c.name === "name_key")) {
 }
 db.exec("CREATE UNIQUE INDEX IF NOT EXISTS idx_users_name_key ON users(name_key)");
 
+// The admin panel used to let an admin message their own account; such a
+// message has no chat it could be read in, and kept the unread badge lit.
+db.exec("UPDATE messages SET read_at = datetime('now') WHERE sender_id = recipient_id AND read_at IS NULL");
+
 // Lets a message carry proof photos — used by the "I found this" flow on a
 // lost listing, so a finder can attach a picture instead of just text.
 const messageColumns = db.prepare("PRAGMA table_info(messages)").all() as { name: string }[];

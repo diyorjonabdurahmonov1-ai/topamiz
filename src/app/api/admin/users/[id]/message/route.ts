@@ -11,6 +11,11 @@ export async function POST(request: Request, ctx: RouteContext<"/api/admin/users
   const targetId = Number(id);
   const target = getUserById(targetId);
   if (!target) return NextResponse.json({ error: "Topilmadi" }, { status: 404 });
+  // A message to yourself has no chat to be read in (/xabarlar/<own id>
+  // redirects away), so it would sit unread forever.
+  if (targetId === admin.id) {
+    return NextResponse.json({ error: "O'zingizga xabar yuborib bo'lmaydi" }, { status: 400 });
+  }
 
   const body = await request.json().catch(() => null);
   const message = typeof body?.message === "string" ? body.message.trim().slice(0, MAX_MESSAGE_LENGTH) : "";
@@ -22,6 +27,7 @@ export async function POST(request: Request, ctx: RouteContext<"/api/admin/users
     title: BRAND_NAME,
     body: message,
     url: `/xabarlar/${admin.id}`,
+    tag: `chat-${admin.id}`,
   });
 
   return NextResponse.json({ ok: true });
