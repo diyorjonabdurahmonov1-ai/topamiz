@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   ArrowLeft,
@@ -21,6 +22,7 @@ import {
 import type { Dictionary } from "@/lib/i18n";
 import { CODE_LENGTH } from "@/lib/verification-code";
 import GoogleLoginButton from "../GoogleLoginButton";
+import { loginHref } from "@/lib/safe-next";
 import type { LegalContent } from "@/lib/legal";
 import LegalSheet, { type LegalDoc } from "./LegalSheet";
 
@@ -68,12 +70,19 @@ export default function AuthPanel({
   initialTab,
   legal,
   abroad,
+  next = null,
+  registerOnly = false,
 }: {
   dict: Dictionary;
   initialTab: Tab;
   legal: LegalContent;
   // Visiting from outside Uzbekistan: phone sign-up only takes +998 numbers.
   abroad: boolean;
+  // Where to go once signed in (already checked with safeNextPath).
+  next?: string | null;
+  // The sign-up page and the listing page's gate: no login tab, just a
+  // link to the login page for someone who already has an account.
+  registerOnly?: boolean;
 }) {
   const t = dict.login;
   const router = useRouter();
@@ -164,7 +173,7 @@ export default function AuthPanel({
   function signedIn() {
     // refresh() re-renders the server parts (navbar, bottom nav) with the
     // new session.
-    router.replace("/profil");
+    router.replace(next ?? "/profil");
     router.refresh();
   }
 
@@ -467,12 +476,13 @@ export default function AuthPanel({
       break;
   }
 
-  const showTabs = view.name === "login" || view.name === "register-details";
+  const atStart = view.name === "login" || view.name === "register-details";
+  const showTabs = atStart && !registerOnly;
 
   return (
     <div ref={panelRef} className="relative scroll-mt-20">
       <div className="relative overflow-hidden rounded-3xl border border-border bg-surface/80 p-5 shadow-2xl shadow-brand-via/5 backdrop-blur-xl sm:p-6">
-        {abroad && showTabs && (
+        {abroad && atStart && (
           <div className="mb-4 flex gap-3 rounded-2xl border border-sky-500/30 bg-sky-500/10 p-3.5">
             <Globe className="mt-0.5 h-5 w-5 shrink-0 text-sky-500" />
             <div className="text-xs leading-relaxed">
@@ -509,7 +519,7 @@ export default function AuthPanel({
           {body}
         </div>
 
-        {showTabs && (
+        {atStart && (
           <>
             <div className="my-5 flex items-center gap-3 text-xs text-muted">
               <span className="h-px flex-1 bg-border" />
@@ -519,16 +529,24 @@ export default function AuthPanel({
             {tab === "register" && !consent ? (
               <div className="space-y-1.5">
                 <div aria-disabled className="pointer-events-none select-none opacity-40">
-                  <GoogleLoginButton label={dict.login.googleButton} />
+                  <GoogleLoginButton label={dict.login.googleButton} next={next} />
                 </div>
                 <p className="text-center text-[11px] text-muted">{t.googleNeedsConsent}</p>
               </div>
             ) : (
-              <GoogleLoginButton label={dict.login.googleButton} />
+              <GoogleLoginButton label={dict.login.googleButton} next={next} />
             )}
             {tab === "login" && (
               <p className="mt-4 text-center text-[11px] leading-relaxed text-muted">
                 {fill(t.loginFinePrint, legalLinks)}
+              </p>
+            )}
+            {registerOnly && tab === "register" && (
+              <p className="mt-5 border-t border-border pt-4 text-center text-sm text-muted">
+                {t.haveAccount}{" "}
+                <Link href={loginHref(next)} className="font-bold text-brand-via hover:underline">
+                  {t.loginInstead}
+                </Link>
               </p>
             )}
           </>

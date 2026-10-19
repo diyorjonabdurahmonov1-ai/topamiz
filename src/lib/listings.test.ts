@@ -55,6 +55,18 @@ describe("createListing / getListingById", () => {
     expect(getListingOwnerId(listing.id)).toBe(owner.id);
   });
 
+  it("only hands out the contact phone when asked for it", () => {
+    const owner = makeUser("egasi@example.com", "Egasi");
+    const listing = createListing(makeListingParams({ ownerId: owner.id }));
+
+    expect(getListingById(listing.id)?.contactPhone).toBe("");
+    expect(getListingById(listing.id, { withContact: true })?.contactPhone).toBe("+998901234567");
+    for (const card of getAllActiveListings("UZ")) {
+      expect(card.contactPhone).toBe("");
+      expect(card.contactName).toBe("");
+    }
+  });
+
   it("returns null for an id that doesn't exist or isn't numeric", () => {
     expect(getListingById("999999")).toBeNull();
     expect(getListingById("not-a-number")).toBeNull();

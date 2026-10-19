@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { signupHref } from "@/lib/safe-next";
 import { ArrowRight, BriefcaseBusiness, Car, House, Smartphone, Sparkles, Zap } from "lucide-react";
 import { LISTING_KINDS } from "@/lib/sections";
 import type { ListingKind } from "@/lib/types";
@@ -27,7 +28,7 @@ export default async function PostListingPage(props: PageProps<"/elon-qoshish">)
   const kindParam = typeof searchParams.kind === "string" ? searchParams.kind : "";
   const initialKind = (LISTING_KINDS as string[]).includes(kindParam) ? (kindParam as ListingKind) : undefined;
   const user = await getCurrentUser();
-  if (!user) redirect("/kirish");
+  if (!user) redirect(signupHref("/elon-qoshish"));
   const locale = await getLocale();
   const dict = getDictionary(locale);
   const t = dict.postListing;

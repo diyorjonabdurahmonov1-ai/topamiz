@@ -106,6 +106,12 @@ export interface Dictionary {
   listingDetail: {
     backLink: string;
     descriptionLabel: string;
+    guestTitle: string;
+    guestPerkFull: string;
+    guestPerkPhone: string;
+    guestPerkChat: string;
+    guestMorePhotos: string;
+    guestPhoneLocked: string;
     showOnMap: string;
     hideMap: string;
     getDirections: string;
@@ -359,6 +365,11 @@ export interface Dictionary {
     setPassword: string;
     googleNeedsConsent: string;
     loginFinePrint: string;
+    haveAccount: string;
+    loginInstead: string;
+    signupTitle: string;
+    signupTitleHighlight: string;
+    signupSubtitle: string;
     abroadTitle: string;
     abroadBody: string;
     errors: {

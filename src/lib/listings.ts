@@ -94,7 +94,11 @@ function parseAttrs(raw: string | null): ListingAttrs {
   }
 }
 
-function toListing(row: RawListingRow): Listing {
+// The poster's contact phone is left out of every listing by default:
+// lists are handed to the browser whole (cards, map, reels), and the phone
+// must only ever reach a signed-in visitor on the listing's own page —
+// see getListingById's `withContact`.
+function toListing(row: RawListingRow, { withContact = false }: { withContact?: boolean } = {}): Listing {
   const category = row.category as CategoryId;
   const colors = CATEGORY_COLORS[category] ?? CATEGORY_COLORS.boshqa;
   const ownerIdentity =
@@ -135,8 +139,8 @@ function toListing(row: RawListingRow): Listing {
     currency: row.currency === "USD" ? "USD" : "UZS",
     priceNegotiable: !!row.price_negotiable,
     attrs: parseAttrs(row.attrs),
-    contactName: row.contact_name,
-    contactPhone: row.contact_phone,
+    contactName: withContact ? row.contact_name : "",
+    contactPhone: withContact ? row.contact_phone : "",
     status: row.status as Listing["status"],
     colorFrom: colors.from,
     colorTo: colors.to,
@@ -179,7 +183,7 @@ export function getAllActiveListings(country: string): Listing[] {
        ORDER BY listings.created_at DESC, listings.id DESC`
     )
     .all(country) as RawListingRow[];
-  return rows.map(toListing);
+  return rows.map((row) => toListing(row));
 }
 
 // Same as above but also includes resolved ("found it!") listings — used
@@ -195,20 +199,23 @@ export function getAllListings(country: string): Listing[] {
        ORDER BY listings.created_at DESC, listings.id DESC`
     )
     .all(country) as RawListingRow[];
-  return rows.map(toListing);
+  return rows.map((row) => toListing(row));
 }
 
 // A blocked owner's listing reads as not found unless the caller is an admin
 // screen (`includeHidden`), so likes, comments, messages and the page itself
 // all treat it as gone.
-export function getListingById(id: string, { includeHidden = false }: { includeHidden?: boolean } = {}): Listing | null {
+export function getListingById(
+  id: string,
+  { includeHidden = false, withContact = false }: { includeHidden?: boolean; withContact?: boolean } = {}
+): Listing | null {
   const numId = Number(id);
   if (!Number.isInteger(numId)) return null;
   const visibility = includeHidden ? "" : `AND ${VISIBLE}`;
   const row = db.prepare(`${LISTING_SELECT} WHERE listings.id = ? ${visibility}`).get(numId) as
     | RawListingRow
     | undefined;
-  return row ? toListing(row) : null;
+  return row ? toListing(row, { withContact }) : null;
 }
 
 export function getRewardedListings(country: string): Listing[] {
@@ -219,7 +226,7 @@ export function getRewardedListings(country: string): Listing[] {
        ORDER BY listings.reward DESC, listings.id DESC`
     )
     .all(country) as RawListingRow[];
-  return rows.map(toListing);
+  return rows.map((row) => toListing(row));
 }
 
 // "Sirli quti" — creative promotional listings (a hidden prize, a partner's
@@ -235,7 +242,7 @@ export function getMysteryBoxListings(country: string): Listing[] {
        ORDER BY listings.created_at DESC, listings.id DESC`
     )
     .all(country) as RawListingRow[];
-  return rows.map(toListing);
+  return rows.map((row) => toListing(row));
 }
 
 // Reels-style feed: every active listing that has either a video or at
@@ -267,7 +274,7 @@ export function getReelsListings(
        ORDER BY RANDOM() LIMIT 30`
     )
     .all(country, ...excludeIds.map(Number)) as RawListingRow[];
-  return rows.map(toListing);
+  return rows.map((row) => toListing(row));
 }
 
 export function setMysteryBox(id: string, value: boolean): boolean {
@@ -285,7 +292,7 @@ export function getAllListingsForAdmin(): Listing[] {
   const rows = db
     .prepare(`${LISTING_SELECT} ORDER BY listings.created_at DESC, listings.id DESC`)
     .all() as RawListingRow[];
-  return rows.map(toListing);
+  return rows.map((row) => toListing(row));
 }
 
 export function getListingCountsByCountry(): { country: string; count: number }[] {
@@ -300,7 +307,7 @@ export function getListingsByOwner(ownerId: number): Listing[] {
       `${LISTING_SELECT} WHERE listings.owner_id = ? ORDER BY listings.created_at DESC, listings.id DESC`
     )
     .all(ownerId) as RawListingRow[];
-  return rows.map(toListing);
+  return rows.map((row) => toListing(row));
 }
 
 export function getListingStats(): { total: number; active: number } {

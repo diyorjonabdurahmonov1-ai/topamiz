@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { createSession, findOrCreateGoogleUser, isUserBlocked, setSessionCookie } from "@/lib/auth";
-import { exchangeGoogleCode, OAUTH_STATE_COOKIE } from "@/lib/google-auth";
+import { exchangeGoogleCode, OAUTH_NEXT_COOKIE, OAUTH_STATE_COOKIE } from "@/lib/google-auth";
+import { safeNextPath } from "@/lib/safe-next";
 import { getBaseUrl } from "@/lib/qr";
 
 export async function GET(request: Request) {
@@ -13,6 +14,8 @@ export async function GET(request: Request) {
   const store = await cookies();
   const storedState = store.get(OAUTH_STATE_COOKIE)?.value;
   store.delete(OAUTH_STATE_COOKIE);
+  const next = safeNextPath(store.get(OAUTH_NEXT_COOKIE)?.value) ?? "/profil";
+  store.delete(OAUTH_NEXT_COOKIE);
 
   if (!code || !state || !storedState || state !== storedState) {
     return NextResponse.redirect(`${baseUrl}/kirish?error=oauth`);
@@ -33,7 +36,7 @@ export async function GET(request: Request) {
     const { token, expiresAt } = createSession(user.id);
     await setSessionCookie(token, expiresAt);
 
-    return NextResponse.redirect(`${baseUrl}/profil`);
+    return NextResponse.redirect(`${baseUrl}${next}`);
   } catch {
     return NextResponse.redirect(`${baseUrl}/kirish?error=oauth`);
   }

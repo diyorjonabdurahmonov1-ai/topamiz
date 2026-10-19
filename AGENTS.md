@@ -135,6 +135,17 @@ which the post form, the API's validation and the display all read. Labels and
 price formatting live in `src/lib/listing-labels.ts`. Findo only hosts the
 listings; it never handles payment or delivery.
 
+A visitor who isn't signed in sees only a short preview of a listing (one
+picture, title, price, place, the start of the description) with the sign-up
+form right under it (`src/components/GuestListingGate.tsx`); the full listing
+and the poster's phone are for registered users. The phone is never sent to
+a guest's browser at all: listings come without it unless
+`getListingById(…, { withContact: true })` asks, which only the listing page
+does, for a signed-in viewer. Anything else that needs an account sends a
+guest to the sign-up page `/royxatdan-otish` (not the login page), and both
+pages return to `?next=` afterwards (`src/lib/safe-next.ts`), Google sign-in
+included.
+
 An admin blocking a user (`/admin/foydalanuvchilar`) hides everything of
 theirs from the rest of the site — listings, QR tags, profile, comments,
 chats and notifications — until they are unblocked; admin pages still show
