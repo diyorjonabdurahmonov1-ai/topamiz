@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!-- Apple push notifications. "development" here; exporting the archive
+	     for the App Store switches it to production. -->
+	<key>aps-environment</key>
+	<string>development</string>
+	<!-- Universal links: findo.net.uz links opened elsewhere (Telegram, SMS)
+	     open in the app. Needs https://findo.net.uz/.well-known/apple-app-site-association. -->
+	<key>com.apple.developer.associated-domains</key>
+	<array>
+		<string>applinks:findo.net.uz</string>
+		<!-- Lets iOS offer saved findo.net.uz passwords on the sign-in form. -->
+		<string>webcredentials:findo.net.uz</string>
+	</array>
+</dict>
+</plist>

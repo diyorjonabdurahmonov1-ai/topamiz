@@ -2,6 +2,7 @@ import webpush from "web-push";
 import path from "node:path";
 import { readFileSync, writeFileSync } from "node:fs";
 import { db } from "./db";
+import { sendApnsToUser } from "./apns";
 import { DEFAULT_LOCALE, isLocale, type Locale } from "./i18n/locales";
 
 interface VapidKeys {
@@ -77,8 +78,16 @@ interface SubscriptionRow {
 
 // Fire-and-forget from every call site — a push failure must never break
 // the action it's attached to, so nothing here ever throws. Pass a function
-// to word the notification in each subscriber's own language.
+// to word the notification in each subscriber's own language. Reaches both
+// browsers (web push) and the iPhone app (APNs, lib/apns.ts).
 export async function sendPushToUser(
+  userId: number,
+  payload: PushPayload | ((locale: Locale) => PushPayload)
+): Promise<void> {
+  await Promise.all([sendWebPushToUser(userId, payload), sendApnsToUser(userId, payload)]);
+}
+
+async function sendWebPushToUser(
   userId: number,
   payload: PushPayload | ((locale: Locale) => PushPayload)
 ): Promise<void> {

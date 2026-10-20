@@ -74,6 +74,7 @@ export default function AuthPanel({
   abroad,
   next = null,
   registerOnly = false,
+  allowGoogle = true,
 }: {
   dict: Dictionary;
   initialTab: Tab;
@@ -85,6 +86,9 @@ export default function AuthPanel({
   // The sign-up page and the listing page's gate: no login tab, just a
   // link to the login page for someone who already has an account.
   registerOnly?: boolean;
+  // Off inside the iPhone app: Google refuses to sign in from an app's web
+  // view ("disallowed_useragent"), so only the phone number is offered there.
+  allowGoogle?: boolean;
 }) {
   const t = dict.login;
   const router = useRouter();
@@ -541,20 +545,24 @@ export default function AuthPanel({
 
         {atStart && (
           <>
-            <div className="my-5 flex items-center gap-3 text-xs text-muted">
-              <span className="h-px flex-1 bg-border" />
-              {t.orDivider}
-              <span className="h-px flex-1 bg-border" />
-            </div>
-            {tab === "register" && !consent ? (
-              <div className="space-y-1.5">
-                <div aria-disabled className="pointer-events-none select-none opacity-40">
-                  <GoogleLoginButton label={dict.login.googleButton} next={next} />
+            {allowGoogle && (
+              <>
+                <div className="my-5 flex items-center gap-3 text-xs text-muted">
+                  <span className="h-px flex-1 bg-border" />
+                  {t.orDivider}
+                  <span className="h-px flex-1 bg-border" />
                 </div>
-                <p className="text-center text-[11px] text-muted">{t.googleNeedsConsent}</p>
-              </div>
-            ) : (
-              <GoogleLoginButton label={dict.login.googleButton} next={next} />
+                {tab === "register" && !consent ? (
+                  <div className="space-y-1.5">
+                    <div aria-disabled className="pointer-events-none select-none opacity-40">
+                      <GoogleLoginButton label={dict.login.googleButton} next={next} />
+                    </div>
+                    <p className="text-center text-[11px] text-muted">{t.googleNeedsConsent}</p>
+                  </div>
+                ) : (
+                  <GoogleLoginButton label={dict.login.googleButton} next={next} />
+                )}
+              </>
             )}
             {tab === "login" && (
               <p className="mt-4 text-center text-[11px] leading-relaxed text-muted">
