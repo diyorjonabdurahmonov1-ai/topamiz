@@ -1,4 +1,5 @@
 import { db } from "./db";
+import { blockedIdsFor } from "./user-blocks";
 import { getPublicUserById, getUserById, type AuthUser, type PublicUser } from "./auth";
 
 export const MAX_MESSAGE_LENGTH = 2000;
@@ -88,8 +89,11 @@ export function getConversations(userId: number): ConversationSummary[] {
     byOther.set(otherId, list);
   }
 
+  // Someone this user blocked: their chat is hidden until unblocked.
+  const blocked = blockedIdsFor(userId);
   const result: ConversationSummary[] = [];
   for (const [otherId, msgs] of byOther.entries()) {
+    if (blocked.has(otherId)) continue;
     const otherUser = getPublicUserById(otherId);
     if (!otherUser) continue;
     const lastMessage = msgs[msgs.length - 1];
@@ -271,6 +275,7 @@ export function getLatestUnreadMessage(
     .prepare(
       `SELECT sender_id, guest_name, body FROM messages
        WHERE recipient_id = ? AND read_at IS NULL AND (sender_id IS NULL OR sender_id NOT IN (SELECT id FROM users WHERE blocked_at IS NOT NULL))
+         AND (sender_id IS NULL OR sender_id NOT IN (SELECT blocked_id FROM user_blocks WHERE blocker_id = recipient_id))
        ORDER BY id DESC LIMIT 1`
     )
     .get(userId) as { sender_id: number | null; guest_name: string | null; body: string } | undefined;
@@ -283,7 +288,8 @@ export function unreadTotal(userId: number): number {
     // unread badge lit either.
     .prepare(
       `SELECT COUNT(*) as c FROM messages
-       WHERE recipient_id = ? AND read_at IS NULL AND (sender_id IS NULL OR sender_id NOT IN (SELECT id FROM users WHERE blocked_at IS NOT NULL))`
+       WHERE recipient_id = ? AND read_at IS NULL AND (sender_id IS NULL OR sender_id NOT IN (SELECT id FROM users WHERE blocked_at IS NOT NULL))
+         AND (sender_id IS NULL OR sender_id NOT IN (SELECT blocked_id FROM user_blocks WHERE blocker_id = recipient_id))`
     )
     .get(userId) as { c: number };
   return row.c;

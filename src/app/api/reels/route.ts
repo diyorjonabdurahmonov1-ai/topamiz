@@ -4,6 +4,7 @@ import { getReelsListings } from "@/lib/listings";
 import { getLikedListingIds } from "@/lib/listing-likes";
 import { countryForIp } from "@/lib/geo";
 import { getClientIp } from "@/lib/rate-limit";
+import { withoutBlockedOwners } from "@/lib/user-blocks";
 
 // Each id becomes one SQL parameter; past a few hundred, repeats in the
 // feed are fine, and an unbounded list could hit SQLite's parameter limit.
@@ -21,7 +22,7 @@ export async function GET(request: Request) {
   const ip = getClientIp(request);
   // Sirli quti stays out of a guest's Reels feed the same way it's gated
   // everywhere else on the site — a logged-in viewer gets it mixed in.
-  const listings = getReelsListings(countryForIp(ip), excludeIds, !!user);
+  const listings = withoutBlockedOwners(getReelsListings(countryForIp(ip), excludeIds, !!user), user?.id);
 
   const likedIds = user ? getLikedListingIds(user.id, listings.map((l) => Number(l.id))) : new Set<number>();
   const withLiked = listings.map((l) => ({ ...l, likedByMe: likedIds.has(Number(l.id)) }));

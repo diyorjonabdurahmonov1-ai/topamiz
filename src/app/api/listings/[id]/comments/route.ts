@@ -5,13 +5,15 @@ import { addComment, getComments, MAX_COMMENT_LENGTH } from "@/lib/listing-comme
 import { containsProhibitedContent, recordModerationViolation } from "@/lib/moderation";
 import { getClientIp, rateLimit } from "@/lib/rate-limit";
 import { notify } from "@/lib/notifications";
+import { isBlockedBetween } from "@/lib/user-blocks";
 
 export async function GET(_request: Request, ctx: RouteContext<"/api/listings/[id]/comments">) {
   const { id } = await ctx.params;
   const listing = getListingById(id);
   if (!listing) return NextResponse.json({ error: "Topilmadi" }, { status: 404 });
 
-  return NextResponse.json({ comments: getComments(Number(id)) });
+  const viewer = await getCurrentUser();
+  return NextResponse.json({ comments: getComments(Number(id), viewer?.id) });
 }
 
 export async function POST(request: Request, ctx: RouteContext<"/api/listings/[id]/comments">) {
@@ -46,6 +48,10 @@ export async function POST(request: Request, ctx: RouteContext<"/api/listings/[i
       },
       { status: 400 }
     );
+  }
+
+  if (listing.ownerId && isBlockedBetween(user.id, listing.ownerId)) {
+    return NextResponse.json({ error: "Bu e'longa izoh yozib bo'lmaydi" }, { status: 403 });
   }
 
   const comment = addComment({ listingId: Number(id), userId: user.id, body: text });

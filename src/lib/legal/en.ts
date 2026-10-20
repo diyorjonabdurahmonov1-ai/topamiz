@@ -69,7 +69,7 @@ const en: LegalContent = {
       },
       {
         "title": "5. Reports and moderation",
-        "body": "Users can report any listing. A listing that receives several independent reports is reviewed automatically and removed if a violation is confirmed. Findo's administration reserves the right to remove a listing or account without prior notice when necessary. An account that breaks the rules may be blocked: a blocked account's profile, listings, comments and messages are no longer visible to anyone on the site."
+        "body": "Users can report any listing. A listing that receives several independent reports is reviewed automatically and removed if a violation is confirmed. Findo's administration reserves the right to remove a listing or account without prior notice when necessary. An account that breaks the rules may be blocked: a blocked account's profile, listings, comments and messages are no longer visible to anyone on the site. Findo has zero tolerance for abusive, threatening, obscene or harassing content and users. Anyone can block another user or report them with the “⋯” button on their profile or in a chat; a blocked user can't message you, and you won't see their listings, comments or messages. Chat messages, listings and comments are automatically checked for prohibited words. Reports are reviewed within 24 hours: offending content is removed and its author blocked."
       },
       {
         "title": "6. Meetings between users",

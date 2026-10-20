@@ -1,4 +1,5 @@
 import { db } from "./db";
+import { hasBlocked } from "./user-blocks";
 import { getPublicUserById, type PublicUser } from "./auth";
 import { getDictionary, type Locale } from "./i18n";
 import { sendPushToUser } from "./push";
@@ -68,6 +69,8 @@ export function notify(params: {
   const { userId, type, actorId } = params;
   const listingId = params.listingId ?? null;
   if (userId === actorId) return;
+  // Nothing at all from someone the recipient blocked — not even a push.
+  if (hasBlocked(userId, actorId)) return;
 
   removeNotification({ userId, type, actorId, listingId });
   db.prepare("INSERT INTO notifications (user_id, type, actor_id, listing_id) VALUES (?, ?, ?, ?)").run(
@@ -113,6 +116,7 @@ export function getNotifications(userId: number, limit = 50): AppNotification[] 
        FROM notifications n LEFT JOIN listings l ON l.id = n.listing_id
        LEFT JOIN users a ON a.id = n.actor_id
        WHERE n.user_id = ? AND a.blocked_at IS NULL
+         AND (n.actor_id IS NULL OR n.actor_id NOT IN (SELECT blocked_id FROM user_blocks WHERE blocker_id = n.user_id))
        ORDER BY n.created_at DESC, n.id DESC LIMIT ?`
     )
     .all(userId, limit) as NotificationRow[];
@@ -131,7 +135,8 @@ export function unreadNotificationCount(userId: number): number {
   const row = db
     .prepare(
       `SELECT COUNT(*) AS c FROM notifications n LEFT JOIN users a ON a.id = n.actor_id
-       WHERE n.user_id = ? AND n.read_at IS NULL AND a.blocked_at IS NULL`
+       WHERE n.user_id = ? AND n.read_at IS NULL AND a.blocked_at IS NULL
+         AND (n.actor_id IS NULL OR n.actor_id NOT IN (SELECT blocked_id FROM user_blocks WHERE blocker_id = n.user_id))`
     )
     .get(userId) as { c: number };
   return row.c;

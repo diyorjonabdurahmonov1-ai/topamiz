@@ -432,6 +432,25 @@ export interface Dictionary {
     deleteAccountError: string;
   };
 
+  safety: {
+    menuLabel: string;
+    report: string;
+    reportTitle: string;
+    reportPlaceholder: string;
+    reportSend: string;
+    reportSent: string;
+    block: string;
+    unblock: string;
+    blockTitle: string;
+    blockBody: string;
+    blockConfirm: string;
+    cancel: string;
+    blockedBanner: string;
+    blockedByBanner: string;
+    blockedProfile: string;
+    prohibitedMessage: string;
+    genericError: string;
+  };
   publicProfile: {
     noBio: string;
     writeMessage: string;

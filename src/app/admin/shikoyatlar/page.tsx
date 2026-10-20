@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { getReportedListings } from "@/lib/listing-reports";
 import AdminReportedListingRow from "@/components/AdminReportedListingRow";
+import AdminReportedUserRow from "@/components/AdminReportedUserRow";
+import { getReportedUsers } from "@/lib/user-blocks";
 import { requireAdmin } from "@/lib/auth";
 
 export const metadata: Metadata = {
@@ -10,6 +12,7 @@ export const metadata: Metadata = {
 export default async function AdminReportsPage() {
   await requireAdmin();
   const reported = getReportedListings();
+  const reportedUsers = getReportedUsers();
 
   return (
     <div>
@@ -27,6 +30,21 @@ export default async function AdminReportsPage() {
           </p>
         ) : (
           reported.map((item) => <AdminReportedListingRow key={item.listingId} item={item} />)
+        )}
+      </div>
+
+      <h2 className="mt-10 text-lg font-extrabold tracking-tight">Foydalanuvchilar ustidan shikoyatlar</h2>
+      <p className="mt-1.5 text-sm text-muted">
+        Profil yoki chatdan yuborilgan. App Store va Google Play shikoyatlar 24 soat ichida ko&apos;rib
+        chiqilishini talab qiladi: bloklang yoki ✓ bilan yoping.
+      </p>
+      <div className="mt-4 space-y-3">
+        {reportedUsers.length === 0 ? (
+          <p className="rounded-2xl border border-dashed border-border py-10 text-center text-sm text-muted">
+            Hozircha foydalanuvchi ustidan shikoyat yo&apos;q.
+          </p>
+        ) : (
+          reportedUsers.map((item) => <AdminReportedUserRow key={item.userId} item={item} />)
         )}
       </div>
     </div>

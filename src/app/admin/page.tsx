@@ -25,6 +25,7 @@ import { countUnhandledAdInquiries } from "@/lib/ad-inquiries";
 import { countGuestVisitors } from "@/lib/guest-visits";
 import { getListingCountsByCountry, getListingStats } from "@/lib/listings";
 import { getReportedListings } from "@/lib/listing-reports";
+import { getReportedUsers } from "@/lib/user-blocks";
 import { countryName } from "@/lib/country-names";
 import StatCard from "@/components/StatCard";
 import { requireAdmin } from "@/lib/auth";
@@ -45,7 +46,8 @@ export default async function AdminDashboardPage() {
   const activeAds = getActiveAds().length;
   const allAds = getAllAds().length;
   const listingStats = getListingStats();
-  const reportedCount = getReportedListings().length;
+  const reportedCount =
+    getReportedListings().length + getReportedUsers().filter((u) => !u.blockedAt).length;
   const unhandledInquiries = countUnhandledAdInquiries();
   const guestVisitors = countGuestVisitors();
   const listingsByCountry = getListingCountsByCountry();
@@ -63,7 +65,7 @@ export default async function AdminDashboardPage() {
       <div className="mt-5 space-y-2">
         {reportedCount > 0 && (
           <AttentionLink href="/admin/shikoyatlar" tone="danger" icon={AlertTriangle}>
-            {reportedCount} ta e&apos;lon ustidan shikoyat bor — ko&apos;rib chiqing
+            {reportedCount} ta shikoyat bor — ko&apos;rib chiqing
           </AttentionLink>
         )}
         {unhandledInquiries > 0 && (

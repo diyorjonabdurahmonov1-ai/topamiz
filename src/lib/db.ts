@@ -275,6 +275,31 @@ db.exec("CREATE UNIQUE INDEX IF NOT EXISTS idx_users_name_key ON users(name_key)
 // message has no chat it could be read in, and kept the unread badge lit.
 db.exec("UPDATE messages SET read_at = datetime('now') WHERE sender_id = recipient_id AND read_at IS NULL");
 
+// One user blocking another (not the admin's site-wide block): the blocker
+// stops seeing the other's listings, comments, chats and notifications, and
+// neither can message the other. And reports of a user (from their profile
+// or a chat) for the admin's Shikoyatlar page — both required by app stores
+// for anything with user-generated content.
+db.exec(`
+  CREATE TABLE IF NOT EXISTS user_blocks (
+    blocker_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    blocked_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    created_at TEXT NOT NULL DEFAULT (datetime('now')),
+    PRIMARY KEY (blocker_id, blocked_id)
+  );
+  CREATE INDEX IF NOT EXISTS idx_user_blocks_blocked ON user_blocks(blocked_id);
+
+  CREATE TABLE IF NOT EXISTS user_reports (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    reported_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    reporter_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    reason TEXT NOT NULL DEFAULT '',
+    context TEXT NOT NULL DEFAULT 'profile',
+    created_at TEXT NOT NULL DEFAULT (datetime('now')),
+    UNIQUE (reported_id, reporter_id)
+  );
+`);
+
 // Lets a message carry proof photos — used by the "I found this" flow on a
 // lost listing, so a finder can attach a picture instead of just text.
 const messageColumns = db.prepare("PRAGMA table_info(messages)").all() as { name: string }[];
