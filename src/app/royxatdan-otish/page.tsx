@@ -7,6 +7,7 @@ import { getVisitorCountry } from "@/lib/geo";
 import { getLegal } from "@/lib/legal";
 import AuthPanel from "@/components/auth/AuthPanel";
 import { safeNextPath } from "@/lib/safe-next";
+import { isNativeAppRequest } from "@/lib/native-app";
 
 export const metadata: Metadata = {
   title: "Ro'yxatdan o'tish — Findo",
@@ -51,7 +52,7 @@ export default async function SignupPage(props: PageProps<"/royxatdan-otish">) {
           </p>
         )}
 
-        <AuthPanel dict={dict} initialTab="register" registerOnly legal={getLegal(locale)} abroad={abroad} next={next} />
+        <AuthPanel dict={dict} initialTab="register" registerOnly legal={getLegal(locale)} abroad={abroad} next={next} allowGoogle={!(await isNativeAppRequest())} />
       </div>
     </div>
   );

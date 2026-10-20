@@ -181,6 +181,22 @@ public). `public/.well-known/assetlinks.json` must list both the upload key's
 and Google Play's app-signing key's SHA-256, or the app shows a browser
 address bar. Details in `android/README.md`.
 
+### iPhone app
+
+`ios-app/` is a Capacitor shell (bundle id `uz.net.findo.app`) around the
+same site — like the Android app, deploys reach it with no app update. It
+adds what the App Store asks of more than a website: push through Apple
+(APNs — `src/lib/apns.ts` sends, `src/lib/native-push.ts` registers from
+inside the app, tokens in `apns_tokens`; needs `APNS_KEY_ID`,
+`APNS_TEAM_ID` and `APNS_KEY` in `.env.production.local`, without which
+iPhone pushes are skipped), universal links (`/.well-known/apple-app-site-association`,
+from `APNS_TEAM_ID`/`APPLE_TEAM_ID`) and an offline screen. The app's user
+agent ends in `FindoApp/iOS` (`src/lib/native-app.ts`): Google sign-in is
+hidden there, since Google blocks it in app web views. CI
+(`.github/workflows/ios.yml`) builds on a GitHub macOS runner and, on `main`
+with the App Store Connect API key in Actions secrets, uploads to
+TestFlight. Details in `ios-app/README.md`.
+
 ### Another project shares this server — do not touch it
 
 `prostaff` (containers `backend-api-1`, `backend-db-1`, `backend-caddy-1`)

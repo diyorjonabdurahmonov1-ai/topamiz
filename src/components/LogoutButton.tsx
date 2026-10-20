@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { LogOut } from "lucide-react";
+import { disableNativePush, isNativeApp } from "@/lib/native-push";
 
 export default function LogoutButton({ label, className = "" }: { label: string; className?: string }) {
   const router = useRouter();
@@ -10,6 +11,8 @@ export default function LogoutButton({ label, className = "" }: { label: string;
 
   async function handleLogout() {
     setLoading(true);
+    // In the iPhone app this phone stops getting the account's pushes.
+    if (isNativeApp()) await disableNativePush();
     await fetch("/api/auth/logout", { method: "POST" });
     router.push("/");
     router.refresh();

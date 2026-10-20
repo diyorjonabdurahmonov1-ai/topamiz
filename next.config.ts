@@ -30,6 +30,12 @@ const nextConfig: NextConfig = {
       { source: "/elon-qoshish/taklif", destination: "/elon-qoshish", permanent: true },
     ];
   },
+  // Universal links for the iPhone app: iOS fetches this exact path (no
+  // extension) to learn which links open in the app. Built from env vars,
+  // so it's served by a route rather than a static file.
+  async rewrites() {
+    return [{ source: "/.well-known/apple-app-site-association", destination: "/api/apple-app-site-association" }];
+  },
 };
 
 export default nextConfig;

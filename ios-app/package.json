@@ -1,0 +1,17 @@
+{
+  "name": "findo-ios",
+  "private": true,
+  "description": "Findo's iPhone app: https://findo.net.uz in a native shell (Capacitor), with Apple push notifications. See README.md.",
+  "scripts": {
+    "sync": "cap sync ios"
+  },
+  "dependencies": {
+    "@capacitor/app": "8.1.2",
+    "@capacitor/core": "8.5.2",
+    "@capacitor/ios": "8.5.2",
+    "@capacitor/push-notifications": "8.1.3"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "8.5.2"
+  }
+}

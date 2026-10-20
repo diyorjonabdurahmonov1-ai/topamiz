@@ -34,12 +34,14 @@ export default function GuestListingGate({
   locale,
   legal,
   abroad,
+  allowGoogle = true,
 }: {
   listing: Listing;
   dict: Dictionary;
   locale: Locale;
   legal: LegalContent;
   abroad: boolean;
+  allowGoogle?: boolean;
 }) {
   const t = dict.listingDetail;
   const Icon = categoryIcons[listing.category];
@@ -138,6 +140,7 @@ export default function GuestListingGate({
             legal={legal}
             abroad={abroad}
             next={`/elonlar/${listing.id}`}
+            allowGoogle={allowGoogle}
           />
         </div>
       </section>

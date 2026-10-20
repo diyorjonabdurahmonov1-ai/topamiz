@@ -7,6 +7,7 @@ import { getVisitorCountry } from "@/lib/geo";
 import { getLegal } from "@/lib/legal";
 import AuthPanel from "@/components/auth/AuthPanel";
 import { safeNextPath } from "@/lib/safe-next";
+import { isNativeAppRequest } from "@/lib/native-app";
 
 export const metadata: Metadata = {
   title: "Kirish — Findo",
@@ -48,7 +49,7 @@ export default async function LoginPage(props: PageProps<"/kirish">) {
           </p>
         )}
 
-        <AuthPanel dict={dict} initialTab={initialTab} legal={getLegal(locale)} abroad={abroad} next={next} />
+        <AuthPanel dict={dict} initialTab={initialTab} legal={getLegal(locale)} abroad={abroad} next={next} allowGoogle={!(await isNativeAppRequest())} />
       </div>
     </div>
   );

@@ -6,6 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { Bell } from "lucide-react";
 import type { Dictionary } from "@/lib/i18n";
 import { pushAvailability, refreshSubscription, warmUpPush } from "@/lib/push-client";
+import { isNativeApp, listenForNativePushes, refreshNativePush } from "@/lib/native-push";
 
 const POLL_MS = 30_000;
 const TOAST_MS = 6_000;
@@ -115,8 +116,29 @@ export default function NotificationCenter({
     };
   }, []);
 
+  // The iPhone app: Apple's pushes instead of the service worker. One that
+  // arrives while the app is open gets the same chime and toast; tapping one
+  // opens its page.
   useEffect(() => {
-    if (pushAvailability() !== "supported") return;
+    if (!isNativeApp()) return;
+    void refreshNativePush().catch(() => {});
+    let stop: (() => void) | null = null;
+    let cancelled = false;
+    void listenForNativePushes({
+      onReceived: (message) => announce(message),
+      onOpened: (url) => router.push(url),
+    }).then((unlisten) => {
+      if (cancelled) unlisten();
+      else stop = unlisten;
+    });
+    return () => {
+      cancelled = true;
+      stop?.();
+    };
+  }, [announce, router]);
+
+  useEffect(() => {
+    if (isNativeApp() || pushAvailability() !== "supported") return;
     // Only keeps an existing subscription fresh (new server key, current
     // language). Someone who turned notifications off has no subscription,
     // so they stay off — permission alone doesn't turn them back on.

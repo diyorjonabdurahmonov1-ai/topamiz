@@ -32,6 +32,7 @@ import { getVisitorCountry } from "@/lib/geo";
 import { getLegal } from "@/lib/legal";
 import { signupHref } from "@/lib/safe-next";
 import { hasBlocked } from "@/lib/user-blocks";
+import { isNativeAppRequest } from "@/lib/native-app";
 import { attrRows, KIND_BADGE_CLASS, kindLabel, priceText, resolvedLabel } from "@/lib/listing-labels";
 
 export async function generateMetadata(props: PageProps<"/elonlar/[id]">): Promise<Metadata> {
@@ -65,6 +66,7 @@ export default async function ListingDetailPage(props: PageProps<"/elonlar/[id]"
         locale={locale}
         legal={getLegal(locale)}
         abroad={(await getVisitorCountry()) !== "UZ"}
+        allowGoogle={!(await isNativeAppRequest())}
       />
     );
   }

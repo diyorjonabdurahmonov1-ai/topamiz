@@ -16,6 +16,8 @@ const eslintConfig = defineConfig([
   globalIgnores([
     // Default ignores of eslint-config-next:
     ".next/**",
+    // The iPhone app's native project and its own node_modules.
+    "ios-app/**",
     "out/**",
     "build/**",
     "next-env.d.ts",

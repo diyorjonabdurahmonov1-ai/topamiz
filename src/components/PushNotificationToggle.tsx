@@ -13,6 +13,7 @@ import {
   warmUpPush,
 } from "@/lib/push-client";
 import { reportClientError } from "@/lib/error-report";
+import { disableNativePush, enableNativePush, isNativeApp, nativePushDenied, nativePushEnabled } from "@/lib/native-push";
 
 type Status = "checking" | "off" | "on" | "busy";
 
@@ -25,6 +26,7 @@ type Notice = "ios-install" | "unsupported" | "denied" | "push-service" | "retry
 // and only if it can't work here does it say why.
 function installedApp(): boolean {
   return (
+    isNativeApp() ||
     window.matchMedia("(display-mode: standalone)").matches ||
     (navigator as Navigator & { standalone?: boolean }).standalone === true
   );
@@ -43,10 +45,10 @@ export default function PushNotificationToggle({ dict }: { dict: Dictionary }) {
     (async () => {
       let on = false;
       try {
-        on =
-          pushAvailability() === "supported" &&
-          Notification.permission === "granted" &&
-          (await isSubscribed());
+        // In the iPhone app pushes go through Apple, not web push.
+        on = isNativeApp()
+          ? await nativePushEnabled()
+          : pushAvailability() === "supported" && Notification.permission === "granted" && (await isSubscribed());
       } catch {
         // Can't tell — show the button as off; tapping it will explain.
       }
@@ -67,6 +69,25 @@ export default function PushNotificationToggle({ dict }: { dict: Dictionary }) {
 
   async function handleEnable() {
     setNotice(null);
+    if (isNativeApp()) {
+      if (await nativePushDenied().catch(() => false)) {
+        setNotice("denied");
+        return;
+      }
+      setStatus("busy");
+      const slowTimer = setTimeout(() => setSlow(true), 4_000);
+      try {
+        await enableNativePush();
+        setStatus("on");
+      } catch (err) {
+        fail(err, "enable");
+        setStatus("off");
+      } finally {
+        clearTimeout(slowTimer);
+        setSlow(false);
+      }
+      return;
+    }
     const availability = pushAvailability();
     if (availability !== "supported") {
       setNotice(availability);
@@ -104,7 +125,7 @@ export default function PushNotificationToggle({ dict }: { dict: Dictionary }) {
     setNotice(null);
     setStatus("busy");
     try {
-      await disablePush();
+      await (isNativeApp() ? disableNativePush() : disablePush());
       setStatus("off");
     } catch (err) {
       fail(err, "disable");
