@@ -1,4 +1,5 @@
 import { db } from "./db";
+import { blockedIdsFor } from "./user-blocks";
 import { displayIdentity, getUserById, isUserBlocked } from "./auth";
 
 export const MAX_COMMENT_LENGTH = 500;
@@ -29,12 +30,15 @@ export function getCommentCount(listingId: number): number {
   return row.c;
 }
 
-export function getComments(listingId: number): ListingComment[] {
+// `viewerId`: comments by anyone the viewer blocked are left out.
+export function getComments(listingId: number, viewerId?: number | null): ListingComment[] {
   const rows = db
     .prepare("SELECT * FROM listing_comments WHERE listing_id = ? ORDER BY created_at ASC, id ASC")
     .all(listingId) as RawCommentRow[];
+  const blocked = blockedIdsFor(viewerId);
   return rows
     .map((row) => {
+      if (blocked.has(row.user_id)) return null;
       const user = getUserById(row.user_id);
       if (!user || isUserBlocked(row.user_id)) return null;
       const identity = displayIdentity(user);

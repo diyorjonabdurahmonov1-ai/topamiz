@@ -154,6 +154,14 @@ guest to the sign-up page `/royxatdan-otish` (not the login page), and both
 pages return to `?next=` afterwards (`src/lib/safe-next.ts`), Google sign-in
 included.
 
+Users can block and report each other, as both app stores require for
+user-generated content (`src/lib/user-blocks.ts`, the "⋯" menu in
+`src/components/UserSafetyMenu.tsx` on a profile and in a chat). Blocking
+hides the other's listings, comments, chats and notifications from the
+blocker and stops messages both ways; reports land on `/admin/shikoyatlar`
+and are meant to be handled within 24 hours. Chat messages go through the
+same word filter as listings and comments (`src/lib/moderation.ts`).
+
 An admin blocking a user (`/admin/foydalanuvchilar`) hides everything of
 theirs from the rest of the site — listings, QR tags, profile, comments,
 chats and notifications — until they are unblocked; admin pages still show

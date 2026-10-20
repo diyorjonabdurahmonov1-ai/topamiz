@@ -1,4 +1,6 @@
 import { NextResponse } from "next/server";
+import { containsProhibitedContent, recordModerationViolation } from "@/lib/moderation";
+import { isBlockedBetween } from "@/lib/user-blocks";
 import { displayIdentity, getCurrentUser, getUserById, isAdmin, isUserBlocked } from "@/lib/auth";
 import { getListingById } from "@/lib/listings";
 import { getThread, markThreadRead, MAX_MESSAGE_LENGTH, MAX_MESSAGE_PHOTOS, sendMessage } from "@/lib/messages";
@@ -45,9 +47,29 @@ export async function POST(request: Request, ctx: RouteContext<"/api/messages/[u
     );
   }
 
+  if (isBlockedBetween(user.id, otherId)) {
+    return NextResponse.json({ error: "Bu foydalanuvchiga xabar yuborib bo'lmaydi", code: "blocked" }, { status: 403 });
+  }
+
   const body = await request.json().catch(() => null);
   const text = typeof body?.body === "string" ? body.body.trim().slice(0, MAX_MESSAGE_LENGTH) : "";
   if (!text) return NextResponse.json({ error: "Xabar bo'sh bo'lishi mumkin emas" }, { status: 400 });
+
+  // The same filter as listings and comments: chats are private, but
+  // harassment in them is exactly what it's there to stop.
+  if (containsProhibitedContent(text)) {
+    const { blocked } = recordModerationViolation(user.id);
+    return NextResponse.json(
+      {
+        error: blocked
+          ? "Xabar mumkin bo'lmagan so'zlar sababli yuborilmadi. Qoidabuzarlik takrorlanganligi uchun hisobingiz bloklandi."
+          : "Xabar mumkin bo'lmagan so'zlar sababli yuborilmadi.",
+        code: "prohibited",
+        blocked,
+      },
+      { status: 400 }
+    );
+  }
   const photoUrls = Array.isArray(body?.photoUrls)
     ? body.photoUrls
         .filter(isOwnUploadUrl)

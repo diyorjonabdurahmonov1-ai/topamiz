@@ -9,6 +9,8 @@ import { getDictionary } from "@/lib/i18n";
 import Avatar from "@/components/Avatar";
 import ChatThread from "@/components/ChatThread";
 import RefreshOnMount from "@/components/RefreshOnMount";
+import UserSafetyMenu from "@/components/UserSafetyMenu";
+import { hasBlocked } from "@/lib/user-blocks";
 
 export async function generateMetadata(
   props: PageProps<"/xabarlar/[userId]">
@@ -39,6 +41,8 @@ export default async function ChatPage(props: PageProps<"/xabarlar/[userId]">) {
   const dict = getDictionary(await getLocale());
   const identity = displayIdentity(other);
   const otherIsAdmin = isAdmin(other);
+  const iBlocked = hasBlocked(user.id, otherId);
+  const blockState = iBlocked ? "blocked" : hasBlocked(otherId, user.id) ? "blockedBy" : "none";
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-6 sm:px-6">
@@ -61,9 +65,25 @@ export default async function ChatPage(props: PageProps<"/xabarlar/[userId]">) {
             <span className="text-sm font-bold">{identity.name}</span>
           </Link>
         )}
+        {!otherIsAdmin && (
+          <UserSafetyMenu
+            userId={otherId}
+            userName={identity.name}
+            blocked={iBlocked}
+            context="chat"
+            dict={dict}
+            className="relative ml-auto"
+          />
+        )}
       </div>
 
-      <ChatThread otherUserId={otherId} currentUserId={user.id} initialMessages={messages} dict={dict} />
+      <ChatThread
+        otherUserId={otherId}
+        currentUserId={user.id}
+        initialMessages={messages}
+        blockState={blockState}
+        dict={dict}
+      />
     </div>
   );
 }

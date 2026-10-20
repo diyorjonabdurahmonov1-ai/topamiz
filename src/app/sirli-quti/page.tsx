@@ -10,6 +10,7 @@ import { getCurrentUser } from "@/lib/auth";
 import { getVisitorCountry } from "@/lib/geo";
 import { getLocale } from "@/lib/i18n/server";
 import { getDictionary } from "@/lib/i18n";
+import { withoutBlockedOwners } from "@/lib/user-blocks";
 
 export const metadata: Metadata = {
   title: "Sirli quti — Findo",
@@ -18,7 +19,7 @@ export const metadata: Metadata = {
 export default async function MysteryBoxPage() {
   const user = await getCurrentUser();
   if (!user) redirect(signupHref("/sirli-quti"));
-  const boxes = getMysteryBoxListings(await getVisitorCountry());
+  const boxes = withoutBlockedOwners(getMysteryBoxListings(await getVisitorCountry()), user.id);
   const locale = await getLocale();
   const dict = getDictionary(locale);
 

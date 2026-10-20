@@ -7,6 +7,8 @@ import { getAllListings } from "@/lib/listings";
 import { getVisitorCountry } from "@/lib/geo";
 import { getLocale } from "@/lib/i18n/server";
 import { getDictionary } from "@/lib/i18n";
+import { getCurrentUser } from "@/lib/auth";
+import { withoutBlockedOwners } from "@/lib/user-blocks";
 
 export const metadata: Metadata = {
   title: "E'lonlar — Findo",
@@ -45,7 +47,7 @@ export default async function ElonlarPage(props: PageProps<"/elonlar">) {
         initialCategory={category}
         initialView={view}
         initialFocus={focus}
-        listings={getAllListings(await getVisitorCountry())}
+        listings={withoutBlockedOwners(getAllListings(await getVisitorCountry()), (await getCurrentUser())?.id)}
         dict={dict}
         locale={locale}
       />

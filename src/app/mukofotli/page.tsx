@@ -7,13 +7,15 @@ import { getRewardedListings } from "@/lib/listings";
 import { getVisitorCountry } from "@/lib/geo";
 import { getLocale } from "@/lib/i18n/server";
 import { getDictionary } from "@/lib/i18n";
+import { getCurrentUser } from "@/lib/auth";
+import { withoutBlockedOwners } from "@/lib/user-blocks";
 
 export const metadata: Metadata = {
   title: "Mukofotli e'lonlar — Findo",
 };
 
 export default async function RewardedPage() {
-  const rewarded = getRewardedListings(await getVisitorCountry());
+  const rewarded = withoutBlockedOwners(getRewardedListings(await getVisitorCountry()), (await getCurrentUser())?.id);
   const totalReward = rewarded.reduce((sum, l) => sum + (l.reward ?? 0), 0);
   const locale = await getLocale();
   const dict = getDictionary(locale);

@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { getCurrentUser, isAdmin } from "@/lib/auth";
 import AdminNav from "@/components/AdminNav";
 import { getReportedListings } from "@/lib/listing-reports";
+import { getReportedUsers } from "@/lib/user-blocks";
 import { countUnhandledAdInquiries } from "@/lib/ad-inquiries";
 import { countRecentErrorGroups } from "@/lib/error-log";
 
@@ -13,7 +14,8 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
     <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
       <AdminNav
         badges={{
-          "/admin/shikoyatlar": getReportedListings().length,
+          "/admin/shikoyatlar":
+            getReportedListings().length + getReportedUsers().filter((u) => !u.blockedAt).length,
           "/admin/reklama-arizalari": countUnhandledAdInquiries(),
           "/admin/xatolar": countRecentErrorGroups(),
         }}

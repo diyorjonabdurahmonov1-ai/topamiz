@@ -31,6 +31,7 @@ import GuestListingGate from "@/components/GuestListingGate";
 import { getVisitorCountry } from "@/lib/geo";
 import { getLegal } from "@/lib/legal";
 import { signupHref } from "@/lib/safe-next";
+import { hasBlocked } from "@/lib/user-blocks";
 import { attrRows, KIND_BADGE_CLASS, kindLabel, priceText, resolvedLabel } from "@/lib/listing-labels";
 
 export async function generateMetadata(props: PageProps<"/elonlar/[id]">): Promise<Metadata> {
@@ -46,6 +47,8 @@ export default async function ListingDetailPage(props: PageProps<"/elonlar/[id]"
   // The poster's phone is only ever loaded for a signed-in visitor.
   const listing = getListingById(id, { includeHidden: isAdmin(user), withContact: !!user });
   if (!listing) notFound();
+  // The owner is someone this viewer blocked: their listings are hidden.
+  if (user && listing.ownerId && hasBlocked(user.id, listing.ownerId)) notFound();
 
   if (listing.isMysteryBox && !user) redirect(signupHref(`/elonlar/${id}`));
 

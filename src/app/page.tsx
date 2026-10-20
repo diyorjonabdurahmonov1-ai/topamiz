@@ -4,6 +4,8 @@ import { getAllActiveListings } from "@/lib/listings";
 import { getVisitorCountry } from "@/lib/geo";
 import { getLocale } from "@/lib/i18n/server";
 import { getDictionary } from "@/lib/i18n";
+import { getCurrentUser } from "@/lib/auth";
+import { withoutBlockedOwners } from "@/lib/user-blocks";
 
 const RECENT_SIZE = 10;
 
@@ -12,7 +14,8 @@ export default async function Home() {
   const locale = await getLocale();
   const dict = getDictionary(locale);
   // Already newest first.
-  const active = getAllActiveListings(country);
+  const viewer = await getCurrentUser();
+  const active = withoutBlockedOwners(getAllActiveListings(country), viewer?.id);
   const ads = getActiveAds();
   const nearby = active.slice(0, 12);
 

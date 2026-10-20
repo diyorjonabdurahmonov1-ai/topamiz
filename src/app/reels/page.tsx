@@ -6,6 +6,7 @@ import { getVisitorCountry } from "@/lib/geo";
 import { getLocale } from "@/lib/i18n/server";
 import { getDictionary } from "@/lib/i18n";
 import ReelsFeed from "@/components/ReelsFeed";
+import { withoutBlockedOwners } from "@/lib/user-blocks";
 
 export const metadata: Metadata = {
   title: "Video — Findo",
@@ -17,7 +18,7 @@ export default async function ReelsPage() {
   const locale = await getLocale();
   const dict = getDictionary(locale);
 
-  const listings = getReelsListings(country, [], !!user);
+  const listings = withoutBlockedOwners(getReelsListings(country, [], !!user), user?.id);
   const likedIds = user ? getLikedListingIds(user.id, listings.map((l) => Number(l.id))) : new Set<number>();
   const initialListings = listings.map((l) => ({ ...l, likedByMe: likedIds.has(Number(l.id)) }));
 

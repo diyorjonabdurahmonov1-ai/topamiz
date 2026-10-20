@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, type FormEvent } from "react";
-import { Send } from "lucide-react";
+import { Ban, Send } from "lucide-react";
 import type { MessageRow } from "@/lib/messages";
 import type { Dictionary } from "@/lib/i18n";
 import PhotoLightbox from "./PhotoLightbox";
@@ -17,16 +17,20 @@ export default function ChatThread({
   otherUserId,
   currentUserId,
   initialMessages,
+  blockState = "none",
   dict,
 }: {
   otherUserId: number;
   currentUserId: number;
   initialMessages: MessageRow[];
+  // Either one blocked the other (lib/user-blocks): no composer, just why.
+  blockState?: "none" | "blocked" | "blockedBy";
   dict: Dictionary;
 }) {
   const [messages, setMessages] = useState<MessageRow[]>(initialMessages);
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
+  const [sendError, setSendError] = useState("");
   const [lightboxUrl, setLightboxUrl] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -61,17 +65,35 @@ export default function ChatThread({
     const text = input.trim();
     if (!text || sending) return;
     setSending(true);
+    setSendError("");
     setInput("");
-    const res = await fetch(`/api/messages/${otherUserId}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ body: text }),
-    });
-    if (res.ok) {
-      const data = await res.json();
-      setMessages((prev) => [...prev, data.message]);
+    try {
+      const res = await fetch(`/api/messages/${otherUserId}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ body: text }),
+      });
+      const data = await res.json().catch(() => null);
+      if (res.ok && data?.message) {
+        setMessages((prev) => [...prev, data.message]);
+      } else {
+        // Not sent (filtered words, a block, too fast): say why and give the
+        // text back rather than losing it.
+        setInput(text);
+        setSendError(
+          data?.code === "prohibited"
+            ? dict.safety.prohibitedMessage
+            : data?.code === "blocked"
+              ? dict.safety.blockedByBanner
+              : (data?.error ?? dict.safety.genericError)
+        );
+      }
+    } catch {
+      setInput(text);
+      setSendError(dict.safety.genericError);
+    } finally {
+      setSending(false);
     }
-    setSending(false);
   }
 
   return (
@@ -118,22 +140,36 @@ export default function ChatThread({
         )}
       </div>
 
-      <form onSubmit={handleSubmit} className="flex items-center gap-2 border-t border-border p-3">
-        <input
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder={dict.messages.messagePlaceholder}
-          className="w-full rounded-xl border border-border bg-bg-elevated px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-via/40"
-        />
-        <button
-          type="submit"
-          disabled={sending}
-          className="btn-brand flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-white disabled:opacity-60"
-          aria-label={dict.messages.sendAriaLabel}
-        >
-          <Send className="h-4 w-4" />
-        </button>
-      </form>
+      {blockState !== "none" ? (
+        <p className="flex items-center justify-center gap-2 border-t border-border p-4 text-center text-sm font-medium text-muted">
+          <Ban className="h-4 w-4 shrink-0" />
+          {blockState === "blocked" ? dict.safety.blockedBanner : dict.safety.blockedByBanner}
+        </p>
+      ) : (
+        <>
+          {sendError && (
+            <p role="alert" className="border-t border-border bg-danger/5 px-4 py-2 text-xs font-medium text-danger">
+              {sendError}
+            </p>
+          )}
+          <form onSubmit={handleSubmit} className="flex items-center gap-2 border-t border-border p-3">
+            <input
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              placeholder={dict.messages.messagePlaceholder}
+              className="w-full rounded-xl border border-border bg-bg-elevated px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-via/40"
+            />
+            <button
+              type="submit"
+              disabled={sending}
+              className="btn-brand flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-white disabled:opacity-60"
+              aria-label={dict.messages.sendAriaLabel}
+            >
+              <Send className="h-4 w-4" />
+            </button>
+          </form>
+        </>
+      )}
 
       {lightboxUrl && (
         <PhotoLightbox url={lightboxUrl} dict={dict} onClose={() => setLightboxUrl(null)} />

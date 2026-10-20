@@ -69,7 +69,7 @@ const uz: LegalContent = {
       },
       {
         "title": "5. Shikoyat va moderatsiya",
-        "body": "Har bir e'lonni foydalanuvchilar shikoyat qilishi mumkin. Bir nechta mustaqil shikoyat kelib tushgan e'lon avtomatik ko'rib chiqiladi va, qoidabuzarlik tasdiqlansa, olib tashlanadi. Findo ma'muriyati zarur hollarda e'lon yoki hisobni oldindan ogohlantirmasdan o'chirish huquqini saqlab qoladi. Qoidalarni buzgan hisob bloklanishi mumkin: bloklangan hisobning profili, e'lonlari, izohlari va xabarlari saytda boshqalarga ko'rinmaydi."
+        "body": "Har bir e'lonni foydalanuvchilar shikoyat qilishi mumkin. Bir nechta mustaqil shikoyat kelib tushgan e'lon avtomatik ko'rib chiqiladi va, qoidabuzarlik tasdiqlansa, olib tashlanadi. Findo ma'muriyati zarur hollarda e'lon yoki hisobni oldindan ogohlantirmasdan o'chirish huquqini saqlab qoladi. Qoidalarni buzgan hisob bloklanishi mumkin: bloklangan hisobning profili, e'lonlari, izohlari va xabarlari saytda boshqalarga ko'rinmaydi. Findo haqoratli, tahdidli, uyatli yoki bezovta qiluvchi kontent va foydalanuvchilarga nisbatan murosasiz: bunday holatlarga yo'l qo'yilmaydi. Har bir foydalanuvchi boshqa foydalanuvchini uning profili yoki chatidagi «⋯» tugmasi orqali bloklashi yoki u ustidan shikoyat qilishi mumkin; bloklangan foydalanuvchi sizga yoza olmaydi, siz esa uning e'lonlari, izohlari va xabarlarini ko'rmaysiz. Chat xabarlari, e'lonlar va izohlar taqiqlangan so'zlar bo'yicha avtomatik tekshiriladi. Shikoyatlar 24 soat ichida ko'rib chiqiladi va qoidabuzar kontent o'chiriladi, uning muallifi bloklanadi."
       },
       {
         "title": "6. Foydalanuvchilar orasidagi uchrashuvlar",
