@@ -15,4 +15,6 @@
 -->
 <paths>
     <files-path path="twa_splash/" name="twa_splash" />
+    <!-- Photos taken with "Rasmga olish" in FindoWebViewActivity. -->
+    <cache-path path="camera/" name="camera" />
 </paths>
