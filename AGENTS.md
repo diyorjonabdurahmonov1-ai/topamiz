@@ -32,6 +32,17 @@ cold start or an ephemeral filesystem.
   `request_body max_size 20MB`. Caddy rejects any request body over this
   limit before it ever reaches the app, which is why video uploads are
   chunked (see the video upload note below) — leave it as is.
+- If the site is unreachable after the server reboots (it happened on
+  2026-10-23): Ubuntu's stock nginx used to start at boot and grab port 80,
+  so `backend-caddy-1` failed to start (`Exited (128)`) and was left with no
+  network or published ports — `docker start`/`restart` don't repair that;
+  recreating it from prostaff's own compose file does
+  (`cd /opt/prostaff/backend && docker compose up -d --no-deps --force-recreate caddy`,
+  touches Caddy only). nginx is now stopped and disabled; keep it that way.
+  Also check the Topamiz block is still at the end of the Caddyfile:
+  prostaff's deploy rewrote that file on 2026-10-15 without it, and Caddy
+  kept serving its old in-memory config until the reboot. The owner asked
+  prostaff to add the block to their repo's copy.
 - `ufw`: port 3000 is only open to `172.18.0.0/16` (the Docker network) —
   it is not reachable from the public internet directly, only through Caddy.
 - Auth cookies are `secure: true` in production (see `src/lib/auth.ts`), so
