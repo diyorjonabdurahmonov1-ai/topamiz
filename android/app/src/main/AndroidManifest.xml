@@ -24,6 +24,9 @@
 
     
         <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+    <!-- "Find my location" on the post form and the map, in FindoWebViewActivity. -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     
 
     
@@ -163,6 +166,15 @@
 
         <activity android:name="com.google.androidbrowserhelper.trusted.WebViewFallbackActivity"
             android:configChanges="orientation|screenSize" />
+
+        <!-- Findo full-screen on phones without a browser that can run it as a
+             Trusted Web Activity (see LauncherActivity.getFallbackStrategy). -->
+        <activity android:name=".FindoWebViewActivity"
+            android:theme="@android:style/Theme.DeviceDefault.NoActionBar"
+            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|uiMode"
+            android:screenOrientation="userPortrait"
+            android:windowSoftInputMode="adjustResize"
+            android:exported="false" />
 
         <provider
             android:name="androidx.core.content.FileProvider"

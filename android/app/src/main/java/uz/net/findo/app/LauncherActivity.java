@@ -20,6 +20,8 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 
+import com.google.androidbrowserhelper.trusted.TwaLauncher;
+
 
 
 public class LauncherActivity
@@ -40,6 +42,22 @@ public class LauncherActivity
         } else {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
         }
+    }
+
+    // No browser on the phone can run the site as a Trusted Web Activity
+    // (no Chrome — Huawei, some Xiaomi): instead of a browser tab with an
+    // address bar, open it full-screen in the app's own web view. Anything
+    // the library decides otherwise (e.g. its "blocked" dialog) stays as is.
+    @Override
+    protected TwaLauncher.FallbackStrategy getFallbackStrategy() {
+        TwaLauncher.FallbackStrategy base = super.getFallbackStrategy();
+        if (base != TwaLauncher.CCT_FALLBACK_STRATEGY && base != TwaLauncher.WEBVIEW_FALLBACK_STRATEGY) {
+            return base;
+        }
+        return (context, twaBuilder, providerPackage, completionCallback) -> {
+            context.startActivity(FindoWebViewActivity.createLaunchIntent(context, twaBuilder.getUri()));
+            if (completionCallback != null) completionCallback.run();
+        };
     }
 
     @Override
