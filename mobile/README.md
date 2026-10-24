@@ -86,7 +86,9 @@ Console → App integrity → "Request upload key reset" replaces it.
 
 `public/.well-known/assetlinks.json` lists the SHA-256 of both the upload key
 and Google Play's app-signing key (Play Console → App integrity); App Links
-need both.
+need both. The first upload key (`5C:25:…`) was lost in October 2026 and
+replaced through an upload key reset with the current one (`01:BB:…`); the
+old entry stays so builds signed with it keep verifying.
 
 `play-store-icon.png` is the 512×512 icon of the Play listing.
 
