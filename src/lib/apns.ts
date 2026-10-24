@@ -4,7 +4,7 @@ import { readFileSync } from "node:fs";
 import { db } from "./db";
 import { DEFAULT_LOCALE, isLocale, type Locale } from "./i18n/locales";
 
-// Push to the iPhone app (ios-app/) through Apple Push Notification service.
+// Push to the iPhone app (mobile/ios) through Apple Push Notification service.
 // Web push doesn't exist inside an app's web view, so the app registers with
 // APNs itself and hands the device token to the site (src/lib/native-push.ts,
 // /api/push/apns); sendPushToUser (push.ts) then sends to those tokens too.

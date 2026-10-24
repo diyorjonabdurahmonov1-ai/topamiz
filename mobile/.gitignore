@@ -1,0 +1,3 @@
+node_modules/
+# Firebase config for Android push: written by CI from a secret, never committed.
+android/app/google-services.json

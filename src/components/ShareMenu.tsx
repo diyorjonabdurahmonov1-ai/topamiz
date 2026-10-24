@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { signupHrefHere } from "@/lib/safe-next";
+import { nativeShare } from "@/lib/native-app-client";
 import { CheckCircle2, Link2, Loader2, Search, Share2, Users, X } from "lucide-react";
 import type { PublicUser } from "@/lib/auth";
 import type { Dictionary } from "@/lib/i18n";
@@ -85,6 +86,11 @@ export default function ShareMenu({
   }
 
   async function handleExternalShare() {
+    // In the phone apps the web view has no navigator.share: their own sheet.
+    if (await nativeShare({ title, url: listingUrl })) {
+      close();
+      return;
+    }
     if (navigator.share) {
       try {
         await navigator.share({ title, url: listingUrl });

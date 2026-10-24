@@ -9,6 +9,7 @@ import AppChrome from "@/components/AppChrome";
 import Analytics from "@/components/Analytics";
 import ErrorReporter from "@/components/ErrorReporter";
 import NativeFeel from "@/components/NativeFeel";
+import NativeAppBridge from "@/components/NativeAppBridge";
 import { getCurrentUser } from "@/lib/auth";
 import { unreadTotal } from "@/lib/messages";
 import { unreadNotificationCount } from "@/lib/notifications";
@@ -113,6 +114,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
           {children}
         </AppChrome>
         <VideoUploadIndicator dict={dict} />
+        <NativeAppBridge />
         {user && (
           <NotificationCenter dict={dict} initialCounts={{ messages: unreadCount, notifications: notificationCount }} />
         )}

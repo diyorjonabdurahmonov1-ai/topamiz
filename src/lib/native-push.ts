@@ -1,17 +1,27 @@
-// Push inside the iPhone app (ios-app/): the site runs in the app's web view,
+// Push inside the phone apps (mobile/): the site runs in the app's web view,
 // where web push doesn't exist, so it asks the app's push plugin to register
-// with Apple and hands the device token to the server (/api/push/apns,
-// lib/apns.ts). Outside the app none of this runs — and the plugin's code is
-// only loaded inside it.
+// — with Apple on iPhone, with Firebase on Android — and hands the device
+// token to the server (/api/push/apns → lib/apns.ts, /api/push/fcm →
+// lib/fcm.ts). Outside the apps none of this runs, and the plugin's code is
+// only loaded inside them.
 
 import { PushError } from "./push-client";
 
-const TOKEN_KEY = "findo-apns-token";
+const TOKEN_KEY = "findo-native-push-token";
+
+type CapacitorGlobal = { isNativePlatform?: () => boolean; getPlatform?: () => string };
+
+function capacitor(): CapacitorGlobal | undefined {
+  return typeof window === "undefined" ? undefined : (window as Window & { Capacitor?: CapacitorGlobal }).Capacitor;
+}
 
 export function isNativeApp(): boolean {
-  if (typeof window === "undefined") return false;
-  const cap = (window as Window & { Capacitor?: { isNativePlatform?: () => boolean } }).Capacitor;
-  return !!cap?.isNativePlatform?.();
+  return !!capacitor()?.isNativePlatform?.();
+}
+
+// Where this phone's token goes: Firebase tokens for Android, Apple's otherwise.
+function tokenEndpoint(): string {
+  return capacitor()?.getPlatform?.() === "android" ? "/api/push/fcm" : "/api/push/apns";
 }
 
 // Wrapped: the plugin is a proxy, and resolving a promise with it directly
@@ -72,7 +82,7 @@ async function registerForToken(): Promise<string> {
 }
 
 async function sendToken(token: string): Promise<void> {
-  const res = await fetch("/api/push/apns", {
+  const res = await fetch(tokenEndpoint(), {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ token }),
@@ -94,8 +104,8 @@ export async function nativePushDenied(): Promise<boolean> {
   return (await push.checkPermissions()).receive === "denied";
 }
 
-// The button: iOS asks once; after a "no" only the phone's Settings can
-// turn it back on.
+// The button: the phone asks once (Android 13+ and iOS); after a "no" only
+// the phone's Settings can turn it back on.
 export async function enableNativePush(): Promise<void> {
   const { push } = await loadPlugin();
   const { receive } = await push.requestPermissions();
@@ -107,7 +117,7 @@ export async function disableNativePush(): Promise<void> {
   const token = storedToken();
   storeToken(null);
   if (!token) return;
-  await fetch("/api/push/apns", {
+  await fetch(tokenEndpoint(), {
     method: "DELETE",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ token }),

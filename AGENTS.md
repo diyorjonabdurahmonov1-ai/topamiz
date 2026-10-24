@@ -180,33 +180,31 @@ it. Deleting an account removes the user's listings, sent messages and the
 photo and video files behind them too (`deleteUserAccount` in
 `src/lib/auth.ts`, `src/lib/stored-files.ts`), as Google Play requires.
 
-### Android app
+### Phone apps
 
-`android/` is a Trusted Web Activity (package `uz.net.findo.app`) — the
-Play Store app is this website opened full-screen in the phone's Chrome, so
-it shares the server, database, accounts and sessions with the site, and
-site deploys reach it with no app update. CI (`.github/workflows/android.yml`)
-builds an unsigned bundle to the `android-build` branch; the owner signs it
-offline with the upload keystore, which is never committed (the repo is
-public). `public/.well-known/assetlinks.json` must list both the upload key's
-and Google Play's app-signing key's SHA-256, or the app shows a browser
-address bar. Details in `android/README.md`.
-
-### iPhone app
-
-`ios-app/` is a Capacitor shell (bundle id `uz.net.findo.app`) around the
-same site — like the Android app, deploys reach it with no app update. It
-adds what the App Store asks of more than a website: push through Apple
-(APNs — `src/lib/apns.ts` sends, `src/lib/native-push.ts` registers from
-inside the app, tokens in `apns_tokens`; needs `APNS_KEY_ID`,
-`APNS_TEAM_ID` and `APNS_KEY` in `.env.production.local`, without which
-iPhone pushes are skipped), universal links (`/.well-known/apple-app-site-association`,
-from `APNS_TEAM_ID`/`APPLE_TEAM_ID`) and an offline screen. The app's user
-agent ends in `FindoApp/iOS` (`src/lib/native-app.ts`): Google sign-in is
-hidden there, since Google blocks it in app web views. CI
-(`.github/workflows/ios.yml`) builds on a GitHub macOS runner and, on `main`
-with the App Store Connect API key in Actions secrets, uploads to
-TestFlight. Details in `ios-app/README.md`.
+`mobile/` is one Capacitor project with both apps (`ios/`, `android/`;
+bundle id / package `uz.net.findo.app`) around the same site — they share
+the server, database, accounts and sessions with it, and site deploys reach
+them with no app update. Only native changes need a store upload. They add
+what the stores ask of more than a website: the phone's own push (APNs on
+iPhone — `src/lib/apns.ts`, tokens in `apns_tokens`, needs `APNS_KEY_ID`,
+`APNS_TEAM_ID`, `APNS_KEY`; FCM on Android — `src/lib/fcm.ts`, tokens in
+`fcm_tokens`, needs `FCM_SERVICE_ACCOUNT_FILE`; both in
+`.env.production.local`, without which those pushes are skipped;
+`src/lib/native-push.ts` registers from inside the app), links that open in
+the app (universal links via `/.well-known/apple-app-site-association` from
+`APNS_TEAM_ID`/`APPLE_TEAM_ID`; App Links via
+`public/.well-known/assetlinks.json`, which must list both the upload key's
+and Google Play's app-signing key's SHA-256; `src/components/NativeAppBridge.tsx`
+navigates), the native share sheet and an offline screen. The apps' user
+agent ends in `FindoApp/iOS` / `FindoApp/Android` (`src/lib/native-app.ts`):
+Google sign-in is hidden there, since Google blocks it in app web views.
+CI: `.github/workflows/android.yml` builds an unsigned bundle to the
+`android-build` branch (Firebase config from the `GOOGLE_SERVICES_JSON`
+secret), which the owner signs offline with the upload keystore — never
+committed, the repo is public; `.github/workflows/ios.yml` builds on a
+GitHub macOS runner and, on `main` with the App Store Connect API key in
+Actions secrets, uploads to TestFlight. Details in `mobile/README.md`.
 
 ### Another project shares this server — do not touch it
 

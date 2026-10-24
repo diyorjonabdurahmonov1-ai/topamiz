@@ -192,7 +192,7 @@ export default function NotificationCenter({
   return (
     <>
       {toast && (
-        <div className="animate-fade-in fixed inset-x-4 top-3 z-[70] mx-auto max-w-sm">
+        <div className="animate-fade-in fixed inset-x-4 top-[calc(0.75rem+env(safe-area-inset-top))] z-[70] mx-auto max-w-sm">
           <Link
             href={toast.url}
             onClick={() => setToast(null)}

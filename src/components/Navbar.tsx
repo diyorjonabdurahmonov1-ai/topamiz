@@ -51,7 +51,7 @@ export default function Navbar({
   ];
 
   return (
-    <header className="sticky top-0 z-50 w-full glass">
+    <header className="sticky top-0 z-50 w-full glass pt-[env(safe-area-inset-top)]">
       <nav className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 sm:px-6 lg:px-8">
         <Logo />
 
