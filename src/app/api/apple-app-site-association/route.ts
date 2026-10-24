@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 
 // Served at /.well-known/apple-app-site-association (next.config.ts): tells
 // iOS that findo.net.uz links opened elsewhere — Telegram, SMS, Safari — may
-// open in the Findo app (ios-app/, its associated-domains entitlement).
+// open in the Findo app (mobile/ios, its associated-domains entitlement).
 // Needs APPLE_TEAM_ID (the developer account's Team ID; APNS_TEAM_ID is used
 // if it isn't set — it's the same team) in .env.production.local.
 export async function GET() {

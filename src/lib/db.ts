@@ -275,8 +275,9 @@ db.exec("CREATE UNIQUE INDEX IF NOT EXISTS idx_users_name_key ON users(name_key)
 // message has no chat it could be read in, and kept the unread badge lit.
 db.exec("UPDATE messages SET read_at = datetime('now') WHERE sender_id = recipient_id AND read_at IS NULL");
 
-// Device tokens of the iPhone app (lib/apns.ts): its pushes go through Apple,
-// not web push. `env` is which APNs service the token belongs to.
+// Device tokens of the phone apps: the iPhone app's go through Apple
+// (lib/apns.ts; `env` is which APNs service the token belongs to), the
+// Android app's through Firebase (lib/fcm.ts) — neither uses web push.
 db.exec(`
   CREATE TABLE IF NOT EXISTS apns_tokens (
     token TEXT PRIMARY KEY,
@@ -287,6 +288,15 @@ db.exec(`
     updated_at TEXT NOT NULL DEFAULT (datetime('now'))
   );
   CREATE INDEX IF NOT EXISTS idx_apns_tokens_user ON apns_tokens(user_id);
+
+  CREATE TABLE IF NOT EXISTS fcm_tokens (
+    token TEXT PRIMARY KEY,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    locale TEXT,
+    created_at TEXT NOT NULL DEFAULT (datetime('now')),
+    updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+  );
+  CREATE INDEX IF NOT EXISTS idx_fcm_tokens_user ON fcm_tokens(user_id);
 `);
 
 // One user blocking another (not the admin's site-wide block): the blocker

@@ -1,0 +1,28 @@
+{
+  "appId": "uz.net.findo.app",
+  "appName": "Findo",
+  "webDir": "www",
+  "server": {
+    "url": "https://findo.net.uz",
+    "allowNavigation": [
+      "findo.net.uz"
+    ],
+    "errorPath": "offline.html"
+  },
+  "ios": {
+    "contentInset": "never",
+    "scrollEnabled": true,
+    "limitsNavigationsToAppBoundDomains": false,
+    "appendUserAgent": "FindoApp/iOS"
+  },
+  "plugins": {
+    "PushNotifications": {
+      "presentationOptions": []
+    }
+  },
+  "android": {
+    "appendUserAgent": "FindoApp/Android",
+    "allowMixedContent": false,
+    "webContentsDebuggingEnabled": false
+  }
+}
