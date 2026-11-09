@@ -5,6 +5,7 @@ import {
   createListing,
   deleteListing,
   getAllActiveListings,
+  getAllListings,
   getListingById,
   getListingOwnerId,
   getListingStats,
@@ -104,6 +105,22 @@ describe("country segmentation", () => {
 
     expect(getAllActiveListings("UZ").map((l) => l.title)).toEqual(["Uzbek listing"]);
     expect(getAllActiveListings("KZ").map((l) => l.title)).toEqual(["Kazakh listing"]);
+  });
+
+  it("shows the home market's listings to a visitor whose own country has none", () => {
+    const owner = makeUser("egasi@example.com", "Egasi");
+    createListing(makeListingParams({ ownerId: owner.id, title: "Uzbek listing", country: "UZ" }));
+
+    expect(getAllActiveListings("US").map((l) => l.title)).toEqual(["Uzbek listing"]);
+    expect(getAllListings("US").map((l) => l.title)).toEqual(["Uzbek listing"]);
+  });
+
+  it("keeps a country's own listings once it has some", () => {
+    const owner = makeUser("egasi@example.com", "Egasi");
+    createListing(makeListingParams({ ownerId: owner.id, title: "Uzbek listing", country: "UZ" }));
+    createListing(makeListingParams({ ownerId: owner.id, title: "American listing", country: "US" }));
+
+    expect(getAllActiveListings("US").map((l) => l.title)).toEqual(["American listing"]);
   });
 });
 
