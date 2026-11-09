@@ -3,6 +3,7 @@ import type { CategoryId, Currency, Listing, ListingAttrs, ListingKind, PromoCat
 import { coordinatesForCity } from "./city-coordinates";
 import { CATEGORY_COLORS } from "./category-colors";
 import { displayIdentity } from "./auth";
+import { DEFAULT_COUNTRY } from "./geo";
 
 export const MAX_LISTING_TITLE_LENGTH = 120;
 export const MAX_LISTING_DESCRIPTION_LENGTH = 2000;
@@ -84,6 +85,15 @@ const LISTING_SELECT = `
 // user deleted their account before listings went with it, or seeded ones)
 // stay visible. Admin pages use getAllListingsForAdmin or includeHidden.
 const VISIBLE = "users.blocked_at IS NULL";
+
+// A visitor whose country has no listings at all — on a VPN, travelling, or
+// placed wrongly by the IP lookup — would be shown an empty site. The home
+// market's listings stand in for them until their own country has some.
+function feedCountry(country: string): string {
+  if (country === DEFAULT_COUNTRY) return country;
+  const any = db.prepare("SELECT 1 FROM listings WHERE country = ? AND status = 'active' LIMIT 1").get(country);
+  return any ? country : DEFAULT_COUNTRY;
+}
 
 function parseAttrs(raw: string | null): ListingAttrs {
   try {
@@ -176,6 +186,7 @@ function toListing(row: RawListingRow, { withContact = false }: { withContact?: 
 // (getMysteryBoxListings), and the business offers of the former Takliflar
 // section, which no longer has a page of its own.
 export function getAllActiveListings(country: string): Listing[] {
+  country = feedCountry(country);
   const rows = db
     .prepare(
       `${LISTING_SELECT} WHERE listings.status = 'active' AND listings.country = ?
@@ -192,6 +203,7 @@ export function getAllActiveListings(country: string): Listing[] {
 // vanishing, which would look like it never existed. Also excludes Sirli
 // quti and old Takliflar listings, same reason as getAllActiveListings above.
 export function getAllListings(country: string): Listing[] {
+  country = feedCountry(country);
   const rows = db
     .prepare(
       `${LISTING_SELECT} WHERE listings.country = ? AND listings.is_mystery_box = 0 AND listings.is_promo = 0
@@ -219,6 +231,7 @@ export function getListingById(
 }
 
 export function getRewardedListings(country: string): Listing[] {
+  country = feedCountry(country);
   const rows = db
     .prepare(
       `${LISTING_SELECT} WHERE listings.status = 'active' AND listings.country = ? AND listings.reward IS NOT NULL
@@ -234,6 +247,7 @@ export function getRewardedListings(country: string): Listing[] {
 // lost/found browsing. No background jobs run in this app, so an expired
 // box is filtered out here at query time rather than deactivated by a cron.
 export function getMysteryBoxListings(country: string): Listing[] {
+  country = feedCountry(country);
   const rows = db
     .prepare(
       `${LISTING_SELECT} WHERE listings.status = 'active' AND listings.country = ? AND listings.is_mystery_box = 1
@@ -261,6 +275,7 @@ export function getReelsListings(
   excludeIds: string[] = [],
   includeMysteryBox: boolean = false
 ): Listing[] {
+  country = feedCountry(country);
   const placeholders = excludeIds.map(() => "?").join(",");
   const excludeClause = excludeIds.length > 0 ? `AND listings.id NOT IN (${placeholders})` : "";
   const mysteryBoxClause = includeMysteryBox ? "" : "AND listings.is_mystery_box = 0";

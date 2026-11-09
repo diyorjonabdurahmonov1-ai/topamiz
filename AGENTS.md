@@ -146,6 +146,12 @@ which the post form, the API's validation and the display all read. Labels and
 price formatting live in `src/lib/listing-labels.ts`. Findo only hosts the
 listings; it never handles payment or delivery.
 
+Lists show the visitor's own country's listings (country from the IP,
+`src/lib/geo.ts`); a country with no active listings at all falls back to
+Uzbekistan's (`feedCountry` in `src/lib/listings.ts`), so a VPN, a trip or a
+wrong IP lookup never shows an empty site. The admin's all-listings page
+ignores country.
+
 Profile names are unique, Instagram-style (`src/lib/user-names.ts`): two
 names are the same if they differ only in case, spacing or which Uzbek
 apostrophe was typed (`src/lib/name-key.ts`); a unique index on
