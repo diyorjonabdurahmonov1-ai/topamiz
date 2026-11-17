@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { db } from "./db";
+import { alignListingCountries, db } from "./db";
 import { findOrCreateGoogleUser } from "./auth";
 import {
   createListing,
@@ -121,6 +121,19 @@ describe("country segmentation", () => {
     createListing(makeListingParams({ ownerId: owner.id, title: "American listing", country: "US" }));
 
     expect(getAllActiveListings("US").map((l) => l.title)).toEqual(["American listing"]);
+  });
+});
+
+describe("alignListingCountries", () => {
+  it("moves a listing posted from abroad to the country of its city", () => {
+    const owner = makeUser("egasi@example.com", "Egasi");
+    const abroad = createListing(makeListingParams({ ownerId: owner.id, city: "Samarqand", country: "US" }));
+    const home = createListing(makeListingParams({ ownerId: owner.id, city: "Toshkent", country: "UZ" }));
+
+    expect(alignListingCountries()).toBe(1);
+    expect(getListingById(abroad.id)?.country).toBe("UZ");
+    expect(getListingById(home.id)?.country).toBe("UZ");
+    expect(alignListingCountries()).toBe(0);
   });
 });
 

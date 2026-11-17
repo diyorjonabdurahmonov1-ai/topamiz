@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { CITY_COORDINATES, coordinatesForCity } from "./city-coordinates";
+import { CITY_COORDINATES, coordinatesForCity, countryForCity } from "./city-coordinates";
 
 describe("coordinatesForCity", () => {
   it("returns a point near the requested city's center", () => {
@@ -25,5 +25,11 @@ describe("coordinatesForCity", () => {
     const { lat, lng } = coordinatesForCity("Not A Real City", 1);
     expect(Number.isFinite(lat)).toBe(true);
     expect(Number.isFinite(lng)).toBe(true);
+  });
+});
+
+describe("countryForCity", () => {
+  it("places every city of the fixed list in Uzbekistan", () => {
+    for (const city of Object.keys(CITY_COORDINATES)) expect(countryForCity(city)).toBe("UZ");
   });
 });

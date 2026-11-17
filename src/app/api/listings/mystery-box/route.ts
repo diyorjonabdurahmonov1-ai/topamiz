@@ -11,7 +11,7 @@ import {
 import { containsProhibitedContent, recordModerationViolation } from "@/lib/moderation";
 import { notify } from "@/lib/notifications";
 import { getClientIp, rateLimit } from "@/lib/rate-limit";
-import { countryForIp } from "@/lib/geo";
+import { countryForCity } from "@/lib/city-coordinates";
 import { R2_PUBLIC_URL } from "@/lib/r2";
 import { getUploadSession } from "@/lib/video-uploads";
 import { isOwnUploadUrl } from "@/lib/upload-url";
@@ -163,7 +163,7 @@ export async function POST(request: Request) {
     photoUrls,
     videoUrl,
     videoThumbnailUrl,
-    country: countryForIp(ip),
+    country: countryForCity(city),
     lat,
     lng,
     isMysteryBox: true,

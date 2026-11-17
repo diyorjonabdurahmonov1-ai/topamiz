@@ -149,8 +149,12 @@ listings; it never handles payment or delivery.
 Lists show the visitor's own country's listings (country from the IP,
 `src/lib/geo.ts`); a country with no active listings at all falls back to
 Uzbekistan's (`feedCountry` in `src/lib/listings.ts`), so a VPN, a trip or a
-wrong IP lookup never shows an empty site. The admin's all-listings page
-ignores country.
+wrong IP lookup never shows an empty site. A listing's own country comes from
+its city (`countryForCity`, `src/lib/city-coordinates.ts`), never from the
+poster's IP — someone abroad can post about something lost at home — and
+`alignListingCountries` (`src/lib/db.ts`) fixes older rows at server start.
+The admin's all-listings page ignores country and says whether each listing
+is visible on the site.
 
 Profile names are unique, Instagram-style (`src/lib/user-names.ts`): two
 names are the same if they differ only in case, spacing or which Uzbek
