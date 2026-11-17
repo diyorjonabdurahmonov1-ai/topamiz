@@ -14,7 +14,7 @@ import {
 } from "@/lib/listings";
 import { containsProhibitedContent, recordModerationViolation } from "@/lib/moderation";
 import { getClientIp, rateLimit } from "@/lib/rate-limit";
-import { countryForIp } from "@/lib/geo";
+import { countryForCity } from "@/lib/city-coordinates";
 import { nearestCityForCoordinates } from "@/lib/city-coordinates";
 import { R2_PUBLIC_URL } from "@/lib/r2";
 import type { CategoryId, ListingKind } from "@/lib/types";
@@ -172,7 +172,7 @@ export async function POST(request: Request) {
     photoUrls,
     videoUrl,
     videoThumbnailUrl,
-    country: countryForIp(ip),
+    country: countryForCity(city),
     lat,
     lng,
   });

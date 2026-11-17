@@ -14,6 +14,18 @@ export const CITY_COORDINATES: Record<string, { lat: number; lng: number }> = {
 
 const DEFAULT_COORDINATE = CITY_COORDINATES.Toshkent;
 
+// Where a listing is — and so which country's visitors see it — follows from
+// the place it was posted for, never from the poster's own IP: someone
+// abroad (or on a VPN) can post about something lost back home. Every city
+// in the fixed list is in Uzbekistan.
+export const CITY_COUNTRY: Record<string, string> = Object.fromEntries(
+  Object.keys(CITY_COORDINATES).map((city) => [city, "UZ"])
+);
+
+export function countryForCity(city: string): string {
+  return CITY_COUNTRY[city] ?? "UZ";
+}
+
 // Deterministic pseudo-random offset (~ up to 1.5km) so listings from the
 // same city don't all stack on a single map marker, without needing a
 // separate "seed" column — derived from the listing id itself.

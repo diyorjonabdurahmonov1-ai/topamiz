@@ -1,7 +1,7 @@
 import Database from "better-sqlite3";
 import path from "node:path";
 import { mkdirSync } from "node:fs";
-import { coordinatesForCity } from "./city-coordinates";
+import { CITY_COUNTRY, coordinatesForCity } from "./city-coordinates";
 import { nameKey } from "./name-key";
 
 const DATA_DIR = path.join(process.cwd(), ".data");
@@ -522,3 +522,18 @@ if (!classifiedColumns.some((c) => c.name === "price")) {
   addColumn("ALTER TABLE listings ADD COLUMN price_negotiable INTEGER NOT NULL DEFAULT 0");
   addColumn("ALTER TABLE listings ADD COLUMN attrs TEXT NOT NULL DEFAULT '{}'");
 }
+
+// Listings used to take the poster's IP country, so one posted from abroad
+// about something lost in Uzbekistan was hidden from Uzbekistan's visitors.
+// A listing's country follows its city; bring older ones in line. Safe to run
+// at every start: it only touches rows that disagree.
+export function alignListingCountries(): number {
+  const update = db.prepare("UPDATE listings SET country = ? WHERE city = ? AND country <> ?");
+  let changed = 0;
+  for (const [city, country] of Object.entries(CITY_COUNTRY)) {
+    changed += update.run(country, city, country).changes;
+  }
+  return changed;
+}
+
+alignListingCountries();
