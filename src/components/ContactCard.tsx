@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Phone, ShieldCheck, User } from "lucide-react";
 import type { Dictionary } from "@/lib/i18n";
+import { ScamWarningCard } from "./ScamWarning";
 
 export default function ContactCard({
   name,
@@ -48,7 +49,7 @@ export default function ContactCard({
           {dict.contactCard.showPhone}
         </button>
       )}
-      <p className="mt-3 text-center text-xs text-muted">{dict.contactCard.safetyNote}</p>
+      <ScamWarningCard dict={dict} />
     </div>
   );
 }

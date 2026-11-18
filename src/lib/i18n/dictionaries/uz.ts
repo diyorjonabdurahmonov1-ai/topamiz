@@ -174,7 +174,6 @@ const uz: Dictionary = {
   contactCard: {
     verifiedUser: "Tasdiqlangan foydalanuvchi",
     showPhone: "Aloqa raqamini ko'rsatish",
-    safetyNote: "Xavfsizlik uchun uchrashuvni ochiq joyda tashkillashtiring.",
   },
 
   reportButton: {
@@ -483,6 +482,9 @@ const uz: Dictionary = {
     blockedProfile: "Siz bu foydalanuvchini bloklagansiz — uning e'lonlari sizga ko'rinmaydi.",
     prohibitedMessage: "Xabar mumkin bo'lmagan so'zlar sababli yuborilmadi.",
     genericError: "Xatolik yuz berdi, qayta urinib ko'ring.",
+    scamTitle: "Pul o'tkazishga shoshilmang.",
+    scamBody: "Mahsulotni ko'rmasdan oldindan pul o'tkazmang. Karta raqami va SMS kodni hech kimga bermang.",
+    scamChat: "Oldindan pul o'tkazmang. Karta raqami va SMS kodni bermang.",
   },
   publicProfile: {
     noBio: "Bu foydalanuvchi hali bio qo'shmagan.",
