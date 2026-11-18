@@ -6,6 +6,7 @@ import type { MessageRow } from "@/lib/messages";
 import type { Dictionary } from "@/lib/i18n";
 import PhotoLightbox from "./PhotoLightbox";
 import SharedListingCard from "./SharedListingCard";
+import { ScamWarningStrip } from "./ScamWarning";
 import { sizedImage } from "@/lib/image-url";
 
 // A forwarded listing's message body is always "<title>\n<url ending in
@@ -98,6 +99,7 @@ export default function ChatThread({
 
   return (
     <div className="flex flex-col overflow-hidden rounded-2xl border border-border bg-surface">
+      {blockState === "none" && <ScamWarningStrip dict={dict} />}
       <div ref={scrollRef} className="max-h-[520px] min-h-[360px] space-y-2.5 overflow-y-auto p-4">
         {messages.length === 0 ? (
           <p className="py-10 text-center text-sm text-muted">{dict.messages.noMessagesYet}</p>

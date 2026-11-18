@@ -148,7 +148,6 @@ export interface Dictionary {
   contactCard: {
     verifiedUser: string;
     showPhone: string;
-    safetyNote: string;
   };
 
   reportButton: {
@@ -450,6 +449,9 @@ export interface Dictionary {
     blockedProfile: string;
     prohibitedMessage: string;
     genericError: string;
+    scamTitle: string;
+    scamBody: string;
+    scamChat: string;
   };
   publicProfile: {
     noBio: string;

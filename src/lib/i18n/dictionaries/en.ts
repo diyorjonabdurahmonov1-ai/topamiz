@@ -173,7 +173,6 @@ const en: Dictionary = {
   contactCard: {
     verifiedUser: "Verified user",
     showPhone: "Show phone number",
-    safetyNote: "For your safety, arrange to meet in a public place.",
   },
 
   reportButton: {
@@ -479,6 +478,9 @@ const en: Dictionary = {
     blockedProfile: "You've blocked this user — their listings are hidden from you.",
     prohibitedMessage: "Message not sent: it contains words that aren't allowed.",
     genericError: "Something went wrong, please try again.",
+    scamTitle: "Don't rush to send money.",
+    scamBody: "Never pay in advance for something you haven't seen. Never share your card number or SMS code.",
+    scamChat: "Don't pay in advance. Never share your card number or SMS code.",
   },
   publicProfile: {
     noBio: "This user hasn't added a bio yet.",
