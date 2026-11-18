@@ -99,18 +99,69 @@ export function formatFollowersCount(locale: Locale, n: number): string {
 }
 
 // "2 soat oldin", "5 минут назад"… — `createdAt` is a UTC "YYYY-MM-DD HH:MM:SS"
-// as SQLite stores it.
+// as SQLite stores it. Written out by hand, not Intl.RelativeTimeFormat: a
+// browser's own Intl data lacks Uzbek, Kazakh, Kyrgyz and Tajik ("-5 min",
+// or plain English), and the page redraws with the browser's answer.
+type TimeUnit = "minute" | "hour" | "day" | "month" | "year";
+
+const TIME_AGO: Record<Locale, { now: string; yesterday: string; ago: (n: number, unit: TimeUnit) => string }> = {
+  uz: {
+    now: "hozirgina",
+    yesterday: "kecha",
+    ago: (n, unit) =>
+      `${n} ${{ minute: "daqiqa", hour: "soat", day: "kun", month: "oy", year: "yil" }[unit]} oldin`,
+  },
+  ru: {
+    now: "только что",
+    yesterday: "вчера",
+    ago: (n, unit) => {
+      const word = {
+        minute: pluralRu(n, "минуту", "минуты", "минут"),
+        hour: pluralRu(n, "час", "часа", "часов"),
+        day: pluralRu(n, "день", "дня", "дней"),
+        month: pluralRu(n, "месяц", "месяца", "месяцев"),
+        year: pluralRu(n, "год", "года", "лет"),
+      }[unit];
+      return `${n} ${word} назад`;
+    },
+  },
+  en: {
+    now: "just now",
+    yesterday: "yesterday",
+    ago: (n, unit) => `${n} ${unit}${n === 1 ? "" : "s"} ago`,
+  },
+  kk: {
+    now: "дәл қазір",
+    yesterday: "кеше",
+    ago: (n, unit) =>
+      `${n} ${{ minute: "минут", hour: "сағат", day: "күн", month: "ай", year: "жыл" }[unit]} бұрын`,
+  },
+  ky: {
+    now: "азыр эле",
+    yesterday: "кечээ",
+    ago: (n, unit) =>
+      `${n} ${{ minute: "мүнөт", hour: "саат", day: "күн", month: "ай", year: "жыл" }[unit]} мурун`,
+  },
+  tg: {
+    now: "ҳозир",
+    yesterday: "дирӯз",
+    ago: (n, unit) =>
+      `${n} ${{ minute: "дақиқа", hour: "соат", day: "рӯз", month: "моҳ", year: "сол" }[unit]} пеш`,
+  },
+};
+
 export function formatTimeAgo(locale: Locale, createdAt: string, now: number = Date.now()): string {
   const then = new Date(createdAt.replace(" ", "T") + "Z").getTime();
-  const seconds = Math.round((then - now) / 1000);
-  const rtf = new Intl.RelativeTimeFormat(locale, { numeric: "auto" });
-  const abs = Math.abs(seconds);
-  if (abs < 60) return rtf.format(0, "minute");
-  if (abs < 3600) return rtf.format(Math.round(seconds / 60), "minute");
-  if (abs < 86400) return rtf.format(Math.round(seconds / 3600), "hour");
-  if (abs < 30 * 86400) return rtf.format(Math.round(seconds / 86400), "day");
-  if (abs < 365 * 86400) return rtf.format(Math.round(seconds / (30 * 86400)), "month");
-  return rtf.format(Math.round(seconds / (365 * 86400)), "year");
+  const seconds = Math.abs(Math.round((then - now) / 1000));
+  const words = TIME_AGO[locale] ?? TIME_AGO.uz;
+  if (seconds < 60) return words.now;
+  if (seconds < 3600) return words.ago(Math.round(seconds / 60), "minute");
+  if (seconds < 86400) return words.ago(Math.round(seconds / 3600), "hour");
+  const days = Math.round(seconds / 86400);
+  if (days === 1) return words.yesterday;
+  if (seconds < 30 * 86400) return words.ago(days, "day");
+  if (seconds < 365 * 86400) return words.ago(Math.max(1, Math.round(seconds / (30 * 86400))), "month");
+  return words.ago(Math.max(1, Math.round(seconds / (365 * 86400))), "year");
 }
 
 export function formatCopyright(locale: Locale, year: number): string {
