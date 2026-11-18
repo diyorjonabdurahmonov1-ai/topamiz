@@ -51,4 +51,32 @@ describe("formatTimeAgo", () => {
     expect(formatTimeAgo("ru", "2026-10-09 11:55:00", now)).toBe("5 минут назад");
     expect(formatTimeAgo("en", "2026-10-08 12:00:00", now)).toBe("yesterday");
   });
+
+  // Written out by hand, not through Intl, whose data in a browser lacks
+  // these languages: every one must read in its own language.
+  it("words every unit in each of the six languages", () => {
+    const ago = (locale: Parameters<typeof formatTimeAgo>[0], createdAt: string) =>
+      formatTimeAgo(locale, createdAt, now);
+    const fiveMinutes = "2026-10-09 11:55:00";
+    const threeDays = "2026-10-06 12:00:00";
+    const twoMonths = "2026-08-09 12:00:00";
+    const twoYears = "2024-10-09 12:00:00";
+    expect(ago("uz", fiveMinutes)).toBe("5 daqiqa oldin");
+    expect(ago("uz", threeDays)).toBe("3 kun oldin");
+    expect(ago("uz", twoMonths)).toBe("2 oy oldin");
+    expect(ago("uz", twoYears)).toBe("2 yil oldin");
+    expect(ago("kk", fiveMinutes)).toBe("5 минут бұрын");
+    expect(ago("ky", fiveMinutes)).toBe("5 мүнөт мурун");
+    expect(ago("tg", threeDays)).toBe("3 рӯз пеш");
+    expect(ago("en", fiveMinutes)).toBe("5 minutes ago");
+    expect(ago("en", "2026-10-09 11:59:00")).toBe("1 minute ago");
+    expect(ago("ru", threeDays)).toBe("3 дня назад");
+    expect(ago("ru", twoYears)).toBe("2 года назад");
+  });
+
+  it("says 'just now' under a minute and never reads negative", () => {
+    expect(formatTimeAgo("uz", "2026-10-09 11:59:40", now)).toBe("hozirgina");
+    expect(formatTimeAgo("uz", "2026-10-09 12:00:30", now)).toBe("hozirgina");
+    expect(formatTimeAgo("ru", "2026-10-09 11:59:40", now)).toBe("только что");
+  });
 });
