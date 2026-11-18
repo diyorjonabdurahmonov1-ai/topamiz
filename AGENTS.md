@@ -73,10 +73,13 @@ cold start or an ephemeral filesystem.
   password reset `Findo.net.uz saytida parolni tiklash uchun tasdiqlash kodi: 1234. Agar buni siz so'ramagan bo'lsangiz, e'tibor bermang.`
   Without the two vars, the phone form shows "SMS xizmati hozircha
   sozlanmagan" and Google sign-in keeps working.
-- The home-page ad banner (`/admin/reklama`, `src/lib/ads.ts`) is managed by
-  whoever's Google account email is listed in `ADMIN_EMAILS` (comma-separated
-  if more than one), also in `.env.production.local`. Anyone else hitting
-  `/admin/reklama` is redirected to `/`.
+- The admin pages (`/admin/*`, including the home-page ad banner at
+  `/admin/reklama`, `src/lib/ads.ts`) are for whoever's Google account email
+  is listed in `ADMIN_EMAILS`, or whose phone-number account is listed in
+  `ADMIN_PHONES` (the app has no Google sign-in); both comma-separated, in
+  `.env.production.local` — read at start, so `pm2 restart topamiz` applies a
+  change. A phone number must belong to an account made through the SMS
+  sign-up. Anyone else hitting `/admin/*` is redirected to `/`.
 - Visitor analytics (`src/components/Analytics.tsx`, admin's `/admin/tahlil`)
   are optional — site works fine with neither set. Add `NEXT_PUBLIC_GA_MEASUREMENT_ID`
   (a GA4 Measurement ID from analytics.google.com) and/or

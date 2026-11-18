@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import crypto from "node:crypto";
 import { db } from "./db";
 import { nameKey } from "./name-key";
+import { normalizeUzPhone } from "./phone-login";
 import { BRAND_NAME, isReservedName, MAX_NAME_LENGTH, uniqueName } from "./user-names";
 
 export const SESSION_COOKIE = "topamiz_session";
@@ -258,13 +259,24 @@ export function isUserBlocked(id: number): boolean {
   return !!row?.blocked_at;
 }
 
+function adminList(name: "ADMIN_EMAILS" | "ADMIN_PHONES"): string[] {
+  return (process.env[name] ?? "")
+    .split(",")
+    .map((entry) => entry.trim().toLowerCase())
+    .filter(Boolean);
+}
+
+// An admin is a Google account whose email is in ADMIN_EMAILS, or a phone
+// account whose number is in ADMIN_PHONES (written however — "90 123 45 67",
+// "+998901234567"). A phone-only account carries its number in `email` (see
+// rowToUser); a real email address is never read as a number.
 export function isAdmin(user: Pick<AuthUser, "email"> | null): boolean {
   if (!user?.email) return false;
-  const admins = (process.env.ADMIN_EMAILS ?? "")
-    .split(",")
-    .map((e) => e.trim().toLowerCase())
-    .filter(Boolean);
-  return admins.includes(user.email.toLowerCase());
+  const identity = user.email.trim().toLowerCase();
+  if (adminList("ADMIN_EMAILS").includes(identity)) return true;
+  if (identity.includes("@")) return false;
+  const phone = normalizeUzPhone(identity);
+  return !!phone && adminList("ADMIN_PHONES").some((entry) => normalizeUzPhone(entry) === phone);
 }
 
 // Every admin page calls this itself, first thing. The check in

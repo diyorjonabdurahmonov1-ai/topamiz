@@ -87,6 +87,35 @@ describe("isAdmin", () => {
     expect(isAdmin({ email: "SECOND@example.com" })).toBe(true);
     expect(isAdmin({ email: "someone-else@example.com" })).toBe(false);
   });
+
+  describe("by phone number", () => {
+    const originalPhones = process.env.ADMIN_PHONES;
+    afterEach(() => {
+      if (originalPhones === undefined) delete process.env.ADMIN_PHONES;
+      else process.env.ADMIN_PHONES = originalPhones;
+    });
+
+    // A phone-only account carries its number in `email` (auth.ts rowToUser).
+    it("makes a phone account an admin however the number is written in ADMIN_PHONES", () => {
+      delete process.env.ADMIN_EMAILS;
+      process.env.ADMIN_PHONES = "90 123 45 67, +998 93 765-43-21";
+      expect(isAdmin({ email: "+998901234567" })).toBe(true);
+      expect(isAdmin({ email: "+998937654321" })).toBe(true);
+      expect(isAdmin({ email: "+998909999999" })).toBe(false);
+    });
+
+    it("never reads an email address as a phone number", () => {
+      delete process.env.ADMIN_EMAILS;
+      process.env.ADMIN_PHONES = "+998901234567";
+      expect(isAdmin({ email: "998901234567@example.com" })).toBe(false);
+    });
+
+    it("is off while ADMIN_PHONES is unset", () => {
+      delete process.env.ADMIN_EMAILS;
+      delete process.env.ADMIN_PHONES;
+      expect(isAdmin({ email: "+998901234567" })).toBe(false);
+    });
+  });
 });
 
 describe("isUserBlocked", () => {
