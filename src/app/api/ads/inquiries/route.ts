@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { apiError } from "@/lib/api-errors";
 import {
   createAdInquiry,
   MAX_COMPANY_LENGTH,
@@ -23,7 +24,7 @@ export async function POST(request: Request) {
   const message = typeof body?.message === "string" ? body.message.trim().slice(0, MAX_MESSAGE_LENGTH) : "";
 
   if (!company || !phone) {
-    return NextResponse.json({ error: "Kompaniya nomi va telefon raqamini kiriting" }, { status: 400 });
+    return await apiError("adsFieldsRequired", 400);
   }
 
   createAdInquiry({ company, phone, message });

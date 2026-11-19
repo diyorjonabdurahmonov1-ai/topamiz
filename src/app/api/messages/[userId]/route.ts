@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { apiError } from "@/lib/api-errors";
 import { containsProhibitedContent, recordModerationViolation } from "@/lib/moderation";
 import { isBlockedBetween } from "@/lib/user-blocks";
 import { displayIdentity, getCurrentUser, getUserById, isAdmin, isUserBlocked } from "@/lib/auth";
@@ -13,12 +14,12 @@ import { isOwnUploadUrl } from "@/lib/upload-url";
 
 export async function GET(_request: Request, ctx: RouteContext<"/api/messages/[userId]">) {
   const user = await getCurrentUser();
-  if (!user) return NextResponse.json({ error: "Kirish talab qilinadi" }, { status: 401 });
+  if (!user) return await apiError("signInRequired", 401);
 
   const { userId } = await ctx.params;
   const otherId = Number(userId);
   if (!getUserById(otherId) || (isUserBlocked(otherId) && !isAdmin(user))) {
-    return NextResponse.json({ error: "Foydalanuvchi topilmadi" }, { status: 404 });
+    return await apiError("userNotFound", 404);
   }
 
   markThreadRead(user.id, otherId);
@@ -27,16 +28,16 @@ export async function GET(_request: Request, ctx: RouteContext<"/api/messages/[u
 
 export async function POST(request: Request, ctx: RouteContext<"/api/messages/[userId]">) {
   const user = await getCurrentUser();
-  if (!user) return NextResponse.json({ error: "Kirish talab qilinadi" }, { status: 401 });
+  if (!user) return await apiError("signInRequired", 401);
 
   const { userId } = await ctx.params;
   const otherId = Number(userId);
   const recipient = getUserById(otherId);
   if (!recipient || (isUserBlocked(otherId) && !isAdmin(user))) {
-    return NextResponse.json({ error: "Foydalanuvchi topilmadi" }, { status: 404 });
+    return await apiError("userNotFound", 404);
   }
   if (otherId === user.id) {
-    return NextResponse.json({ error: "O'zingizga xabar yubora olmaysiz" }, { status: 400 });
+    return await apiError("cannotMessageSelf", 400);
   }
 
   const limit = rateLimit(`send-message:${user.id}`, 30, 60 * 1000);
@@ -48,27 +49,18 @@ export async function POST(request: Request, ctx: RouteContext<"/api/messages/[u
   }
 
   if (isBlockedBetween(user.id, otherId)) {
-    return NextResponse.json({ error: "Bu foydalanuvchiga xabar yuborib bo'lmaydi", code: "blocked" }, { status: 403 });
+    return await apiError("cannotMessage", 403, {}, { code: "blocked" });
   }
 
   const body = await request.json().catch(() => null);
   const text = typeof body?.body === "string" ? body.body.trim().slice(0, MAX_MESSAGE_LENGTH) : "";
-  if (!text) return NextResponse.json({ error: "Xabar bo'sh bo'lishi mumkin emas" }, { status: 400 });
+  if (!text) return await apiError("messageEmpty", 400);
 
   // The same filter as listings and comments: chats are private, but
   // harassment in them is exactly what it's there to stop.
   if (containsProhibitedContent(text)) {
     const { blocked } = recordModerationViolation(user.id);
-    return NextResponse.json(
-      {
-        error: blocked
-          ? "Xabar mumkin bo'lmagan so'zlar sababli yuborilmadi. Qoidabuzarlik takrorlanganligi uchun hisobingiz bloklandi."
-          : "Xabar mumkin bo'lmagan so'zlar sababli yuborilmadi.",
-        code: "prohibited",
-        blocked,
-      },
-      { status: 400 }
-    );
+    return await apiError(blocked ? "messageRejectedBlocked" : "messageRejected", 400, {}, { code: "prohibited", blocked });
   }
   const photoUrls = Array.isArray(body?.photoUrls)
     ? body.photoUrls

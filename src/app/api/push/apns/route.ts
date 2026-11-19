@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { apiError } from "@/lib/api-errors";
 import { getCurrentUser } from "@/lib/auth";
 import { isApnsToken, removeApnsToken, saveApnsToken } from "@/lib/apns";
 import { getLocale } from "@/lib/i18n/server";
@@ -8,9 +9,9 @@ import { getLocale } from "@/lib/i18n/server";
 // launch — tokens can change, and this also keeps the language current.
 export async function POST(request: Request) {
   const user = await getCurrentUser();
-  if (!user) return NextResponse.json({ error: "Kirish talab qilinadi" }, { status: 401 });
+  if (!user) return await apiError("signInRequired", 401);
   const body = await request.json().catch(() => null);
-  if (!isApnsToken(body?.token)) return NextResponse.json({ error: "Noto'g'ri token" }, { status: 400 });
+  if (!isApnsToken(body?.token)) return await apiError("invalidRequest", 400);
   saveApnsToken(user.id, body.token, await getLocale());
   return NextResponse.json({ ok: true });
 }

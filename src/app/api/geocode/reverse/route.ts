@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { apiError } from "@/lib/api-errors";
 import { cities } from "@/lib/data";
 import { nearestCityForCoordinates } from "@/lib/city-coordinates";
 import { getClientIp, rateLimit } from "@/lib/rate-limit";
@@ -44,7 +45,7 @@ export async function GET(request: Request) {
   const lat = Number(searchParams.get("lat"));
   const lng = Number(searchParams.get("lng"));
   if (!Number.isFinite(lat) || !Number.isFinite(lng) || lat < -90 || lat > 90 || lng < -180 || lng > 180) {
-    return NextResponse.json({ error: "Noto'g'ri koordinata" }, { status: 400 });
+    return await apiError("invalidCoordinate", 400);
   }
 
   // The post form no longer offers a manual city picker as a fallback, so

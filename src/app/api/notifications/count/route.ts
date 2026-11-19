@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { apiError } from "@/lib/api-errors";
 import { displayIdentity, getCurrentUser, getUserById } from "@/lib/auth";
 import { getDictionary } from "@/lib/i18n";
 import { getLocale } from "@/lib/i18n/server";
@@ -10,7 +11,7 @@ import { getNotifications, notificationText, notificationUrl, unreadNotification
 // with the counts it returns what the newest unread item says, for the toast.
 export async function GET() {
   const user = await getCurrentUser();
-  if (!user) return NextResponse.json({ error: "Kirish talab qilinadi" }, { status: 401 });
+  if (!user) return await apiError("signInRequired", 401);
   const locale = await getLocale();
   const dict = getDictionary(locale);
 

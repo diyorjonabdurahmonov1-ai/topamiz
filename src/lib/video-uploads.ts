@@ -37,7 +37,8 @@ interface UploadSession {
   createdAt: number;
   videoUrl?: string;
   thumbnailUrl?: string;
-  error?: string;
+  // A key of the dictionary's apiErrors; the route words it in the visitor's language.
+  error?: "videoProcessingFailed" | "videoInvalid" | "videoTooLong";
   // Set when the poster published the listing before the video finished:
   // the video is filled into that listing as soon as it's ready.
   listingId?: string;
@@ -148,12 +149,12 @@ export async function writeChunk(
 // The final size comes from the client at the end rather than from the
 // start: Android can hand the browser a converted copy of a gallery video
 // whose real length differs from the size it first reported.
-export async function finishUpload(session: UploadSession, size: number): Promise<string | null> {
+export async function finishUpload(session: UploadSession, size: number): Promise<"uploadIncomplete" | null> {
   if (session.status !== "receiving") return null;
   const onDisk = (await stat(path.join(session.dir, "input"))).size;
   const expectedChunks = Math.ceil(size / CHUNK_SIZE);
   if (size <= 0 || session.received !== size || onDisk !== size || session.chunks.size !== expectedChunks) {
-    return "Fayl to'liq yuklanmadi";
+    return "uploadIncomplete";
   }
 
   session.status = "processing";
@@ -163,7 +164,7 @@ export async function finishUpload(session: UploadSession, size: number): Promis
   processVideo(session).catch((err) => {
     console.error("Video processing failed:", err);
     session.status = "error";
-    session.error = "Videoni qayta ishlashda xatolik yuz berdi. Qayta urinib ko'ring.";
+    session.error = "videoProcessingFailed";
   });
   return null;
 }
@@ -193,7 +194,7 @@ async function processVideo(session: UploadSession) {
       probe = JSON.parse(stdout) as FfprobeResult;
     } catch {
       session.status = "error";
-      session.error = "Fayl mazmuni haqiqiy videoga mos kelmadi";
+      session.error = "videoInvalid";
       return;
     }
 
@@ -201,12 +202,12 @@ async function processVideo(session: UploadSession) {
     const duration = Number(probe.format?.duration);
     if (!hasVideoStream || !Number.isFinite(duration)) {
       session.status = "error";
-      session.error = "Fayl mazmuni haqiqiy videoga mos kelmadi";
+      session.error = "videoInvalid";
       return;
     }
     if (duration > MAX_DURATION_SECONDS) {
       session.status = "error";
-      session.error = "Video uzunligi 2 daqiqadan oshmasligi kerak";
+      session.error = "videoTooLong";
       return;
     }
 

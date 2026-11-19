@@ -1,15 +1,16 @@
 import { NextResponse } from "next/server";
+import { apiError, apiErrorText } from "@/lib/api-errors";
 import { getCurrentUser } from "@/lib/auth";
 import { finishUpload, getUploadSession, writeChunk } from "@/lib/video-uploads";
 
 async function sessionFor(ctx: RouteContext<"/api/upload-video/[id]">) {
   const user = await getCurrentUser();
-  if (!user) return { error: NextResponse.json({ error: "Kirish talab qilinadi" }, { status: 401 }) };
+  if (!user) return { error: await apiError("signInRequired", 401) };
   const { id } = await ctx.params;
   const session = getUploadSession(id, user.id);
   if (!session) {
     return {
-      error: NextResponse.json({ error: "Yuklash topilmadi. Videoni qaytadan tanlang." }, { status: 404 }),
+      error: await apiError("uploadNotFound", 404),
     };
   }
   return { session };
@@ -24,18 +25,18 @@ export async function PUT(request: Request, ctx: RouteContext<"/api/upload-video
   const offset = Number(params.get("offset"));
   const length = Number(params.get("length"));
   if (!Number.isInteger(offset) || offset < 0 || !Number.isInteger(length)) {
-    return NextResponse.json({ error: "Bo'lak tartibi buzildi" }, { status: 400 });
+    return await apiError("chunkProblem", 400);
   }
 
   let data: Buffer;
   try {
     data = Buffer.from(await request.arrayBuffer());
   } catch {
-    return NextResponse.json({ error: "Bo'lak to'liq yetib kelmadi" }, { status: 409 });
+    return await apiError("chunkProblem", 409);
   }
   const result = await writeChunk(session, offset, length, data);
-  if (result === "invalid") return NextResponse.json({ error: "Bo'lak tartibi buzildi" }, { status: 400 });
-  if (result === "incomplete") return NextResponse.json({ error: "Bo'lak to'liq yetib kelmadi" }, { status: 409 });
+  if (result === "invalid") return await apiError("chunkProblem", 400);
+  if (result === "incomplete") return await apiError("chunkProblem", 409);
   return NextResponse.json({ received: session.received });
 }
 
@@ -47,7 +48,7 @@ export async function POST(request: Request, ctx: RouteContext<"/api/upload-vide
   const body = await request.json().catch(() => null);
   const size = typeof body?.size === "number" && Number.isInteger(body.size) ? body.size : 0;
   const problem = await finishUpload(session, size);
-  if (problem) return NextResponse.json({ error: problem }, { status: 400 });
+  if (problem) return await apiError(problem, 400);
   return NextResponse.json({ status: session.status }, { status: 202 });
 }
 
@@ -59,6 +60,6 @@ export async function GET(_request: Request, ctx: RouteContext<"/api/upload-vide
     status: session.status,
     videoUrl: session.videoUrl ?? null,
     thumbnailUrl: session.thumbnailUrl ?? null,
-    error: session.error ?? null,
+    error: session.error ? await apiErrorText(session.error) : null,
   });
 }

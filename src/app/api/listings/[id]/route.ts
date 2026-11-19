@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { apiError } from "@/lib/api-errors";
 import { getCurrentUser, isAdmin } from "@/lib/auth";
 import { deleteListing, getListingById, setListingStatus } from "@/lib/listings";
 import { getListingClaimants } from "@/lib/messages";
@@ -10,7 +11,7 @@ import { getListingClaimants } from "@/lib/messages";
 export async function GET(_request: Request, ctx: RouteContext<"/api/listings/[id]">) {
   const { id } = await ctx.params;
   const listing = getListingById(id);
-  if (!listing) return NextResponse.json({ error: "Topilmadi" }, { status: 404 });
+  if (!listing) return await apiError("notFound", 404);
 
   return NextResponse.json({
     listing: {
@@ -28,14 +29,14 @@ export async function GET(_request: Request, ctx: RouteContext<"/api/listings/[i
 
 export async function DELETE(_request: Request, ctx: RouteContext<"/api/listings/[id]">) {
   const user = await getCurrentUser();
-  if (!user) return NextResponse.json({ error: "Kirish talab qilinadi" }, { status: 401 });
+  if (!user) return await apiError("signInRequired", 401);
 
   const { id } = await ctx.params;
   const listing = getListingById(id, { includeHidden: true });
-  if (!listing) return NextResponse.json({ error: "Topilmadi" }, { status: 404 });
+  if (!listing) return await apiError("notFound", 404);
 
   if (listing.ownerId !== user.id && !isAdmin(user)) {
-    return NextResponse.json({ error: "Ruxsat yo'q" }, { status: 403 });
+    return await apiError("forbidden", 403);
   }
 
   deleteListing(id);
@@ -44,19 +45,19 @@ export async function DELETE(_request: Request, ctx: RouteContext<"/api/listings
 
 export async function PATCH(request: Request, ctx: RouteContext<"/api/listings/[id]">) {
   const user = await getCurrentUser();
-  if (!user) return NextResponse.json({ error: "Kirish talab qilinadi" }, { status: 401 });
+  if (!user) return await apiError("signInRequired", 401);
 
   const { id } = await ctx.params;
   const listing = getListingById(id, { includeHidden: true });
-  if (!listing) return NextResponse.json({ error: "Topilmadi" }, { status: 404 });
+  if (!listing) return await apiError("notFound", 404);
 
   if (listing.ownerId !== user.id && !isAdmin(user)) {
-    return NextResponse.json({ error: "Ruxsat yo'q" }, { status: 403 });
+    return await apiError("forbidden", 403);
   }
 
   const body = await request.json().catch(() => null);
   const status = body?.status === "active" || body?.status === "resolved" ? body.status : null;
-  if (!status) return NextResponse.json({ error: "Noto'g'ri holat" }, { status: 400 });
+  if (!status) return await apiError("invalidStatus", 400);
 
   // Crediting a specific finder only ever comes from the owner picking one
   // of the actual "found it!" claims on this listing — never an arbitrary

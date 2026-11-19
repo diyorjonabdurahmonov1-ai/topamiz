@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { apiError } from "@/lib/api-errors";
 import { displayIdentity, getCurrentUser } from "@/lib/auth";
 import { cities } from "@/lib/data";
 import { getFollowerIds } from "@/lib/friends";
@@ -26,7 +27,7 @@ const MAX_DAYS_AHEAD = 30;
 // but it always carries an expiry and never a real phone number.
 export async function POST(request: Request) {
   const user = await getCurrentUser();
-  if (!user) return NextResponse.json({ error: "Kirish talab qilinadi" }, { status: 401 });
+  if (!user) return await apiError("signInRequired", 401);
 
   const ip = getClientIp(request);
   const limit = rateLimit(`mystery-box-create:${ip}`, 10, 60 * 60 * 1000);
@@ -86,29 +87,20 @@ export async function POST(request: Request) {
     lng === null ||
     (photoUrls.length === 0 && !videoUrl && !hasPendingVideo)
   ) {
-    return NextResponse.json(
-      { error: "Iltimos, * bilan belgilangan barcha maydonlarni to'ldiring." },
-      { status: 400 }
-    );
+    return await apiError("fillRequired", 400);
   }
 
   const expiresAtRaw = typeof body?.expiresAt === "string" ? new Date(body.expiresAt) : null;
   if (!expiresAtRaw || Number.isNaN(expiresAtRaw.getTime())) {
-    return NextResponse.json({ error: "Amal qilish muddatini tanlang." }, { status: 400 });
+    return await apiError("expiryRequired", 400);
   }
   const minAllowed = Date.now() + MIN_MINUTES_AHEAD * 60 * 1000;
   const maxAllowed = Date.now() + MAX_DAYS_AHEAD * 24 * 60 * 60 * 1000;
   if (expiresAtRaw.getTime() < minAllowed) {
-    return NextResponse.json(
-      { error: `Amal qilish muddati hozirdan kamida ${MIN_MINUTES_AHEAD} daqiqa keyin bo'lishi kerak.` },
-      { status: 400 }
-    );
+    return await apiError("expiryTooSoon", 400, { minutes: MIN_MINUTES_AHEAD });
   }
   if (expiresAtRaw.getTime() > maxAllowed) {
-    return NextResponse.json(
-      { error: `Amal qilish muddati ${MAX_DAYS_AHEAD} kundan ortiq bo'lishi mumkin emas.` },
-      { status: 400 }
-    );
+    return await apiError("expiryTooFar", 400, { days: MAX_DAYS_AHEAD });
   }
   const expiresAt = expiresAtRaw.toISOString().slice(0, 19).replace("T", " ");
 
@@ -119,34 +111,20 @@ export async function POST(request: Request) {
   if (typeof body?.startsAt === "string") {
     const startsAtRaw = new Date(body.startsAt);
     if (Number.isNaN(startsAtRaw.getTime())) {
-      return NextResponse.json({ error: "Boshlanish vaqti noto'g'ri." }, { status: 400 });
+      return await apiError("startInvalid", 400);
     }
     if (startsAtRaw.getTime() < minAllowed) {
-      return NextResponse.json(
-        { error: `Boshlanish vaqti hozirdan kamida ${MIN_MINUTES_AHEAD} daqiqa keyin bo'lishi kerak.` },
-        { status: 400 }
-      );
+      return await apiError("startTooSoon", 400, { minutes: MIN_MINUTES_AHEAD });
     }
     if (startsAtRaw.getTime() >= expiresAtRaw.getTime()) {
-      return NextResponse.json(
-        { error: "Boshlanish vaqti amal qilish muddatidan oldin bo'lishi kerak." },
-        { status: 400 }
-      );
+      return await apiError("startAfterExpiry", 400);
     }
     startsAt = startsAtRaw.toISOString().slice(0, 19).replace("T", " ");
   }
 
   if (containsProhibitedContent(`${title} ${fullDescription}`)) {
     const { blocked } = recordModerationViolation(user.id);
-    return NextResponse.json(
-      {
-        error: blocked
-          ? "Bu e'lon mumkin bo'lmagan kontent sababli rad etildi. Qoidabuzarlik takrorlanganligi uchun hisobingiz bloklandi."
-          : "Bu e'lon mumkin bo'lmagan kontent (so'kinish, zo'ravonlik yoki jinsiy mazmun) sababli rad etildi. Keyingi safar shunday urinish qilsangiz, hisobingiz bloklanadi.",
-        blocked,
-      },
-      { status: 400 }
-    );
+    return await apiError(blocked ? "listingRejectedBlocked" : "listingRejected", 400, {}, { blocked });
   }
 
   const posterIdentity = displayIdentity(user);

@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { apiError } from "@/lib/api-errors";
 import { db } from "@/lib/db";
 import {
   clearSessionCookie,
@@ -18,7 +19,7 @@ import { removeStoredFiles } from "@/lib/stored-files";
 
 export async function PATCH(request: Request) {
   const user = await getCurrentUser();
-  if (!user) return NextResponse.json({ error: "Kirish talab qilinadi" }, { status: 401 });
+  if (!user) return await apiError("signInRequired", 401);
 
   const body = await request.json().catch(() => null);
   const updates: string[] = [];
@@ -28,10 +29,10 @@ export async function PATCH(request: Request) {
     const name = body.name.trim().slice(0, MAX_NAME_LENGTH);
     const problem = nameProblem(name, { exceptUserId: user.id, allowReserved: isAdmin(user) });
     if (problem === "nameRequired") {
-      return NextResponse.json({ error: "Ism bo'sh bo'lishi mumkin emas", code: problem }, { status: 400 });
+      return await apiError("nameEmpty", 400, {}, { code: problem });
     }
     if (problem) {
-      return NextResponse.json({ error: "Bu nom band — boshqa nom toping", code: problem }, { status: 409 });
+      return await apiError("nameTaken", 409, {}, { code: problem });
     }
     updates.push("name = ?", "name_key = ?");
     values.push(name, nameKey(name));
@@ -48,7 +49,7 @@ export async function PATCH(request: Request) {
   }
 
   if (updates.length === 0) {
-    return NextResponse.json({ error: "Yangilanadigan ma'lumot topilmadi" }, { status: 400 });
+    return await apiError("nothingToUpdate", 400);
   }
 
   try {
@@ -62,7 +63,7 @@ export async function PATCH(request: Request) {
 
 export async function DELETE() {
   const user = await getCurrentUser();
-  if (!user) return NextResponse.json({ error: "Kirish talab qilinadi" }, { status: 401 });
+  if (!user) return await apiError("signInRequired", 401);
 
   const files = deleteUserAccount(user.id);
   await clearSessionCookie();

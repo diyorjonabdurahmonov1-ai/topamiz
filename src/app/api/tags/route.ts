@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { apiError } from "@/lib/api-errors";
 import { getCurrentUser } from "@/lib/auth";
 import {
   countActiveTags,
@@ -16,13 +17,10 @@ import { isOwnUploadUrl } from "@/lib/upload-url";
 
 export async function POST(request: Request) {
   const user = await getCurrentUser();
-  if (!user) return NextResponse.json({ error: "Kirish talab qilinadi" }, { status: 401 });
+  if (!user) return await apiError("signInRequired", 401);
 
   if (countActiveTags(user.id) >= MAX_ACTIVE_TAGS_PER_USER) {
-    return NextResponse.json(
-      { error: `Faol QR-belgilar soni cheklangan (${MAX_ACTIVE_TAGS_PER_USER} tagacha).` },
-      { status: 403 }
-    );
+    return await apiError("tagLimit", 403, { max: MAX_ACTIVE_TAGS_PER_USER });
   }
 
   const body = await request.json().catch(() => null);
@@ -38,16 +36,10 @@ export async function POST(request: Request) {
     : [];
 
   if (!title || !description) {
-    return NextResponse.json(
-      { error: "Buyum nomi va tasnifini kiriting" },
-      { status: 400 }
-    );
+    return await apiError("tagFieldsRequired", 400);
   }
   if (photoUrls.length === 0) {
-    return NextResponse.json(
-      { error: "Kamida bitta rasm yuklang — bu buyumni tanib olishni osonlashtiradi" },
-      { status: 400 }
-    );
+    return await apiError("tagPhotoRequired", 400);
   }
 
   const tag = createTag({ ownerId: user.id, title, description, photoUrls });

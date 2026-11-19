@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { apiError } from "@/lib/api-errors";
 import { getCurrentUser, isAdmin } from "@/lib/auth";
 import { getClientIp, rateLimit } from "@/lib/rate-limit";
 import { MAX_NAME_LENGTH, nameProblem } from "@/lib/user-names";
@@ -8,7 +9,7 @@ import { MAX_NAME_LENGTH, nameProblem } from "@/lib/user-names";
 // this gives nothing away; the limit only stops it being hammered.
 export async function GET(request: Request) {
   if (!rateLimit(`name-check:${getClientIp(request)}`, 300, 10 * 60 * 1000).allowed) {
-    return NextResponse.json({ error: "Juda ko'p urinish" }, { status: 429 });
+    return await apiError("tooMany", 429);
   }
   const name = (new URL(request.url).searchParams.get("name") ?? "").trim().slice(0, MAX_NAME_LENGTH);
   const user = await getCurrentUser();
