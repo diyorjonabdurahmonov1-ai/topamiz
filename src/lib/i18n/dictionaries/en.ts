@@ -68,7 +68,6 @@ const en: Dictionary = {
     howToPost: "How do I post a listing?",
     safetyRules: "Safety rules",
     termsOfUse: "Terms of use",
-    supportCall: "Support",
     privacyPolicy: "Privacy policy",
     deleteAccount: "Delete account",
     madeIn: "Made in Uzbekistan, with care ❖.",

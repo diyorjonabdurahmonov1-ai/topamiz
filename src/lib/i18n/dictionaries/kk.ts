@@ -68,7 +68,6 @@ const kk: Dictionary = {
     howToPost: "Хабарландыру қалай орналастырылады?",
     safetyRules: "Қауіпсіздік ережелері",
     termsOfUse: "Пайдалану шарттары",
-    supportCall: "Қолдау",
     privacyPolicy: "Құпиялылық саясаты",
     deleteAccount: "Есептік жазбаны жою",
     madeIn: "Өзбекстанда, ❖ қамқорлықпен жасалған.",

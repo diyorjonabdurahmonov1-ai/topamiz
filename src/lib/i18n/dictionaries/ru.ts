@@ -68,7 +68,6 @@ const ru: Dictionary = {
     howToPost: "Как разместить объявление?",
     safetyRules: "Правила безопасности",
     termsOfUse: "Условия использования",
-    supportCall: "Поддержка",
     privacyPolicy: "Политика конфиденциальности",
     deleteAccount: "Удаление аккаунта",
     madeIn: "Сделано в Узбекистане, с заботой ❖.",

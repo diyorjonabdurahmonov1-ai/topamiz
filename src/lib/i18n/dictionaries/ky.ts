@@ -68,7 +68,6 @@ const ky: Dictionary = {
     howToPost: "Жарыя кантип жайгаштырылат?",
     safetyRules: "Коопсуздук эрежелери",
     termsOfUse: "Колдонуу шарттары",
-    supportCall: "Колдоо",
     privacyPolicy: "Купуялык саясаты",
     deleteAccount: "Аккаунтту өчүрүү",
     madeIn: "Өзбекстанда, ❖ кам көрүп жасалган.",

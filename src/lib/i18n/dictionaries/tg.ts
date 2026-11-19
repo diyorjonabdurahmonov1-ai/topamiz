@@ -68,7 +68,6 @@ const tg: Dictionary = {
     howToPost: "Эълон чӣ тавр гузошта мешавад?",
     safetyRules: "Қоидаҳои бехатарӣ",
     termsOfUse: "Шартҳои истифода",
-    supportCall: "Дастгирӣ",
     privacyPolicy: "Сиёсати махфият",
     deleteAccount: "Нест кардани ҳисоб",
     madeIn: "Дар Ӯзбекистон, бо ғамхорӣ ❖ сохта шудааст.",
