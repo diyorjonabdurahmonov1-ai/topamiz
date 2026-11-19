@@ -9,6 +9,8 @@ import {
   isAdmin,
   isUserBlocked,
   pickAvatarColor,
+  createSession,
+  renewSession,
 } from "./auth";
 import { blockUser, unblockUser } from "./admin-users";
 import { createListing, setListingStatus } from "./listings";
@@ -115,6 +117,43 @@ describe("isAdmin", () => {
       delete process.env.ADMIN_PHONES;
       expect(isAdmin({ email: "+998901234567" })).toBe(false);
     });
+  });
+});
+
+describe("renewSession", () => {
+  const DAY = 24 * 60 * 60 * 1000;
+  const now = Date.parse("2026-11-19T12:00:00Z");
+
+  function sessionExpiringIn(days: number): string {
+    const user = findOrCreateGoogleUser({ googleId: `g-${days}`, email: `u${days}@example.com`, name: `U${days}` });
+    const { token } = createSession(user.id);
+    db.prepare("UPDATE sessions SET expires_at = ? WHERE token = ?").run(
+      new Date(now + days * DAY).toISOString(),
+      token
+    );
+    return token;
+  }
+  const expiry = (token: string) =>
+    new Date((db.prepare("SELECT expires_at FROM sessions WHERE token = ?").get(token) as { expires_at: string }).expires_at).getTime();
+
+  it("extends a session with little left to a full 90 days and reports the new expiry", () => {
+    const token = sessionExpiringIn(10);
+    const renewed = renewSession(token, now);
+    expect(renewed?.getTime()).toBe(now + 90 * DAY);
+    expect(expiry(token)).toBe(now + 90 * DAY);
+  });
+
+  it("leaves a session with plenty left alone, so almost every visit is a single read", () => {
+    const token = sessionExpiringIn(80);
+    expect(renewSession(token, now)).toBeNull();
+    expect(expiry(token)).toBe(now + 80 * DAY);
+  });
+
+  it("never brings back a session that has run out, nor invents one", () => {
+    const token = sessionExpiringIn(-1);
+    expect(renewSession(token, now)).toBeNull();
+    expect(expiry(token)).toBe(now - DAY);
+    expect(renewSession("no-such-token", now)).toBeNull();
   });
 });
 

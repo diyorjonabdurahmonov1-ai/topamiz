@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import crypto from "node:crypto";
-import { SESSION_COOKIE } from "@/lib/auth";
+import { renewSession, SESSION_COOKIE, sessionCookieOptions } from "@/lib/auth";
 import { GUEST_COOKIE, recordGuestVisit } from "@/lib/guest-visits";
 import { getClientIp } from "@/lib/rate-limit";
 import { countryForIp } from "@/lib/geo";
@@ -17,6 +17,14 @@ export function proxy(request: NextRequest) {
   // Assigns a long-lived anonymous id to anyone without a session cookie, so
   // the admin panel can show how many distinct guests have used the site
   // without ever registering.
+  // Someone signed in who keeps using the site stays signed in: a session
+  // with little left is extended, and the cookie's expiry with it.
+  const sessionToken = request.cookies.get(SESSION_COOKIE)?.value;
+  if (sessionToken) {
+    const renewedUntil = renewSession(sessionToken);
+    if (renewedUntil) response.cookies.set(SESSION_COOKIE, sessionToken, sessionCookieOptions(renewedUntil));
+  }
+
   if (!request.cookies.has(SESSION_COOKIE)) {
     const existingGuestId = request.cookies.get(GUEST_COOKIE)?.value;
     const guestId = existingGuestId ?? crypto.randomUUID();

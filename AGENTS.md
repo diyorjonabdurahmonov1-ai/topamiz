@@ -47,7 +47,10 @@ cold start or an ephemeral filesystem.
   it is not reachable from the public internet directly, only through Caddy.
 - Auth cookies are `secure: true` in production (see `src/lib/auth.ts`), so
   the site only works over HTTPS. Don't test login against the server over
-  plain `http://`.
+  plain `http://`. A session lasts 90 days and is extended while it is used:
+  a page visit with less than 60 days left renews it and its cookie
+  (`renewSession`, called from `src/proxy.ts`), so only someone away for
+  months signs in again.
 - Google sign-in (`src/lib/google-auth.ts`, `/api/auth/google*`) —
   requires `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` in a gitignored
   `.env.production.local` at `/var/www/topamiz/`. Get these from a Google
