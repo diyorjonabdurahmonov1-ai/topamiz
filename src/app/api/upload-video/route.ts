@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { apiError } from "@/lib/api-errors";
 import { getCurrentUser } from "@/lib/auth";
 import { getClientIp, rateLimit } from "@/lib/rate-limit";
 import { isR2Configured } from "@/lib/r2";
@@ -16,26 +17,23 @@ import {
 // phone video past the reverse proxy's body-size limit.
 export async function POST(request: Request) {
   const user = await getCurrentUser();
-  if (!user) return NextResponse.json({ error: "Kirish talab qilinadi" }, { status: 401 });
+  if (!user) return await apiError("signInRequired", 401);
 
   if (!isR2Configured()) {
-    return NextResponse.json(
-      { error: "Video yuklash hozircha sozlanmagan. Birozdan so'ng qayta urinib ko'ring." },
-      { status: 503 }
-    );
+    return await apiError("videoUnavailable", 503);
   }
 
   const body = await request.json().catch(() => null);
   const type = typeof body?.type === "string" ? body.type : "";
   const size = typeof body?.size === "number" ? body.size : 0;
   if (!isAcceptableVideoType(type)) {
-    return NextResponse.json({ error: "Faqat video fayl qabul qilinadi" }, { status: 400 });
+    return await apiError("videoOnly", 400);
   }
   if (!Number.isInteger(size) || size <= 0) {
-    return NextResponse.json({ error: "Fayl topilmadi" }, { status: 400 });
+    return await apiError("fileNotFound", 400);
   }
   if (size > MAX_RAW_SIZE) {
-    return NextResponse.json({ error: "Video hajmi 300MB dan oshmasligi kerak" }, { status: 400 });
+    return await apiError("videoTooLarge", 400);
   }
 
   const ip = getClientIp(request);
@@ -51,7 +49,7 @@ export async function POST(request: Request) {
   // video still lands on that listing once this new upload finishes.
   const listingId = typeof body?.listingId === "string" ? body.listingId : null;
   if (listingId && getListingOwnerId(listingId) !== user.id) {
-    return NextResponse.json({ error: "Ruxsat yo'q" }, { status: 403 });
+    return await apiError("forbidden", 403);
   }
 
   const session = await createUploadSession(user.id, size);

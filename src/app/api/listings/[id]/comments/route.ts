@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { apiError } from "@/lib/api-errors";
 import { getCurrentUser } from "@/lib/auth";
 import { getListingById } from "@/lib/listings";
 import { addComment, getComments, MAX_COMMENT_LENGTH } from "@/lib/listing-comments";
@@ -10,7 +11,7 @@ import { isBlockedBetween } from "@/lib/user-blocks";
 export async function GET(_request: Request, ctx: RouteContext<"/api/listings/[id]/comments">) {
   const { id } = await ctx.params;
   const listing = getListingById(id);
-  if (!listing) return NextResponse.json({ error: "Topilmadi" }, { status: 404 });
+  if (!listing) return await apiError("notFound", 404);
 
   const viewer = await getCurrentUser();
   return NextResponse.json({ comments: getComments(Number(id), viewer?.id) });
@@ -18,7 +19,7 @@ export async function GET(_request: Request, ctx: RouteContext<"/api/listings/[i
 
 export async function POST(request: Request, ctx: RouteContext<"/api/listings/[id]/comments">) {
   const user = await getCurrentUser();
-  if (!user) return NextResponse.json({ error: "Kirish talab qilinadi" }, { status: 401 });
+  if (!user) return await apiError("signInRequired", 401);
 
   const ip = getClientIp(request);
   const limit = rateLimit(`listing-comment:${ip}`, 20, 60 * 1000);
@@ -31,27 +32,19 @@ export async function POST(request: Request, ctx: RouteContext<"/api/listings/[i
 
   const { id } = await ctx.params;
   const listing = getListingById(id);
-  if (!listing) return NextResponse.json({ error: "Topilmadi" }, { status: 404 });
+  if (!listing) return await apiError("notFound", 404);
 
   const body = await request.json().catch(() => null);
   const text = typeof body?.body === "string" ? body.body.trim().slice(0, MAX_COMMENT_LENGTH) : "";
-  if (!text) return NextResponse.json({ error: "Izoh bo'sh bo'lishi mumkin emas" }, { status: 400 });
+  if (!text) return await apiError("commentEmpty", 400);
 
   if (containsProhibitedContent(text)) {
     const { blocked } = recordModerationViolation(user.id);
-    return NextResponse.json(
-      {
-        error: blocked
-          ? "Bu izoh mumkin bo'lmagan kontent sababli rad etildi. Qoidabuzarlik takrorlanganligi uchun hisobingiz bloklandi."
-          : "Bu izoh mumkin bo'lmagan kontent sababli rad etildi.",
-        blocked,
-      },
-      { status: 400 }
-    );
+    return await apiError(blocked ? "commentRejectedBlocked" : "commentRejected", 400, {}, { blocked });
   }
 
   if (listing.ownerId && isBlockedBetween(user.id, listing.ownerId)) {
-    return NextResponse.json({ error: "Bu e'longa izoh yozib bo'lmaydi" }, { status: 403 });
+    return await apiError("commentsClosed", 403);
   }
 
   const comment = addComment({ listingId: Number(id), userId: user.id, body: text });

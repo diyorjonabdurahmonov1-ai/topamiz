@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { apiError } from "@/lib/api-errors";
 import { displayIdentity, getCurrentUser } from "@/lib/auth";
 import { getTagByCode } from "@/lib/tags";
 import { MAX_MESSAGE_LENGTH, sendMessage } from "@/lib/messages";
@@ -20,23 +21,20 @@ export async function POST(request: Request, ctx: RouteContext<"/api/tags/[code]
   }
 
   const tag = getTagByCode(code);
-  if (!tag) return NextResponse.json({ error: "Belgi topilmadi" }, { status: 404 });
+  if (!tag) return await apiError("tagNotFound", 404);
   if (tag.status === "resolved") {
-    return NextResponse.json(
-      { error: "Bu buyum allaqachon topilgan deb belgilangan, xabar yuborib bo'lmaydi" },
-      { status: 400 }
-    );
+    return await apiError("tagResolved", 400);
   }
 
   const body = await request.json().catch(() => null);
   const message = typeof body?.message === "string" ? body.message.trim().slice(0, MAX_MESSAGE_LENGTH) : "";
   if (!message) {
-    return NextResponse.json({ error: "Xabar matnini kiriting" }, { status: 400 });
+    return await apiError("tagMessageRequired", 400);
   }
 
   const currentUser = await getCurrentUser();
   if (currentUser && currentUser.id === tag.ownerId) {
-    return NextResponse.json({ error: "Bu sizning o'z belgingiz" }, { status: 400 });
+    return await apiError("tagOwn", 400);
   }
 
   const guestName = typeof body?.guestName === "string" ? body.guestName.trim().slice(0, 80) : "";
