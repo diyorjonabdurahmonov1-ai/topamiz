@@ -136,17 +136,19 @@ describe("renewSession", () => {
   const expiry = (token: string) =>
     new Date((db.prepare("SELECT expires_at FROM sessions WHERE token = ?").get(token) as { expires_at: string }).expires_at).getTime();
 
-  it("extends a session with little left to a full 90 days and reports the new expiry", () => {
+  it("extends a session to a full 90 days again, a visit after 80 days away included", () => {
     const token = sessionExpiringIn(10);
+    const awayEighty = sessionExpiringIn(11);
+    expect(renewSession(awayEighty, now)?.getTime()).toBe(now + 90 * DAY);
     const renewed = renewSession(token, now);
     expect(renewed?.getTime()).toBe(now + 90 * DAY);
     expect(expiry(token)).toBe(now + 90 * DAY);
   });
 
-  it("leaves a session with plenty left alone, so almost every visit is a single read", () => {
-    const token = sessionExpiringIn(80);
+  it("leaves a session already renewed today alone, so almost every visit is a single read", () => {
+    const token = sessionExpiringIn(89.5);
     expect(renewSession(token, now)).toBeNull();
-    expect(expiry(token)).toBe(now + 80 * DAY);
+    expect(expiry(token)).toBe(now + 89.5 * DAY);
   });
 
   it("never brings back a session that has run out, nor invents one", () => {
