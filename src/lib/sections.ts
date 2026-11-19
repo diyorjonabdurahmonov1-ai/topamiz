@@ -1,4 +1,6 @@
 import type { CategoryId, Currency, ListingAttrs, ListingKind } from "./types";
+import type { Locale } from "./i18n/locales";
+import { SUM_WORD } from "./i18n/units";
 
 // The shape of Findo's listings: which kinds of listing exist, which
 // categories each offers, and the extra fields a category asks for. Shared by
@@ -132,7 +134,7 @@ export function sanitizeAttrs(kind: ListingKind, category: CategoryId, raw: unkn
 
 export const MAX_PRICE = 1_000_000_000_000; // so'm — a sanity cap, not a business rule
 
-export function formatPrice(price: number, currency: Currency): string {
+export function formatPrice(price: number, currency: Currency, locale: Locale = "uz"): string {
   const grouped = Math.round(price).toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
-  return currency === "USD" ? `$${grouped}` : `${grouped} so'm`;
+  return currency === "USD" ? `$${grouped}` : `${grouped} ${SUM_WORD[locale]}`;
 }

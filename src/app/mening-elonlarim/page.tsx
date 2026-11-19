@@ -6,9 +6,10 @@ import { getLocale } from "@/lib/i18n/server";
 import { getDictionary } from "@/lib/i18n";
 import MyListingRow from "@/components/MyListingRow";
 
-export const metadata: Metadata = {
-  title: "Mening e'lonlarim — Findo",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const dict = getDictionary(await getLocale());
+  return { title: `${dict.myListings.title} — Findo` };
+}
 
 export default async function MyListingsPage() {
   const user = await getCurrentUser();

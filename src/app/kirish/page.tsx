@@ -9,9 +9,10 @@ import AuthPanel from "@/components/auth/AuthPanel";
 import { safeNextPath } from "@/lib/safe-next";
 import { isNativeAppRequest } from "@/lib/native-app";
 
-export const metadata: Metadata = {
-  title: "Kirish — Findo",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const dict = getDictionary(await getLocale());
+  return { title: `${dict.login.tabLogin} — Findo` };
+}
 
 export default async function LoginPage(props: PageProps<"/kirish">) {
   const searchParams = await props.searchParams;

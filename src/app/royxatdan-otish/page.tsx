@@ -9,9 +9,10 @@ import AuthPanel from "@/components/auth/AuthPanel";
 import { safeNextPath } from "@/lib/safe-next";
 import { isNativeAppRequest } from "@/lib/native-app";
 
-export const metadata: Metadata = {
-  title: "Ro'yxatdan o'tish — Findo",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const dict = getDictionary(await getLocale());
+  return { title: `${dict.login.tabRegister} — Findo` };
+}
 
 // Sign-up on a page of its own, separate from the login page: this is where
 // a visitor who isn't registered lands from anything that needs an account

@@ -1,4 +1,4 @@
-import type { Dictionary } from "./i18n";
+import type { Dictionary, Locale } from "./i18n";
 import type { Listing, ListingKind } from "./types";
 import { fieldsFor, formatPrice, kindHasPrice, type AttrKey } from "./sections";
 
@@ -62,9 +62,13 @@ export function priceLabel(dict: Dictionary, kind: ListingKind): string {
 
 // "$12 500", "3 500 000 so'm" or "Kelishiladi"; null when the listing has
 // no price to show (lost & found, or a price simply left out).
-export function priceText(dict: Dictionary, listing: Pick<Listing, "kind" | "price" | "currency" | "priceNegotiable">): string | null {
+export function priceText(
+  dict: Dictionary,
+  listing: Pick<Listing, "kind" | "price" | "currency" | "priceNegotiable">,
+  locale: Locale = "uz"
+): string | null {
   if (!kindHasPrice(listing.kind)) return null;
-  if (listing.price) return formatPrice(listing.price, listing.currency);
+  if (listing.price) return formatPrice(listing.price, listing.currency, locale);
   return listing.priceNegotiable ? dict.classifieds.negotiable : null;
 }
 

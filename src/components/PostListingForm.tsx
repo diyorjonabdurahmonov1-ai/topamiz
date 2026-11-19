@@ -65,6 +65,7 @@ import {
   saveDraft,
   saveDraftVideo,
 } from "@/lib/listing-draft";
+import { failureMessage } from "@/lib/fetch-error";
 
 const LocationPickerMap = dynamic(() => import("./LocationPickerMap"), {
   ssr: false,
@@ -500,7 +501,7 @@ export default function PostListingForm({
       setStatus("success");
       window.scrollTo({ top: 0, behavior: "smooth" });
     } catch (err) {
-      setError(err instanceof Error ? err.message : t.genericError);
+      setError(failureMessage(err, dict.common.networkError, t.genericError));
       setStatus("idle");
     }
   }

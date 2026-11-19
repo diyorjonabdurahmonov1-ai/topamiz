@@ -27,6 +27,7 @@ import { useNameCheck } from "@/lib/use-name-check";
 import { NameCheckIcon, NameCheckMessage, nameCheckBorder } from "../NameCheckStatus";
 import type { LegalContent } from "@/lib/legal";
 import LegalSheet, { type LegalDoc } from "./LegalSheet";
+import { failureMessage } from "@/lib/fetch-error";
 
 type Tab = "login" | "register";
 type View =
@@ -171,8 +172,8 @@ export default function AuthPanel({
     setError("");
     try {
       await task();
-    } catch {
-      fail(t.genericError);
+    } catch (err) {
+      fail(failureMessage(err, dict.common.networkError, t.genericError));
     } finally {
       setBusy(false);
     }

@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Ban, CheckCircle2, Flag, Loader2, MoreHorizontal, X } from "lucide-react";
 import type { Dictionary } from "@/lib/i18n";
+import { failureMessage } from "@/lib/fetch-error";
 
 // "⋯" on a profile and in a chat: report the user to the moderators, or
 // block them (lib/user-blocks). App stores require both wherever people
@@ -62,8 +63,8 @@ export default function UserSafetyMenu({
         return false;
       }
       return true;
-    } catch {
-      setError(t.genericError);
+    } catch (err) {
+      setError(failureMessage(err, dict.common.networkError, t.genericError));
       return false;
     } finally {
       setBusy(false);

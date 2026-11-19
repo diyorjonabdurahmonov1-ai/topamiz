@@ -8,9 +8,10 @@ import { getDictionary } from "@/lib/i18n";
 import ReelsFeed from "@/components/ReelsFeed";
 import { withoutBlockedOwners } from "@/lib/user-blocks";
 
-export const metadata: Metadata = {
-  title: "Video — Findo",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const dict = getDictionary(await getLocale());
+  return { title: `${dict.social.reelsNavLabel} — Findo` };
+}
 
 export default async function ReelsPage() {
   const country = await getVisitorCountry();

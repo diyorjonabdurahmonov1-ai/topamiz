@@ -7,6 +7,7 @@ import { signupHref } from "@/lib/safe-next";
 import { CheckCircle2, Loader2, PackageCheck } from "lucide-react";
 import type { Dictionary } from "@/lib/i18n";
 import ImageUploader from "./ImageUploader";
+import { failureMessage } from "@/lib/fetch-error";
 
 export default function FoundItForm({
   ownerId,
@@ -63,7 +64,7 @@ export default function FoundItForm({
       setSent(true);
       router.refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : dict.listingDetail.foundItGenericError);
+      setError(failureMessage(err, dict.common.networkError, dict.listingDetail.foundItGenericError));
     } finally {
       setSending(false);
     }

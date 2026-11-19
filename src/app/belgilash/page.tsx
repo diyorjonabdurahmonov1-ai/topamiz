@@ -5,9 +5,10 @@ import { getLocale } from "@/lib/i18n/server";
 import { getDictionary } from "@/lib/i18n";
 import TagForm from "@/components/TagForm";
 
-export const metadata: Metadata = {
-  title: "QR-belgi yaratish — Findo",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const dict = getDictionary(await getLocale());
+  return { title: `${dict.nav.createQr} — Findo` };
+}
 
 export default async function CreateTagPage() {
   const user = await getCurrentUser();

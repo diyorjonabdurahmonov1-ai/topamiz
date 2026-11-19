@@ -7,6 +7,7 @@ import { Loader2, Send } from "lucide-react";
 import type { ListingComment } from "@/lib/listing-comments";
 import type { Dictionary } from "@/lib/i18n";
 import Avatar from "./Avatar";
+import { failureMessage } from "@/lib/fetch-error";
 
 export default function CommentSection({
   listingId,
@@ -56,7 +57,7 @@ export default function CommentSection({
       });
       setInput("");
     } catch (err) {
-      setError(err instanceof Error ? err.message : dict.social.commentGenericError);
+      setError(failureMessage(err, dict.common.networkError, dict.social.commentGenericError));
     } finally {
       setSending(false);
     }

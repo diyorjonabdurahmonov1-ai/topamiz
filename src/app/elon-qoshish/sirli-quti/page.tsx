@@ -7,9 +7,10 @@ import { getLocale } from "@/lib/i18n/server";
 import { getDictionary } from "@/lib/i18n";
 import MysteryBoxForm from "@/components/MysteryBoxForm";
 
-export const metadata: Metadata = {
-  title: "Sirli quti yaratish — Findo",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const dict = getDictionary(await getLocale());
+  return { title: `${dict.mysteryBoxForm.pageTitle} — Findo` };
+}
 
 export default async function CreateMysteryBoxPage() {
   const user = await getCurrentUser();

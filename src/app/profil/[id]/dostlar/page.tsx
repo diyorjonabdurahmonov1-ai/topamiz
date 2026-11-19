@@ -8,11 +8,17 @@ import { getLocale } from "@/lib/i18n/server";
 import { getDictionary } from "@/lib/i18n";
 import Avatar from "@/components/Avatar";
 import FriendButton from "@/components/FriendButton";
+import { apiErrorText } from "@/lib/api-errors";
 
 export async function generateMetadata(props: PageProps<"/profil/[id]/dostlar">): Promise<Metadata> {
   const { id } = await props.params;
   const user = getUserById(Number(id));
-  return { title: user ? `${user.name} — Do'stlar — Findo` : "Foydalanuvchi topilmadi — Findo" };
+  const dict = getDictionary(await getLocale());
+  return {
+    title: user
+      ? `${user.name} — ${dict.publicProfile.friendsHeading} — Findo`
+      : `${await apiErrorText("userNotFound")} — Findo`,
+  };
 }
 
 // Two tabs: the people this user added ("friends") and the people who

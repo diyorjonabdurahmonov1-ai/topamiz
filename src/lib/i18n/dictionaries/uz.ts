@@ -38,6 +38,10 @@ const uz: Dictionary = {
     previous: "Oldingilar",
     next: "Keyingilar",
     close: "Yopish",
+    themeToggle: "Mavzuni almashtirish",
+    networkError: "Internet aloqasi yo'q yoki juda sust. Ulanishni tekshirib, qayta urinib ko'ring.",
+    offlineBanner: "Internet aloqasi yo'q",
+    backOnline: "Aloqa tiklandi",
   },
 
   nav: {
@@ -64,6 +68,9 @@ const uz: Dictionary = {
     howToPost: "E'lon qanday joylanadi?",
     safetyRules: "Xavfsizlik qoidalari",
     termsOfUse: "Foydalanish shartlari",
+    supportCall: "Qo'llab-quvvatlash",
+    privacyPolicy: "Maxfiylik siyosati",
+    deleteAccount: "Hisobni o'chirish",
     madeIn: "O'zbekistonda, ❖ g'amxorlik bilan yaratilgan.",
   },
 
@@ -284,6 +291,7 @@ const uz: Dictionary = {
     videoPickFromFiles: "Fayllar orqali tanlash",
     videoRecord: "Kamerada yozish",
     photoUploadPrompt: "Rasmni shu yerga tashlang yoki bosib tanlang",
+    photoLimitHint: "JPG, PNG, HEIC, WEBP · {max} tagacha",
     photoTake: "Suratga olish",
     videoServerError: "server javob bermadi, birozdan so'ng qayta urinib ko'ring",
     draftRestored: "Tugallanmagan e'loningiz saqlangan edi — davom ettiring.",
@@ -462,6 +470,27 @@ const uz: Dictionary = {
     deleteAccountConfirm:
       "Hisobingizni butunlay o'chirmoqchimisiz? Profilingiz, xabarlaringiz va QR-belgilaringiz qaytarib bo'lmas tarzda o'chiriladi. Barcha e'lonlaringiz ham rasm va videolari bilan o'chiriladi.",
     deleteAccountError: "Hisobni o'chirishda xatolik yuz berdi. Birozdan keyin qayta urinib ko'ring.",
+  },
+
+  meta: {
+    title: "Findo — videoli e'lonlar: sotish, ijara, ish va yo'qolgan buyumlar",
+    description: "Findo — videoli e'lonlar platformasi: mashina, uy-joy, ish, xizmatlar va buyum sotish e'lonlari hamda yo'qolgan va topilgan buyumlar. Xaritada, video lentada va chat orqali.",
+  },
+
+  deleteAccountPage: {
+    title: "Hisobni va ma'lumotlarni o'chirish",
+    intro: "Findo'dagi hisobingizni va unga bog'liq barcha shaxsiy ma'lumotlaringizni istalgan vaqtda butunlay o'chirishingiz mumkin. Ilovani telefoningizda o'rnatgan yoki o'rnatmagan bo'lishingizdan qat'i nazar, bu sahifa orqali so'rov yuborishingiz mumkin.",
+    whatHappens: "O'chirilganda nima bo'ladi",
+    bullet1: "Profilingiz (ism, bio, rasm) butunlay o'chiriladi.",
+    bullet2: "Barcha xabar yozishmalaringiz va QR-belgilaringiz o'chiriladi.",
+    bullet3: "Do'stlar ro'yxati va push-bildirishnoma obunalari bekor qilinadi.",
+    bullet4: "Joylashtirgan barcha e'lonlaringiz rasm va videolari bilan birga o'chiriladi.",
+    bullet5: "Qoldirgan izohlaringiz va yoqtirishlaringiz o'chiriladi.",
+    bullet6: "Bu amalni ortga qaytarib bo'lmaydi.",
+    howTitle: "So'rov qanday yuboriladi",
+    signedInAs: "Siz {email} sifatida kirgansiz. Hisobingizni hoziroq o'chirishingiz mumkin:",
+    guestHelp: "Hisobingizni o'chirish uchun avval {signIn} va shu sahifaga qayting: o'chirish tugmasi paydo bo'ladi. Hisobingizga kira olmasangiz, qaysi telefon raqam yoki email bilan ro'yxatdan o'tganingizni ko'rsatib {email} manziliga yozing, hisobingizni qo'lda o'chirib beramiz.",
+    guestSignInLink: "tizimga kiring",
   },
 
   // What the server answers when a request is refused — in the visitor's own

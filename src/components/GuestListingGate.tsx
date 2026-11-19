@@ -47,7 +47,7 @@ export default function GuestListingGate({
   const Icon = categoryIcons[listing.category];
   const cover = listing.photoUrls[0] ?? listing.videoThumbnailUrl ?? null;
   const hiddenMedia = Math.max(0, listing.photoUrls.length - 1) + (listing.videoUrl && listing.photoUrls.length > 0 ? 1 : 0);
-  const price = listing.isPromo ? null : priceText(dict, listing);
+  const price = listing.isPromo ? null : priceText(dict, listing, locale);
   const place = [listing.city, listing.district].filter(Boolean).join(", ");
 
   return (

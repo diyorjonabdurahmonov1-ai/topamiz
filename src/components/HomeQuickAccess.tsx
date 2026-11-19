@@ -162,7 +162,7 @@ export default function HomeQuickAccess({
           href="/elonlar?view=map"
           linkLabel={dict.listingDetail.showOnMap}
         />
-        <NearbyMapCard listings={nearby} dict={dict} labelled={false} className="mt-3 h-44 sm:h-64" />
+        <NearbyMapCard listings={nearby} dict={dict} locale={locale} labelled={false} className="mt-3 h-44 sm:h-64" />
       </section>
 
       <section>

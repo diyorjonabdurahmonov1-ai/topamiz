@@ -3,6 +3,7 @@
 import { useState, type FormEvent } from "react";
 import { CheckCircle2, Loader2, Send } from "lucide-react";
 import type { Dictionary } from "@/lib/i18n";
+import { failureMessage } from "@/lib/fetch-error";
 
 export default function AdInquiryForm({ dict }: { dict: Dictionary }) {
   const [company, setCompany] = useState("");
@@ -32,8 +33,8 @@ export default function AdInquiryForm({ dict }: { dict: Dictionary }) {
         return;
       }
       setStatus("success");
-    } catch {
-      setError(dict.ads.genericError);
+    } catch (err) {
+      setError(failureMessage(err, dict.common.networkError, dict.ads.genericError));
       setStatus("idle");
     }
   }

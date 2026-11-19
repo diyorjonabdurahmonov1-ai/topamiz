@@ -5,6 +5,7 @@ import Link from "next/link";
 import { CheckCircle2, Download, Loader2, QrCode } from "lucide-react";
 import type { Dictionary } from "@/lib/i18n";
 import ImageUploader from "./ImageUploader";
+import { failureMessage } from "@/lib/fetch-error";
 
 type Status = "idle" | "submitting" | "success";
 
@@ -41,7 +42,7 @@ export default function TagForm({ dict }: { dict: Dictionary }) {
       setTagCode(data.tag.code);
       setStatus("success");
     } catch (err) {
-      setError(err instanceof Error ? err.message : dict.tags.genericError);
+      setError(failureMessage(err, dict.common.networkError, dict.tags.genericError));
       setStatus("idle");
     }
   }

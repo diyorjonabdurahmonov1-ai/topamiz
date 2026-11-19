@@ -8,11 +8,12 @@ import { getDictionary } from "@/lib/i18n";
 import Logo from "@/components/Logo";
 import TagContactForm from "@/components/TagContactForm";
 import TagPhoto from "@/components/TagPhoto";
+import { apiErrorText } from "@/lib/api-errors";
 
 export async function generateMetadata(props: PageProps<"/t/[code]">): Promise<Metadata> {
   const { code } = await props.params;
   const tag = getTagByCode(code);
-  return { title: tag ? `${tag.title} — Findo` : "Belgi topilmadi — Findo" };
+  return { title: tag ? `${tag.title} — Findo` : `${await apiErrorText("tagNotFound")} — Findo` };
 }
 
 export default async function PublicTagPage(props: PageProps<"/t/[code]">) {

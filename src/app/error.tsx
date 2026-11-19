@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import Link from "next/link";
 import { Home, RotateCw, TriangleAlert } from "lucide-react";
 import { isStaleBuildError, reloadForStaleBuild, reportClientError } from "@/lib/error-report";
+import { browserLocale, ERROR_PAGE_TEXT } from "@/lib/i18n/error-pages";
 
 export default function GlobalError({
   error,
@@ -18,15 +19,19 @@ export default function GlobalError({
     reportClientError(error, error.digest ? { source: `digest:${error.digest}` } : undefined);
   }, [error]);
 
+  // The language is only known in the browser: server-rendered, this is Uzbek.
+  const text = ERROR_PAGE_TEXT[browserLocale()];
+
   return (
     <div className="mx-auto flex max-w-md flex-col items-center px-4 py-24 text-center sm:px-6">
       <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-danger/10 text-danger">
         <TriangleAlert className="h-8 w-8" />
       </div>
-      <h1 className="mt-5 text-3xl font-extrabold tracking-tight">Nimadir xato ketdi</h1>
-      <p className="mt-2 text-sm text-muted">
-        Kechirasiz, sahifani yuklashda kutilmagan xatolik yuz berdi. Qayta urinib
-        ko'ring — agar davom etsa, birozdan so'ng qaytib tashrif buyuring.
+      <h1 className="mt-5 text-3xl font-extrabold tracking-tight" suppressHydrationWarning>
+        {text.errorTitle}
+      </h1>
+      <p className="mt-2 text-sm text-muted" suppressHydrationWarning>
+        {text.errorBody}
       </p>
       <div className="mt-6 flex flex-wrap justify-center gap-3">
         <button
@@ -35,14 +40,14 @@ export default function GlobalError({
           className="btn-brand flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold text-white"
         >
           <RotateCw className="h-4 w-4" />
-          Qayta urinish
+          <span suppressHydrationWarning>{text.retry}</span>
         </button>
         <Link
           href="/"
           className="flex items-center gap-2 rounded-xl border border-border bg-surface px-5 py-2.5 text-sm font-semibold hover:bg-surface-2"
         >
           <Home className="h-4 w-4" />
-          Bosh sahifa
+          <span suppressHydrationWarning>{text.home}</span>
         </Link>
       </div>
     </div>

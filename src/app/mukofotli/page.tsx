@@ -10,9 +10,10 @@ import { getDictionary } from "@/lib/i18n";
 import { getCurrentUser } from "@/lib/auth";
 import { withoutBlockedOwners } from "@/lib/user-blocks";
 
-export const metadata: Metadata = {
-  title: "Mukofotli e'lonlar — Findo",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const dict = getDictionary(await getLocale());
+  return { title: `${dict.rewarded.title} — Findo` };
+}
 
 export default async function RewardedPage() {
   const rewarded = withoutBlockedOwners(getRewardedListings(await getVisitorCountry()), (await getCurrentUser())?.id);
@@ -30,7 +31,7 @@ export default async function RewardedPage() {
         <p className="mx-auto mt-3 max-w-xl text-sm text-muted">{dict.rewarded.subtitle}</p>
         <div className="mx-auto mt-7 grid max-w-lg grid-cols-1 gap-3 sm:grid-cols-2">
           <StatCard icon={Gift} value={String(rewarded.length)} label={dict.rewarded.activeCount} />
-          <StatCard icon={TrendingUp} value={formatSom(totalReward)} label={dict.rewarded.totalReward} />
+          <StatCard icon={TrendingUp} value={formatSom(totalReward, locale)} label={dict.rewarded.totalReward} />
         </div>
       </div>
 

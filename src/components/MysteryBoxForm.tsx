@@ -13,6 +13,7 @@ import {
   markVideoSubmitted,
   videoFieldsForListing,
 } from "@/lib/video-upload-store";
+import { failureMessage } from "@/lib/fetch-error";
 
 const LocationPickerMap = dynamic(() => import("./LocationPickerMap"), {
   ssr: false,
@@ -144,7 +145,7 @@ export default function MysteryBoxForm({ dict }: { dict: Dictionary }) {
       }
       setStatus("success");
     } catch (err) {
-      setError(err instanceof Error ? err.message : dict.mysteryBoxForm.genericError);
+      setError(failureMessage(err, dict.common.networkError, dict.mysteryBoxForm.genericError));
       setStatus("idle");
     }
   }

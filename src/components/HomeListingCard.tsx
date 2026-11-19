@@ -23,7 +23,7 @@ export default function HomeListingCard({
   const Icon = categoryIcons[listing.category];
   const image = listing.videoThumbnailUrl ?? listing.photoUrls[0] ?? null;
   const place = [listing.city, listing.district].filter(Boolean).join(", ");
-  const price = listing.isPromo || listing.isMysteryBox ? null : priceText(dict, listing);
+  const price = listing.isPromo || listing.isMysteryBox ? null : priceText(dict, listing, locale);
 
   return (
     <Link
@@ -78,7 +78,7 @@ export default function HomeListingCard({
         {listing.reward ? (
           <span className="absolute bottom-2 left-2 flex items-center gap-1 rounded-full bg-accent-gold px-2 py-0.5 text-[10px] font-bold text-white shadow">
             <Gift className="h-3 w-3" />
-            {formatSom(listing.reward)}
+            {formatSom(listing.reward, locale)}
           </span>
         ) : null}
       </div>

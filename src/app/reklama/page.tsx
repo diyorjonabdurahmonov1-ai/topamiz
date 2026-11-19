@@ -7,9 +7,10 @@ import { getActiveAds } from "@/lib/ads";
 import { getLocale } from "@/lib/i18n/server";
 import { getDictionary } from "@/lib/i18n";
 
-export const metadata: Metadata = {
-  title: "Reklama taxtachasi — Findo",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const dict = getDictionary(await getLocale());
+  return { title: `${dict.ads.pageTitle} — Findo` };
+}
 
 export default async function AdBoardPage() {
   const ads = getActiveAds();

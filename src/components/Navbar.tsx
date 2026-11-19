@@ -76,7 +76,7 @@ export default function Navbar({
 
         <div className="hidden items-center gap-3 md:flex">
           <LanguageSwitcher locale={locale} label={dict.languageSwitcher.label} />
-          <ThemeToggle />
+          <ThemeToggle label={dict.common.themeToggle} />
           {bell}
           {user && (
             <Link
@@ -116,7 +116,7 @@ export default function Navbar({
 
         <div className="flex items-center gap-2 md:hidden">
           <LanguageSwitcher locale={locale} label={dict.languageSwitcher.label} />
-          <ThemeToggle />
+          <ThemeToggle label={dict.common.themeToggle} />
           {bell}
           <button
             type="button"

@@ -331,8 +331,8 @@ export default function ReelSlide({
           through it to the video, except on the actual buttons. */}
       <div className="pointer-events-none absolute inset-x-0 bottom-0 flex items-end justify-between gap-3 bg-gradient-to-t from-black/80 via-black/20 to-transparent p-4 pb-8">
         <div className="min-w-0 flex-1 text-white">
-          {!listing.isPromo && !listing.isMysteryBox && priceText(dict, listing) && (
-            <p className="text-lg font-extrabold drop-shadow">{priceText(dict, listing)}</p>
+          {!listing.isPromo && !listing.isMysteryBox && priceText(dict, listing, locale) && (
+            <p className="text-lg font-extrabold drop-shadow">{priceText(dict, listing, locale)}</p>
           )}
           <p className="line-clamp-2 text-sm">{listing.title}</p>
           <p className="mt-0.5 text-[11px] text-white/70 drop-shadow" suppressHydrationWarning>

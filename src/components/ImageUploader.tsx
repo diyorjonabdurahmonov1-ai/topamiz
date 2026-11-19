@@ -6,6 +6,7 @@ import type { Dictionary } from "@/lib/i18n";
 import PhotoRedactModal from "./PhotoRedactModal";
 import { prepareImageForUpload } from "@/lib/image-prepare";
 import { usePickerAccept } from "@/lib/file-picker";
+import { failureMessage } from "@/lib/fetch-error";
 
 interface UploadImage {
   id: string;
@@ -59,7 +60,7 @@ export default function ImageUploader({
     try {
       const res = await fetch("/api/upload", { method: "POST", body });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error ?? "Yuklashda xatolik yuz berdi");
+      if (!res.ok) throw new Error(data.error ?? dict.postListing.genericError);
       setImages((prev) => {
         const next = prev.map((img) =>
           img.id === id ? { ...img, status: "done" as const, url: data.url as string } : img
@@ -74,7 +75,7 @@ export default function ImageUploader({
             ? {
                 ...img,
                 status: "error" as const,
-                error: err instanceof Error ? err.message : "Yuklashda xatolik",
+                error: failureMessage(err, dict.common.networkError, dict.postListing.genericError),
               }
             : img
         )
@@ -158,7 +159,7 @@ export default function ImageUploader({
         >
           <ImagePlus className="h-5 w-5" />
           {dict.postListing.photoUploadPrompt}
-          <span className="text-xs text-muted">JPG, PNG, HEIC, WEBP · {MAX_IMAGES} tagacha</span>
+          <span className="text-xs text-muted">{dict.postListing.photoLimitHint.replace("{max}", String(MAX_IMAGES))}</span>
           <input
             ref={inputRef}
             type="file"

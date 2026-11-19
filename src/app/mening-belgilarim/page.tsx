@@ -9,14 +9,16 @@ import { getLocale } from "@/lib/i18n/server";
 import { getDictionary } from "@/lib/i18n";
 import TagCard from "@/components/TagCard";
 
-export const metadata: Metadata = {
-  title: "Mening QR-belgilarim — Findo",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const dict = getDictionary(await getLocale());
+  return { title: `${dict.tags.myTagsTitle} — Findo` };
+}
 
 export default async function MyTagsPage() {
   const user = await getCurrentUser();
   if (!user) redirect("/kirish");
-  const dict = getDictionary(await getLocale());
+  const locale = await getLocale();
+  const dict = getDictionary(locale);
 
   const tags = getTagsByOwner(user.id);
   const baseUrl = await getBaseUrlFromHeaders();
@@ -56,7 +58,7 @@ export default async function MyTagsPage() {
       ) : (
         <div className="space-y-3">
           {withQr.map(({ tag, qrDataUrl, url }) => (
-            <TagCard key={tag.id} tag={tag} qrDataUrl={qrDataUrl} url={url} dict={dict} />
+            <TagCard key={tag.id} tag={tag} qrDataUrl={qrDataUrl} url={url} dict={dict} locale={locale} />
           ))}
         </div>
       )}
