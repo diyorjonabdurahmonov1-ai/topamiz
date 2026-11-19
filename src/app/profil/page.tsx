@@ -13,9 +13,10 @@ import FriendCounts from "@/components/FriendCounts";
 import PushNotificationToggle from "@/components/PushNotificationToggle";
 import UserSearch from "@/components/UserSearch";
 
-export const metadata: Metadata = {
-  title: "Mening profilim — Findo",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const dict = getDictionary(await getLocale());
+  return { title: `${dict.bottomNav.profile} — Findo` };
+}
 
 export default async function OwnProfilePage() {
   const user = await getCurrentUser();

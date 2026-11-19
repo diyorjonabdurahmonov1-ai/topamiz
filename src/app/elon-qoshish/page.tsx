@@ -10,9 +10,10 @@ import { getLocale } from "@/lib/i18n/server";
 import { getDictionary } from "@/lib/i18n";
 import PostListingForm from "@/components/PostListingForm";
 
-export const metadata: Metadata = {
-  title: "E'lon joylash — Findo",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const dict = getDictionary(await getLocale());
+  return { title: `${dict.nav.postListing} — Findo` };
+}
 
 // Accounts store phones as +998XXXXXXXXX; the form shows them the way people
 // write them.

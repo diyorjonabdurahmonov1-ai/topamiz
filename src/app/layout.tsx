@@ -5,6 +5,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import BottomNav from "@/components/BottomNav";
 import VideoUploadIndicator from "@/components/VideoUploadIndicator";
+import ConnectionBanner from "@/components/ConnectionBanner";
 import AppChrome from "@/components/AppChrome";
 import Analytics from "@/components/Analytics";
 import ErrorReporter from "@/components/ErrorReporter";
@@ -14,7 +15,7 @@ import { getCurrentUser } from "@/lib/auth";
 import { unreadTotal } from "@/lib/messages";
 import { unreadNotificationCount } from "@/lib/notifications";
 import NotificationCenter from "@/components/NotificationCenter";
-import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
+import { SITE_NAME, SITE_URL } from "@/lib/site";
 import { getLocale } from "@/lib/i18n/server";
 import { getDictionary } from "@/lib/i18n";
 import "./globals.css";
@@ -25,53 +26,58 @@ const manrope = Manrope({
   weight: ["400", "500", "600", "700", "800"],
 });
 
-const TITLE = `${SITE_NAME} — videoli e'lonlar: sotish, ijara, ish va yo'qolgan buyumlar`;
+// Open Graph language tags, for the link previews a chat app makes.
+const OG_LOCALE = { uz: "uz_UZ", ru: "ru_RU", en: "en_US", kk: "kk_KZ", ky: "ky_KG", tg: "tg_TJ" } as const;
 
-export const metadata: Metadata = {
-  metadataBase: new URL(SITE_URL),
-  // Every page already sets its own full "X — Findo" string, so this is
-  // only a fallback for a future page that doesn't — deliberately no
-  // `title.template`, since Next.js applies a template to a child's plain
-  // string title too and would double-suffix all of them.
-  title: TITLE,
-  description: SITE_DESCRIPTION,
-  keywords: [
-    "e'lonlar",
-    "mashina sotish",
-    "kvartira ijara",
-    "ish e'lonlari",
-    "yo'qolgan buyum",
-    "topilgan buyum",
-    "e'lon",
-    "QR belgi",
-    "O'zbekiston",
-    "Toshkent",
-    "Findo",
-  ],
-  manifest: "/manifest.webmanifest",
-  appleWebApp: {
-    capable: true,
-    title: SITE_NAME,
-    statusBarStyle: "black-translucent",
-  },
-  icons: {
-    icon: [{ url: "/icon-192.png", sizes: "192x192", type: "image/png" }],
-    apple: [{ url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
-  },
-  openGraph: {
-    type: "website",
-    locale: "uz_UZ",
-    url: SITE_URL,
-    siteName: SITE_NAME,
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLocale();
+  const { title: TITLE, description: SITE_DESCRIPTION } = getDictionary(locale).meta;
+  return {
+    metadataBase: new URL(SITE_URL),
+    // Every page already sets its own full "X — Findo" string, so this is
+    // only a fallback for a future page that doesn't — deliberately no
+    // `title.template`, since Next.js applies a template to a child's plain
+    // string title too and would double-suffix all of them.
     title: TITLE,
     description: SITE_DESCRIPTION,
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: TITLE,
-    description: SITE_DESCRIPTION,
-  },
-};
+    keywords: [
+      "e'lonlar",
+      "mashina sotish",
+      "kvartira ijara",
+      "ish e'lonlari",
+      "yo'qolgan buyum",
+      "topilgan buyum",
+      "e'lon",
+      "QR belgi",
+      "O'zbekiston",
+      "Toshkent",
+      "Findo",
+    ],
+    manifest: "/manifest.webmanifest",
+    appleWebApp: {
+      capable: true,
+      title: SITE_NAME,
+      statusBarStyle: "black-translucent",
+    },
+    icons: {
+      icon: [{ url: "/icon-192.png", sizes: "192x192", type: "image/png" }],
+      apple: [{ url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
+    },
+    openGraph: {
+      type: "website",
+      locale: OG_LOCALE[locale],
+      url: SITE_URL,
+      siteName: SITE_NAME,
+      title: TITLE,
+      description: SITE_DESCRIPTION,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: TITLE,
+      description: SITE_DESCRIPTION,
+    },
+  };
+}
 
 export const viewport: Viewport = {
   themeColor: "#6366f1",
@@ -114,6 +120,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
           {children}
         </AppChrome>
         <VideoUploadIndicator dict={dict} />
+        <ConnectionBanner dict={dict} />
         <NativeAppBridge />
         {user && (
           <NotificationCenter dict={dict} initialCounts={{ messages: unreadCount, notifications: notificationCount }} />

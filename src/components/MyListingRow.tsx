@@ -39,13 +39,13 @@ export default function MyListingRow({ listing, dict, locale }: { listing: Listi
             <span className={listing.kind === "lost" ? "text-danger" : "text-success"}>
               {kindLabel(dict, listing.kind)}
             </span>
-            {priceText(dict, listing) && <span className="font-semibold text-foreground">· {priceText(dict, listing)}</span>}
+            {priceText(dict, listing, locale) && <span className="font-semibold text-foreground">· {priceText(dict, listing, locale)}</span>}
             <span suppressHydrationWarning>· {formatTimeAgo(locale, listing.createdAt)}</span>
             {listing.status === "resolved" && <span>· {resolvedLabel(dict, listing.kind)}</span>}
             {listing.reward ? (
               <span className="flex items-center gap-1 text-accent-gold">
                 <Gift className="h-3 w-3" />
-                {formatSom(listing.reward)}
+                {formatSom(listing.reward, locale)}
               </span>
             ) : null}
           </p>

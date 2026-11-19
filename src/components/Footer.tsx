@@ -16,7 +16,7 @@ export default function Footer({ dict, locale }: { dict: Dictionary; locale: Loc
             <div className="mt-5 flex gap-2">
               <a
                 href="tel:+998712001122"
-                aria-label="Qo'llab-quvvatlash"
+                aria-label={dict.footer.supportCall}
                 className="flex h-9 w-9 items-center justify-center rounded-xl border border-border bg-surface text-muted transition-colors hover:text-foreground hover:border-brand-via/50"
               >
                 <Phone className="h-4 w-4" />
@@ -53,8 +53,8 @@ export default function Footer({ dict, locale }: { dict: Dictionary; locale: Loc
               <li><Link href="/elon-qoshish" className="hover:text-foreground">{dict.footer.howToPost}</Link></li>
               <li><Link href="/xavfsizlik-qoidalari" className="hover:text-foreground">{dict.footer.safetyRules}</Link></li>
               <li><Link href="/foydalanish-shartlari" className="hover:text-foreground">{dict.footer.termsOfUse}</Link></li>
-              <li><Link href="/maxfiylik-siyosati" className="hover:text-foreground">Maxfiylik siyosati</Link></li>
-              <li><Link href="/hisobni-ochirish" className="hover:text-foreground">Hisobni o'chirish</Link></li>
+              <li><Link href="/maxfiylik-siyosati" className="hover:text-foreground">{dict.footer.privacyPolicy}</Link></li>
+              <li><Link href="/hisobni-ochirish" className="hover:text-foreground">{dict.footer.deleteAccount}</Link></li>
               <li><a href="mailto:info@findo.net.uz" className="hover:text-foreground">info@findo.net.uz</a></li>
             </ul>
           </div>

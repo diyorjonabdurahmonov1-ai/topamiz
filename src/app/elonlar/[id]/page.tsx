@@ -34,11 +34,12 @@ import { signupHref } from "@/lib/safe-next";
 import { hasBlocked } from "@/lib/user-blocks";
 import { isNativeAppRequest } from "@/lib/native-app";
 import { attrRows, KIND_BADGE_CLASS, kindLabel, priceText, resolvedLabel } from "@/lib/listing-labels";
+import { apiErrorText } from "@/lib/api-errors";
 
 export async function generateMetadata(props: PageProps<"/elonlar/[id]">): Promise<Metadata> {
   const { id } = await props.params;
   const listing = getListingById(id);
-  return { title: listing ? `${listing.title} — Findo` : "E'lon topilmadi — Findo" };
+  return { title: listing ? `${listing.title} — Findo` : `${await apiErrorText("listingNotFound")} — Findo` };
 }
 
 export default async function ListingDetailPage(props: PageProps<"/elonlar/[id]">) {
@@ -79,7 +80,7 @@ export default async function ListingDetailPage(props: PageProps<"/elonlar/[id]"
   const isExpiredMysteryBox =
     listing.isMysteryBox && listing.expiresAt ? new Date(listing.expiresAt) < new Date() : false;
   const likedByMe = user ? isLikedByUser(Number(listing.id), user.id) : false;
-  const price = listing.isPromo || listing.isMysteryBox ? null : priceText(dict, listing);
+  const price = listing.isPromo || listing.isMysteryBox ? null : priceText(dict, listing, locale);
   const details = listing.isPromo || listing.isMysteryBox ? [] : attrRows(dict, listing);
 
   return (
@@ -142,7 +143,7 @@ export default async function ListingDetailPage(props: PageProps<"/elonlar/[id]"
             {!listing.isMysteryBox && !listing.isPromo && listing.reward ? (
               <span className="flex items-center gap-1 rounded-full bg-accent-gold/15 px-3 py-1 text-xs font-semibold text-accent-gold">
                 <Gift className="h-3.5 w-3.5" />
-                {formatSom(listing.reward)} {dict.common.rewardSuffix}
+                {formatSom(listing.reward, locale)} {dict.common.rewardSuffix}
               </span>
             ) : null}
           </div>
@@ -164,7 +165,7 @@ export default async function ListingDetailPage(props: PageProps<"/elonlar/[id]"
           <div className="mt-3 flex flex-wrap items-center gap-4 text-sm text-muted">
             <span className="flex items-center gap-1.5">
               <Calendar1 className="h-4 w-4" />
-              <time dateTime={listing.date} title={formatDate(listing.date)} suppressHydrationWarning>
+              <time dateTime={listing.date} title={formatDate(listing.date, locale)} suppressHydrationWarning>
                 {formatTimeAgo(locale, listing.createdAt)}
               </time>
             </span>

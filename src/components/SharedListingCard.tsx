@@ -6,6 +6,7 @@ import { Gift } from "lucide-react";
 import { formatSom } from "@/lib/data";
 import type { Dictionary } from "@/lib/i18n";
 import { sizedImage } from "@/lib/image-url";
+import type { Locale } from "@/lib/i18n";
 
 interface PreviewListing {
   id: string;
@@ -20,10 +21,12 @@ export default function SharedListingCard({
   listingId,
   fallbackTitle,
   dict,
+  locale,
 }: {
   listingId: string;
   fallbackTitle: string;
   dict: Dictionary;
+  locale: Locale;
 }) {
   const [listing, setListing] = useState<PreviewListing | null>(null);
 
@@ -58,7 +61,7 @@ export default function SharedListingCard({
             {listing.reward ? (
               <>
                 <Gift className="h-3 w-3" />
-                {formatSom(listing.reward)}
+                {formatSom(listing.reward, locale)}
               </>
             ) : (
               listing.city

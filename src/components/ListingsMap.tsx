@@ -1,6 +1,7 @@
 "use client";
 
 import "leaflet/dist/leaflet.css";
+import "@/lib/leaflet-text";
 import { useEffect, useMemo, useState } from "react";
 import { divIcon, type LatLngBoundsExpression } from "leaflet";
 import { MapContainer, Marker, Popup, TileLayer, ZoomControl, useMap } from "react-leaflet";
@@ -13,6 +14,7 @@ import { mapSectionOf, mapSections, type MapSection } from "@/lib/map-sections";
 import { categoryIcons } from "@/lib/icons";
 import { formatSom } from "@/lib/data";
 import { categoryPinIcon } from "@/lib/map-pins";
+import type { Locale } from "@/lib/i18n";
 
 // CARTO's free basemaps (previously used here) started requiring a signed-up
 // API key in Aug 2026 and watermark every tile "API KEY REQUIRED" without
@@ -82,6 +84,7 @@ function TouchActionSync({ active }: { active: boolean }) {
 export default function ListingsMap({
   listings,
   dict,
+  locale,
   interactive = true,
   heightClassName = "h-[520px]",
   bare = false,
@@ -89,6 +92,7 @@ export default function ListingsMap({
 }: {
   listings: Listing[];
   dict: Dictionary;
+  locale: Locale;
   // false renders a purely decorative preview (no dragging/zoom/locate
   // button) — used for the home page teaser, which is wrapped in its own
   // link so the map itself never needs to capture touch gestures.
@@ -220,7 +224,7 @@ export default function ListingsMap({
                   {listing.reward ? (
                     <p className="mt-1.5 flex items-center gap-1 text-xs font-semibold text-amber-600">
                       <Gift className="h-3 w-3" />
-                      {formatSom(listing.reward)} {dict.common.rewardSuffix}
+                      {formatSom(listing.reward, locale)} {dict.common.rewardSuffix}
                     </p>
                   ) : null}
                   <Link

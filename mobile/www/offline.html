@@ -31,10 +31,27 @@
 <body>
   <main>
     <div class="logo" aria-hidden="true"></div>
-    <h1>Internet yo'q</h1>
-    <p>Findo'ni ochish uchun internetga ulaning.</p>
-    <p lang="ru">Нет подключения к интернету.</p>
-    <button type="button" onclick="location.href='https://findo.net.uz'">Qayta urinish</button>
+    <h1 id="title">Internet yo'q</h1>
+    <p id="text">Findo'ni ochish uchun internetga ulaning.</p>
+    <button id="retry" type="button" onclick="location.href='https://findo.net.uz'">Qayta urinish</button>
   </main>
+  <script>
+    // The app's own page, so the site's language setting isn't reachable:
+    // the phone's language decides, Uzbek when it is none of ours.
+    var TEXT = {
+      uz: ["Internet yo'q", "Findo'ni ochish uchun internetga ulaning.", "Qayta urinish"],
+      ru: ["Нет интернета", "Подключитесь к интернету, чтобы открыть Findo.", "Повторить"],
+      en: ["No internet", "Connect to the internet to open Findo.", "Try again"],
+      kk: ["Интернет жоқ", "Findo-ны ашу үшін интернетке қосылыңыз.", "Қайталау"],
+      ky: ["Интернет жок", "Findo'ну ачуу үчүн интернетке туташыңыз.", "Кайра аракет кылуу"],
+      tg: ["Интернет нест", "Барои кушодани Findo ба интернет пайваст шавед.", "Дубора кӯшиш кардан"]
+    };
+    var code = String(navigator.language || "uz").slice(0, 2).toLowerCase();
+    var words = TEXT[code] || TEXT.uz;
+    document.documentElement.lang = TEXT[code] ? code : "uz";
+    document.getElementById("title").textContent = words[0];
+    document.getElementById("text").textContent = words[1];
+    document.getElementById("retry").textContent = words[2];
+  </script>
 </body>
 </html>

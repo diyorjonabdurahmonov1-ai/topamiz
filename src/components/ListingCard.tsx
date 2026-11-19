@@ -12,7 +12,7 @@ import { KIND_BADGE_CLASS, kindLabel, priceText, resolvedLabel } from "@/lib/lis
 
 export default function ListingCard({ listing, dict, locale }: { listing: Listing; dict: Dictionary; locale: Locale }) {
   const Icon = categoryIcons[listing.category];
-  const price = listing.isPromo || listing.isMysteryBox ? null : priceText(dict, listing);
+  const price = listing.isPromo || listing.isMysteryBox ? null : priceText(dict, listing, locale);
 
   return (
     <div
@@ -104,7 +104,7 @@ export default function ListingCard({ listing, dict, locale }: { listing: Listin
         ) : listing.reward ? (
           <span className="absolute right-1.5 top-1.5 flex items-center gap-1 rounded-full bg-accent-gold px-2 py-0.5 text-[10px] font-semibold text-white shadow">
             <Gift className="h-3 w-3" />
-            {formatSom(listing.reward)}
+            {formatSom(listing.reward, locale)}
           </span>
         ) : null}
 

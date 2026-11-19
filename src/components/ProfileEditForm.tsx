@@ -9,6 +9,7 @@ import Avatar from "./Avatar";
 import { prepareImageForUpload } from "@/lib/image-prepare";
 import { useNameCheck } from "@/lib/use-name-check";
 import { NameCheckIcon, NameCheckMessage, nameCheckBorder } from "./NameCheckStatus";
+import { failureMessage } from "@/lib/fetch-error";
 
 export default function ProfileEditForm({ user, dict }: { user: AuthUser; dict: Dictionary }) {
   const router = useRouter();
@@ -52,7 +53,7 @@ export default function ProfileEditForm({ user, dict }: { user: AuthUser; dict: 
       setAvatarPreview(uploadData.url as string);
       router.refresh();
     } catch (err) {
-      setAvatarError(err instanceof Error ? err.message : dict.profile.genericError);
+      setAvatarError(failureMessage(err, dict.common.networkError, dict.profile.genericError));
     } finally {
       setAvatarUploading(false);
     }
@@ -99,7 +100,7 @@ export default function ProfileEditForm({ user, dict }: { user: AuthUser; dict: 
       setEditing(false);
       router.refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : dict.profile.genericError);
+      setError(failureMessage(err, dict.common.networkError, dict.profile.genericError));
     } finally {
       setLoading(false);
     }

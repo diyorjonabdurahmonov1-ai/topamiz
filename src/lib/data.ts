@@ -1,4 +1,6 @@
 import type { Category, PromoCategory } from "./types";
+import type { Locale } from "./i18n/locales";
+import { formatDay, SUM_WORD } from "./i18n/units";
 
 export const categories: Category[] = [
   { id: "hujjatlar", label: "Hujjatlar", icon: "IdCard" },
@@ -38,22 +40,18 @@ export const cities: string[] = [
   "Qarshi",
 ];
 
-const UZ_MONTHS = [
-  "yanvar", "fevral", "mart", "aprel", "may", "iyun",
-  "iyul", "avgust", "sentabr", "oktabr", "noyabr", "dekabr",
-];
-
 // Intl.NumberFormat/DateTimeFormat("uz-UZ") render inconsistently between the
-// server and browser ICU data, which breaks hydration — format manually instead.
-export function formatSom(amount: number): string {
+// server and browser ICU data, which breaks hydration — format manually
+// instead, in the visitor's language (i18n/units.ts). Uzbek by default: the
+// admin pages are in Uzbek.
+export function formatSom(amount: number, locale: Locale = "uz"): string {
   const grouped = Math.round(amount).toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
-  return `${grouped} so'm`;
+  return `${grouped} ${SUM_WORD[locale]}`;
 }
 
-export function formatDate(iso: string): string {
+export function formatDate(iso: string, locale: Locale = "uz"): string {
   // Parsed as UTC midnight since these are date-only strings; read back with
   // the UTC getters so the result doesn't shift with the viewer's timezone.
   const date = new Date(iso);
-  const day = String(date.getUTCDate()).padStart(2, "0");
-  return `${day}-${UZ_MONTHS[date.getUTCMonth()]}`;
+  return formatDay(date.getUTCDate(), date.getUTCMonth(), locale);
 }

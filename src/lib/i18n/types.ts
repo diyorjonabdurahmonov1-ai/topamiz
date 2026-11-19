@@ -14,6 +14,10 @@ export interface Dictionary {
     previous: string;
     next: string;
     close: string;
+    themeToggle: string;
+    networkError: string;
+    offlineBanner: string;
+    backOnline: string;
   };
 
   nav: {
@@ -40,6 +44,9 @@ export interface Dictionary {
     howToPost: string;
     safetyRules: string;
     termsOfUse: string;
+    supportCall: string;
+    privacyPolicy: string;
+    deleteAccount: string;
     madeIn: string;
   };
 
@@ -256,6 +263,7 @@ export interface Dictionary {
     videoPickFromFiles: string;
     videoRecord: string;
     photoUploadPrompt: string;
+    photoLimitHint: string;
     photoTake: string;
     videoServerError: string;
     draftRestored: string;
@@ -429,6 +437,27 @@ export interface Dictionary {
     deleteAccount: string;
     deleteAccountConfirm: string;
     deleteAccountError: string;
+  };
+
+  meta: {
+    title: string;
+    description: string;
+  };
+
+  deleteAccountPage: {
+    title: string;
+    intro: string;
+    whatHappens: string;
+    bullet1: string;
+    bullet2: string;
+    bullet3: string;
+    bullet4: string;
+    bullet5: string;
+    bullet6: string;
+    howTitle: string;
+    signedInAs: string;
+    guestHelp: string;
+    guestSignInLink: string;
   };
 
   apiErrors: {

@@ -38,6 +38,10 @@ const en: Dictionary = {
     previous: "Previous",
     next: "Next",
     close: "Close",
+    themeToggle: "Switch theme",
+    networkError: "No internet connection, or it's very weak. Check your connection and try again.",
+    offlineBanner: "No internet connection",
+    backOnline: "Back online",
   },
 
   nav: {
@@ -64,6 +68,9 @@ const en: Dictionary = {
     howToPost: "How do I post a listing?",
     safetyRules: "Safety rules",
     termsOfUse: "Terms of use",
+    supportCall: "Support",
+    privacyPolicy: "Privacy policy",
+    deleteAccount: "Delete account",
     madeIn: "Made in Uzbekistan, with care ❖.",
   },
 
@@ -282,6 +289,7 @@ const en: Dictionary = {
     videoPickFromFiles: "Pick from Files",
     videoRecord: "Record video",
     photoUploadPrompt: "Drop photos here or tap to choose",
+    photoLimitHint: "JPG, PNG, HEIC, WEBP · up to {max}",
     photoTake: "Take a photo",
     videoServerError: "the server didn't respond, please try again shortly",
     draftRestored: "Your unfinished listing was saved — carry on.",
@@ -458,6 +466,27 @@ const en: Dictionary = {
     deleteAccountConfirm:
       "Permanently delete your account? Your profile, messages, and QR tags will be removed and cannot be recovered. All your listings will be deleted too, with their photos and videos.",
     deleteAccountError: "Couldn't delete your account. Please try again shortly.",
+  },
+
+  meta: {
+    title: "Findo — video listings: buy, rent, jobs and lost & found",
+    description: "Findo — a video classifieds platform: cars, property, jobs, services and things for sale, plus lost and found items. On a map, in a video feed and in chat.",
+  },
+
+  deleteAccountPage: {
+    title: "Delete your account and data",
+    intro: "You can delete your Findo account and all the personal data tied to it at any time. Whether or not you have the app on your phone, you can send the request from this page.",
+    whatHappens: "What happens when you delete",
+    bullet1: "Your profile (name, bio, photo) is deleted completely.",
+    bullet2: "All your messages and QR tags are deleted.",
+    bullet3: "Your friends list and push notification subscriptions are cancelled.",
+    bullet4: "All your listings are deleted along with their photos and videos.",
+    bullet5: "Your comments and likes are deleted.",
+    bullet6: "This can't be undone.",
+    howTitle: "How to send the request",
+    signedInAs: "You're signed in as {email}. You can delete your account right now:",
+    guestHelp: "To delete your account, first {signIn} and come back to this page: a delete button will appear. If you can't sign in, write to {email} with the phone number or email you registered with, and we'll delete the account by hand.",
+    guestSignInLink: "sign in",
   },
 
   // What the server answers when a request is refused — in the visitor's own

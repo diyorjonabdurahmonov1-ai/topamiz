@@ -7,17 +7,20 @@ import { CheckCircle2, Copy, Download, ExternalLink, Loader2, RotateCcw, Trash2 
 import type { ItemTag } from "@/lib/tags";
 import type { Dictionary } from "@/lib/i18n";
 import { formatDate } from "@/lib/data";
+import type { Locale } from "@/lib/i18n";
 
 export default function TagCard({
   tag,
   qrDataUrl,
   url,
   dict,
+  locale,
 }: {
   tag: ItemTag;
   qrDataUrl: string;
   url: string;
   dict: Dictionary;
+  locale: Locale;
 }) {
   const router = useRouter();
   const [deleting, setDeleting] = useState(false);
@@ -76,7 +79,7 @@ export default function TagCard({
           )}
         </div>
         <p className="mt-0.5 line-clamp-2 text-xs text-muted">{tag.description}</p>
-        <p className="mt-1.5 text-xs text-muted">{formatDate(tag.createdAt.slice(0, 10))}</p>
+        <p className="mt-1.5 text-xs text-muted">{formatDate(tag.createdAt.slice(0, 10), locale)}</p>
         <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1.5">
           <a
             href={qrDataUrl}

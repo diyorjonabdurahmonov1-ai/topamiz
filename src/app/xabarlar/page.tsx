@@ -12,14 +12,16 @@ import Avatar from "@/components/Avatar";
 import UserSearch from "@/components/UserSearch";
 import RefreshOnMount from "@/components/RefreshOnMount";
 
-export const metadata: Metadata = {
-  title: "Xabarlar — Findo",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const dict = getDictionary(await getLocale());
+  return { title: `${dict.nav.messages} — Findo` };
+}
 
 export default async function MessagesPage() {
   const user = await getCurrentUser();
   if (!user) redirect("/kirish");
-  const dict = getDictionary(await getLocale());
+  const locale = await getLocale();
+  const dict = getDictionary(locale);
 
   const guestNotifications = getGuestNotifications(user.id);
   const hadUnreadGuestNotifications = guestNotifications.some((n) => !n.readAt);
@@ -73,7 +75,7 @@ export default async function MessagesPage() {
                   <p className="mt-1.5 text-sm text-foreground">{n.body}</p>
                   <p className="mt-1.5 text-xs text-muted">
                     {n.guestName ?? dict.messages.noNameFallback}
-                    {n.guestPhone ? ` · ${n.guestPhone}` : ""} · {formatDate(n.createdAt.slice(0, 10))}
+                    {n.guestPhone ? ` · ${n.guestPhone}` : ""} · {formatDate(n.createdAt.slice(0, 10), locale)}
                   </p>
                 </div>
               </div>
@@ -105,7 +107,7 @@ export default async function MessagesPage() {
                     <div className="flex items-center justify-between gap-2">
                       <p className="truncate text-sm font-semibold">{identity.name}</p>
                       <span className="shrink-0 text-xs text-muted">
-                        {formatDate(c.lastMessage.createdAt.slice(0, 10))}
+                        {formatDate(c.lastMessage.createdAt.slice(0, 10), locale)}
                       </span>
                     </div>
                     <p className="truncate text-sm text-muted">{c.lastMessage.body}</p>

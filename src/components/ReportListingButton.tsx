@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { signupHref } from "@/lib/safe-next";
 import { CheckCircle2, Flag, Loader2 } from "lucide-react";
 import type { Dictionary } from "@/lib/i18n";
+import { failureMessage } from "@/lib/fetch-error";
 
 export default function ReportListingButton({
   listingId,
@@ -56,7 +57,7 @@ export default function ReportListingButton({
       if (!res.ok) throw new Error(data.error ?? dict.reportButton.genericError);
       setStatus("sent");
     } catch (err) {
-      setErrorMessage(err instanceof Error ? err.message : dict.reportButton.genericError);
+      setErrorMessage(failureMessage(err, dict.common.networkError, dict.reportButton.genericError));
       setStatus("error");
     }
   }

@@ -12,9 +12,10 @@ import { getLocale } from "@/lib/i18n/server";
 import { getDictionary } from "@/lib/i18n";
 import { withoutBlockedOwners } from "@/lib/user-blocks";
 
-export const metadata: Metadata = {
-  title: "Sirli quti — Findo",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const dict = getDictionary(await getLocale());
+  return { title: `${dict.nav.mysteryBox} — Findo` };
+}
 
 export default async function MysteryBoxPage() {
   const user = await getCurrentUser();

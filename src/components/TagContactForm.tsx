@@ -3,6 +3,7 @@
 import { useState, type FormEvent } from "react";
 import { CheckCircle2, Loader2, Send } from "lucide-react";
 import type { Dictionary } from "@/lib/i18n";
+import { failureMessage } from "@/lib/fetch-error";
 
 export default function TagContactForm({
   code,
@@ -37,7 +38,7 @@ export default function TagContactForm({
       if (!res.ok) throw new Error(data.error ?? dict.tags.genericError);
       setStatus("sent");
     } catch (err) {
-      setError(err instanceof Error ? err.message : dict.tags.genericError);
+      setError(failureMessage(err, dict.common.networkError, dict.tags.genericError));
       setStatus("idle");
     }
   }

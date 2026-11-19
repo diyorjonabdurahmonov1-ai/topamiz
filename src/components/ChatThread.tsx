@@ -8,6 +8,8 @@ import PhotoLightbox from "./PhotoLightbox";
 import SharedListingCard from "./SharedListingCard";
 import { ScamWarningStrip } from "./ScamWarning";
 import { sizedImage } from "@/lib/image-url";
+import { failureMessage } from "@/lib/fetch-error";
+import type { Locale } from "@/lib/i18n";
 
 // A forwarded listing's message body is always "<title>\n<url ending in
 // /elonlar/<id>>" (see ShareMenu) — pull the id back out so the link can
@@ -20,6 +22,7 @@ export default function ChatThread({
   initialMessages,
   blockState = "none",
   dict,
+  locale,
 }: {
   otherUserId: number;
   currentUserId: number;
@@ -27,6 +30,7 @@ export default function ChatThread({
   // Either one blocked the other (lib/user-blocks): no composer, just why.
   blockState?: "none" | "blocked" | "blockedBy";
   dict: Dictionary;
+  locale: Locale;
 }) {
   const [messages, setMessages] = useState<MessageRow[]>(initialMessages);
   const [input, setInput] = useState("");
@@ -89,9 +93,9 @@ export default function ChatThread({
               : (data?.error ?? dict.safety.genericError)
         );
       }
-    } catch {
+    } catch (err) {
       setInput(text);
-      setSendError(dict.safety.genericError);
+      setSendError(failureMessage(err, dict.common.networkError, dict.safety.genericError));
     } finally {
       setSending(false);
     }
@@ -133,7 +137,7 @@ export default function ChatThread({
                     const match = m.body.match(LISTING_LINK_RE);
                     if (!match) return m.body;
                     const title = m.body.slice(0, match.index).trim();
-                    return <SharedListingCard listingId={match[1]} fallbackTitle={title} dict={dict} />;
+                    return <SharedListingCard listingId={match[1]} fallbackTitle={title} dict={dict} locale={locale} />;
                   })()}
                 </div>
               </div>

@@ -234,7 +234,7 @@ export default function ListingsExplorer({
 
       {view === "map" ? (
         <div className="mt-5">
-          <ListingsMap listings={results} dict={dict} initialMe={initialFocus} />
+          <ListingsMap listings={results} dict={dict} locale={locale} initialMe={initialFocus} />
         </div>
       ) : results.length > 0 ? (
         <div className="mt-5">

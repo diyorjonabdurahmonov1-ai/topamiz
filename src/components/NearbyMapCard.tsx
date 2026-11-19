@@ -6,6 +6,7 @@ import dynamic from "next/dynamic";
 import { Loader2, Navigation } from "lucide-react";
 import type { Listing } from "@/lib/types";
 import type { Dictionary } from "@/lib/i18n";
+import type { Locale } from "@/lib/i18n";
 
 const ListingsMap = dynamic(() => import("./ListingsMap"), {
   ssr: false,
@@ -22,11 +23,13 @@ const ListingsMap = dynamic(() => import("./ListingsMap"), {
 export default function NearbyMapCard({
   listings,
   dict,
+  locale,
   labelled = true,
   className = "min-h-[120px]",
 }: {
   listings: Listing[];
   dict: Dictionary;
+  locale: Locale;
   // Off when the section around it already carries the title.
   labelled?: boolean;
   className?: string;
@@ -50,7 +53,7 @@ export default function NearbyMapCard({
       className={`card-hover group relative block overflow-hidden rounded-2xl border border-border ${className}`}
     >
       <div className="pointer-events-none absolute inset-0">
-        <ListingsMap listings={listings} dict={dict} interactive={false} bare initialMe={me} />
+        <ListingsMap listings={listings} dict={dict} locale={locale} interactive={false} bare initialMe={me} />
       </div>
       {labelled ? (
         <>

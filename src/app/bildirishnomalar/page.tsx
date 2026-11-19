@@ -17,9 +17,10 @@ import Avatar from "@/components/Avatar";
 import RefreshOnMount from "@/components/RefreshOnMount";
 import PushNotificationToggle from "@/components/PushNotificationToggle";
 
-export const metadata: Metadata = {
-  title: "Bildirishnomalar — Findo",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const dict = getDictionary(await getLocale());
+  return { title: `${dict.notifications.title} — Findo` };
+}
 
 const TYPE_ICONS: Record<NotificationType, typeof Bell> = {
   friend_added: UserPlus,
@@ -91,7 +92,7 @@ export default async function NotificationsPage() {
                   <p className="text-sm leading-snug text-muted">
                     {renderText(notificationTemplate(locale, n.type), actorName, n.listingTitle)}
                   </p>
-                  <p className="mt-0.5 text-xs text-muted">{formatDate(n.createdAt.slice(0, 10))}</p>
+                  <p className="mt-0.5 text-xs text-muted">{formatDate(n.createdAt.slice(0, 10), locale)}</p>
                 </div>
                 {!n.readAt && <span className="h-2.5 w-2.5 shrink-0 rounded-full bg-brand-via" />}
               </Link>

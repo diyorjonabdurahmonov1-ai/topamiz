@@ -10,9 +10,10 @@ import { getDictionary } from "@/lib/i18n";
 import { getCurrentUser } from "@/lib/auth";
 import { withoutBlockedOwners } from "@/lib/user-blocks";
 
-export const metadata: Metadata = {
-  title: "E'lonlar — Findo",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const dict = getDictionary(await getLocale());
+  return { title: `${dict.nav.listings} — Findo` };
+}
 
 const categoryIds = new Set(categories.map((c) => c.id));
 

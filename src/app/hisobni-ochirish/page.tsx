@@ -1,75 +1,79 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import type { ReactNode } from "react";
 import { ShieldAlert } from "lucide-react";
 import { getCurrentUser } from "@/lib/auth";
+import { getDictionary } from "@/lib/i18n";
+import { getLocale } from "@/lib/i18n/server";
 import DeleteAccountButton from "@/components/DeleteAccountButton";
 
-export const metadata: Metadata = {
-  title: "Hisobni va ma'lumotlarni o'chirish — Findo",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  return { title: `${getDictionary(await getLocale()).deleteAccountPage.title} — Findo` };
+}
 
-const DELETE_CONFIRM =
-  "Hisobingizni butunlay o'chirmoqchimisiz? Profilingiz, xabarlaringiz va QR-belgilaringiz qaytarib bo'lmas tarzda o'chiriladi. Barcha e'lonlaringiz ham rasm va videolari bilan o'chiriladi.";
-const DELETE_ERROR = "Hisobni o'chirishda xatolik yuz berdi. Birozdan keyin qayta urinib ko'ring.";
+// "…sign in {signIn} …write to {email}": the sentence's own word order stays
+// the translator's, the links are dropped in where the placeholders sit.
+function fill(template: string, parts: Record<string, ReactNode>): ReactNode[] {
+  return template.split(/(\{[a-zA-Z]+\})/).map((piece, i) => {
+    const name = piece.match(/^\{([a-zA-Z]+)\}$/)?.[1];
+    return name && name in parts ? <span key={i}>{parts[name]}</span> : piece;
+  });
+}
 
 export default async function AccountDeletionPage() {
   const user = await getCurrentUser();
+  const dict = getDictionary(await getLocale());
+  const t = dict.deleteAccountPage;
+  const bullets = [t.bullet1, t.bullet2, t.bullet3, t.bullet4, t.bullet5, t.bullet6];
+  const link = "font-semibold text-brand-via hover:text-brand-to";
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-10 sm:px-6 lg:px-8">
       <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-danger/10 text-danger">
         <ShieldAlert className="h-7 w-7" />
       </div>
-      <h1 className="mt-5 text-3xl font-extrabold tracking-tight sm:text-4xl">
-        Hisobni va ma'lumotlarni o'chirish
-      </h1>
-      <p className="mt-3 max-w-xl text-sm text-muted">
-        Findo'dagi hisobingizni va unga bog'liq barcha shaxsiy ma'lumotlaringizni istalgan vaqtda
-        butunlay o'chirishingiz mumkin. Ilovani telefoningizda o'rnatgan yoki o'rnatmagan bo'lishingizdan
-        qat'i nazar, bu sahifa orqali so'rov yuborishingiz mumkin.
-      </p>
+      <h1 className="mt-5 text-3xl font-extrabold tracking-tight sm:text-4xl">{t.title}</h1>
+      <p className="mt-3 max-w-xl text-sm text-muted">{t.intro}</p>
 
       <div className="mt-8 rounded-2xl border border-border bg-surface p-5">
-        <h2 className="text-sm font-bold">O'chirilganda nima bo'ladi</h2>
+        <h2 className="text-sm font-bold">{t.whatHappens}</h2>
         <ul className="mt-2 list-disc space-y-1.5 pl-5 text-sm leading-relaxed text-muted">
-          <li>Profilingiz (ism, bio, rasm) butunlay o'chiriladi.</li>
-          <li>Barcha xabar yozishmalaringiz va QR-belgilaringiz o'chiriladi.</li>
-          <li>Do'stlar ro'yxati va push-bildirishnoma obunalari bekor qilinadi.</li>
-          <li>Joylashtirgan barcha e'lonlaringiz rasm va videolari bilan birga o'chiriladi.</li>
-          <li>Qoldirgan izohlaringiz va yoqtirishlaringiz o'chiriladi.</li>
-          <li>Bu amalni ortga qaytarib bo'lmaydi.</li>
+          {bullets.map((text) => (
+            <li key={text}>{text}</li>
+          ))}
         </ul>
       </div>
 
       <div className="mt-6 rounded-2xl border border-border bg-surface p-5">
-        <h2 className="text-sm font-bold">So'rov qanday yuboriladi</h2>
+        <h2 className="text-sm font-bold">{t.howTitle}</h2>
         {user ? (
           <>
             <p className="mt-1.5 text-sm leading-relaxed text-muted">
-              Siz <span className="font-semibold text-foreground">{user.email}</span> sifatida
-              kirgansiz. Hisobingizni hoziroq o'chirishingiz mumkin:
+              {fill(t.signedInAs, { email: <span className="font-semibold text-foreground">{user.email}</span> })}
             </p>
             <div className="mt-4">
               <DeleteAccountButton
-                label="Hisobni butunlay o'chirish"
-                confirmText={DELETE_CONFIRM}
-                errorText={DELETE_ERROR}
+                label={dict.profile.deleteAccount}
+                confirmText={dict.profile.deleteAccountConfirm}
+                errorText={dict.profile.deleteAccountError}
                 className="rounded-xl border border-danger/30 bg-danger/10 px-4 py-2.5"
               />
             </div>
           </>
         ) : (
           <p className="mt-1.5 text-sm leading-relaxed text-muted">
-            Hisobingizni o'chirish uchun avval{" "}
-            <Link href="/kirish" className="font-semibold text-brand-via hover:text-brand-to">
-              tizimga kiring
-            </Link>{" "}
-            va shu sahifaga qayting — "Hisobni butunlay o'chirish" tugmasi paydo bo'ladi. Hisobingizga
-            kira olmasangiz, qaysi email bilan ro'yxatdan o'tganingizni ko'rsatib{" "}
-            <a href="mailto:info@findo.net.uz" className="font-semibold text-brand-via hover:text-brand-to">
-              info@findo.net.uz
-            </a>{" "}
-            manziliga yozing — hisobingizni qo'lda o'chirib beramiz.
+            {fill(t.guestHelp, {
+              signIn: (
+                <Link href="/kirish" className={link}>
+                  {t.guestSignInLink}
+                </Link>
+              ),
+              email: (
+                <a href="mailto:info@findo.net.uz" className={link}>
+                  info@findo.net.uz
+                </a>
+              ),
+            })}
           </p>
         )}
       </div>

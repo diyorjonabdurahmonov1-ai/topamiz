@@ -13,11 +13,12 @@ import FriendButton from "@/components/FriendButton";
 import FriendCounts from "@/components/FriendCounts";
 import UserSafetyMenu from "@/components/UserSafetyMenu";
 import { hasBlocked } from "@/lib/user-blocks";
+import { apiErrorText } from "@/lib/api-errors";
 
 export async function generateMetadata(props: PageProps<"/profil/[id]">): Promise<Metadata> {
   const { id } = await props.params;
   const user = getPublicUserById(Number(id));
-  return { title: user ? `${user.name} — Findo` : "Foydalanuvchi topilmadi — Findo" };
+  return { title: user ? `${user.name} — Findo` : `${await apiErrorText("userNotFound")} — Findo` };
 }
 
 export default async function PublicProfilePage(props: PageProps<"/profil/[id]">) {

@@ -18,7 +18,8 @@ export async function generateMetadata(
   const { userId } = await props.params;
   const other = getUserById(Number(userId));
   const name = other && !isUserBlocked(other.id) ? displayIdentity(other).name : null;
-  return { title: name ? `${name} — Xabarlar — Findo` : "Xabarlar — Findo" };
+  const messages = getDictionary(await getLocale()).nav.messages;
+  return { title: name ? `${name} — ${messages} — Findo` : `${messages} — Findo` };
 }
 
 export default async function ChatPage(props: PageProps<"/xabarlar/[userId]">) {
@@ -38,7 +39,8 @@ export default async function ChatPage(props: PageProps<"/xabarlar/[userId]">) {
   );
   markThreadRead(user.id, otherId);
   const messages = getThread(user.id, otherId);
-  const dict = getDictionary(await getLocale());
+  const locale = await getLocale();
+  const dict = getDictionary(locale);
   const identity = displayIdentity(other);
   const otherIsAdmin = isAdmin(other);
   const iBlocked = hasBlocked(user.id, otherId);
@@ -83,6 +85,7 @@ export default async function ChatPage(props: PageProps<"/xabarlar/[userId]">) {
         initialMessages={messages}
         blockState={blockState}
         dict={dict}
+        locale={locale}
       />
     </div>
   );
