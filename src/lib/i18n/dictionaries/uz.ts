@@ -68,7 +68,6 @@ const uz: Dictionary = {
     howToPost: "E'lon qanday joylanadi?",
     safetyRules: "Xavfsizlik qoidalari",
     termsOfUse: "Foydalanish shartlari",
-    supportCall: "Qo'llab-quvvatlash",
     privacyPolicy: "Maxfiylik siyosati",
     deleteAccount: "Hisobni o'chirish",
     madeIn: "O'zbekistonda, ❖ g'amxorlik bilan yaratilgan.",

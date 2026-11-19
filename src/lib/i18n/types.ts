@@ -44,7 +44,6 @@ export interface Dictionary {
     howToPost: string;
     safetyRules: string;
     termsOfUse: string;
-    supportCall: string;
     privacyPolicy: string;
     deleteAccount: string;
     madeIn: string;

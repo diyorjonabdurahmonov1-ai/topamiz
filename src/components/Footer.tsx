@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { Phone } from "lucide-react";
 import Logo from "./Logo";
 import { ALL_CATEGORIES } from "@/lib/sections";
 import type { Dictionary, Locale } from "@/lib/i18n";
@@ -13,15 +12,6 @@ export default function Footer({ dict, locale }: { dict: Dictionary; locale: Loc
           <div>
             <Logo />
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-muted">{dict.footer.tagline}</p>
-            <div className="mt-5 flex gap-2">
-              <a
-                href="tel:+998712001122"
-                aria-label={dict.footer.supportCall}
-                className="flex h-9 w-9 items-center justify-center rounded-xl border border-border bg-surface text-muted transition-colors hover:text-foreground hover:border-brand-via/50"
-              >
-                <Phone className="h-4 w-4" />
-              </a>
-            </div>
           </div>
 
           <div>
