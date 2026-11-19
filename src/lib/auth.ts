@@ -7,7 +7,12 @@ import { normalizeUzPhone } from "./phone-login";
 import { BRAND_NAME, isReservedName, MAX_NAME_LENGTH, uniqueName } from "./user-names";
 
 export const SESSION_COOKIE = "topamiz_session";
-const SESSION_DAYS = 30;
+// A session in use never runs out: visiting a page extends it (renewSession)
+// whenever less than SESSION_RENEW_BELOW_DAYS of it is left, so only someone
+// who stays away this long has to sign in again.
+const SESSION_DAYS = 90;
+const SESSION_RENEW_BELOW_DAYS = 60;
+const DAY_MS = 24 * 60 * 60 * 1000;
 export { BRAND_NAME, isReservedName, MAX_NAME_LENGTH };
 export const MAX_BIO_LENGTH = 280;
 
@@ -176,7 +181,7 @@ export function setUserPassword(userId: number, password: string): void {
 
 export function createSession(userId: number): { token: string; expiresAt: Date } {
   const token = crypto.randomBytes(32).toString("hex");
-  const expiresAt = new Date(Date.now() + SESSION_DAYS * 24 * 60 * 60 * 1000);
+  const expiresAt = new Date(Date.now() + SESSION_DAYS * DAY_MS);
   db.prepare("INSERT INTO sessions (token, user_id, expires_at) VALUES (?, ?, ?)").run(
     token,
     userId,
@@ -185,15 +190,36 @@ export function createSession(userId: number): { token: string; expiresAt: Date 
   return { token, expiresAt };
 }
 
-export async function setSessionCookie(token: string, expiresAt: Date) {
-  const store = await cookies();
-  store.set(SESSION_COOKIE, token, {
+export function sessionCookieOptions(expiresAt: Date) {
+  return {
     httpOnly: true,
-    sameSite: "lax",
+    sameSite: "lax" as const,
     secure: process.env.NODE_ENV === "production",
     expires: expiresAt,
     path: "/",
-  });
+  };
+}
+
+export async function setSessionCookie(token: string, expiresAt: Date) {
+  const store = await cookies();
+  store.set(SESSION_COOKIE, token, sessionCookieOptions(expiresAt));
+}
+
+// Called on page visits (proxy.ts). Returns the new expiry when the session
+// was extended — the caller sends it back as the cookie's new expiry — and
+// null when there was nothing to do: no such session, one that has already
+// run out (never brought back), or one with plenty of time left. That last
+// case is nearly every call, so it costs a single read.
+export function renewSession(token: string, now: number = Date.now()): Date | null {
+  const row = db.prepare("SELECT expires_at FROM sessions WHERE token = ?").get(token) as
+    | { expires_at: string }
+    | undefined;
+  if (!row) return null;
+  const left = new Date(row.expires_at).getTime() - now;
+  if (!(left > 0) || left > SESSION_RENEW_BELOW_DAYS * DAY_MS) return null;
+  const expiresAt = new Date(now + SESSION_DAYS * DAY_MS);
+  db.prepare("UPDATE sessions SET expires_at = ? WHERE token = ?").run(expiresAt.toISOString(), token);
+  return expiresAt;
 }
 
 export async function clearSessionCookie() {
