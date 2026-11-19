@@ -7,11 +7,12 @@ import { normalizeUzPhone } from "./phone-login";
 import { BRAND_NAME, isReservedName, MAX_NAME_LENGTH, uniqueName } from "./user-names";
 
 export const SESSION_COOKIE = "topamiz_session";
-// A session in use never runs out: visiting a page extends it (renewSession)
-// whenever less than SESSION_RENEW_BELOW_DAYS of it is left, so only someone
-// who stays away this long has to sign in again.
+// A session in use never runs out: a page visit pushes it back out to a full
+// SESSION_DAYS (renewSession), so someone is signed out only after staying
+// away that long. The visit renews it once its expiry is more than a day
+// short of that, which keeps it to one write per session per day.
 const SESSION_DAYS = 90;
-const SESSION_RENEW_BELOW_DAYS = 60;
+const SESSION_RENEW_BELOW_DAYS = SESSION_DAYS - 1;
 const DAY_MS = 24 * 60 * 60 * 1000;
 export { BRAND_NAME, isReservedName, MAX_NAME_LENGTH };
 export const MAX_BIO_LENGTH = 280;
@@ -208,8 +209,8 @@ export async function setSessionCookie(token: string, expiresAt: Date) {
 // Called on page visits (proxy.ts). Returns the new expiry when the session
 // was extended — the caller sends it back as the cookie's new expiry — and
 // null when there was nothing to do: no such session, one that has already
-// run out (never brought back), or one with plenty of time left. That last
-// case is nearly every call, so it costs a single read.
+// run out (never brought back), or one already renewed today. That last case
+// is nearly every call, so it costs a single read.
 export function renewSession(token: string, now: number = Date.now()): Date | null {
   const row = db.prepare("SELECT expires_at FROM sessions WHERE token = ?").get(token) as
     | { expires_at: string }
