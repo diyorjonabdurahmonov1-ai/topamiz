@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { Bell, Heart, MessageSquare, Sparkles, UserPlus } from "lucide-react";
+import { Bell, CornerDownRight, Heart, MessageSquare, Sparkles, UserPlus } from "lucide-react";
 import { getCurrentUser } from "@/lib/auth";
 import { formatDate } from "@/lib/data";
 import { getLocale } from "@/lib/i18n/server";
@@ -27,6 +27,7 @@ const TYPE_ICONS: Record<NotificationType, typeof Bell> = {
   friend_listing: Sparkles,
   listing_comment: MessageSquare,
   listing_like: Heart,
+  comment_reply: CornerDownRight,
 };
 
 // Every template starts with {name}; the name is set in bold, Instagram-style.

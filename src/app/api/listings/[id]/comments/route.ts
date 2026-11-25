@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { apiError } from "@/lib/api-errors";
 import { getCurrentUser } from "@/lib/auth";
 import { getListingById } from "@/lib/listings";
-import { addComment, getComments, MAX_COMMENT_LENGTH } from "@/lib/listing-comments";
+import { addComment, getCommentRow, getComments, MAX_COMMENT_LENGTH } from "@/lib/listing-comments";
 import { containsProhibitedContent, recordModerationViolation } from "@/lib/moderation";
 import { getClientIp, rateLimit } from "@/lib/rate-limit";
 import { notify } from "@/lib/notifications";
@@ -43,12 +43,32 @@ export async function POST(request: Request, ctx: RouteContext<"/api/listings/[i
     return await apiError(blocked ? "commentRejectedBlocked" : "commentRejected", 400, {}, { blocked });
   }
 
+  // A reply names the comment it answers. Replies stay one level deep, as on
+  // Instagram: answering a reply hangs the new one under the same top-level
+  // comment, addressed to whoever wrote that reply.
+  let parentId: number | null = null;
+  let replyToUserId: number | null = null;
+  if (body?.replyTo !== undefined && body?.replyTo !== null) {
+    const target = getCommentRow(Number(body.replyTo));
+    if (!target || target.listing_id !== Number(id)) return await apiError("notFound", 404);
+    parentId = target.parent_id ?? target.id;
+    replyToUserId = target.user_id;
+  }
+
   if (listing.ownerId && isBlockedBetween(user.id, listing.ownerId)) {
     return await apiError("commentsClosed", 403);
   }
+  if (replyToUserId && isBlockedBetween(user.id, replyToUserId)) {
+    return await apiError("commentsClosed", 403);
+  }
 
-  const comment = addComment({ listingId: Number(id), userId: user.id, body: text });
-  if (listing.ownerId) {
+  const comment = addComment({ listingId: Number(id), userId: user.id, body: text, parentId, replyToUserId });
+  // Whoever was answered hears about it; the listing's owner hears about
+  // every comment on their listing unless that was already them.
+  if (replyToUserId) {
+    notify({ userId: replyToUserId, type: "comment_reply", actorId: user.id, listingId: Number(id) });
+  }
+  if (listing.ownerId && listing.ownerId !== replyToUserId) {
     notify({ userId: listing.ownerId, type: "listing_comment", actorId: user.id, listingId: Number(id) });
   }
   return NextResponse.json({ comment });

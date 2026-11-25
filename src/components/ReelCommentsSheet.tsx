@@ -3,19 +3,21 @@
 import { useEffect, useState } from "react";
 import { Loader2, X } from "lucide-react";
 import type { ListingComment } from "@/lib/listing-comments";
-import type { Dictionary } from "@/lib/i18n";
+import type { Dictionary, Locale } from "@/lib/i18n";
 import CommentSection from "./CommentSection";
 
 export default function ReelCommentsSheet({
   listingId,
   loggedIn,
   dict,
+  locale,
   onClose,
   onCommentPosted,
 }: {
   listingId: string;
   loggedIn: boolean;
   dict: Dictionary;
+  locale: Locale;
   onClose: () => void;
   onCommentPosted: (count: number) => void;
 }) {
@@ -66,6 +68,7 @@ export default function ReelCommentsSheet({
             initialComments={comments}
             loggedIn={loggedIn}
             dict={dict}
+            locale={locale}
             onCommentAdded={onCommentPosted}
           />
         )}
