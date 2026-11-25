@@ -119,6 +119,7 @@ export interface Dictionary {
     guestMorePhotos: string;
     guestPhoneLocked: string;
     showOnMap: string;
+    approxLocation: string;
     hideMap: string;
     getDirections: string;
     foundItButton: string;
@@ -207,6 +208,7 @@ export interface Dictionary {
     locateMeButton: string;
     locating: string;
     locateMeSuccess: string;
+    cityOnlyHint: string;
     locateMeError: string;
     locateMePermissionDenied: string;
     detectingLocation: string;

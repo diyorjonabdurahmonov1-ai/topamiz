@@ -143,6 +143,7 @@ const en: Dictionary = {
     guestMorePhotos: "{count} more photos",
     guestPhoneLocked: "The phone number is shown to registered users",
     showOnMap: "Show on map",
+    approxLocation: "Exact address not given",
     hideMap: "Hide map",
     getDirections: "Get directions",
     foundItButton: "I found this!",
@@ -232,6 +233,7 @@ const en: Dictionary = {
     locateMeButton: "Detect my location",
     locating: "Detecting...",
     locateMeSuccess: "Location detected",
+    cityOnlyHint: "Only the city is chosen — the listing won't show an exact spot. To add one, tap “Detect my location” or mark it on the map.",
     locateMeError: "Could not detect your location",
     locateMePermissionDenied:
       "Location access was denied. Allow location access for this site in your browser settings.",

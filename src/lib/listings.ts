@@ -36,6 +36,7 @@ interface RawListingRow {
   country: string;
   lat: number;
   lng: number;
+  location_exact: number;
   is_mystery_box: number;
   expires_at: string | null;
   starts_at: string | null;
@@ -163,6 +164,7 @@ function toListing(row: RawListingRow, { withContact = false }: { withContact?: 
     country: row.country,
     lat: row.lat,
     lng: row.lng,
+    locationExact: row.location_exact === 1,
     isMysteryBox: !!row.is_mystery_box,
     // Stored as a naive "YYYY-MM-DD HH:MM:SS" UTC string (to compare directly
     // against SQLite's own datetime('now') at query time) — but `new Date()`
@@ -369,8 +371,8 @@ export function createListing(params: {
   const info = db
     .prepare(
       `INSERT INTO listings
-        (owner_id, kind, title, description, category, city, district, reward, price, currency, price_negotiable, attrs, contact_name, contact_phone, photo_urls, video_url, video_thumbnail_url, country, lat, lng, is_mystery_box, expires_at, starts_at, is_promo, promo_category)
-       VALUES (@ownerId, @kind, @title, @description, @category, @city, @district, @reward, @price, @currency, @priceNegotiable, @attrs, @contactName, @contactPhone, @photoUrls, @videoUrl, @videoThumbnailUrl, @country, @lat, @lng, @isMysteryBox, @expiresAt, @startsAt, @isPromo, @promoCategory)`
+        (owner_id, kind, title, description, category, city, district, reward, price, currency, price_negotiable, attrs, contact_name, contact_phone, photo_urls, video_url, video_thumbnail_url, country, lat, lng, location_exact, is_mystery_box, expires_at, starts_at, is_promo, promo_category)
+       VALUES (@ownerId, @kind, @title, @description, @category, @city, @district, @reward, @price, @currency, @priceNegotiable, @attrs, @contactName, @contactPhone, @photoUrls, @videoUrl, @videoThumbnailUrl, @country, @lat, @lng, @locationExact, @isMysteryBox, @expiresAt, @startsAt, @isPromo, @promoCategory)`
     )
     .run({
       ownerId: params.ownerId,
@@ -393,6 +395,7 @@ export function createListing(params: {
       country: params.country,
       lat: params.lat ?? null,
       lng: params.lng ?? null,
+      locationExact: params.lat !== undefined && params.lng !== undefined ? 1 : 0,
       isMysteryBox: params.isMysteryBox ? 1 : 0,
       expiresAt: params.expiresAt ?? null,
       startsAt: params.startsAt ?? null,

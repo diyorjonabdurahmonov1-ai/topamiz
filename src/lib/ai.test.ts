@@ -43,6 +43,7 @@ function makeListing(overrides: Partial<Listing>): Listing {
     country: "UZ",
     lat: 41.3,
     lng: 69.2,
+    locationExact: true,
     ...overrides,
   };
 }

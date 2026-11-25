@@ -31,6 +31,7 @@ import type { CategoryId, Currency, ListingKind } from "@/lib/types";
 import type { Dictionary, Locale } from "@/lib/i18n";
 import { formatPostSuccessBody } from "@/lib/i18n/format";
 import { cities } from "@/lib/data";
+import { CITY_COORDINATES } from "@/lib/city-coordinates";
 import {
   categoriesFor,
   defaultCategory,
@@ -424,13 +425,14 @@ export default function PostListingForm({
   }
 
   // A city chip is the one-tap "roughly here": it replaces any map point,
-  // which may well have been in another city.
+  // which may well have been in another city. The listing then only says the
+  // city — no invented spot — unless the poster also marks a real place; the
+  // map, if open, moves to that city so the right street is a tap away.
   function pickCity(next: string) {
     setCity(next);
     if (errorStep === "where") clearError();
     setCoords(null);
     setDistrict("");
-    setShowMap(false);
   }
 
   function clearError() {
@@ -832,7 +834,7 @@ export default function PostListingForm({
         {showMap && (
           <div className="mt-3">
             <p className="mb-2 text-xs text-muted">{t.mapPickerHint}</p>
-            <LocationPickerMap value={coords} onChange={handleCoordsChange} />
+            <LocationPickerMap value={coords} onChange={handleCoordsChange} cityCenter={city ? (CITY_COORDINATES[city] ?? null) : null} />
           </div>
         )}
 
@@ -869,6 +871,9 @@ export default function PostListingForm({
               </>
             )}
           </p>
+        )}
+        {city && !coords && !detecting && (
+          <p className="mt-2 text-xs leading-relaxed text-muted">{t.cityOnlyHint}</p>
         )}
         {locateError && <p className="mt-2 text-xs font-medium text-danger">{locateError}</p>}
       </Step>
