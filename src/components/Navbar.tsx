@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, X, Plus, MessageCircle, QrCode, Bell } from "lucide-react";
+import { Menu, X, Plus, MessageCircle, Bell, User } from "lucide-react";
 import type { AuthUser } from "@/lib/auth";
 import type { Dictionary, Locale } from "@/lib/i18n";
 import Logo from "./Logo";
@@ -26,6 +26,27 @@ export default function Navbar({
 }) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
+
+  // Going to another page closes the menu.
+  const [menuPath, setMenuPath] = useState(pathname);
+  if (menuPath !== pathname) {
+    setMenuPath(pathname);
+    setOpen(false);
+  }
+
+  // The menu is a panel hanging under the bar, not part of the page: scrolling
+  // the page, pressing Escape or tapping outside puts it away again.
+  useEffect(() => {
+    if (!open) return;
+    const close = () => setOpen(false);
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && close();
+    window.addEventListener("scroll", close, { passive: true });
+    window.addEventListener("keydown", onKey);
+    return () => {
+      window.removeEventListener("scroll", close);
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [open]);
 
   const bell = user && (
     <Link
@@ -116,8 +137,21 @@ export default function Navbar({
 
         <div className="flex items-center gap-2 md:hidden">
           <LanguageSwitcher locale={locale} label={dict.languageSwitcher.label} />
-          <ThemeToggle label={dict.common.themeToggle} />
           {bell}
+          {/* The profile lives up here (not in the bottom bar): the picture
+              for someone signed in, a person icon that leads to sign-in
+              for a guest. */}
+          <Link
+            href={user ? "/profil" : "/kirish"}
+            aria-label={user ? dict.bottomNav.profile : dict.nav.login}
+            className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-full border border-border bg-surface text-muted hover:text-foreground"
+          >
+            {user ? (
+              <Avatar name={user.name} color={user.avatarColor} avatarUrl={user.avatarUrl} size={34} />
+            ) : (
+              <User className="h-4 w-4" />
+            )}
+          </Link>
           <button
             type="button"
             onClick={() => setOpen((v) => !v)}
@@ -130,43 +164,40 @@ export default function Navbar({
       </nav>
 
       {open && (
-        <div className="border-t border-border px-4 pb-4 pt-2 md:hidden">
-          <div className="flex flex-col gap-1">
-            {links.map((link) => (
+        <div className="md:hidden">
+          {/* Tapping the dimmed page puts the menu away. */}
+          <button
+            type="button"
+            aria-hidden="true"
+            tabIndex={-1}
+            onClick={() => setOpen(false)}
+            className="absolute inset-x-0 top-full h-dvh cursor-default bg-black/40"
+          />
+          <div className="absolute inset-x-0 top-full max-h-[calc(100dvh-8rem-env(safe-area-inset-top)-env(safe-area-inset-bottom))] overflow-y-auto overscroll-contain border-b border-border bg-bg-elevated px-4 pb-4 pt-2 shadow-xl">
+            <div className="flex flex-col gap-1">
+              {links.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  onClick={() => setOpen(false)}
+                  className="rounded-lg px-3 py-2.5 text-sm font-medium text-muted hover:bg-surface-2 hover:text-foreground"
+                >
+                  {link.label}
+                </Link>
+              ))}
+              <div className="flex items-center justify-between rounded-lg px-3 py-1.5 text-sm font-medium text-muted">
+                <span>{dict.common.themeToggle}</span>
+                <ThemeToggle label={dict.common.themeToggle} />
+              </div>
               <Link
-                key={link.href}
-                href={link.href}
+                href="/elon-qoshish"
                 onClick={() => setOpen(false)}
-                className="rounded-lg px-3 py-2.5 text-sm font-medium text-muted hover:bg-surface-2 hover:text-foreground"
+                className="btn-brand mt-2 flex items-center justify-center gap-1.5 rounded-xl px-4 py-2.5 text-sm font-semibold text-white"
               >
-                {link.label}
+                <Plus className="h-4 w-4" />
+                {dict.nav.postListing}
               </Link>
-            ))}
-            <Link
-              href="/belgilash"
-              onClick={() => setOpen(false)}
-              className="flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium text-muted hover:bg-surface-2 hover:text-foreground"
-            >
-              <QrCode className="h-4 w-4" />
-              {dict.nav.createQr}
-            </Link>
-            {!user && (
-              <Link
-                href="/kirish"
-                onClick={() => setOpen(false)}
-                className="rounded-lg px-3 py-2.5 text-sm font-medium text-muted hover:bg-surface-2 hover:text-foreground"
-              >
-                {dict.nav.login}
-              </Link>
-            )}
-            <Link
-              href="/elon-qoshish"
-              onClick={() => setOpen(false)}
-              className="btn-brand mt-2 flex items-center justify-center gap-1.5 rounded-xl px-4 py-2.5 text-sm font-semibold text-white"
-            >
-              <Plus className="h-4 w-4" />
-              {dict.nav.postListing}
-            </Link>
+            </div>
           </div>
         </div>
       )}
