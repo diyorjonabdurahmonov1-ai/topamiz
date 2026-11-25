@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { signupHrefHere } from "@/lib/safe-next";
 import { MessageCircle } from "lucide-react";
-import type { Dictionary } from "@/lib/i18n";
+import type { Dictionary, Locale } from "@/lib/i18n";
 import ReelCommentsSheet from "./ReelCommentsSheet";
 
 // A compact trigger + the same bottom-sheet used by Reels — comments live in
@@ -15,11 +15,13 @@ export default function ListingCommentButton({
   initialCount,
   loggedIn,
   dict,
+  locale,
 }: {
   listingId: string;
   initialCount: number;
   loggedIn: boolean;
   dict: Dictionary;
+  locale: Locale;
 }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
@@ -49,6 +51,7 @@ export default function ListingCommentButton({
           listingId={listingId}
           loggedIn={loggedIn}
           dict={dict}
+          locale={locale}
           onClose={() => setOpen(false)}
           onCommentPosted={setCount}
         />

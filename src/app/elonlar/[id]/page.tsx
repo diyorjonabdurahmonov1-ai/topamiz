@@ -273,6 +273,7 @@ export default async function ListingDetailPage(props: PageProps<"/elonlar/[id]"
               initialCount={listing.commentCount}
               loggedIn={!!user}
               dict={dict}
+              locale={locale}
             />
             <ShareMenu listingId={listing.id} title={listing.title} loggedIn={!!user} dict={dict} />
           </div>

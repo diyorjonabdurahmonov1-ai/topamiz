@@ -653,6 +653,13 @@ export interface Dictionary {
     commentSend: string;
     commentLoginPrompt: string;
     commentGenericError: string;
+    commentReply: string;
+    // {n} is how many replies, {name} who is being answered.
+    commentViewReplies: string;
+    commentHideReplies: string;
+    commentReplyingTo: string;
+    commentReplyCancel: string;
+    commentReplyPlaceholder: string;
     shareButton: string;
     shareToFriend: string;
     shareExternal: string;
@@ -703,6 +710,7 @@ export interface Dictionary {
     friendListing: string;
     listingComment: string;
     listingLike: string;
+    commentReply: string;
     someone: string;
     toastNew: string;
     toastOpen: string;

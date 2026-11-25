@@ -461,6 +461,13 @@ db.exec(`
   CREATE INDEX IF NOT EXISTS idx_listing_comments_listing ON listing_comments(listing_id);
 `);
 
+// Replies, Instagram-style: one level deep. `parent_id` is the top-level
+// comment a reply hangs under; `reply_to_user_id` is whoever it answers (so
+// "@name" can be shown, and they can be notified).
+addColumn("ALTER TABLE listing_comments ADD COLUMN parent_id INTEGER REFERENCES listing_comments(id) ON DELETE CASCADE");
+addColumn("ALTER TABLE listing_comments ADD COLUMN reply_to_user_id INTEGER REFERENCES users(id) ON DELETE SET NULL");
+db.exec("CREATE INDEX IF NOT EXISTS idx_listing_comments_parent ON listing_comments(parent_id)");
+
 // The in-site notification feed (/bildirishnomalar): someone added you as a
 // friend, a friend posted a listing, someone commented on or liked your
 // listing. Direct messages keep their own unread state in `messages` and

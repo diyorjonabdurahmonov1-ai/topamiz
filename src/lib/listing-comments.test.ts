@@ -1,47 +1,50 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { db } from "./db";
-import { findOrCreateGoogleUser } from "./auth";
-import { createListing } from "./listings";
-import { addComment, getCommentCount, getComments } from "./listing-comments";
+
+const { db } = await import("./db");
+const { findOrCreateGoogleUser } = await import("./auth");
+const { createListing } = await import("./listings");
+const { addComment, getComments, getCommentCount } = await import("./listing-comments");
+const { notify, getNotifications, notificationText } = await import("./notifications");
+
+function makeUser(email: string, name: string) {
+  return findOrCreateGoogleUser({ googleId: `g-${email}`, email, name });
+}
 
 beforeEach(() => {
-  db.exec("DELETE FROM listings; DELETE FROM sessions; DELETE FROM users;");
+  db.exec("DELETE FROM notifications; DELETE FROM listing_comments; DELETE FROM listings; DELETE FROM users;");
 });
 
-describe("addComment / getComments", () => {
-  it("stores comments in order and resolves the commenter's identity", () => {
-    const owner = findOrCreateGoogleUser({ googleId: "g-owner", email: "owner@example.com", name: "Owner" });
-    const commenter = findOrCreateGoogleUser({
-      googleId: "g-commenter",
-      email: "commenter@example.com",
-      name: "Commenter",
-    });
+describe("comment replies", () => {
+  it("keeps a reply under its top-level comment and names who it answers", () => {
+    const owner = makeUser("o@example.com", "Owner");
+    const asker = makeUser("a@example.com", "Diyor");
     const listing = createListing({
-      ownerId: owner.id,
-      kind: "found",
-      title: "Test",
-      description: "test",
-      category: "boshqa",
-      city: "Toshkent",
-      reward: null,
-      contactName: "Owner",
-      contactPhone: "+998900000000",
-      photoUrls: [],
-      country: "UZ",
+      ownerId: owner.id, kind: "sell", title: "Telefon", description: "x", category: "texnika", city: "Toshkent",
+      reward: null, contactName: "O", contactPhone: "+998900000000", photoUrls: [], country: "UZ",
     });
-    const id = Number(listing.id);
+    const lid = Number(listing.id);
+    const top = addComment({ listingId: lid, userId: asker.id, body: "Narxi qancha?" });
+    const reply = addComment({ listingId: lid, userId: owner.id, body: "100 dollar", parentId: top.id, replyToUserId: asker.id });
 
-    addComment({ listingId: id, userId: commenter.id, body: "Birinchi izoh" });
-    addComment({ listingId: id, userId: owner.id, body: "Ikkinchi izoh" });
+    expect(top.parentId).toBeNull();
+    expect(reply.parentId).toBe(top.id);
+    expect(reply.replyToName).toBe("Diyor");
+    expect(getComments(lid).map((c) => c.id)).toEqual([top.id, reply.id]);
+    expect(getCommentCount(lid)).toBe(2);
 
-    const comments = getComments(id);
-    expect(comments.map((c) => c.body)).toEqual(["Birinchi izoh", "Ikkinchi izoh"]);
-    expect(comments[0].userName).toBe("Commenter");
-    expect(getCommentCount(id)).toBe(2);
+    // Deleting the top-level comment takes its replies with it.
+    db.prepare("DELETE FROM listing_comments WHERE id = ?").run(top.id);
+    expect(getComments(lid)).toEqual([]);
   });
 
-  it("returns an empty list for a listing with no comments", () => {
-    expect(getComments(999999)).toEqual([]);
-    expect(getCommentCount(999999)).toBe(0);
+  it("tells the person who was answered, in their language", () => {
+    const owner = makeUser("o@example.com", "Owner");
+    const asker = makeUser("a@example.com", "Diyor");
+    notify({ userId: asker.id, type: "comment_reply", actorId: owner.id });
+    const [n] = getNotifications(asker.id);
+    expect(n.type).toBe("comment_reply");
+    expect(notificationText("uz", { type: n.type, actorName: "Owner", listingTitle: "Telefon" })).toBe(
+      "Owner izohingizga javob yozdi: «Telefon»"
+    );
   });
 });

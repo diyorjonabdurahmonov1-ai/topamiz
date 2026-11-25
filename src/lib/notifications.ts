@@ -4,7 +4,7 @@ import { getPublicUserById, type PublicUser } from "./auth";
 import { getDictionary, type Locale } from "./i18n";
 import { sendPushToUser } from "./push";
 
-export type NotificationType = "friend_added" | "friend_listing" | "listing_comment" | "listing_like";
+export type NotificationType = "friend_added" | "friend_listing" | "listing_comment" | "listing_like" | "comment_reply";
 
 export interface AppNotification {
   id: number;
@@ -32,6 +32,7 @@ const PUSHED_TYPES: ReadonlySet<NotificationType> = new Set([
   "friend_added",
   "friend_listing",
   "listing_comment",
+  "comment_reply",
 ]);
 
 // The sentence for a notification type, with {name} and {title} still in it.
@@ -42,6 +43,7 @@ export function notificationTemplate(locale: Locale, type: NotificationType): st
     friend_listing: t.friendListing,
     listing_comment: t.listingComment,
     listing_like: t.listingLike,
+    comment_reply: t.commentReply,
   }[type];
 }
 

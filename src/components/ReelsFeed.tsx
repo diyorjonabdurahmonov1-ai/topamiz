@@ -141,6 +141,7 @@ export default function ReelsFeed({
           listingId={openCommentsFor}
           loggedIn={loggedIn}
           dict={dict}
+          locale={locale}
           onClose={() => setOpenCommentsFor(null)}
           onCommentPosted={(count) =>
             setCommentCounts((prev) => ({ ...prev, [openCommentsFor]: count }))
