@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Clapperboard, Home, MessageCircle, Plus, Search, User } from "lucide-react";
+import { Clapperboard, Home, MessageCircle, Plus, Search } from "lucide-react";
 import type { AuthUser } from "@/lib/auth";
 import type { Dictionary } from "@/lib/i18n";
 
@@ -31,11 +31,6 @@ export default function BottomNav({
       icon: MessageCircle,
       label: dict.bottomNav.messages,
       badge: unreadCount,
-    },
-    {
-      href: user ? "/profil" : "/kirish",
-      icon: User,
-      label: user ? dict.bottomNav.profile : dict.bottomNav.login,
     },
   ];
 
