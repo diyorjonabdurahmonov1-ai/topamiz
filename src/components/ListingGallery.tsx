@@ -1,9 +1,10 @@
 "use client";
 
-import { useCallback, useEffect, useState, type ReactNode } from "react";
-import { ChevronLeft, ChevronRight, Expand, X } from "lucide-react";
+import { useCallback, useState, type ReactNode } from "react";
+import { ChevronLeft, ChevronRight, Expand } from "lucide-react";
 import type { Dictionary } from "@/lib/i18n";
 import { sizedImage } from "@/lib/image-url";
+import PhotoViewer from "./PhotoViewer";
 
 export default function ListingGallery({
   photoUrls,
@@ -28,27 +29,6 @@ export default function ListingGallery({
   const count = photoUrls.length;
 
   const go = useCallback((delta: number) => setIndex((i) => (i + delta + count) % count), [count]);
-
-  useEffect(() => {
-    if (!lightbox) return;
-    function onKey(e: KeyboardEvent) {
-      if (e.key === "Escape") setLightbox(false);
-      if (e.key === "ArrowLeft") go(-1);
-      if (e.key === "ArrowRight") go(1);
-    }
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [lightbox, go]);
-
-  // Body scroll lock while the lightbox is open.
-  useEffect(() => {
-    if (!lightbox) return;
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = prev;
-    };
-  }, [lightbox]);
 
   if (count === 0) {
     return (
@@ -136,60 +116,14 @@ export default function ListingGallery({
       )}
 
       {lightbox && (
-        <div
-          className="animate-fade-up fixed inset-0 z-[100] flex items-center justify-center bg-black/90 p-4"
-          onClick={() => setLightbox(false)}
-        >
-          <button
-            type="button"
-            onClick={() => setLightbox(false)}
-            aria-label={dict.common.close}
-            className="absolute right-4 top-[calc(1rem+env(safe-area-inset-top))] flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20"
-          >
-            <X className="h-5 w-5" />
-          </button>
-
-          {count > 1 && (
-            <>
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  go(-1);
-                }}
-                aria-label={dict.common.previous}
-                className="absolute left-2 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 sm:left-6"
-              >
-                <ChevronLeft className="h-6 w-6" />
-              </button>
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  go(1);
-                }}
-                aria-label={dict.common.next}
-                className="absolute right-2 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 sm:right-6"
-              >
-                <ChevronRight className="h-6 w-6" />
-              </button>
-            </>
-          )}
-
-          {/* eslint-disable-next-line @next/next/no-img-element -- runtime-uploaded file served from /api/uploads, not a build-time asset */}
-          <img
-            src={photoUrls[index]}
-            alt={`${title} — ${index + 1}/${count}`}
-            className="max-h-[85vh] max-w-full rounded-lg object-contain shadow-2xl"
-            onClick={(e) => e.stopPropagation()}
-          />
-
-          {count > 1 && (
-            <span className="absolute bottom-[calc(1.25rem+env(safe-area-inset-bottom))] left-1/2 -translate-x-1/2 rounded-full bg-white/10 px-3.5 py-1.5 text-sm font-semibold text-white backdrop-blur-sm">
-              {index + 1} / {count}
-            </span>
-          )}
-        </div>
+        <PhotoViewer
+          urls={photoUrls}
+          index={index}
+          onIndex={setIndex}
+          onClose={() => setLightbox(false)}
+          dict={dict}
+          alt={`${title} — ${index + 1}/${count}`}
+        />
       )}
     </div>
   );
