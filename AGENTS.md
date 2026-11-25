@@ -212,7 +212,13 @@ the app (universal links via `/.well-known/apple-app-site-association` from
 `APNS_TEAM_ID`/`APPLE_TEAM_ID`; App Links via
 `public/.well-known/assetlinks.json`, which must list both the upload key's
 and Google Play's app-signing key's SHA-256; `src/components/NativeAppBridge.tsx`
-navigates), the native share sheet and an offline screen. The Android app
+navigates), the native share sheet and an offline screen. Coming back from
+the background: Android can leave the web view half-asleep (it opens but
+buttons do nothing), so `MainActivity` resumes its timers, pings the page and
+reloads it if it doesn't answer within 5 s (and rebuilds the screen if the
+renderer process was taken away), and `src/components/ResumeGuard.tsx`
+reloads the page after 10+ minutes away, or after 30 s+ away if the server
+doesn't answer — never while a video is uploading or a field has text. The Android app
 draws edge to edge, under the status bar and the phone's own button bar, so
 anything pinned to the bottom or top of the screen (sheets, full-screen
 viewers, reels) must pad itself with `env(safe-area-inset-bottom)` /

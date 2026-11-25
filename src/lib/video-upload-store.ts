@@ -89,6 +89,12 @@ export function getVideoUpload(id: string | null): VideoUploadEntry | null {
   return (id && entries.find((e) => e.id === id)) || null;
 }
 
+// True while a video is still on its way to the server — a page reload then
+// would lose it.
+export function hasActiveVideoUpload(): boolean {
+  return entries.some((e) => e.stage !== "done" && e.stage !== "error");
+}
+
 export function useVideoUploads(): VideoUploadEntry[] {
   return useSyncExternalStore(
     subscribe,

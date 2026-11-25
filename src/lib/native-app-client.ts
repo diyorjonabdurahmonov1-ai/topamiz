@@ -34,6 +34,22 @@ export async function listenForAppLinks(onPath: (path: string) => void): Promise
   return () => void handle.remove();
 }
 
+// The app going to the background (home button, another app) and coming back.
+// Android may have dropped the page's network connections or paused its work
+// meanwhile, so the site checks itself when the app returns.
+export async function listenForAppState(
+  onBackground: () => void,
+  onForeground: () => void
+): Promise<() => void> {
+  if (!isNativeApp()) return () => {};
+  const { app } = await loadApp();
+  const handle = await app.addListener("appStateChange", ({ isActive }) => {
+    if (isActive) onForeground();
+    else onBackground();
+  });
+  return () => void handle.remove();
+}
+
 // The phone's own share sheet. false when it couldn't be shown (or the
 // person backed out), so the caller can fall back to copying the link.
 export async function nativeShare(data: { title: string; url: string }): Promise<boolean> {
