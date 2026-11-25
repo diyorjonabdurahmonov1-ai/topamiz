@@ -92,6 +92,9 @@ export interface Listing {
   country: string;
   lat: number;
   lng: number;
+  // false: lat/lng is only a stand-in near the middle of the city, because
+  // the poster picked a city and not a place. Never show it as an exact spot.
+  locationExact: boolean;
   isMysteryBox: boolean;
   expiresAt: string | null;
   startsAt: string | null;

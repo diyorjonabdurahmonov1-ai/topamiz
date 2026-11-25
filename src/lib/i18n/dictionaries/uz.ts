@@ -143,6 +143,7 @@ const uz: Dictionary = {
     guestMorePhotos: "yana {count} ta rasm",
     guestPhoneLocked: "Telefon raqami ro'yxatdan o'tganlarga ko'rinadi",
     showOnMap: "Xaritada ko'rish",
+    approxLocation: "Aniq manzil ko'rsatilmagan",
     hideMap: "Xaritani yashirish",
     getDirections: "Yo'nalish olish",
     foundItButton: "Men buni topdim!",
@@ -233,6 +234,7 @@ const uz: Dictionary = {
     locateMeButton: "Joylashuvimni aniqlash",
     locating: "Aniqlanmoqda...",
     locateMeSuccess: "Joylashuv aniqlandi",
+    cityOnlyHint: "Faqat shahar tanlandi — e'londa aniq joy ko'rsatilmaydi. Aniq joyni ko'rsatish uchun «Joylashuvimni aniqlash»ni bosing yoki xaritadan belgilang.",
     locateMeError: "Joylashuvni aniqlab bo'lmadi",
     locateMePermissionDenied:
       "Joylashuvga ruxsat berilmagan. Brauzeringiz sozlamalaridan bu sayt uchun joylashuvga ruxsat bering.",

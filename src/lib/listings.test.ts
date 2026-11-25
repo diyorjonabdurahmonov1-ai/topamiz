@@ -167,6 +167,8 @@ describe("createListing location", () => {
 
     expect(listing.lat).toBeCloseTo(41.2995, 1);
     expect(listing.lng).toBeCloseTo(69.2401, 1);
+    // Only the city was chosen, so the stand-in point is not an exact place.
+    expect(listing.locationExact).toBe(false);
   });
 
   it("uses an explicit lat/lng when the poster shared their location", () => {
@@ -175,6 +177,7 @@ describe("createListing location", () => {
 
     expect(listing.lat).toBe(41.31);
     expect(listing.lng).toBe(69.28);
+    expect(listing.locationExact).toBe(true);
   });
 });
 

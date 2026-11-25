@@ -34,10 +34,10 @@ function useIsDark() {
   return isDark;
 }
 
-function Recenter({ target }: { target: [number, number] | null }) {
+function Recenter({ target, zoom }: { target: [number, number] | null; zoom: number }) {
   const map = useMap();
   useEffect(() => {
-    if (target) map.flyTo(target, Math.max(map.getZoom(), 13));
+    if (target) map.flyTo(target, Math.max(map.getZoom(), zoom));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [target?.[0], target?.[1]]);
   return null;
@@ -70,18 +70,23 @@ function TouchActionSync() {
 export default function LocationPickerMap({
   value,
   onChange,
+  cityCenter = null,
 }: {
   value: { lat: number; lng: number } | null;
   onChange: (coords: { lat: number; lng: number }) => void;
+  // Where to look when no point is placed yet (the chosen city); no pin
+  // is drawn there — it is only where the map opens.
+  cityCenter?: { lat: number; lng: number } | null;
 }) {
   const isDark = useIsDark();
   const point: [number, number] | null = value ? [value.lat, value.lng] : null;
+  const look: [number, number] | null = point ?? (cityCenter ? [cityCenter.lat, cityCenter.lng] : null);
 
   return (
     <div className="relative h-64 w-full overflow-hidden rounded-xl border border-border">
       <MapContainer
-        center={point ?? UZBEKISTAN_CENTER}
-        zoom={point ? 13 : 6}
+        center={look ?? UZBEKISTAN_CENTER}
+        zoom={point ? 13 : look ? 12 : 6}
         dragging
         touchZoom
         scrollWheelZoom
@@ -94,7 +99,7 @@ export default function LocationPickerMap({
         <TileLayer url={TILES} attribution={ATTRIBUTION} />
         <TouchActionSync />
         <ClickToPlace enabled onPick={(lat, lng) => onChange({ lat, lng })} />
-        <Recenter target={point} />
+        <Recenter target={look} zoom={point ? 13 : 12} />
         {point && (
           <Marker
             position={point}

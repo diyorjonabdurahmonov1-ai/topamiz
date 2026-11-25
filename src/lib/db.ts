@@ -408,6 +408,28 @@ if (listingsMissingCoords.length > 0) {
   }
 }
 
+// Whether a listing's point is where the poster really put it (their own
+// location, or a pin on the map) or only a stand-in near the middle of the
+// city they chose. A stand-in must never be shown as an exact place. Older
+// rows are told apart by the stand-in's recipe: it is a pure function of the
+// city and the row id.
+if (!(db.prepare("PRAGMA table_info(listings)").all() as { name: string }[]).some((c) => c.name === "location_exact")) {
+  addColumn("ALTER TABLE listings ADD COLUMN location_exact INTEGER NOT NULL DEFAULT 1");
+  const rows = db.prepare("SELECT id, city, lat, lng FROM listings").all() as {
+    id: number;
+    city: string;
+    lat: number | null;
+    lng: number | null;
+  }[];
+  const markApprox = db.prepare("UPDATE listings SET location_exact = 0 WHERE id = ?");
+  for (const row of rows) {
+    const guess = coordinatesForCity(row.city, row.id);
+    if (row.lat === null || row.lng === null || (Math.abs(guess.lat - row.lat) < 1e-7 && Math.abs(guess.lng - row.lng) < 1e-7)) {
+      markApprox.run(row.id);
+    }
+  }
+}
+
 // Seed the listings table once, on the very first run, with the same
 // example content this app shipped with before listings were DB-backed —
 // as real rows (owner_id NULL) so they behave identically to a genuine

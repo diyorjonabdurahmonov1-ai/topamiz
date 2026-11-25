@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { ArrowLeft, Calendar1, Eye, Gift, Sparkles, Tag } from "lucide-react";
+import { ArrowLeft, Calendar1, Eye, Gift, MapPin, Sparkles, Tag } from "lucide-react";
 import { formatDate, formatSom } from "@/lib/data";
 import { categoryIcons } from "@/lib/icons";
 import { getListingById, incrementListingViews } from "@/lib/listings";
@@ -199,6 +199,17 @@ export default async function ListingDetailPage(props: PageProps<"/elonlar/[id]"
                   colorTo={listing.colorTo}
                   dict={dict}
                 />
+              ) : !listing.locationExact ? (
+                // Only the city was chosen: say so, and never draw a pin or
+                // offer directions to a spot nobody picked.
+                <p className="inline-flex items-center gap-2 rounded-xl border border-border bg-surface px-4 py-2.5 text-sm font-semibold text-muted">
+                  <MapPin className="h-4 w-4 shrink-0" />
+                  <span>
+                    {listing.city}
+                    {listing.district ? `, ${listing.district}` : ""}
+                  </span>
+                  <span className="text-xs font-medium">· {dict.listingDetail.approxLocation}</span>
+                </p>
               ) : (
                 <ListingLocationMap
                   lat={listing.lat}
