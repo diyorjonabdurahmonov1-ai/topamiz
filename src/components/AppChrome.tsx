@@ -29,7 +29,7 @@ export default function AppChrome({
   return (
     <>
       {navbar}
-      <main className="flex-1 pb-16 sm:pb-0">{children}</main>
+      <main className="flex-1 pb-[calc(4rem+env(safe-area-inset-bottom))] sm:pb-0">{children}</main>
       <div className="hidden sm:block">{footer}</div>
       {bottomNav}
     </>

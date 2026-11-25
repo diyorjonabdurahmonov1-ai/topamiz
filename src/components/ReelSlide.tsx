@@ -329,7 +329,7 @@ export default function ReelSlide({
 
       {/* The caption gradient covers the lower part of the video — let taps
           through it to the video, except on the actual buttons. */}
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 flex items-end justify-between gap-3 bg-gradient-to-t from-black/80 via-black/20 to-transparent p-4 pb-8">
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 flex items-end justify-between gap-3 bg-gradient-to-t from-black/80 via-black/20 to-transparent p-4 pb-[calc(2rem+env(safe-area-inset-bottom))]">
         <div className="min-w-0 flex-1 text-white">
           {!listing.isPromo && !listing.isMysteryBox && priceText(dict, listing, locale) && (
             <p className="text-lg font-extrabold drop-shadow">{priceText(dict, listing, locale)}</p>

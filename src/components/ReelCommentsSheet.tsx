@@ -44,7 +44,7 @@ export default function ReelCommentsSheet({
   return (
     <div className="fixed inset-0 z-[100] flex items-end justify-center bg-black/70" onClick={onClose}>
       <div
-        className="relative max-h-[75vh] w-full max-w-sm overflow-y-auto rounded-t-3xl bg-surface p-5"
+        className="relative max-h-[75vh] w-full max-w-sm overflow-y-auto rounded-t-3xl bg-surface p-5 pb-[calc(1.25rem+env(safe-area-inset-bottom))]"
         onClick={(e) => e.stopPropagation()}
       >
         <button

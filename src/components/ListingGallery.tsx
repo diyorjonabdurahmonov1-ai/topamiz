@@ -144,7 +144,7 @@ export default function ListingGallery({
             type="button"
             onClick={() => setLightbox(false)}
             aria-label={dict.common.close}
-            className="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20"
+            className="absolute right-4 top-[calc(1rem+env(safe-area-inset-top))] flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20"
           >
             <X className="h-5 w-5" />
           </button>
@@ -185,7 +185,7 @@ export default function ListingGallery({
           />
 
           {count > 1 && (
-            <span className="absolute bottom-5 left-1/2 -translate-x-1/2 rounded-full bg-white/10 px-3.5 py-1.5 text-sm font-semibold text-white backdrop-blur-sm">
+            <span className="absolute bottom-[calc(1.25rem+env(safe-area-inset-bottom))] left-1/2 -translate-x-1/2 rounded-full bg-white/10 px-3.5 py-1.5 text-sm font-semibold text-white backdrop-blur-sm">
               {index + 1} / {count}
             </span>
           )}

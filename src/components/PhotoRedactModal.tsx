@@ -117,7 +117,7 @@ export default function PhotoRedactModal({
   }
 
   return (
-    <div className="fixed inset-0 z-[200] flex flex-col bg-black/95 p-4">
+    <div className="fixed inset-0 z-[200] flex flex-col bg-black/95 px-4 pb-[calc(1rem+env(safe-area-inset-bottom))] pt-[calc(1rem+env(safe-area-inset-top))]">
       <div className="flex items-center justify-between text-white">
         <p className="text-sm font-semibold">{dict.postListing.redactHeading}</p>
         <button
