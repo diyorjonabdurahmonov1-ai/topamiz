@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ExternalLink, Gift, Loader2, Trash2 } from "lucide-react";
+import { ExternalLink, Gift, Loader2, Play, Trash2 } from "lucide-react";
 import type { Listing } from "@/lib/types";
 import type { Dictionary, Locale } from "@/lib/i18n";
 import { formatTimeAgo } from "@/lib/i18n/format";
@@ -11,6 +11,7 @@ import { formatSom } from "@/lib/data";
 import ResolveToggleButton from "./ResolveToggleButton";
 import { sizedImage } from "@/lib/image-url";
 import { kindLabel, priceText, resolvedLabel } from "@/lib/listing-labels";
+import { categoryIcons } from "@/lib/icons";
 
 export default function MyListingRow({ listing, dict, locale }: { listing: Listing; dict: Dictionary; locale: Locale }) {
   const router = useRouter();
@@ -24,18 +25,47 @@ export default function MyListingRow({ listing, dict, locale }: { listing: Listi
     else setDeleting(false);
   }
 
+  const Icon = categoryIcons[listing.category];
+  // The first picture, or the video's first frame; with neither, the
+  // category's own icon — so every row still shows which listing it is.
+  const image = listing.photoUrls[0] ?? listing.videoThumbnailUrl ?? null;
+  const isVideo = !listing.photoUrls[0] && !!listing.videoThumbnailUrl;
+
   return (
     <div className="rounded-xl border border-border bg-surface p-3">
       <div className="flex items-center gap-3">
-        <div className="h-12 w-12 shrink-0 overflow-hidden rounded-lg bg-surface-2">
-          {listing.photoUrls[0] && (
-            // eslint-disable-next-line @next/next/no-img-element -- runtime-uploaded file served from /api/uploads, not a build-time asset
-            <img src={sizedImage(listing.photoUrls[0], 240)} alt="" className="h-full w-full object-cover" />
+        <Link
+          href={`/elonlar/${listing.id}`}
+          aria-label={listing.title}
+          className="relative h-16 w-16 shrink-0 overflow-hidden rounded-xl bg-surface-2"
+        >
+          {image ? (
+            // eslint-disable-next-line @next/next/no-img-element -- runtime-uploaded file (R2 or /api/uploads), not a build-time asset
+            <img src={sizedImage(image, 240)} alt="" className="h-full w-full object-cover" />
+          ) : (
+            <span
+              className="flex h-full w-full items-center justify-center text-white"
+              style={{ backgroundImage: `linear-gradient(135deg, ${listing.colorFrom}, ${listing.colorTo})` }}
+            >
+              <Icon className="h-6 w-6" />
+            </span>
           )}
-        </div>
+          {(isVideo || (listing.videoUrl && image)) && (
+            <span className="absolute inset-0 flex items-center justify-center">
+              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-black/55 text-white">
+                <Play className="h-3 w-3 fill-white" />
+              </span>
+            </span>
+          )}
+        </Link>
         <div className="min-w-0 flex-1">
-          <p className="truncate text-sm font-semibold">{listing.title}</p>
-          <p className="mt-0.5 flex flex-wrap items-center gap-x-2 text-xs text-muted">
+          <Link href={`/elonlar/${listing.id}`} className="block truncate text-sm font-semibold hover:underline">
+            {listing.title}
+          </Link>
+          <p className="mt-0.5 truncate text-xs text-muted">
+            {dict.categories[listing.category]} · {[listing.city, listing.district].filter(Boolean).join(", ")}
+          </p>
+          <p className="mt-1 flex flex-wrap items-center gap-x-2 text-xs text-muted">
             <span className={listing.kind === "lost" ? "text-danger" : "text-success"}>
               {kindLabel(dict, listing.kind)}
             </span>
