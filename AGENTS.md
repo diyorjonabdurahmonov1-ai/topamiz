@@ -212,7 +212,12 @@ the app (universal links via `/.well-known/apple-app-site-association` from
 `APNS_TEAM_ID`/`APPLE_TEAM_ID`; App Links via
 `public/.well-known/assetlinks.json`, which must list both the upload key's
 and Google Play's app-signing key's SHA-256; `src/components/NativeAppBridge.tsx`
-navigates), the native share sheet and an offline screen. The apps' user
+navigates), the native share sheet and an offline screen. The Android app
+draws edge to edge, under the status bar and the phone's own button bar, so
+anything pinned to the bottom or top of the screen (sheets, full-screen
+viewers, reels) must pad itself with `env(safe-area-inset-bottom)` /
+`env(safe-area-inset-top)` — a desktop or phone browser has no such bars, so
+the omission never shows there. The apps' user
 agent ends in `FindoApp/iOS` / `FindoApp/Android` (`src/lib/native-app.ts`):
 Google sign-in is hidden there, since Google blocks it in app web views.
 CI: `.github/workflows/android.yml` builds an unsigned bundle to the

@@ -150,7 +150,7 @@ export default function ShareMenu({
           onClick={close}
         >
           <div
-            className="w-full max-w-sm overflow-hidden rounded-t-3xl bg-surface sm:rounded-3xl"
+            className="w-full max-w-sm overflow-hidden rounded-t-3xl bg-surface pb-[env(safe-area-inset-bottom)] sm:rounded-3xl sm:pb-0"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between border-b border-border px-5 py-4">
