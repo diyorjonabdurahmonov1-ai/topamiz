@@ -667,7 +667,6 @@ const en: Dictionary = {
     you: "You",
     nearbyHeading: "Listings near you",
     nearbyHint: "Tap to view on the map",
-    noExactSpot: "{n} listings have no exact spot",
   },
 
   myListings: {

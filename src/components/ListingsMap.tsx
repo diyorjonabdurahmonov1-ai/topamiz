@@ -112,7 +112,6 @@ export default function ListingsMap({
   // A listing whose poster only chose a city has no real place — drawing its
   // stand-in point would send people to a street it isn't on.
   const listings = useMemo(() => allListings.filter((l) => l.locationExact), [allListings]);
-  const hiddenCount = allListings.length - listings.length;
   // `initialMe` often arrives after mount (async geolocation lookup
   // upstream) — read it directly rather than copying it into state, so a
   // later prop update still takes effect. A manual locate-me tap overrides
@@ -249,12 +248,6 @@ export default function ListingsMap({
           </Marker>
         )}
       </MapContainer>
-
-      {interactive && hiddenCount > 0 && (
-        <p className="pointer-events-none absolute bottom-2 left-1/2 z-[1000] max-w-[55%] -translate-x-1/2 truncate rounded-full bg-bg-elevated/90 px-3 py-1 text-[11px] font-medium text-muted shadow">
-          {dict.map.noExactSpot.replace("{n}", String(hiddenCount))}
-        </p>
-      )}
 
       {interactive && sections.length > 1 && (
         <div className="absolute inset-x-0 top-0 z-[1000] flex gap-1.5 overflow-x-auto p-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
