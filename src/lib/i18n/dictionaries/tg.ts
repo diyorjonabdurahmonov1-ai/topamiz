@@ -668,6 +668,7 @@ const tg: Dictionary = {
     you: "Шумо",
     nearbyHeading: "Эълонҳои наздики шумо",
     nearbyHint: "Дар харита дидан барои пахш кунед",
+    noExactSpot: "{n} эълон ҷои дақиқ надорад",
   },
 
   myListings: {

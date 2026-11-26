@@ -668,6 +668,7 @@ const ru: Dictionary = {
     you: "Вы",
     nearbyHeading: "Объявления рядом с вами",
     nearbyHint: "Нажмите, чтобы посмотреть на карте",
+    noExactSpot: "У {n} объявлений нет точного места",
   },
 
   myListings: {

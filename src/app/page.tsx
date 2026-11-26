@@ -17,7 +17,8 @@ export default async function Home() {
   const viewer = await getCurrentUser();
   const active = withoutBlockedOwners(getAllActiveListings(country), viewer?.id);
   const ads = getActiveAds();
-  const nearby = active.slice(0, 12);
+  // Only listings with a real place go on the map teaser.
+  const nearby = active.filter((l) => l.locationExact).slice(0, 12);
 
   return (
     <div className="relative overflow-hidden">
