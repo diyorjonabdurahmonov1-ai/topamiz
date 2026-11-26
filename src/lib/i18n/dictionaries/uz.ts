@@ -672,6 +672,7 @@ const uz: Dictionary = {
     you: "Siz",
     nearbyHeading: "Yaqiningizdagi e'lonlar",
     nearbyHint: "Xaritada ko'rish uchun bosing",
+    noExactSpot: "{n} ta e'londa aniq joy yo'q",
   },
 
   myListings: {

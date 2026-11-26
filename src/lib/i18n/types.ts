@@ -633,6 +633,8 @@ export interface Dictionary {
     you: string;
     nearbyHeading: string;
     nearbyHint: string;
+    // {n} listings left off the map because they only name a city.
+    noExactSpot: string;
   };
 
   myListings: {
