@@ -668,7 +668,6 @@ const ky: Dictionary = {
     you: "Сиз",
     nearbyHeading: "Жаныңыздагы жарыялар",
     nearbyHint: "Картадан көрүү үчүн басыңыз",
-    noExactSpot: "{n} жарнамада так жер жок",
   },
 
   myListings: {

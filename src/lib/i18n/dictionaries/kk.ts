@@ -668,7 +668,6 @@ const kk: Dictionary = {
     you: "Сіз",
     nearbyHeading: "Жаныңыздағы хабарландырулар",
     nearbyHint: "Картада көру үшін басыңыз",
-    noExactSpot: "{n} хабарландыруда нақты орын жоқ",
   },
 
   myListings: {
